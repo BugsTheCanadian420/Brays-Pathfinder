@@ -1,30 +1,125 @@
-Pathfinder
+**Pathfinder**
 
-**Home**
+_Thank you for trying out my Destiny 2 All in One application. Please feel free to DM me on discord with any Bugs or Questions (Discord:BugsTheCnadian)
+-Bray_
+
+**Home Page**
+
+_This is a landing page for a quick glace at all the info you want._
 <img width="2553" height="1389" alt="image" src="https://github.com/user-attachments/assets/51ae635d-5dd8-482e-a2d8-65834e73cd8f" />
+
+
+**Vault**
+
+_|Here you can access your vault. (like DIM) Move items between characters and see your inventory.|_
 <img width="2558" height="1393" alt="image" src="https://github.com/user-attachments/assets/080ea732-8ae3-491e-a0cf-0e3a53b8be10" />
+
+
+**Loadouts**
+
+_|This is a loadout manager & builder.|_
 <img width="2556" height="1387" alt="image" src="https://github.com/user-attachments/assets/c6f88da4-7df3-414d-9f22-ae7ad6f03265" />
+
+
+**Triumph Tracker**
+
+_|Built in triumph tracking system.|_
 <img width="2556" height="1387" alt="image" src="https://github.com/user-attachments/assets/b76cdf82-665b-45dc-9c3b-614f31d36278" />
+
+
+**Activity Tab**
+
+**_Rotations_**
 <img width="2555" height="1386" alt="image" src="https://github.com/user-attachments/assets/d4220de4-c67d-4e06-a709-bafc2a94cd53" />
+
+
+**_Weekly Activities_**
 <img width="2555" height="1389" alt="image" src="https://github.com/user-attachments/assets/a7ad907b-0a1e-44e4-b309-03b7e68742e6" />
+
+
+**_Xur Inventory_**
 <img width="2550" height="1386" alt="image" src="https://github.com/user-attachments/assets/cb703fd2-7b01-43d9-b1b8-dc963f66caa1" />
+
+
+**_Bounty Tracker (Tracks per character)_**
 <img width="2551" height="989" alt="image" src="https://github.com/user-attachments/assets/8b10b5fe-854a-4542-ba08-fe85f6aa73d3" />
+
+
+**_Vendor Inventories (Selectable)_**
 <img width="2554" height="798" alt="image" src="https://github.com/user-attachments/assets/06adcb2b-9242-4428-9f0a-d38d8c784abb" />
+
+
+**_Weapon Stats_**
 <img width="2549" height="1030" alt="image" src="https://github.com/user-attachments/assets/9b4ed78e-96f9-479c-8097-f00284040179" />
+
+
+**_Raid & Dungeon Tracker_**
 <img width="2550" height="1022" alt="image" src="https://github.com/user-attachments/assets/a45793e2-a4cb-43cd-94dd-11c8ef38dcec" />
+_|Example of tracked dungeon.|_
 <img width="2558" height="1391" alt="image" src="https://github.com/user-attachments/assets/97ba9f40-b327-482c-b856-ef647e782814" />
+
+
+**_Crucible Tracker_**
+
+_|Shows some Crucible stats.|_
 <img width="2558" height="1388" alt="image" src="https://github.com/user-attachments/assets/972e1801-68f0-4c3d-9a38-0ad430bd82d9" />
+
+
+**_Personal Bests_**
+
+_|Shows your personal bests on some activities and gamemodes.|_
 <img width="2557" height="1384" alt="image" src="https://github.com/user-attachments/assets/6b6b6f59-a49b-417b-9d46-6e9c9b044c78" />
+
+
+**_Personal Recaps_**
+
+_|Recaps your last few activities with a clickacle menu.|_
 <img width="2556" height="1387" alt="image" src="https://github.com/user-attachments/assets/77b5c14f-ca2c-41e3-83af-2a61515acf63" />
+
+
+**Target Farming**
+
+_|Track Weapons and Armor that you want to target farm, Selectable Perks and Stats.|_
 <img width="2554" height="1388" alt="image" src="https://github.com/user-attachments/assets/335948c0-6e96-40e6-8110-6c105ed404e8" />
+
+
+**Helpful Images**
+
+_|Helpful Raid & Dungeon imaages used for explanations and encounters. (Loot Tables Included)|_
 <img width="2556" height="1389" alt="image" src="https://github.com/user-attachments/assets/8bc319b4-5e90-4dc4-b190-7506fd2a9aa2" />
+
+
+**Website Hub**
+_|Webview versions of helpful & used websites. (Fully funtional)|_
 <img width="2549" height="1390" alt="image" src="https://github.com/user-attachments/assets/50076705-09c9-493d-bda7-4704161840bd" />
+_|Example.|_
 <img width="2556" height="1391" alt="image" src="https://github.com/user-attachments/assets/7a4e565d-5ad4-4b3f-89b0-779a6bcf73af" />
+
+
+**Checklist**
+
+_|Customizable checklist.|_
 <img width="2557" height="1387" alt="image" src="https://github.com/user-attachments/assets/8e6d3527-f2e0-4ad6-8d37-b801a7e38181" />
+
+**Notes**
 <img width="2556" height="1390" alt="image" src="https://github.com/user-attachments/assets/10f68c6e-a297-4a68-85a5-cb53245c61de" />
+_|Notes Popup. (Usable from anywhere in the app)|_
 <img width="2552" height="1391" alt="image" src="https://github.com/user-attachments/assets/90c60de7-9a03-4820-a320-e6a62fd7e0b1" />
+
+
+**Organizer**
+
+_|Sorting window to label and view anything in your vault for sorting.|_
 <img width="2558" height="1390" alt="image" src="https://github.com/user-attachments/assets/6833db9e-b6ba-4069-a436-ad1a48e2c0da" />
+
+
+**Optimizer**
+
+_|Optimize stat totals and find the best armor for the stat totals you choose.|_
 <img width="2553" height="1381" alt="image" src="https://github.com/user-attachments/assets/1586dd94-c139-4c17-b6a0-9a369926d897" />
+
+
+**Settings**
 <img width="2559" height="1389" alt="image" src="https://github.com/user-attachments/assets/6629245d-7c7b-477f-adf4-872758f80700" />
 <img width="2559" height="1392" alt="image" src="https://github.com/user-attachments/assets/f9def2a3-c65a-46fd-a34f-2607fed66d3f" />
 <img width="2554" height="1389" alt="image" src="https://github.com/user-attachments/assets/ffb4bf64-f2b2-432f-9c21-57bc4774fee0" />
