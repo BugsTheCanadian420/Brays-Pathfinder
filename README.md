@@ -1,6 +1,6 @@
 **Pathfinder**
 
-_Thank you for trying out my Destiny 2 All in One application. Please feel free to DM me on discord with any Bugs or Questions (Discord:BugsTheCnadian)
+_Thank you for trying out my Destiny 2 All in One application. Please feel free to DM me on discord with any Bugs or Questions (Discord:BugsTheCanadian)
 -Bray_
 
 **Home Page**
