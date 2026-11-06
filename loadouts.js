@@ -327,71 +327,109 @@
   async function loImage(l) {
     const res = resolve(l), by = (b) => res.find((r) => r.en.b === b) || null, c = l.c < 3 ? CL[l.c] : 'Any class';
     const sub = by(SUB), weps = WB.map(by), arms = AB.map(by);
-    const mods = [...(l.fm || []).map((p) => p[2]), ...l.it.filter((q) => AB.includes(q.b)).flatMap((q) => (q.m || []).map((p) => p[2]))].filter(Boolean).slice(0, 25);
-    const subPl = sub && sub.en.m ? sub.en.m.map((p) => p[2]).filter(Boolean).slice(0, 12) : [];
+    // Mods by where they go: each armor piece's own mods, plus loadout mods that name a piece; the rest go in "Any piece".
+    const mk = (p) => (p && p[2] ? { i: p[2], n: p[1] || '' } : null);
+    const modsBy = AB.map((b) => [...l.it.filter((q) => q.b === b).flatMap((q) => (q.m || []).map(mk)), ...(l.fm || []).filter((p) => +p[4] === b).map(mk)].filter(Boolean).slice(0, 12));
+    const anyMods = (l.fm || []).filter((p) => !p[4] || !AB.includes(+p[4])).map(mk).filter(Boolean).slice(0, 12);
+    const hasMods = modsBy.some((m) => m.length) || anyMods.length > 0;
+    const subPl = sub && sub.en.m ? sub.en.m.map(mk).filter(Boolean).slice(0, 16) : [];
     const ic = (r) => (r && (r.x ? rawIcon(r.x.i) : r.en.i)) || '';
     const artPk = (l.a || []).map((p) => p[2]).filter(Boolean).slice(0, 14), artIc = (l.ai && l.ai.i) || '', hasArt = !!(artIc || artPk.length);
-    const paths = [ic(sub), ...weps.map(ic), ...arms.map(ic), ...mods, ...subPl, artIc, ...artPk].filter(Boolean);
-    let D = {}; try { D = await gt.imgFetch({ p: paths }); } catch (e) { /* drawn without icons */ }
+    const paths = [ic(sub), ...weps.map(ic), ...arms.map(ic), ...modsBy.flat().map((m) => m.i), ...anyMods.map((m) => m.i), ...subPl.map((m) => m.i), artIc, ...artPk].filter(Boolean);
+    let D = {}; try { D = await gt.imgFetch({ p: [...new Set(paths)] }); } catch (e) { /* drawn without icons */ }
     const imgs = {}; await Promise.all(Object.entries(D).map(([k, v]) => new Promise((ok) => { const im = new Image(); im.onload = () => { imgs[k] = im; ok(); }; im.onerror = ok; im.src = v; })));
     const st = [0, 0, 0, 0, 0, 0]; let hasSt = false; arms.forEach((r) => { if (r && r.x && r.x.st) { hasSt = true; r.x.st.forEach((v, i) => { st[i] += v || 0; }); } });
-    const W = 1200, H = hasArt ? 775 : 675, cv = document.createElement('canvas'); cv.width = W; cv.height = H; const g2 = cv.getContext('2d');
+    // Layout first (the picture grows to fit the sections it has), then draw.
+    const W = 1200, M = 32, IW = W - M * 2, GAP = 16;
+    const SUBSZ = 54, SUBSTEP = 62, subPer = Math.floor((IW - 32) / SUBSTEP), subRows = Math.ceil(subPl.length / subPer);
+    const cols = anyMods.length ? 6 : 5, colW = IW / cols, MSZ = 46, MSTEP = 54, mPer = Math.max(1, Math.floor((colW - 24) / MSTEP));
+    const mRows = Math.max(1, ...[...modsBy, anyMods].map((m) => Math.ceil(m.length / mPer)));
+    let y = 196;
+    const L = { top: y };
+    y += 400 + GAP;
+    if (subPl.length) { L.sub = y; y += 50 + subRows * SUBSTEP + 10 + GAP; }
+    if (hasMods) { L.mods = y; y += 108 + mRows * MSTEP + 8 + GAP; }
+    if (hasArt) { L.art = y; y += 104 + GAP; }
+    const H = y + 24, cv = document.createElement('canvas'); cv.width = W; cv.height = H; const g2 = cv.getContext('2d');
     // Background: dark base, a glow in the class colour, a faded subclass emblem, a fine pattern and a vignette.
     const ACC = [['#5d8ae6', '#2c4a9a'], ['#45c48d', '#1d6f4d'], ['#e8c25a', '#8a6a1c']][l.c] || ['#a98bff', '#4b3a99'];
     const bg = g2.createLinearGradient(0, 0, W, H); bg.addColorStop(0, '#171a22'); bg.addColorStop(.55, '#101218'); bg.addColorStop(1, '#0a0b0f'); g2.fillStyle = bg; g2.fillRect(0, 0, W, H);
-    const glow = (x, y, r, col, a) => { const q = g2.createRadialGradient(x, y, 0, x, y, r); q.addColorStop(0, col + a); q.addColorStop(1, col + '00'); g2.fillStyle = q; g2.fillRect(0, 0, W, H); };
+    const glow = (x, y1, r, col, a) => { const q = g2.createRadialGradient(x, y1, 0, x, y1, r); q.addColorStop(0, col + a); q.addColorStop(1, col + '00'); g2.fillStyle = q; g2.fillRect(0, 0, W, H); };
     glow(W * .88, -40, 760, ACC[0], '38'); glow(-60, H + 40, 640, ACC[1], '55'); glow(W * .5, H * .55, 520, ACC[1], '16');
     if (sub && imgs[ic(sub)]) { g2.save(); g2.globalAlpha = .07; g2.drawImage(imgs[ic(sub)], W - 520, -70, 560, 560); g2.restore(); }
     g2.save(); g2.strokeStyle = 'rgba(255,255,255,.035)'; g2.lineWidth = 1; for (let x = -H; x < W; x += 26) { g2.beginPath(); g2.moveTo(x, H); g2.lineTo(x + H, 0); g2.stroke(); } g2.restore();
     const vg = g2.createRadialGradient(W / 2, H / 2, H * .45, W / 2, H / 2, W * .75); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.55)'); g2.fillStyle = vg; g2.fillRect(0, 0, W, H);
     const bar = g2.createLinearGradient(0, 0, W, 0); bar.addColorStop(0, ACC[0]); bar.addColorStop(1, ACC[1] + '00'); g2.fillStyle = bar; g2.fillRect(0, 0, W, 5);
-    const rr = (x, y, w, h, r) => { g2.beginPath(); if (g2.roundRect) g2.roundRect(x, y, w, h, r); else g2.rect(x, y, w, h); };
-    const panel = (x, y, w, h) => { rr(x, y, w, h, 14); g2.fillStyle = 'rgba(255,255,255,.04)'; g2.fill(); g2.strokeStyle = 'rgba(255,255,255,.09)'; g2.lineWidth = 1; g2.stroke(); };
+    const rr = (x, y1, w, h, r) => { g2.beginPath(); if (g2.roundRect) g2.roundRect(x, y1, w, h, r); else g2.rect(x, y1, w, h); };
+    const panel = (x, y1, w, h) => { rr(x, y1, w, h, 14); g2.fillStyle = 'rgba(255,255,255,.04)'; g2.fill(); g2.strokeStyle = 'rgba(255,255,255,.09)'; g2.lineWidth = 1; g2.stroke(); };
     const font = (sz, w) => { g2.font = `${w || 400} ${sz}px "Open Sans","Segoe UI",Arial,sans-serif`; };
-    const txt = (t, x, y, sz, col, w, max) => { font(sz, w); g2.fillStyle = col; let s2 = String(t || ''); if (max) while (s2.length > 1 && g2.measureText(s2).width > max) s2 = s2.slice(0, -2) + '…'; g2.fillText(s2, x, y); };
-    const box = (r, x, y, sz) => {
+    const txt = (t, x, y1, sz, col, w, max) => { font(sz, w); g2.fillStyle = col; let s2 = String(t || ''); if (max) while (s2.length > 1 && g2.measureText(s2).width > max) s2 = s2.slice(0, -2) + '…'; g2.fillText(s2, x, y1); };
+    const label = (t, x, y1) => txt(t, x, y1, 14, '#8b8f97', 700);
+    const box = (r, x, y1, sz) => {
       const rc = r && r.x ? IMRC[r.x.r] || '#3a3d43' : '#3a3d43';
       // The rarity colour goes behind the picture, so an item whose icon has a see-through or dark background (ornaments, for example) still looks like the others.
-      const fg = g2.createLinearGradient(x, y, x, y + sz); fg.addColorStop(0, rc); fg.addColorStop(1, '#14161b');
-      g2.save(); rr(x, y, sz, sz, 7); g2.clip(); g2.fillStyle = '#14161b'; g2.fillRect(x, y, sz, sz); g2.globalAlpha = .9; g2.fillStyle = fg; g2.fillRect(x, y, sz, sz); g2.globalAlpha = 1;
-      const im = imgs[ic(r)]; if (im) g2.drawImage(im, x, y, sz, sz); g2.restore();
-      rr(x + 1.5, y + 1.5, sz - 3, sz - 3, 7); g2.strokeStyle = rc === '#522f65' ? '#8a5fb0' : rc; g2.lineWidth = 3; g2.stroke();
+      const fg = g2.createLinearGradient(x, y1, x, y1 + sz); fg.addColorStop(0, rc); fg.addColorStop(1, '#14161b');
+      g2.save(); rr(x, y1, sz, sz, 7); g2.clip(); g2.fillStyle = '#14161b'; g2.fillRect(x, y1, sz, sz); g2.globalAlpha = .9; g2.fillStyle = fg; g2.fillRect(x, y1, sz, sz); g2.globalAlpha = 1;
+      const im = imgs[ic(r)]; if (im) g2.drawImage(im, x, y1, sz, sz); g2.restore();
+      rr(x + 1.5, y1 + 1.5, sz - 3, sz - 3, 7); g2.strokeStyle = rc === '#522f65' ? '#8a5fb0' : rc; g2.lineWidth = Math.max(2, sz / 30); g2.stroke();
+    };
+    const tileIc = (src, x, y1, sz, round) => {
+      const rad = round ? sz / 2 : 7;
+      rr(x, y1, sz, sz, rad); g2.fillStyle = '#14161b'; g2.fill();
+      const im = imgs[src]; if (im) { g2.save(); rr(x, y1, sz, sz, rad); g2.clip(); g2.drawImage(im, x, y1, sz, sz); g2.restore(); }
+      rr(x + .5, y1 + .5, sz - 1, sz - 1, rad); g2.strokeStyle = 'rgba(255,255,255,.22)'; g2.lineWidth = 1.5; g2.stroke();
     };
     // header
-    txt(l.n || 'Loadout', 48, 78, 46, '#ffffff', 700, 760);
-    txt(c.toUpperCase() + (sub && sub.x ? '  ·  ' + sub.x.n : ''), 50, 112, 18, '#9aa0a8', 600, 760);
-    if (sub && imgs[ic(sub)]) g2.drawImage(imgs[ic(sub)], W - 150, 30, 104, 104);
-    subPl.forEach((p, i) => { const im = imgs[p]; if (im) g2.drawImage(im, W - 150 - (subPl.length - i) * 34, 140, 30, 30); });
-    g2.fillStyle = '#2b2e33'; g2.fillRect(48, 180, W - 96, 1);
-    panel(32, 196, 520, 320); panel(584, 196, 584, 400); if (mods.length) panel(32, 526, 520, 110);
-    // weapons
-    txt('WEAPONS', 48, 220, 14, '#8b8f97', 700);
-    weps.forEach((r, i) => { const y = 236 + i * 92; box(r, 48, y, 76); txt(r ? (r.x || r.en).n : 'Empty', 140, y + 34, 22, r ? '#fff' : '#555', 600, 380); txt(r && r.x ? (r.x.t || '') + (r.x.p ? '  ·  ' + r.x.p : '') : '', 140, y + 62, 15, '#9aa0a8', 400, 380); });
-    // armor
-    txt('ARMOR', 600, 220, 14, '#8b8f97', 700);
-    arms.forEach((r, i) => { box(r, 600 + i * 108, 236, 92); });
-    arms.forEach((r, i) => { if (r && r.x && r.x.r === 'Exotic') txt(r.x.n, 600, 352, 17, '#ceae33', 600, 540); });
+    txt(l.n || 'Loadout', 48, 78, 46, '#ffffff', 700, 900);
+    txt(c.toUpperCase() + (sub && (sub.x || sub.en).n ? '  ·  ' + (sub.x || sub.en).n : ''), 50, 112, 18, '#9aa0a8', 600, 900);
+    if (sub && imgs[ic(sub)]) g2.drawImage(imgs[ic(sub)], W - 150, 30, 110, 110);
+    g2.fillStyle = '#2b2e33'; g2.fillRect(48, 172, W - 96, 1);
+    // weapons and armor
+    panel(M, L.top, 520, 400); panel(584, L.top, W - M - 584, 400);
+    label('WEAPONS', 48, L.top + 26);
+    weps.forEach((r, i) => { const y1 = L.top + 44 + i * 112; box(r, 48, y1, 88); txt(r ? (r.x || r.en).n : 'Empty', 154, y1 + 40, 23, r ? '#fff' : '#555', 600, 370); txt(r && r.x ? (r.x.t || '') + (r.x.p ? '  ·  ' + r.x.p : '') : '', 154, y1 + 68, 15, '#9aa0a8', 400, 370); });
+    label('ARMOR', 600, L.top + 26);
+    arms.forEach((r, i) => { box(r, 600 + i * 108, L.top + 40, 92); });
+    arms.forEach((r) => { if (r && r.x && r.x.r === 'Exotic') txt(r.x.n, 600, L.top + 158, 17, '#ceae33', 600, 540); });
     if (hasSt) {
       const tot = st.reduce((a, b) => a + b, 0);
       st.forEach((v, i) => {
-        const y = 382 + i * 30; txt(IMSTL[i], 600, y + 14, 15, '#cfd2d8', 600);
-        g2.fillStyle = '#23262b'; g2.fillRect(700, y + 2, 360, 14); g2.fillStyle = IMSTC[i]; g2.fillRect(700, y + 2, Math.min(360, v / 200 * 360), 14);
-        txt(String(v), 1072, y + 15, 16, '#fff', 700);
+        const y1 = L.top + 186 + i * 30; txt(IMSTL[i], 600, y1 + 14, 15, '#cfd2d8', 600);
+        g2.fillStyle = '#23262b'; g2.fillRect(700, y1 + 2, 360, 14); g2.fillStyle = IMSTC[i]; g2.fillRect(700, y1 + 2, Math.max(0, Math.min(360, v / 200 * 360)), 14);
+        txt(String(v), 1072, y1 + 15, 16, '#fff', 700);
       });
-      txt('Total ' + tot, 600, 580, 16, '#e0b64a', 700);
+      txt('Total ' + tot, 600, L.top + 384, 16, '#e0b64a', 700);
     }
-    // mods
-    if (mods.length) { txt('MODS', 48, 540, 14, '#8b8f97', 700); mods.forEach((p, i) => { const im = imgs[p], x = 48 + (i % 13) * 40, y = 552 + Math.floor(i / 13) * 40; g2.fillStyle = '#0d0f12'; g2.fillRect(x, y, 36, 36); if (im) g2.drawImage(im, x, y, 36, 36); }); }
+    // subclass: super, abilities, aspects and fragments
+    if (L.sub) {
+      panel(M, L.sub, IW, 50 + subRows * SUBSTEP + 10);
+      label('SUBCLASS' + (sub && (sub.x || sub.en).n ? '  ·  ' + String((sub.x || sub.en).n).toUpperCase() : ''), 48, L.sub + 26);
+      subPl.forEach((m, i) => tileIc(m.i, 48 + (i % subPer) * SUBSTEP, L.sub + 42 + Math.floor(i / subPer) * SUBSTEP, SUBSZ, false));
+    }
+    // mods, under the armor piece they go on
+    if (L.mods) {
+      panel(M, L.mods, IW, 108 + mRows * MSTEP + 8);
+      label('MODS', 48, L.mods + 26);
+      const SLOTN = ['Helmet', 'Arms', 'Chest', 'Legs', 'Class item'];
+      [...modsBy, ...(anyMods.length ? [anyMods] : [])].forEach((list, ci) => {
+        const x0 = M + 16 + ci * colW, yh = L.mods + 40;
+        if (ci < 5) box(arms[ci], x0, yh, 46); else { rr(x0, yh, 46, 46, 7); g2.fillStyle = '#1b1d22'; g2.fill(); txt('+', x0 + 15, yh + 32, 26, '#8b8f97', 600); }
+        txt(ci < 5 ? SLOTN[ci] : 'Any piece', x0 + 56, yh + 20, 15, '#e6e7ea', 600, colW - 70);
+        txt(list.length ? list.length + ' mod' + (list.length > 1 ? 's' : '') : 'No mods', x0 + 56, yh + 40, 13, '#8b8f97', 400, colW - 70);
+        if (ci) { g2.fillStyle = 'rgba(255,255,255,.07)'; g2.fillRect(x0 - 10, yh, 1, 52 + mRows * MSTEP); }
+        list.forEach((m, k) => tileIc(m.i, x0 + (k % mPer) * MSTEP, yh + 60 + Math.floor(k / mPer) * MSTEP, MSZ, false));
+      });
+    }
     // artifact
-    if (hasArt) {
-      const y0 = 662; panel(32, y0 - 16, W - 64, 96);
-      txt('ARTIFACT', 48, y0 + 8, 14, '#8b8f97', 700);
-      if (artIc && imgs[artIc]) { rr(48, y0 + 16, 52, 52, 8); g2.fillStyle = '#1a1c22'; g2.fill(); g2.drawImage(imgs[artIc], 48, y0 + 16, 52, 52); rr(48.5, y0 + 16.5, 51, 51, 8); g2.strokeStyle = '#ceae33'; g2.lineWidth = 2; g2.stroke(); }
-      txt((l.ai && l.ai.n) || 'Artifact', 114, y0 + 40, 20, '#ffffff', 600, 280);
-      txt(artPk.length ? artPk.length + ' perks selected' : '', 114, y0 + 62, 14, '#9aa0a8', 400);
-      artPk.forEach((p, i) => { const im = imgs[p], x = 420 + i * 52, y = y0 + 18; rr(x, y, 46, 46, 23); g2.fillStyle = '#14161b'; g2.fill(); if (im) { g2.save(); rr(x, y, 46, 46, 23); g2.clip(); g2.drawImage(im, x, y, 46, 46); g2.restore(); } rr(x + .5, y + .5, 45, 45, 22.5); g2.strokeStyle = 'rgba(255,255,255,.35)'; g2.lineWidth = 1.5; g2.stroke(); });
+    if (L.art) {
+      const y0 = L.art; panel(M, y0, IW, 104);
+      label('ARTIFACT', 48, y0 + 26);
+      if (artIc && imgs[artIc]) { rr(48, y0 + 38, 54, 54, 8); g2.fillStyle = '#1a1c22'; g2.fill(); g2.drawImage(imgs[artIc], 48, y0 + 38, 54, 54); rr(48.5, y0 + 38.5, 53, 53, 8); g2.strokeStyle = '#ceae33'; g2.lineWidth = 2; g2.stroke(); }
+      txt((l.ai && l.ai.n) || 'Artifact', 116, y0 + 62, 20, '#ffffff', 600, 280);
+      txt(artPk.length ? artPk.length + ' perks selected' : '', 116, y0 + 84, 14, '#9aa0a8', 400);
+      artPk.forEach((p, i) => tileIc(p, 420 + i * 60, y0 + 38, 54, true));
     }
-    txt('Made with Pathfinder', W - 220, H - 12, 14, '#6a6f77', 600);
+    txt('Made with Pathfinder', W - 220, H - 10, 14, '#6a6f77', 600);
     const data = cv.toDataURL('image/png');
     let m = g('loimg'); if (m) m.remove();
     m = document.createElement('div'); m.id = 'loimg';

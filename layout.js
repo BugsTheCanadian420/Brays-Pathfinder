@@ -38,38 +38,45 @@
   nav.insertBefore(more, set || null);
   const pan = document.createElement('div'); pan.id = 'gtmp'; pan.setAttribute('role', 'menu'); document.body.appendChild(pan);
 
-  const narrow = window.matchMedia ? window.matchMedia('(max-width:1100px)') : { matches: false, addEventListener() {} };
+  // Everything moves into one menu only when the tabs really do not fit (a phone-width window, or a bar too full even with just the main tabs),
+  // not just because a window is in portrait.
+  const narrowMQ = window.matchMedia ? window.matchMedia('(max-width:640px)') : { matches: false, addEventListener() {} };
+  let tight = false;
+  const narrow = { get matches() { return narrowMQ.matches || tight; }, addEventListener: (t, f) => narrowMQ.addEventListener && narrowMQ.addEventListener(t, f) };
+  const setNarrowCls = () => html.classList.toggle('gtnarrow', narrow.matches);
   // Tabs you hid in Settings > Tabs: gone from the bar, from More and from the phone menu.
   const HIDK = 'gt.nav.hide';
   const hidSet = () => { try { const a = JSON.parse(localStorage.getItem(HIDK)); return new Set(Array.isArray(a) ? a : []); } catch (e) { return new Set(); } };
   let HID = hidSet();
   const hidden = (id) => HID.has(id) && id !== 'vault' && id !== 'settings';
-  const shownExtra = () => EXTRA.filter((id) => !hidden(id));
   function applyHide() { nav.querySelectorAll('button[data-t]').forEach((b) => b.classList.toggle('gthide', hidden(b.dataset.t))); }
   applyHide();
   let nProm = 0;
-  const barIds = () => (narrow.matches ? new Set() : new Set([...PRIMARY.filter((id) => !hidden(id)), ...shownExtra().slice(0, nProm)]));
+  // Bar order: the main tabs, then the extras. Inventory is always on the bar; the rest join one by one while they fit.
+  const shownAll = () => [...PRIMARY, ...EXTRA].filter((id) => !hidden(id) && btn(id));
+  const onBar = (n) => { const l = shownAll().slice(0, n); if (!l.includes('vault')) l.push('vault'); return new Set(l); };
+  const barIds = () => (narrow.matches ? new Set() : onBar(nProm));
   function applyProm(n) {
     nProm = n;
-    const ex = shownExtra();
-    EXTRA.forEach((id) => { const b = btn(id); if (!b) return; const i = ex.indexOf(id), on = i >= 0 && i < n; b.classList.toggle('gtx', !on); b.classList.toggle('gtp', on); });
-    const anyInMore = GROUPS.some(([, ids]) => ids.some((id) => btn(id) && !hidden(id) && !PRIMARY.includes(id) && !(ex.indexOf(id) >= 0 && ex.indexOf(id) < n)));
-    more.classList.toggle('gtnone', !narrow.matches && (n >= ex.length || !anyInMore)); // a class: the bar's button rule uses !important, which beats an inline style
+    const bar = onBar(n);
+    [...PRIMARY, ...EXTRA].forEach((id) => { const b = btn(id); if (!b) return; const on = bar.has(id); b.classList.toggle('gtx', !on); b.classList.toggle('gtp', on); });
+    const anyInMore = GROUPS.some(([, ids]) => ids.some((id) => btn(id) && !hidden(id) && !bar.has(id)));
+    more.classList.toggle('gtnone', !narrow.matches && !anyInMore); // a class: the bar's button rule uses !important, which beats an inline style
   }
   // Show as many tabs on the bar as fit while keeping room for the search box; the rest stay under "More".
   function fit() {
     applyHide();
+    tight = false; setNarrowCls();
+    const all = shownAll();
     if (narrow.matches) { applyProm(0); sync(); return; }
-    let best = 0;
-    // On Inventory, keep room for the search box (about 240px) plus its buttons. Elsewhere the bar has no search box, so every tab that fits goes on it.
+    // On Inventory, keep room for a usable search box plus its buttons. Elsewhere the bar has no search box, so every tab that fits goes on it.
     const onVault = html.dataset.gtab === 'vault' || !html.dataset.gtab;
-    const nb = slot.querySelectorAll('.vbar button').length || 7, need = onVault ? 240 + nb * 37 : 0;
+    const nb = slot.querySelectorAll('.vbar button').length || 7, need = onVault ? Math.min(240 + nb * 37, 420) : 0;
     html.classList.toggle('gtwide', !onVault);
-    const ex = shownExtra();
-    for (let n = 0; n <= ex.length; n++) {
-      applyProm(n);
-      if ((!need || slot.getBoundingClientRect().width >= need) && hd.scrollWidth <= hd.clientWidth + 1) best = n; else break;
-    }
+    const fits = () => (!need || slot.getBoundingClientRect().width >= need) && hd.scrollWidth <= hd.clientWidth + 1;
+    let best = -1;
+    for (let n = all.length; n >= 1; n--) { applyProm(n); if (fits()) { best = n; break; } }
+    if (best < 0) { tight = true; setNarrowCls(); applyProm(0); sync(); return; } // not even Inventory fits beside the search box: one menu
     applyProm(best); sync();
   }
   let fitq = 0;
@@ -160,7 +167,7 @@ html[data-gtab="vault"] #gtsrch .vbar{display:flex}
 #gtmp .gi b{display:block;font-size:13.5px;font-weight:600;letter-spacing:1px;color:#dfe1e4}
 #gtmp .gi small{display:block;font-size:11.5px;color:#8d9097;margin-top:1px}
 #gtmp .gi.on{border-left-color:var(--g-accent,#7ab8e8);background:rgba(255,255,255,.04)}#gtmp .gi.on b{color:#fff}
-@media (max-width:1100px){header.gtbar nav button.gtp{display:none!important}header.gtbar nav #gtmore{margin-left:2px;border:1px solid #3a3d43!important;border-radius:3px!important;height:32px;padding:0 12px!important}}
+html.gtnarrow header.gtbar nav button.gtp{display:none!important}html.gtnarrow header.gtbar nav #gtmore{margin-left:2px;border:1px solid #3a3d43!important;border-radius:3px!important;height:32px;padding:0 12px!important}
 @media (max-width:760px){#gtsrch .vbar button.g[data-act=junk],#gtsrch .vbar button.g[data-f=bulk],#gtsrch .vbar button.g[data-act=help]{display:none}header.gtbar>svg,header.gtbar>.plogo{width:26px!important;height:26px!important}}
 `;
   document.head.appendChild(st);

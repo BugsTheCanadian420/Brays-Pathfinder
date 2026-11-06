@@ -1,4 +1,4 @@
-/* Pathfinder 0.2.91: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.2.92: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -930,7 +930,9 @@ try { app.setPath('userData', path.join(app.getPath('appData'), 'guardian-toolki
 if (!app.requestSingleInstanceLock()) app.quit();
 else app.on('second-instance', () => { if (win) { if (win.isMinimized()) win.restore(); win.focus(); } });
 // No website or page inside the app may ask for the camera, microphone, location, notifications and so on.
-app.on('session-created', (s) => { s.setPermissionRequestHandler((wc, p, cb) => cb(false)); s.setPermissionCheckHandler(() => false); });
+// The one exception: Hub sites may put text on the clipboard (their "copy" buttons, like copying a checkpoint bot's name). Reading the clipboard stays blocked.
+const CLIPW = (p) => p === 'clipboard-sanitized-write';
+app.on('session-created', (s) => { s.setPermissionRequestHandler((wc, p, cb) => cb(CLIPW(p))); s.setPermissionCheckHandler((wc, p) => CLIPW(p)); });
 // Keep the app light on disk: a small picture cache, and old leftovers removed on start.
 app.commandLine.appendSwitch('disk-cache-size', String(64 * 1024 * 1024));
 function tidyDisk() {
@@ -961,7 +963,7 @@ app.whenReady().then(async () => {
     });
   } catch (e) { /* cookies stay session-only */ }
   session.defaultSession.setPermissionRequestHandler((wc, p, cb) => cb(false)); session.defaultSession.setPermissionCheckHandler(() => false);
-  session.fromPartition('persist:hub').setPermissionRequestHandler((wc, p, cb) => cb(false));
+  session.fromPartition('persist:hub').setPermissionRequestHandler((wc, p, cb) => cb(CLIPW(p))); session.fromPartition('persist:hub').setPermissionCheckHandler((wc, p) => CLIPW(p));
   // Keep an Edit menu (never shown) so Ctrl+C/V/X/A/Z work in text fields.
   Menu.setApplicationMenu(Menu.buildFromTemplate([{ label: 'Edit', submenu: [
     { role: 'undo' }, { role: 'redo' }, { type: 'separator' },
