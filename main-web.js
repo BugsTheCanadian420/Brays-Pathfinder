@@ -1,4 +1,4 @@
-/* Pathfinder 0.2.95: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.2.96: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -1874,21 +1874,42 @@ H('act:wscan', async () => {
   if (batch.length) wsSave();
   return { left: need.length - batch.length, total: seen.size, scanned: seen.size - (need.length - batch.length) };
 });
-// Play time: what Bungie keeps. Time per character comes from the profile; time spent inside activities comes from the account stats.
-// Bungie does not record being AFK, so "not in an activity" (orbit, the Tower, menus, loading, and AFK) is the total minus the time inside activities.
+// Play time, the way Time Wasted on Destiny counts it: ACTIVE time is the time spent inside activities (Bungie's own per-activity stats);
+// the platform total (what the character screen shows, minutesPlayedTotal) also holds orbit, the Tower, menus, loading and being AFK.
+// Bungie does not record AFK itself, so "AFK and idle" is the platform total minus the active time (it is the number that site shows as AFK).
+const PT_MODES = [['Story', 2], ['Strikes', 18], ['Patrol', 6], ['Raids', 4], ['Dungeons', 82], ['Gambit', 63], ['Crucible', 5], ['PvE', 7]];
 H('act:playtime', async () => {
-  const m = await acct();
-  const [pr, st] = await Promise.all([api(pbase(m) + '?components=200'), api(`/Destiny2/${m.membershipType}/Account/${m.membershipId}/Stats/`)]);
+  const m = await acct(), base = `/Destiny2/${m.membershipType}/Account/${m.membershipId}/`;
+  const [pr, st] = await Promise.all([api(pbase(m) + '?components=200'), api(base + 'Stats/')]);
   const cd = (pr.characters && pr.characters.data) || {};
   const sec = (o) => ((((o || {}).allTime || {}).secondsPlayed || {}).basic || {}).value || 0;
+  const all = st.mergedAllCharacters || {}, delSec = sec((st.mergedDeletedCharacters || {}).merged);
+  // Every character, deleted ones too. A single mode per call, so the answer never depends on what Bungie names the mode in its reply.
+  const ids = [...new Set([...Object.keys(cd), ...(st.characters || []).map((c) => String(c.characterId)).filter((c) => /^\d+$/.test(c))])];
+  const first = (r) => { const v = r && Object.values(r).find((q) => q && q.allTime); return v ? sec(v) : 0; };
+  const jobs = []; ids.forEach((c) => PT_MODES.forEach(([n, md]) => jobs.push([c, n, md])));
+  const got = await pool(jobs, 6, async ([c, n, md]) => { try { return first(await api(base + `Character/${c}/Stats/?modes=${md}&periodType=2`)); } catch (e) { return -1; } });
+  const per = {}, tot = {}; let bad = 0;
+  jobs.forEach(([c, n], i) => { const v = got[i]; if (v < 0) { bad++; return; } (per[c] = per[c] || {})[n] = v; tot[n] = (tot[n] || 0) + v; });
   const byId = {}; (st.characters || []).forEach((c) => { byId[c.characterId] = c; });
   const rows = Object.values(cd).map((x) => {
-    const s = byId[x.characterId] || {}, r = s.results || {};
-    return { id: x.characterId, cls: x.classType, light: x.light, em: x.emblemBackgroundPath || '', mp: (Number(x.minutesPlayedTotal) || 0) * 60, act: sec(s.merged), pve: sec(r.allPvE), pvp: sec(r.allPvP), last: Date.parse(x.dateLastPlayed) || 0 };
-  }).sort((a, b) => b.mp - a.mp);
-  const all = st.mergedAllCharacters || {}, del = sec((st.mergedDeletedCharacters || {}).merged);
-  const live = rows.reduce((t, r) => t + r.mp, 0), total = live + del, acts = sec(all.merged);
-  return { rows, del, live, total, acts, idle: Math.max(0, total - acts), pve: sec((all.results || {}).allPvE), pvp: sec((all.results || {}).allPvP), at: Date.now() };
+    const s = byId[x.characterId] || {}, p = per[x.characterId] || {};
+    return { id: x.characterId, cls: x.classType, light: x.light, em: x.emblemBackgroundPath || '', mp: (Number(x.minutesPlayedTotal) || 0) * 60, act: sec(s.merged), pve: p.PvE || 0, pvp: p.Crucible || 0, last: Date.parse(x.dateLastPlayed) || 0 };
+  }).sort((a, b) => b.act - a.act);
+  const live = rows.reduce((t, r) => t + r.mp, 0), total = live + delSec, acts = sec(all.merged);
+  const typeSum = PT_MODES.filter(([n]) => n !== 'PvE').reduce((t, [n]) => t + (tot[n] || 0), 0);
+  const types = PT_MODES.filter(([n]) => n !== 'PvE').map(([n]) => ({ n, s: tot[n] || 0 })).filter((q) => q.s > 0);
+  if (acts > typeSum) types.push({ n: 'Other', s: acts - typeSum });
+  // The last 30 days, one bar per day (best effort: the page simply leaves the chart out if Bungie does not answer).
+  let days = [];
+  try {
+    const ymd = (t) => new Date(t).toISOString().slice(0, 10), now = Date.now(), d0 = ymd(now - 29 * 864e5), d1 = ymd(now), acc = {};
+    const parts = await pool(ids, 6, async (c) => { try { return await api(base + `Character/${c}/Stats/?periodType=1&daystart=${d0}&dayend=${d1}`); } catch (e) { return null; } });
+    parts.forEach((r) => { if (!r) return; ['allPvE', 'allPvP'].forEach((k) => (((r[k] || {}).daily) || []).forEach((q) => { const d = String(q.period || '').slice(0, 10); if (d) acc[d] = (acc[d] || 0) + ((((q.values || {}).secondsPlayed || {}).basic || {}).value || 0); })); });
+    for (let i = 29; i >= 0; i--) { const d = ymd(now - i * 864e5); days.push({ d, s: acc[d] || 0 }); }
+    if (!days.some((q) => q.s > 0)) days = [];
+  } catch (e) { days = []; }
+  return { rows, del: delSec, live, total, acts, idle: Math.max(0, total - acts), pve: tot.PvE || 0, pvp: tot.Crucible || 0, types, days, bad, at: Date.now() };
 });
 H('act:totals', async () => {
   const m = await acct();

@@ -69,6 +69,7 @@
 #home .hm-big{font-size:30px;color:#fff;line-height:1.1;font-weight:600;font-variant-numeric:tabular-nums}
 #home .hm-big small{font-size:13px;color:#9aa0a8;font-weight:400;letter-spacing:.5px}
 #home .hm-sub{color:#9aa0a8;font-size:12.5px;margin-top:4px}
+#home .hm-tb{display:flex;height:8px;border-radius:4px;overflow:hidden;background:#2b2e33;margin-top:10px}#home .hm-tb i{display:block;height:100%}
 #home .hm-bar{height:6px;background:#2b2e33;border-radius:3px;overflow:hidden;margin-top:8px}#home .hm-bar i{display:block;height:100%;background:var(--hc,#6aa6e0);border-radius:3px}
 #home .hm-row{display:flex;gap:10px;align-items:center;margin-top:8px;min-width:0}
 #home .hm-row>img{width:40px;height:40px;border:1px solid #3a3d43;flex:none;background:#0d0f12;border-radius:2px}
@@ -142,13 +143,16 @@
     const rows = [['d', same ? 'Daily + weekly' : 'Daily', r ? when(r.d) : ''], ...(same ? [] : [['w', 'Weekly', r ? when(r.w) : '']]), ['x', here ? 'X&ucirc;r leaves' : 'X&ucirc;r arrives', r ? when(here ? r.w : r.fri) + (here && same ? ' (with the reset)' : '') : '']];
     return card({ w: 'w3', i: 'clock', h: 'Resets', go: 'activity:rot', c: '#7fb6e8' }, `<div class="hm-rs">${rows.map(([k, l, w]) => `<div class="rs"><b><em data-hrs="${k}" style="font-style:normal">${esc(rs(k))}</em><span>${l}</span></b><div class="hm-bar"><i data-rsp="${k === 'd' && same ? 'w' : k}" style="width:${Math.round(rsPct(k === 'd' && same ? 'w' : k) * 100)}%"></i></div><small class="hm-when">${esc(w)}</small></div>`).join('')}</div>`);
   };
-  function seasonCard() {
-    const r = H.season;
-    if (!r || !r.pass) return card({ w: 'w3', i: 'star', h: 'Season', go: 'activity:week', c: '#c77dff' }, msgSub('season'));
-    const P = r.pass, Q = r.pre, rank = P.lvl + (Q ? Q.lvl : 0), useP = P.lvl < P.cap || !Q, cur = useP ? P.cur : Q.cur, next = useP ? P.next : Q.next;
-    const left = r.end ? Math.floor((r.end - Date.now()) / 864e5) : -1, showLeft = left >= 0 && left < 400;
-    return card({ w: 'w3', i: 'star', h: esc(r.name || 'Season'), ct: showLeft ? left + ' days left' : '', go: 'activity:week', c: '#c77dff' }, `<div class="hm-big">Rank ${num(rank)}</div><div class="hm-bar"><i style="width:${next ? Math.round(cur / next * 100) : 0}%"></i></div><div class="hm-sub">${num(cur)} / ${num(next)} XP to the next rank</div>`);
+  // Play time, as Time Wasted on Destiny counts it: active time is time inside activities; AFK and idle (orbit, menus, loading, AFK) is left out.
+  const PT_COL = ['#6aa6e0', '#7fd48a', '#e8a53a', '#c77dff', '#ff7b72', '#4dd0c8', '#9aa0a8', '#d6c26a'];
+  const hm = (s) => num(Math.floor(s / 3600)) + 'h ' + String(Math.floor((s % 3600) / 60)).padStart(2, '0') + 'm';
+  function ptBody() {
+    const r = H.time || H.act.time;
+    if (!r) return msgSub('time');
+    const types = (r.types || []).slice().sort((a, b) => b.s - a.s), den = Math.max(r.acts || 0, types.reduce((t, q) => t + q.s, 0)) || 1;
+    return `<div class="hm-big">${esc(hm(r.acts))} <small>active</small></div>${types.length ? `<div class="hm-tb" title="${esc(types.map((q) => q.n + ' ' + Math.round(q.s / den * 100) + '%').join(', '))}">${types.map((q, i) => `<i style="width:${(q.s / den * 100).toFixed(2)}%;background:${PT_COL[i % PT_COL.length]}"></i>`).join('')}</div>` : ''}<div class="hm-sub">${esc(hm(r.idle))} AFK and idle (not counted)</div><div class="hm-sub">${esc(hm(r.total))} on the platform, all characters</div>`;
   }
+  const timeCard = () => card({ w: 'w3', i: 'clock', h: 'Play time', go: 'activity:time', c: '#7fb6e8' }, ptBody());
   function invCard(D) {
     const vault = D.items.filter((x) => x.loc === 'vault' && !x.pm).length, cap = 1300; // same vault size the Inventory page shows
     return card({ w: 'w3', i: 'box', h: 'Inventory', go: 'vault', c: '#6fbf73' }, `<div class="hm-big">${num(vault)} <small>items in the vault</small></div><div class="hm-bar"><i style="width:${Math.min(100, Math.round(vault / cap * 100))}%"></i></div><div class="hm-sub">${num(vault)} of ${num(cap)} vault slots used</div>`);
@@ -171,7 +175,7 @@
   }
 
   // ---------- pinned cards ----------
-  const ACT = { cru: ['Crucible', 'flag'], rot: ['Rotations', 'cal'], bnt: ['Bounties', 'flag'], xur: ['X&ucirc;r', 'shop'], clr: ['Raids and dungeons', 'star'], pb: ['Personal bests', 'star'], rec: ['Recap', 'clock'], wep: ['Weapon stats', 'tag'] };
+  const ACT = { cru: ['Crucible', 'flag'], rot: ['Rotations', 'cal'], bnt: ['Bounties', 'flag'], xur: ['X&ucirc;r', 'shop'], clr: ['Raids and dungeons', 'star'], pb: ['Personal bests', 'star'], rec: ['Recap', 'clock'], time: ['Play time', 'clock'], wep: ['Weapon stats', 'tag'] };
   function actBody(k) {
     const r = H.act[k]; if (!r) return `<div class="hm-sub">${H.err['a' + k] ? esc(H.err['a' + k]) : 'Loading...'}</div>`;
     const row = (i, t, sub, right) => `<div class="hm-row">${i ? `<img src="${esc(img(i))}" alt="" loading="lazy">` : ''}<div style="flex:1"><b>${esc(t)}</b>${sub ? `<span>${sub}</span>` : ''}</div>${right ? `<span class="r">${right}</span>` : ''}</div>`;
@@ -182,6 +186,7 @@
     if (k === 'pb') { return (r.rows || []).slice(0, 4).map((x) => row(x.img, x.label, esc(x.n), esc(x.txt))).join('') || '<div class="hm-sub">No records yet.</div>'; }
     if (k === 'rec') { const day = (r.acts || []).filter((a) => Date.now() - a.at < 864e5), kills = day.reduce((t, a) => t + (a.k || 0), 0); return `<div class="hm-big">${day.length} <small>activities in 24h</small></div><div class="hm-sub">${num(kills)} kills</div>` + (r.acts || []).slice(0, 2).map((a) => row(a.img, a.n, a.ok ? 'Completed' : '')).join(''); }
     if (k === 'cru') { const T = r.total || {}; return `<div class="hm-big">${T.m ? (Math.round(T.kd * 100) / 100).toFixed(2) : '-'} <small>K/D</small></div><div class="hm-sub">${num(T.m || 0)} matches &middot; ${T.m ? Math.round(T.wr * 100) : 0}% wins &middot; KDA ${T.m ? (Math.round(T.kda * 100) / 100).toFixed(2) : '-'}</div>` + (r.recent || []).slice(0, 3).map((a) => row(a.img, a.n, (a.w === 1 ? 'Victory' : a.w === 0 ? 'Defeat' : '') + ' &middot; ' + esc(a.mode), a.k + '/' + a.d + '/' + a.a)).join(''); }
+    if (k === 'time') return ptBody();
     if (k === 'wep') { return (r.weapons || []).slice().sort((a, b) => b.k - a.k).slice(0, 4).map((w) => row(w.i, w.n, esc(w.t || ''), num(w.k) + ' kills')).join('') || '<div class="hm-sub">No weapon stats yet.</div>'; }
     return '';
   }
@@ -216,7 +221,7 @@
     if (!D) { s.innerHTML = '<div class="hm-g"><div class="hm-c w12"><div class="hm-h">Home</div><div class="hm-sub">Sign in on the Inventory tab to fill this page.</div></div></div>'; return; }
     const pins = PINS();
     s.innerHTML = `<div class="hm-hd"><h2>Home</h2><button class="g" data-hx="refresh">&#8635; Refresh</button><label><input type="checkbox" id="hstart"${lsGet('gt.home.start', false) ? ' checked' : ''}> Open the app on this page</label></div>
-<div class="hm-g">${charsCard(D)}${resetsCard()}${seasonCard()}${invCard(D)}${goalsCard()}
+<div class="hm-g">${charsCard(D)}${resetsCard()}${timeCard()}${invCard(D)}${goalsCard()}
 <div class="hm-sec">Your pins</div>${pins.length ? pins.map((p) => pinCard(p, D)).join('') : '<div class="hm-empty">Use <b>+ Home</b> on vendors, items, loadouts, Activity pages, Hub sites and guides to add them here.</div>'}</div>`;
   }
   async function load(force) {
@@ -225,7 +230,7 @@
     const redraw = () => { if (s.classList.contains('on')) draw(); };
     const get = async (k) => { try { if (A().fetch) { H[k] = await A().fetch(k, force); H.err[k] = ''; } } catch (e) { H.err[k] = clean(e); } redraw(); };
     const pins = PINS();
-    const jobs = [get('season')];
+    const jobs = [get('time')];
     if (pins.some((p) => p.t === 'act' && p.id === 'week')) jobs.push(get('week'));
     pins.filter((p) => p.t === 'act' && ACT[p.id]).forEach((p) => jobs.push((async () => { try { H.act[p.id] = await A().fetch(p.id, force); H.err['a' + p.id] = ''; } catch (e) { H.err['a' + p.id] = clean(e); } redraw(); })()));
     pins.filter((p) => p.t === 'vendor').forEach((p) => jobs.push((async () => { try { H.ven[p.id] = await A().vendor(+p.id, force); H.err['v' + p.id] = ''; } catch (e) { H.err['v' + p.id] = clean(e); } redraw(); })()));

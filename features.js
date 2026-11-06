@@ -336,6 +336,9 @@ ${mine ? `<div class="mute" style="margin-top:4px">You have ${mine} roll${mine =
     new MutationObserver(() => { if (!setEl.querySelector('#gtfx')) { drawFx(); } }).observe(setEl, { childList: true });
     setEl.addEventListener('click', async (e) => {
       const b = e.target.closest('[data-fs]'); if (!b) return;
+      // Checkboxes and number boxes are handled by the change handler below. Redrawing this card from the click used to rebuild the checkbox
+      // before its change was saved, so no box in Reminders (or the postmaster alert) could be switched.
+      if (b.matches('input')) return;
       const a = b.dataset.fs;
       try {
         if (a === 'farm') { const r = await gt.farmSet({ on: !st.farm.on }); st.farm = r; }

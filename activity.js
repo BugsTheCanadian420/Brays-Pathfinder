@@ -90,6 +90,15 @@
 #activity .tbl .rb i{display:block;height:100%;background:#6aa6e0;border-radius:2px}
 #activity .stat{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--mute,#9aa0a8)}
 #activity .row3{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+#activity .row3.ptrow{grid-template-columns:repeat(auto-fit,minmax(min(230px,46%),1fr))}#activity .ptc{padding:14px 16px}#activity .ptc h4{margin:0;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#cfd2d8;font-weight:600}
+#activity .ptpan{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(380px,100%),1fr));gap:10px;margin-top:10px}
+#activity .ptbar{display:flex;height:16px;border-radius:8px;overflow:hidden;background:#23262b;margin:12px 0 14px}#activity .ptbar i{display:block;height:100%}
+#activity .ptleg{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px 22px}
+#activity .ptleg div{display:flex;align-items:center;gap:8px;font-size:13px;color:#cfd2d8}#activity .ptleg div i{width:10px;height:10px;border-radius:2px;flex:none}
+#activity .ptleg b{margin-left:auto;color:#fff;font-weight:600}#activity .ptleg em{font-style:normal;color:#8b8f97;min-width:44px;text-align:right}
+#activity .ptdays{display:flex;align-items:flex-end;gap:3px;height:130px;margin-top:14px}#activity .ptdays i{flex:1;min-width:3px;background:var(--g-accent,#6aa6e0);border-radius:2px 2px 0 0;opacity:.9}#activity .ptdays i.z{background:#2b2e33;opacity:1}
+#activity .ptax{display:flex;justify-content:space-between;font-size:11px;color:#8b8f97;margin-top:6px}
+#activity .pmbar{height:4px;background:rgba(255,255,255,.12);border-radius:2px;margin-top:10px;overflow:hidden}#activity .pmbar i{display:block;height:100%;background:var(--g-accent,#6aa6e0);border-radius:2px}
 #activity .pos{color:#7be08c}
 #activity .tg{border-color:#34506e;background:rgba(58,110,165,.14);color:#a9c8ea}
 #activity .bty .bimg{width:56px;height:56px;flex:none;border:1px solid #4a4d54;background:#0d0f12;box-shadow:inset 0 0 0 1px rgba(255,255,255,.04);display:block;overflow:hidden}
@@ -398,17 +407,25 @@
       + noteCard(`From your last ${num(g.pve || 0)} PvE activities and ${num(g.pvp || 0)} Crucible matches${g.pvp ? ' (' + num(g.wins || 0) + ' wins)' : ''}. Click a record to see who was there.`);
   };
 
-  // ---- play time: how long you have played, per character, and how much of it was spent outside activities ----
+  // ---- play time: counted like Time Wasted on Destiny. Active time is time inside activities; AFK and idle time (orbit, the Tower, menus, loading, AFK) is left out ----
+  const PT_COL = ['#6aa6e0', '#7fd48a', '#e8a53a', '#c77dff', '#ff7b72', '#4dd0c8', '#9aa0a8', '#d6c26a'];
   RENDER.time = async (force) => {
     const r = await fetchCached('time', () => gt().actPlaytime(), force);
     const CL = (V().CL && V().CL()) || [];
-    const hh = (s) => { const h = Math.floor(s / 3600), d = Math.floor(h / 24); return num(h) + 'h ' + Math.floor((s % 3600) / 60) + 'm' + (d >= 1 ? ' <small class="mute">(' + num(d) + ' days)</small>' : ''); };
-    const pc = (a, b) => (b > 0 ? Math.round((a / b) * 100) : 0) + '%';
+    const hh = (s) => { const h = Math.floor(s / 3600), d = Math.floor(h / 24); return num(h) + 'h ' + String(Math.floor((s % 3600) / 60)).padStart(2, '0') + 'm' + (d >= 1 ? ' <small class="mute">(' + num(d) + ' days)</small>' : ''); };
+    const pc = (a, b) => (b > 0 ? (Math.round((a / b) * 1000) / 10) : 0) + '%';
     const tile = (l, v, sub, c) => `<div class="acard"><div class="stat">${l}</div><div class="big ${c || ''}">${v}</div>${sub ? `<div class="sub">${sub}</div>` : ''}</div>`;
-    const head = `<div class="row3">${tile('Total play time', hh(r.total), 'Every character, deleted ones included')}${tile('In activities', hh(r.acts), pc(r.acts, r.total) + ' of your time')}${tile('Not in an activity', hh(r.idle), pc(r.idle, r.total) + ' &middot; orbit, the Tower, menus, loading and AFK', r.idle > r.acts ? 'neg' : '')}${tile('PvE', hh(r.pve), pc(r.pve, r.acts) + ' of activity time')}${tile('Crucible', hh(r.pvp), pc(r.pvp, r.acts) + ' of activity time')}${r.del ? tile('Deleted characters', hh(r.del), pc(r.del, r.total) + ' of your total') : ''}</div>`;
-    const top = Math.max(1, ...r.rows.map((c) => c.mp));
-    const cards = r.rows.map((c) => `<div class="acard bg">${c.em ? `<div class="abgi" style="background-image:url('${esc(img(c.em))}')"></div>` : ''}<div class="stat">${esc(CL[c.cls] || 'Guardian')} &middot; &#9670; ${num(c.light)}</div><div class="big">${hh(c.mp)}</div><div class="sub">${c.act ? hh(c.act) + ' in activities (' + pc(c.act, c.mp) + ')' : 'Active ' + esc(new Date(c.last).toLocaleDateString())}</div><div class="pmbar" style="height:4px;background:rgba(255,255,255,.12);border-radius:2px;margin-top:8px"><i style="display:block;height:100%;width:${Math.round(c.mp / top * 100)}%;background:var(--g-accent,#6aa6e0);border-radius:2px"></i></div></div>`).join('');
-    return head + `<h3 class="sec">Characters</h3><div class="agrid">${cards}</div>` + noteCard('Total time is what Bungie keeps for each character. Bungie does not record AFK time on its own, so "Not in an activity" is your total minus the time inside activities: orbit, the Tower, menus, loading and being AFK all land there.');
+    const days = r.days || [], dTot = days.reduce((t, q) => t + q.s, 0), dAct = days.filter((q) => q.s > 0), best = dAct.reduce((a, q) => (q.s > a.s ? q : a), { s: 0, d: '' });
+    const head = `<div class="row3 ptrow">${tile('Active time', hh(r.acts), 'Time inside activities, every character. This is the number Time Wasted on Destiny shows.')}${tile('AFK and idle (not counted)', hh(r.idle), pc(r.idle, r.total) + ' of the platform total: orbit, the Tower, menus, loading and AFK')}${tile('Platform total', hh(r.total), 'What your character screens add up to, deleted characters included')}${tile('Deleted characters', hh(r.del), 'Active time on characters you deleted')}</div>`;
+    const sub2 = `<div class="row3 ptrow" style="margin-top:10px">${tile('PvE', hh(r.pve), pc(r.pve, r.acts) + ' of active time')}${tile('Crucible', hh(r.pvp), pc(r.pvp, r.acts) + ' of active time')}${days.length ? tile('Last 30 days', hh(dTot), dAct.length + ' active days &middot; ' + (dAct.length ? esc(dur(dTot / dAct.length)) + ' a day' : '')) : ''}${best.s ? tile('Best day (30 days)', hh(best.s), esc(new Date(best.d + 'T12:00:00').toLocaleDateString([], { month: 'long', day: 'numeric' }))) : ''}</div>`;
+    const types = (r.types || []).slice().sort((a, b) => b.s - a.s), den = Math.max(r.acts || 0, types.reduce((t, q) => t + q.s, 0)) || 1;
+    const typeCard = types.length ? `<div class="acard ptc"><h4>Time by activity</h4><div class="ptbar">${types.map((q, i) => `<i title="${esc(q.n)}" style="width:${(q.s / den * 100).toFixed(2)}%;background:${PT_COL[i % PT_COL.length]}"></i>`).join('')}</div><div class="ptleg">${types.map((q, i) => `<div><i style="background:${PT_COL[i % PT_COL.length]}"></i>${esc(q.n)}<b>${esc(dur(q.s))}</b><em>${pc(q.s, den)}</em></div>`).join('')}</div></div>` : '';
+    const mx = Math.max(1, ...days.map((q) => q.s)), fmtD = (d) => new Date(d + 'T12:00:00').toLocaleDateString([], { month: 'short', day: 'numeric' });
+    const dayCard = days.length ? `<div class="acard ptc"><h4>Last 30 days</h4><div class="ptdays">${days.map((q) => `<i class="${q.s ? '' : 'z'}" title="${esc(fmtD(q.d) + ': ' + (q.s ? dur(q.s) : 'no play'))}" style="height:${q.s ? Math.max(3, Math.round(q.s / mx * 100)) : 2}%"></i>`).join('')}</div><div class="ptax"><span>${esc(fmtD(days[0].d))}</span><span>Peak ${esc(dur(mx))}</span><span>${esc(fmtD(days[days.length - 1].d))}</span></div></div>` : '';
+    const top = Math.max(1, ...r.rows.map((c) => c.act || c.mp));
+    const cards = r.rows.map((c) => `<div class="acard bg">${c.em ? `<div class="abgi" style="background-image:url('${esc(img(c.em))}')"></div>` : ''}<div class="stat">${esc(CL[c.cls] || 'Guardian')} &middot; &#9670; ${num(c.light)}</div><div class="big">${hh(c.act || c.mp)}</div><div class="sub">PvE ${esc(dur(c.pve))} &middot; Crucible ${esc(dur(c.pvp))}</div><div class="sub">${esc(dur(c.mp))} on the platform &middot; last played ${esc(new Date(c.last).toLocaleDateString())}</div><div class="pmbar"><i style="width:${Math.round((c.act || c.mp) / top * 100)}%"></i></div></div>`).join('');
+    return head + sub2 + (typeCard || dayCard ? `<div class="ptpan">${typeCard}${dayCard}</div>` : '') + `<h3 class="sec">Characters</h3><div class="agrid">${cards}${r.del ? `<div class="acard"><div class="stat">Deleted characters</div><div class="big">${hh(r.del)}</div><div class="sub">Still counted in your active time</div></div>` : ''}</div>`
+      + noteCard('Active time is counted from Bungie\'s activity stats, the way Time Wasted on Destiny does it. Bungie does not record AFK time on its own, so AFK and idle is the platform total minus active time. Activity types are Bungie\'s own groups; anything not in one of them is shown as Other.');
   };
 
   // ---- Crucible: totals, win rate, K/D, KDA, playlists, maps, recent matches and a trend of the last 40 matches ----
@@ -598,7 +615,7 @@
   // For the Home page: the same cached data, and a way to jump straight to one of these pages.
   window.__gta = {
     fetch: (k, force) => {
-      const F = { deal: ['deal', () => gt().actDeals()], season: ['season', () => gt().actSeason()], week: ['week', () => gt().actLockouts()], rot: ['rot' + st.char, () => gt().actRot(charArg())], bnt: ['bnt' + st.char, () => gt().actBounties(charArg())], xur: ['xur' + st.char, () => gt().actXur(charArg())], clr: ['clr', () => gt().actClears()], pb: ['pb', () => gt().actPbs()], rec: ['recent', () => gt().actRecent()], wep: ['wep', () => gt().actWeapons()], cru: ['cru', () => gt().actCrucible({})] }[k];
+      const F = { deal: ['deal', () => gt().actDeals()], season: ['season', () => gt().actSeason()], week: ['week', () => gt().actLockouts()], rot: ['rot' + st.char, () => gt().actRot(charArg())], bnt: ['bnt' + st.char, () => gt().actBounties(charArg())], xur: ['xur' + st.char, () => gt().actXur(charArg())], clr: ['clr', () => gt().actClears()], pb: ['pb', () => gt().actPbs()], rec: ['recent', () => gt().actRecent()], wep: ['wep', () => gt().actWeapons()], time: ['time', () => gt().actPlaytime()], cru: ['cru', () => gt().actCrucible({})] }[k];
       return F ? fetchCached(F[0], F[1], force) : Promise.reject(new Error('unknown'));
     },
     vendor: (h, force) => fetchCached('ven' + h + st.char, () => gt().actVendor({ h, ...charArg() }), force),
