@@ -1,4 +1,4 @@
-/* Pathfinder 0.2.99: preload.js for the browser */
+/* Pathfinder 0.2.100: preload.js for the browser */
 (function (require) {
 const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('gt', {
@@ -64,7 +64,6 @@ contextBridge.exposeInMainWorld('gt', {
   imgCopy: (v) => ipcRenderer.invoke('img:copy', v),
   imgSave: (v) => ipcRenderer.invoke('img:save', v),
   actCrucible: (v) => ipcRenderer.invoke('act:crucible', v),
-  actDeals: () => ipcRenderer.invoke('act:deals'),
   actXur: (v) => ipcRenderer.invoke('act:xur', v),
   actWeapons: () => ipcRenderer.invoke('act:weapons'),
   actWScan: () => ipcRenderer.invoke('act:wscan'),
@@ -79,6 +78,8 @@ contextBridge.exposeInMainWorld('gt', {
   trState: () => ipcRenderer.invoke('tr:state'),
   trWho: (v) => ipcRenderer.invoke('tr:who', v),
   vaultCached: () => ipcRenderer.invoke('vault:cached'),
+  loShare: (v) => ipcRenderer.invoke('lo:share', v),
+  loShareGet: (v) => ipcRenderer.invoke('lo:shareget', v),
   syncGet: () => ipcRenderer.invoke('sync:get'),
   syncPut: (v) => ipcRenderer.invoke('sync:put', v),
   acctList: () => ipcRenderer.invoke('acct:list'),

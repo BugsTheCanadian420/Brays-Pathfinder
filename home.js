@@ -112,7 +112,7 @@
 `;
   document.head.appendChild(css);
 
-  const H = { deal: null, season: null, week: null, err: {}, act: {}, ven: {} };
+  const H = { season: null, week: null, err: {}, act: {}, ven: {} };
   let busy = false;
   const rsF = () => {
     const L = typeof lastReset === 'function' ? lastReset : null; if (!L) return null;
@@ -160,12 +160,6 @@
     const vault = D.items.filter((x) => x.loc === 'vault' && !x.pm).length, cap = 1300; // same vault size the Inventory page shows
     return card({ w: 'w3', i: 'box', h: 'Inventory', go: 'vault', c: '#6fbf73' }, `<div class="hm-big">${num(vault)} <small>items in the vault</small></div><div class="hm-bar"><i style="width:${Math.min(100, Math.round(vault / cap * 100))}%"></i></div><div class="hm-sub">${num(vault)} of ${num(cap)} vault slots used</div>`);
   }
-  function dealCard(pin) {
-    const r = H.deal, f = r && A().dealFind ? A().dealFind(r) : null;
-    if (!f) return card({ i: 'tag', h: 'Vendor deals', go: 'activity:deal', pin, c: '#e8a53a' }, msgSub('deal', 'Checking every vendor...'));
-    const top = [...f.w.map((o) => ({ x: o.x, why: 'Wish list roll' })), ...f.a.map((o) => ({ x: o.x, why: 'Stat total ' + o.x.tot }))].slice(0, 3);
-    return card({ i: 'tag', h: 'Vendor deals', pin, ct: `${f.w.length} rolls &middot; ${f.a.length} armor`, go: 'activity:deal', c: '#e8a53a' }, top.length ? top.map((o) => `<div class="hm-row">${o.x.i ? `<img src="${esc(img(o.x.i))}" alt="" loading="lazy">` : ''}<div><b>${esc(o.x.n)}</b><span>${esc(o.why)} &middot; ${esc(o.x.vn)}</span></div></div>`).join('') : '<div class="hm-sub">Nothing on your wish lists or above your armor stat total is on sale right now.</div>');
-  }
   function weekCard(pin) {
     const r = H.week, CL = (V().CL && V().CL()) || [];
     if (!r) return card({ i: 'cal', h: 'Left this week', go: 'activity:week', pin, c: '#7fd48a' }, msgSub('week'));
@@ -196,7 +190,7 @@
   function pinCard(p, D) {
     const pin = { t: p.t, id: p.id };
     if (p.t === 'act' && p.id === 'week') return weekCard(pin);
-    if (p.t === 'act' && p.id === 'deal') return '';
+    if (p.t === 'act' && p.id === 'deal') return ''; // the old Vendor deals pin (that page is gone)
     if (p.t === 'act' && ACT[p.id]) return card({ i: ACT[p.id][1], h: ACT[p.id][0], go: 'activity:' + p.id, pin, c: '#9fc4ee' }, actBody(p.id));
     if (p.t === 'vendor') {
       const r = H.ven[p.id], items = r && r.items ? r.items : null, W = A().wishOf;

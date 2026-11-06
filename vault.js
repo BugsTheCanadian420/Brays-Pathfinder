@@ -148,6 +148,18 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 .dc.dz .eq.over{outline:2px solid #fff}
 .eq{flex:none;width:var(--t);min-height:calc(var(--t)*1.27);background:rgba(255,255,255,.03);display:flex}
 .eq .vt{width:100%}
+.dc>.eq{align-self:stretch;flex-direction:column;align-items:center;gap:calc(var(--t)*.1);padding-bottom:4px;border-radius:3px;background:rgba(255,255,255,.035);box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)}
+.eq .eqp{width:var(--t);height:calc(var(--t)*.6);flex:none;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.3);font-size:calc(var(--t)*.42);font-style:normal;line-height:1;border:1px dashed rgba(255,255,255,.14);border-radius:3px;box-sizing:border-box;cursor:pointer}
+.eq .eqp:hover{color:#fff;border-color:rgba(255,255,255,.5)}
+.dc.dz{background:none!important;box-shadow:none!important}
+.dc.dz>.inv{background:rgba(255,255,255,.09);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);border-radius:3px;align-self:stretch}
+.dc.dz.over{outline:0!important}.dc.dz.over>.inv{background:rgba(255,255,255,.18);outline:2px solid #fff;outline-offset:1px}
+.dc.dz>.eq.eqok{background:rgba(122,184,232,.16);box-shadow:inset 0 0 0 1px rgba(122,184,232,.55)}
+.dc.dz>.eq.eqok.over{background:rgba(122,184,232,.32);outline:2px solid #fff;outline-offset:1px}
+.dc.dz>.eq.eqok .eqp{color:#cfe6ff;border-color:rgba(122,184,232,.7)}
+.dc.dz>.eq.eqok .eqp::after{content:'Equip';font-size:calc(var(--t)*.2);letter-spacing:.5px;margin-left:2px}
+#eqpick{position:fixed;z-index:9300;background:var(--g-solid,#17181b);border:1px solid #3a3d43;border-radius:6px;box-shadow:0 14px 34px rgba(0,0,0,.6);padding:8px;max-width:min(440px,94vw);max-height:60vh;overflow:auto}
+#eqpick h6{margin:0 0 6px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#9aa0a8}#eqpick .eqg{display:flex;flex-wrap:wrap;gap:4px}#eqpick .eqg .vt{cursor:pointer}#eqpick p{margin:4px 0 0;font-size:12px;color:#8b8f97}
 .inv{display:grid;grid-template-columns:repeat(3,var(--t));gap:calc(var(--t)*.12);min-height:calc(var(--t)*1.27);align-content:start}
 .vt{position:relative;width:var(--t);height:var(--t);border:1px solid #455565;background:#455565;cursor:pointer;overflow:hidden;flex:none}
 .vt:hover{outline:2px solid #fff;outline-offset:-1px;z-index:1}
@@ -409,19 +421,20 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 .dpfr .dpi0{width:24px;height:24px;border-radius:50%;background:#35566f;border:1px solid var(--g-accent,#7ab8e8);overflow:hidden;flex:none}.dpfr .dpi0 img{width:100%;height:100%;display:block}
 .dpfr b{display:block;font-size:12px;color:#fff;font-weight:600}.dpfr span{display:block;font-size:11px;color:#9b9ea5;line-height:1.25}
 .dpp{border-top:1px solid #2b2d31;padding:2px 0}
-.dpr{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px 6px;padding:3px 10px}
+.dpr{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:5px 8px;padding:5px 12px}
 .dpr.open{background:rgba(255,255,255,.03)}
 .dpr .cur{display:flex;align-items:center;gap:7px;min-width:0;cursor:pointer;flex:1 1 110px}
-.dpr .cur b{font-size:12px;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dpr .cur b{font-size:13.5px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dpr .alt{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;margin-left:auto}
-.dpc{position:relative;width:24px;height:24px;border-radius:50%;background:#1c1e22;border:2px solid #3a3d43;cursor:pointer;opacity:.75;flex:none;box-sizing:border-box}
+.dpc{position:relative;width:30px;height:30px;border-radius:50%;background:#1c1e22;border:2px solid #3a3d43;cursor:pointer;opacity:.75;flex:none;box-sizing:border-box}
 .dpc>img{width:100%;height:100%;display:block;border-radius:50%}
 .dpc:hover{opacity:1;border-color:#fff}
+.dpsk{min-height:330px;padding:10px 12px;display:flex;flex-direction:column;gap:9px}.dpsk i,.dpsk b{display:block;height:12px;border-radius:3px;background:linear-gradient(90deg,rgba(255,255,255,.05),rgba(255,255,255,.11),rgba(255,255,255,.05));background-size:200% 100%;animation:dpsk 1.1s linear infinite}.dpsk i:nth-child(odd){width:82%}.dpsk b{height:30px;margin-top:6px}@keyframes dpsk{to{background-position:-200% 0}}
 .dpc.eqp{background:#46799f;border-color:#8cb4d6;opacity:1}
 .dpc.sel:not(.eqp){border-color:#fff;opacity:1}
-.dpc .pwb{position:absolute;right:-4px;bottom:-4px;width:13px;height:13px;border-radius:50%;background:#2e7d32;color:#fff;display:flex;align-items:center;justify-content:center;border:1px solid #111;pointer-events:none}.dpc .pwb svg{width:8px;height:8px}
-.dpi{padding:4px 10px 7px 41px;font-size:11px;color:#cfd2d8;cursor:pointer;background:rgba(255,255,255,.03)}
-.dpi b{color:#fff;font-size:12px}.dpi small{color:#9b9ea5}.dpi .pds{display:block;margin-top:2px}.dpi .pbn{color:#9b9ea5;margin-top:3px}
+.dpc .pwb{position:absolute;right:-4px;bottom:-4px;width:15px;height:15px;border-radius:50%;background:#2e7d32;color:#fff;display:flex;align-items:center;justify-content:center;border:1px solid #111;pointer-events:none}.dpc .pwb svg{width:8px;height:8px}
+.dpi{padding:5px 12px 9px 50px;font-size:12.5px;line-height:1.45;color:#cfd2d8;cursor:pointer;background:rgba(255,255,255,.03)}
+.dpi b{color:#fff;font-size:13.5px}.dpi small{color:#9b9ea5}.dpi .pds{display:block;margin-top:2px}.dpi .pbn{color:#9b9ea5;margin-top:3px}
 .dpmr{display:flex;flex-wrap:wrap;gap:4px;padding:6px 10px;border-top:1px solid #2b2d31}.dpmr div{width:26px;height:26px;background:#2a2c30;border:1px solid #4a4d54;overflow:hidden}.dpmr img{width:100%;height:100%;display:block}
 .dpbt{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:6px 10px 8px;border-top:1px solid #2b2d31}
 .dpbt .pbtn{display:inline-flex;align-items:center;gap:5px;padding:4px 9px!important;font-size:11px!important;border-radius:3px;text-transform:none!important;letter-spacing:0!important}.dpbt .pbtn svg{width:13px;height:13px}
@@ -1108,18 +1121,14 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
   const SL = [[1498876634, 'Kinetic'], [2465295065, 'Energy'], [953998645, 'Power'], [3448274439, 'Helmet'], [3551918588, 'Gauntlets'], [14239492, 'Chest'], [20886954, 'Legs'], [1585787867, 'Class item'], [4023194814, 'Ghost'], [2025709351, 'Sparrow']];
   const GROUPS = [['Weapons', SL.slice(0, 3).map((s) => s[0])], ['Armor', SL.slice(3, 8).map((s) => s[0])], ['General', SL.slice(8).map((s) => s[0])]];
   const WEAPON = new Set(SL.slice(0, 3).map((s) => s[0]));
-  const GEN = new Set([3284755031, 4023194814, 2025709351, 284967655, 4274335291, 3683254069, 3054419239, 4292445962]);
   // Read-only rows in the General section, shown only when you own something of that kind.
   const XROWS = [[3284755031, 'Subclass'], [284967655, 'Ship'], [4274335291, 'Emblem'], [3683254069, 'Finisher'], [3054419239, 'Emote'], [4292445962, 'Clan banner']];
-  const INVB = [['Consumables', 1469714392], ['Mods', 3313201758], ['Shaders', 2973005342], ['Materials', 3865314626]];
   const ENGR = 375726501;
-  const EQORD = [3284755031, 1498876634, 2465295065, 953998645, 3448274439, 3551918588, 14239492, 20886954, 1585787867, 4023194814, 2025709351, 284967655, 4274335291, 3683254069, 3054419239, 4292445962];
   const ARMOR = new Set(SL.slice(3, 8).map((s) => s[0]));
   const slotName = (h) => (SL.find((s) => s[0] === h) || XROWS.find((s) => s[0] === h) || [0, ''])[1];
   const TIER = { Exotic: 0, Legendary: 1, Rare: 2, Uncommon: 3, Common: 4, Basic: 4 };
   const TAGORD = ['favorite', 'keep', 'infuse', 'junk', 'archive'];
   const byName = (a, b) => String(a.n).localeCompare(b.n);
-  const byRar = (a, b) => (TIER[a.r] !== undefined ? TIER[a.r] : 5) - (TIER[b.r] !== undefined ? TIER[b.r] : 5);
   const SORTV = {
     power: (x) => -(x.p || 0), name: (x) => String(x.n || '').toLowerCase(), type: (x) => String(x.t || '').toLowerCase(),
     rarity: (x) => (TIER[x.r] !== undefined ? TIER[x.r] : 5), stack: (x) => -(x.q || 0), class: (x) => (x.c === undefined ? 4 : x.c),
@@ -1367,6 +1376,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
       return out;
     }
     if (!t) return out;
+    { const M = acMap(), hit = M[nz(t)]; if (hit) add(hit, 'filter'); }
     SKEYS.filter((k) => k.startsWith(t)).forEach((k) => add(k, 'filter'));
     ISV().filter((o) => o.startsWith(t) || (t.length > 2 && o.includes(t))).slice(0, 5).forEach((o) => add('is:' + o));
     if (t.length > 1) {
@@ -1375,10 +1385,48 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
     }
     return out;
   }
+  // ---- autocorrect: a finished word (or two or three) that names a filter becomes that filter, like "arc " -> "is:arc ",
+  // "anti barrier " -> "is:barrier ", "hand cannon " -> "is:handcannon ". Backspace right after puts back what you typed.
+  let ACM = null, ACMn = 0, LASTAC = null;
+  const acMap = () => {
+    if (ACM && ACMn === D.items.length) return ACM;
+    const m = {}, put = (k, v) => { k = nz(k); if (k && !m[k]) m[k] = v; };
+    ['arc', 'solar', 'void', 'stasis', 'strand', 'kinetic', 'prismatic', 'exotic', 'legendary', 'crafted', 'deepsight', 'adept', 'masterwork', 'masterworked', 'locked', 'unlocked', 'equipped', 'wishlist', 'trashlist', 'titan', 'hunter', 'warlock', 'barrier', 'overload', 'unstoppable', 'primary', 'special', 'heavy', 'helmet', 'gauntlets', 'subclass'].forEach((w) => put(w, 'is:' + w));
+    [['anti barrier', 'barrier'], ['antibarrier', 'barrier'], ['shield piercing', 'barrier'], ['disruption', 'overload'], ['stagger', 'unstoppable'], ['dupe', 'duplicate'], ['dupes', 'duplicate'], ['duplicates', 'duplicate'], ['duplicate', 'duplicate'], ['class item', 'classitem'], ['chest armor', 'chest'], ['leg armor', 'legs'], ['in loadout', 'inloadout'], ['deep sight', 'deepsight'], ['red border', 'deepsight']].forEach(([k, v]) => put(k, 'is:' + v));
+    Object.keys(TYA).forEach((k) => { if (k.length > 1 && !['grenade', 'class', 'mark', 'bond', 'cloak', 'auto', 'pulse', 'scout', 'linear', 'rocket', 'trace', 'fusion', 'sniper', 'bow'].includes(k)) put(k, 'is:' + nz(TYA[k])); });
+    [...new Set(D.items.filter((x) => WEAPON.has(x.b) && x.t).map((x) => x.t))].forEach((t) => { put(t, 'is:' + nz(t)); put(t + 's', 'is:' + nz(t)); });
+    ACM = m; ACMn = D.items.length; return m;
+  };
+  function autoFix(inp, e) {
+    if (!D || !e || e.inputType !== 'insertText' || e.data !== ' ') return false;
+    const v = inp.value, pos = inp.selectionStart; if (pos !== v.length) return false;
+    const head = v.slice(0, -1); if ((head.match(/"/g) || []).length % 2) return false; // inside quotes: leave it
+    const words = head.split(/\s+/), M = acMap();
+    for (let n = Math.min(3, words.length); n >= 1; n--) {
+      const part = words.slice(-n); if (part.some((w) => !w || /[:"]/.test(w) || (w[0] === '-' && w !== part[0]))) continue;
+      const neg = part[0][0] === '-' ? '-' : '', key = nz(part.join(' ').replace(/^-/, '')), to = M[key];
+      if (!to) continue;
+      const rest = words.slice(0, -n).join(' '), nv = (rest ? rest + ' ' : '') + neg + to + ' ';
+      LASTAC = { before: v, after: nv }; inp.value = nv; inp.setSelectionRange(nv.length, nv.length);
+      setNote('Searching ' + neg + to + ' (Backspace puts back "' + part.join(' ') + '")');
+      return true;
+    }
+    return false;
+  }
   function sugDraw(inp) {
     let box = document.getElementById('vqs');
     const val = inp.value, caret = inp.selectionStart == null ? val.length : inp.selectionStart, before = val.slice(0, caret), mt = before.match(/(-?[a-z]+:"[^"]*|-?"[^"]*|\S*)$/), tok = mt ? mt[0] : '';
     SUG = { list: D ? sugList(tok.toLowerCase()) : [], i: -1, tok, start: caret - tok.length, end: caret };
+    // "anti bar", "hand can": offer the filter for the whole phrase, replacing those words.
+    if (D && tok && !/[:"]/.test(tok)) {
+      const M = acMap(), ws = before.trimEnd().split(/\s+/);
+      for (let n = 3; n >= 2; n--) {
+        if (ws.length < n) continue; const part = ws.slice(-n); if (part.some((w) => /[:"]/.test(w) || w[0] === '-')) continue;
+        const key = nz(part.join(' ')); if (key.length < 4) continue;
+        const hits = [...new Set(Object.keys(M).filter((k) => k.startsWith(key)).map((k) => M[k]))].slice(0, 3);
+        if (hits.length) { const st0 = before.length - part.join(' ').length; SUG.list = hits.map((v) => ({ v, hint: 'filter', st: st0 })).concat(SUG.list.filter((o) => !hits.includes(o.v))).slice(0, 12); break; }
+      }
+    }
     if (!SUG.list.length || document.activeElement !== inp) { if (box) box.remove(); return; }
     if (!box) { box = document.createElement('div'); box.id = 'vqs'; document.body.appendChild(box); box.addEventListener('pointerdown', (e) => { const r = e.target.closest('[data-qs]'); if (!r) return; e.preventDefault(); sugPick(inp, +r.dataset.qs); }); }
     const r = inp.getBoundingClientRect();
@@ -1388,20 +1436,20 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
   }
   function sugPick(inp, i) {
     const o = SUG.list[i]; if (!o) return;
-    const v = inp.value, add = o.v + (/[:<>=]$/.test(o.v) ? '' : ' ');
-    inp.value = v.slice(0, SUG.start) + add + v.slice(SUG.end).replace(/^\S*/, '');
-    const pos = SUG.start + add.length; inp.setSelectionRange(pos, pos); inp.focus();
+    const v = inp.value, add = o.v + (/[:<>=]$/.test(o.v) ? '' : ' '), st0 = o.st !== undefined ? o.st : SUG.start;
+    inp.value = v.slice(0, st0) + add + v.slice(SUG.end).replace(/^\S*/, '');
+    const pos = st0 + add.length; inp.setSelectionRange(pos, pos); inp.focus();
     q = inp.value.toLowerCase(); renderGrid(); sugDraw(inp);
   }
   function sugKey(e) {
     const inp = e.target, box = document.getElementById('vqs');
+    if (e.key === 'Backspace' && LASTAC && inp.value === LASTAC.after) { e.preventDefault(); const b0 = LASTAC.before.replace(/ $/, ''); LASTAC = null; inp.value = b0; inp.setSelectionRange(b0.length, b0.length); q = b0.toLowerCase(); renderGrid(); sugDraw(inp); setNote(''); return; }
     if (e.key === 'Escape') { if (box) { box.remove(); e.stopPropagation(); } return; }
     if (!box || !SUG.list.length) return;
     if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); SUG.i = (SUG.i + (e.key === 'ArrowDown' ? 1 : -1) + SUG.list.length) % SUG.list.length; box.querySelectorAll('.qs').forEach((n, k) => n.classList.toggle('on', k === SUG.i)); return; }
     if (e.key === 'Tab' || (e.key === 'Enter' && SUG.i >= 0)) { e.preventDefault(); sugPick(inp, SUG.i >= 0 ? SUG.i : 0); }
   }
   const CC = ['#4a5a78', '#5c6b49', '#7a5a3f'];
-  const cname = (c) => `${CL[c.cls] || 'Guardian'} ${c.light}`;
   // ---- saved searches (kept on this computer) ----
   const SQ = () => { try { const a = JSON.parse(localStorage.getItem('gt_savedq')); return Array.isArray(a) ? a.filter((x) => typeof x === 'string').slice(0, 30) : []; } catch (e) { return []; } };
   const saveSQ = (a) => { try { localStorage.setItem('gt_savedq', JSON.stringify(a.slice(0, 30))); } catch (e) { /* storage off */ } };
@@ -1540,7 +1588,8 @@ ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="
   function charCell(c, h) {
     const mine = allI().filter((x) => x.loc === c.id && !x.pm && x.b === h);
     const eq = mine.find((x) => x.e), inv = mine.filter((x) => !x.e).sort(sortI);
-    return `<div class="dc" data-drop="char" data-loc="${esc(c.id)}" data-b="${h}"><div class="eq" title="${esc(slotName(h))}" data-drop="eq" data-loc="${esc(c.id)}" data-b="${h}">${eq ? tile(eq) : ''}</div><div class="inv">${inv.map(tile).join('')}</div></div>`;
+    // Like DIM: the equipped item has its own box (drop here to equip), with a + under it to pick something to equip.
+    return `<div class="dc" data-drop="char" data-loc="${esc(c.id)}" data-b="${h}"><div class="eq" title="${esc(slotName(h))}: drop here to equip" data-drop="eq" data-loc="${esc(c.id)}" data-b="${h}">${eq ? tile(eq) : ''}<i class="eqp" data-act="eqpick" data-c="${esc(c.id)}" data-b="${h}" title="Choose something to equip">+</i></div><div class="inv">${inv.map(tile).join('')}</div></div>`;
   }
   function vaultCell(h) {
     const its = allI().filter((x) => x.b === h && inVault(x)).sort(sortI), under = SET.vaultunder || PHONE.matches ? ' under' : '';
@@ -1557,7 +1606,7 @@ ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="
     return `<div class="dc v${cls}${under}" data-drop="vault" data-loc="vault" data-b="${h}">${body}</div>`;
   }
   function pmCell(c) {
-    const its = D.items.filter((x) => x.loc === c.id && x.pm), n = (D.pm && D.pm[c.id]) || its.length;
+    const its = D.items.filter((x) => x.loc === c.id && x.pm);
     const can = its.filter((x) => !x.eg);
     const eg = (D.gen || []).filter((x) => x.loc === c.id && x.b === ENGR).sort(sortI).slice(0, 10);
     const slots = eg.map(tile).join('') + '<i class="pms"></i>'.repeat(Math.max(0, 10 - eg.length));
@@ -1600,7 +1649,6 @@ ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="
     if (dragId) { dragPend = true; return; } // never rebuild the page under a drag in progress
     const y = window.scrollY, el = g('vgrid'); if (!el || !D) return;
     const vc = D.items.filter((x) => x.loc === 'vault').length, vis = visChars(), under = SET.vaultunder || PHONE.matches;
-    const cur = (D.cur || []).slice(0, 8).map((c) => `<span title="${esc(c.n)}"><img src="${esc(icon(c.i))}" alt="">${Number(c.q).toLocaleString()}</span>`).join('');
     let h = `<div class="dgrid${under ? ' under' : ''}${PHONE.matches ? ' phone' : ''}" style="--n:${vis.length};--iw:${SET.invw}">`;
     if (PHONE.matches) { const all = sortedChars(), on = vis[0] && vis[0].id; h += `<div class="phsw" role="tablist">${all.map((c) => `<button type="button" role="tab" data-act="phch" data-c="${esc(c.id)}" class="${c.id === on ? 'on' : ''}" style="--cc:${CC[c.cls] || '#3a3d43'}"><b>${esc(CL[c.cls] || 'Guardian')}</b><span>${SV_LIGHT}${c.light}</span></button>`).join('')}</div>`; }
     const curAll = (D.cur || []).slice(), cell = (c) => `<span title="${esc(c.n)}"><img src="${esc(icon(c.i))}" alt="">${Number(c.q).toLocaleString()}</span>`;
@@ -1616,7 +1664,7 @@ ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="
     const lastP = D.chars.reduce((m, c) => Math.max(m, c.dp || 0), 0);
     h += vis.map((c) => `<div class="ch${SET.emblems && c.em ? ' em' : ''}" style="--cc:${CC[c.cls] || '#3a3d43'}"><div class="chb"><div class="cht" style="${SET.emblems && c.em ? `background-image:linear-gradient(90deg,rgba(0,0,0,.05),rgba(0,0,0,.45)),url(${esc(icon(c.em))})` : ''}">${lastP && c.dp === lastP ? '<i class="chn" title="Last played"></i>' : ''}<div class="chnm"><b>${esc(CL[c.cls] || 'Guardian')}</b>${c.tt ? `<small class="ttl${c.gl ? ' gld' : ''}">${esc(c.tt)}${c.gl ? SV_SEAL : ''}</small>` : ''}</div><span class="chp" title="Light level">${SV_LIGHT}${c.light}</span></div><button class="chm" data-act="chmenu" data-c="${esc(c.id)}" title="Character menu">&#8942;</button></div><div class="chr"><span class="chx" title="Highest power level you could reach with the gear you own">${SV_HELM}${maxPow(c)}</span><span class="chs">${(c.sb || []).map((q) => `<span class="cbn" title="${esc((q.sn ? q.sn + ' - ' : '') + q.n + (q.d ? '\n' + q.d : ''))}"><img src="${esc(icon(q.i))}" alt="" draggable="false"></span>`).join('')}</span></div>${armorStats(c)}</div>`).join('') + `<div class="ch vlt"><div class="chb"><div class="cht vh"><svg class="vlg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2"><circle cx="16" cy="16" r="12"/><circle cx="16" cy="16" r="6"/><path d="M16 4v6M16 22v6M4 16h6M22 16h6" stroke-linecap="round"/></svg><div class="chnm"><b>Vault</b></div><span class="chp" title="Highest power level you could reach">${SV_LIGHT}${maxAll}</span><button class="vrf${qload ? ' spin' : ''}" data-act="qrefresh" title="Reload your vault from Bungie (R)"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button></div></div><div class="vcg">${vgrid}</div></div>`;
     if (SET.postmaster) {
-      h += vis.map((c, k) => { const n = (D.pm && D.pm[c.id]) || D.items.filter((x) => x.loc === c.id && x.pm).length; return `<div class="pmh">${k === 0 ? `<span class="dsec tg" data-tg="1">${pmOpen ? '&#9662;' : '&#9656;'} Postmaster</span>` : ''}<span class="pmn">(${n}/21)</span></div>`; }).join('') + (under ? '' : '<div></div>');
+      h += vis.map((c, k) => { const n = D.items.filter((x) => x.loc === c.id && x.pm).length; return `<div class="pmh">${k === 0 ? `<span class="dsec tg" data-tg="1">${pmOpen ? '&#9662;' : '&#9656;'} Postmaster</span>` : ''}<span class="pmn">(${n}/21)</span></div>`; }).join('') + (under ? '' : '<div></div>');
       if (pmOpen) h += vis.map(pmCell).join('') + (under ? '' : '<div></div>');
     }
     const owned = new Set(allI().map((x) => x.b));
@@ -1645,7 +1693,7 @@ ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="
   let lastBadge = -1;
   function pmBadge(vis) {
     if (!window.gt || !gt.badge) return;
-    const c = vis[0], n = SET.pmbadge && c && D ? Math.min(99, (D.pm && D.pm[c.id]) || D.items.filter((x) => x.loc === c.id && x.pm).length) : 0;
+    const c = vis[0], n = SET.pmbadge && c && D ? Math.min(99, D.items.filter((x) => x.loc === c.id && x.pm).length) : 0;
     if (n === lastBadge) return; lastBadge = n;
     let png = '';
     if (n) {
@@ -1675,7 +1723,7 @@ ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="
     sec.innerHTML = `${slot ? '' : '<div class="card vcard">' + bar + '</div>'}<div id="vfx"></div><div id="vhelp" class="card">${hp}</div><p id="vnote" class="mute"></p><div id="vgrid"></div><div id="vpop"></div>`;
     if (slot) { slot.replaceChildren(); slot.insertAdjacentHTML('beforeend', bar); slot.querySelector('.vbar').onclick = (e) => sec.onclick(e); }
     const vqi = g('vq');
-    vqi.oninput = (e) => { q = e.target.value.toLowerCase(); renderGrid(); sugDraw(e.target); };
+    vqi.oninput = (e) => { if (!autoFix(e.target, e)) LASTAC = null; q = e.target.value.toLowerCase(); renderGrid(); sugDraw(e.target); };
     vqi.onkeydown = sugKey;
     vqi.onfocus = (e) => sugDraw(e.target);
     vqi.onblur = () => setTimeout(() => { const bx = document.getElementById('vqs'); if (bx && document.activeElement !== g('vq')) bx.remove(); }, 120);
@@ -1692,7 +1740,8 @@ ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="
     const by = new Map(n.items.map((x) => [x.id, x]));
     ids.forEach((id) => {
       const l = LEDGER[id];
-      if (l.at && now - l.at > LED_MS) { delete LEDGER[id]; return; }
+      // An item taken out of the postmaster can never go back into it, so that one is remembered longer (Bungie can lag for minutes).
+      if (l.at && now - l.at > (l.pmx ? 600000 : LED_MS)) { delete LEDGER[id]; return; }
       const s = by.get(id);
       if (!s) return; // gone from Bungie's list (dismantled or deleted): leave it gone
       if (stamp(s) === l.k) { if (l.at) delete LEDGER[id]; return; } // Bungie has caught up
@@ -1712,7 +1761,7 @@ ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="
     const before = new Map(D.items.map((x) => [x.id, { loc: x.loc, e: x.e, pm: x.pm, k: stamp(x) }]));
     apply();
     const led = [];
-    D.items.forEach((x) => { const b = before.get(x.id); if (b && b.k !== stamp(x)) { led.push({ id: x.id, b }); LEDGER[x.id] = { loc: x.loc, e: x.e ? 1 : 0, pm: x.pm ? 1 : 0, k: stamp(x), at: 0 }; } });
+    D.items.forEach((x) => { const b = before.get(x.id); if (b && b.k !== stamp(x)) { led.push({ id: x.id, b }); LEDGER[x.id] = { loc: x.loc, e: x.e ? 1 : 0, pm: x.pm ? 1 : 0, k: stamp(x), at: 0, pmx: b.pm && !x.pm ? 1 : 0 }; } });
     qn++; busy = label; qNote(label);
     if (lazyNext) { lazyNext = false; requestAnimationFrame(() => setTimeout(() => { renderGrid(); renderLoTab(); }, 0)); } else { renderGrid(); renderLoTab(); }
     const run = async () => {
@@ -1738,7 +1787,9 @@ ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="
       if (good && refresh && qn === 0) { try { D = await fetchD(); } catch (e) { /* keep screen state */ } }
       if (qn === 0) busy = '';
       renderGrid(); renderLoTab();
-      if (qn === 0) { setNote(qbad ? 'Failed: ' + qbad : 'Done: ' + label); qbad = ''; }
+      const pnote = part && Array.isArray(part.failed) && part.failed.length ? 'Done, except ' + part.failed.slice(0, 3).map((f) => f.n + ' (' + f.why.replace(/^.*?:\s*/, '') + ')').join(', ') + (part.failed.length > 3 ? ' and ' + (part.failed.length - 3) + ' more' : '') : '';
+      if (qn === 0) { setNote(qbad ? 'Failed: ' + qbad : pnote || 'Done: ' + label); qbad = ''; }
+      else if (pnote) setNote(pnote);
       else if (!good) setNote('Failed: ' + why);
       if (good) { clearTimeout(resync); resync = setTimeout(async () => { if (qn > 0 || sel) return; try { D = await fetchD(); renderGrid(); renderLoTab(); } catch (e) { /* ignore */ } }, 8000); }
       return good;
@@ -1793,6 +1844,19 @@ ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="
     const s = slim(it), from = it.loc;
     act('move ' + it.n, () => { it.loc = to; }, () => gt.move({ item: s, from, to }), false, String(it.id));
   }
+  // The + under an equipped item: everything you could equip in that slot on that character, best power first. One click equips it.
+  function eqPick(t) {
+    const old = document.getElementById('eqpick'); if (old) { const same = old.dataset.k === t.dataset.c + t.dataset.b; old.remove(); if (same) return; }
+    const c = D.chars.find((x) => x.id === t.dataset.c), b = +t.dataset.b; if (!c) return;
+    const list = D.items.filter((x) => x.b === b && !x.pm && !x.ro && !(x.loc === c.id && x.e) && (x.c === 3 || x.c === undefined || x.c === c.cls) && match(x)).sort((p, q2) => (q2.r === 'Exotic') - (p.r === 'Exotic') || (q2.p || 0) - (p.p || 0)).slice(0, 60);
+    const m = document.createElement('div'); m.id = 'eqpick'; m.dataset.k = t.dataset.c + t.dataset.b;
+    m.innerHTML = `<h6>Equip on ${esc(CL[c.cls] || 'Guardian')}: ${esc(slotName(b))}</h6>${list.length ? `<div class="eqg">${list.map((x) => tile(x).replace(' draggable="true"', '')).join('')}</div>` : '<p>Nothing else you own fits this slot' + (q ? ' with this search' : '') + '.</p>'}${q ? '<p>Only items matching your search are listed.</p>' : ''}`;
+    const r = t.getBoundingClientRect(); document.body.appendChild(m);
+    const w = m.offsetWidth, hgt = m.offsetHeight;
+    m.style.left = Math.max(8, Math.min(r.left, innerWidth - w - 8)) + 'px'; m.style.top = (r.bottom + hgt + 8 < innerHeight ? r.bottom + 4 : Math.max(8, r.top - hgt - 4)) + 'px';
+    m.addEventListener('click', (e) => { const v = e.target.closest('.vt[data-id]'); if (!v) return; e.stopPropagation(); const it = byId(v.dataset.id); m.remove(); if (it) doEquip(it, c.id); });
+    setTimeout(() => { const off = (e) => { if (!m.contains(e.target) && !e.target.closest('[data-act=eqpick]')) { m.remove(); document.removeEventListener('pointerdown', off, true); } }; document.addEventListener('pointerdown', off, true); }, 0);
+  }
   function doEquip(it, to) {
     quickPlace(it, to, true);
     const s = slim(it);
@@ -1806,7 +1870,7 @@ ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="
   // ---- drag and drop ----
   // Drop on a character's equipped slot to equip. Drop anywhere else on a character column to move it there. Drop on the vault column to vault it.
   let overEl = null, dzEls = [];
-  const clearDz = () => { dzEls.forEach((z) => z.classList.remove('dz')); dzEls = []; };
+  const clearDz = () => { dzEls.forEach((z) => z.classList.remove('dz', 'eqok')); dzEls = []; };
   const clearOver = () => { if (overEl) overEl.classList.remove('over'); overEl = null; };
   function dropInfo(zone) {
     const it = byId(dragId); if (!it || it.e || it.pm || it.ro) return null;
@@ -1827,7 +1891,7 @@ ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="
   // Dragging items: done with the mouse directly (like DIM's feel) instead of the browser's built-in drag and drop, which on Windows
   // waits on the system drag loop and can add half a second before a drop lands. A press that moves less than 5px is still a click.
   let pd = null, swallowClick = false;
-  const lightZones = (it) => { dzEls = [...sec.querySelectorAll('#vgrid .dc[data-b="' + it.b + '"]')].filter((z) => z.dataset.drop === 'vault' || dropInfo(z) || z.dataset.loc === it.loc); dzEls.forEach((z) => z.classList.add('dz')); };
+  const lightZones = (it) => { dzEls = [...sec.querySelectorAll('#vgrid .dc[data-b="' + it.b + '"]')].filter((z) => z.dataset.drop === 'vault' || dropInfo(z) || z.dataset.loc === it.loc); dzEls.forEach((z) => { z.classList.add('dz'); const q = z.querySelector(':scope > .eq'); if (q && dropInfo(q)) { q.classList.add('eqok'); dzEls.push(q); } }); };
   sec.addEventListener('pointerdown', (e) => {
     if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || !D) return;
     if (e.pointerType === 'touch' && PHONE.matches) return; // on a phone a finger on an item scrolls the page; items move with the buttons in the item sheet
@@ -1922,6 +1986,38 @@ ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="
   const BRK = { 1: 'Barrier (shield-piercing)', 2: 'Overload (disruption)', 3: 'Unstoppable (stagger)' };
   const NOTES = () => { try { return JSON.parse(localStorage.getItem('gt_notes')) || {}; } catch (e) { return {}; } };
   const pimg = (p) => (p && p.i ? `<img src="${esc(icon(p.i))}" alt="">` : '');
+  // "Preview Wishlist Perks": the one wish list roll (or Farming target) that suits this weapon best, perk by perk, instead of
+  // mixing perks from different rolls. Best = names the most columns, then needs the fewest changes, then comes first in the list.
+  function bestRoll(x, d) {
+    const P = new Set(x.pk || []), name = (h) => (D && D.pn && D.pn[h]) || '';
+    const cols = []; d.groups.forEach((gr, gi) => { if (gr.label !== 'Perks') return; gr.cols.forEach((col, ci) => cols.push({ k: gi + '-' + ci, col, on: col.find((p) => p.on) || col[0] })); });
+    const cand = [];
+    const T = window.__gtt, th = T && T.hit ? T.hit(x) : null;
+    if (th && th.perks && th.perks.size) cand.push({ hs: [...th.perks].filter((v) => typeof v === 'number'), names: [...th.perks].filter((v) => typeof v === 'string'), note: 'Farming target: ' + th.name, pri: 1 });
+    if (WL && x.pk) for (const r of [...(WL.rolls[x.h] || []), ...(WL.rolls['*'] || [])]) {
+      if (typeof r[0] === 'string') r[0] = r[0] ? r[0].split(',').map(Number) : [];
+      if (r[2] || !r[0].length || !r[0].every((h) => P.has(h))) continue;
+      cand.push({ hs: r[0], names: [], note: typeof r[1] === 'number' ? (WL.notes || [])[r[1]] || '' : r[1] || '', pri: 0 });
+    }
+    let best = null;
+    const allH = new Set(); cols.forEach(({ col }) => col.forEach((p) => { if (p.h) allH.add(p.h); }));
+    cand.forEach((c, order) => {
+      // by hash; by name only for a perk this copy has in its other version (enhanced or not), so names never match the wrong column
+      const want = new Set(c.hs), wantN = new Set([...c.hs.filter((h) => !allH.has(h)).map(name).filter(Boolean), ...c.names.filter(() => c.pri)]), pick = {}; let spec = 0, keep = 0, can = 0;
+      cols.forEach(({ k, col, on }) => {
+        const hits = col.filter((p) => want.has(p.h) || wantN.has(p.n)); if (!hits.length) return;
+        spec++;
+        // what is already in the weapon first; otherwise one Bungie lets you put in (the enhanced one if both are there)
+        const ch = hits.find((p) => p === on) || hits.filter((p) => p.ci).pop() || hits[hits.length - 1];
+        if (ch === on) keep++; if (ch === on || ch.ci) can++;
+        pick[k] = col.indexOf(ch);
+      });
+      if (!spec) return;
+      const score = c.pri * 1e6 + spec * 1e4 + can * 100 + keep - order * 1e-3;
+      if (!best || score > best.score) best = { score, pick, note: c.note, spec, keep, n: cand.length };
+    });
+    return best;
+  }
   // Stats after the perks you have clicked: current stats, minus the active perk's bonus, plus the previewed perk's bonus.
   function liveStats(d) {
     const delta = {};
@@ -2099,7 +2195,7 @@ ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="
     if (ro || noInst(x)) main = roBody(x);
     else {
       const d = DET[sel];
-      const detail = !d ? '<p class="dpmu">Loading...</p>' : d.err ? `<p class="dpmu">Could not load details: ${esc(d.err)}</p>` : detailHTML(d, x);
+      const detail = !d ? '<div class="dpsk" aria-label="Loading"><i></i><i></i><i></i><i></i><i></i><i></i><b></b><b></b><b></b></div>' : d.err ? `<p class="dpmu">Could not load details: ${esc(d.err)}</p>` : detailHTML(d, x);
       const note = (NOTES()[x.id] || '');
       const noteHTML = noteEdit ? `<div class="dpn"><textarea id="vnotebox" placeholder="Notes about this item">${esc(note)}</textarea></div>` : `<div class="dpn" data-a="note">${note ? esc(note) : '&#9998; Add notes'}</div>`;
       const w = wish(x);
@@ -2116,17 +2212,26 @@ ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="
     const all = document.querySelectorAll('.vt'); for (const t of all) if (t.dataset.id === sel && t.offsetParent !== null) return t;
     return null;
   }
-  function placePop() {
+  // The pop-up is placed once, next to the item, and then stays put: it moves with the item when the page scrolls, and when its
+  // contents change (a perk opened, details arriving) it only shifts up if it would run off the bottom of the window.
+  let POS = null;
+  function placePop(why) {
     const dp = document.querySelector('#vsheet .dp'); if (!dp) return;
     const vw = innerWidth, vh = innerHeight;
     dp.querySelectorAll('.dpm,.dps').forEach((n) => { n.style.maxHeight = (vh - 16) + 'px'; });
     const w = dp.offsetWidth, h = dp.offsetHeight, t = anchorEl();
     let L, T;
-    if (!t || vw < 640) { L = Math.max(8, (vw - w) / 2); T = Math.max(8, (vh - h) / 2); }
+    if (!t || vw < 640) { L = Math.max(8, (vw - w) / 2); T = Math.max(8, (vh - h) / 2); POS = null; }
     else {
       const r = t.getBoundingClientRect();
-      L = r.right + 8; if (L + w > vw - 8) L = r.left - 8 - w; if (L < 8) L = Math.max(8, vw - w - 8);
-      T = Math.max(8, Math.min(r.top - 4, vh - h - 8));
+      if (POS && POS.id === sel && POS.w === w) {
+        L = POS.L; T = r.top + POS.dy;
+        if (why !== 'scroll' && T + h > vh - 8) { T = Math.max(8, vh - h - 8); POS.dy = T - r.top; }
+      } else {
+        L = r.right + 8; if (L + w > vw - 8) L = r.left - 8 - w; if (L < 8) L = Math.max(8, vw - w - 8);
+        T = Math.max(8, Math.min(r.top - 4, vh - h - 8));
+        POS = { id: sel, L, w, dy: T - r.top };
+      }
     }
     dp.style.left = Math.round(L) + 'px'; dp.style.top = Math.round(T) + 'px';
   }
@@ -2146,7 +2251,10 @@ ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="
   const noInst = (x) => !!(x && (x.eg || !/^\d+$/.test(String(x.id))));
   async function openPop(id, el) {
     const x = byId(id); if (!x) return;
-    sel = id; psel = {}; plast = null; pex = ''; noteEdit = false; PMSG = ''; ptab = 'ov'; stq = 0; popEl = el || null; renderPop();
+    sel = id; psel = {}; plast = null; pex = ''; noteEdit = false; PMSG = ''; ptab = 'ov'; stq = 0; popEl = el || null;
+    // Wait a moment for the details (usually already on their way from the hover) so the pop-up opens once, at its full size.
+    if (!x.ro && !noInst(x) && !DET[id]) { const p = fetchDet(x); await Promise.race([p, new Promise((r) => setTimeout(r, 350))]); if (sel !== id) return; }
+    renderPop();
     if (x.ro || noInst(x)) {
       const num = /^\d+$/.test(String(x.id));
       if (!INFO[x.h] && window.gt && gt.itemInfo) { try { INFO[x.h] = await gt.itemInfo({ h: x.h }); } catch (e) { INFO[x.h] = { d: '', fl: '', mx: 1 }; } if (sel === id) renderPop(); }
@@ -2154,9 +2262,22 @@ ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="
       return;
     }
     if (DET[id]) return;
-    try { DET[id] = await gt.itemDetail({ id, h: x.h }); } catch (e) { DET[id] = { err: clean(e) }; }
+    await fetchDet(x);
     if (sel === id) renderPop();
   }
+  // Details are fetched once per item, shared between the hover prefetch and the click.
+  const PEND = {};
+  function fetchDet(x) {
+    const id = x.id; if (DET[id]) return Promise.resolve(DET[id]);
+    if (!PEND[id]) PEND[id] = gt.itemDetail({ id, h: x.h }).then((d) => (DET[id] = d), (e) => (DET[id] = { err: clean(e) })).finally(() => { delete PEND[id]; });
+    return PEND[id];
+  }
+  // Point at an item for a moment and its details start loading, so the pop-up usually opens complete instead of filling in a second later.
+  let preT = 0;
+  sec.addEventListener('pointerover', (e) => {
+    if (e.pointerType !== 'mouse' || !D) return; const v = e.target.closest && e.target.closest('.vt[data-id]'); if (!v) return;
+    clearTimeout(preT); preT = setTimeout(() => { const x = byId(v.dataset.id); if (x && !x.ro && !noInst(x) && !DET[x.id] && v.matches(':hover')) fetchDet(x); }, 140);
+  });
   // The Loadouts tab lives in loadouts.js; this just asks it to redraw.
   function renderLoTab() { const l = document.getElementById('loadouts'); if (l && !l.classList.contains('on')) return; if (window.__gtl) window.__gtl.render(); } // hidden tab redraws itself when opened
 
@@ -2177,6 +2298,7 @@ ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="
     if (px && sel) { pex = pex === px.dataset.px ? '' : px.dataset.px; renderPop(); return; }
     if (e.target.closest('[data-a="rst"]')) { psel = {}; pex = ''; renderPop(); return; }
     if (e.target.closest('[data-a="note"]')) { noteEdit = true; renderPop(); const nb = g('vnotebox'); if (nb) nb.focus(); return; }
+    const ep = e.target.closest('[data-act="eqpick"]'); if (ep && D) { eqPick(ep); return; }
     const t = e.target.closest('button'); if (!t) return;
     if (t.dataset.paste) {
       const el = g(t.dataset.paste), note = g('p' + t.dataset.paste);
@@ -2196,13 +2318,14 @@ ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="
     if (t.dataset.a === 'pull' && x) { const it = slim(x), ch = t.dataset.t; return act('pull ' + x.n, () => { const o = byId(it.id); o.pm = 0; o.loc = ch; o.e = 0; }, () => gt.pmPull({ items: [it], char: ch })); }
     if (t.dataset.a === 'lock' && x) return toggleLock(x);
     if (t.dataset.a === 'wlp' && x) {
-      const d = DET[sel], wp = wish(x).perks; if (!d) return;
-      d.groups.forEach((gr, gi) => { if (gr.label !== 'Perks') return; gr.cols.forEach((col, ci) => {
-        const k = gi + '-' + ci, on = col.find((p) => p.on) || col[0];
-        const want = wp.has(on.h) || wp.has(on.n) ? on : col.find((p) => wp.has(p.h) || wp.has(p.n));
-        if (want) psel[k] = col.indexOf(want); else delete psel[k];
-      }); });
-      pex = ''; PMSG = ''; renderPop(); return;
+      const d = DET[sel]; if (!d) return;
+      const b = bestRoll(x, d);
+      psel = {}; pex = '';
+      if (!b) { PMSG = 'None of your wish list rolls fits this weapon.'; renderPop(); return; }
+      Object.assign(psel, b.pick);
+      const nt = String(b.note || '').replace(/\s+/g, ' ').trim();
+      PMSG = (b.keep === b.spec ? 'This weapon already has the best wish list roll.' : 'Showing the best wish list roll' + (b.n > 1 ? ' (of ' + b.n + ' that fit)' : '') + '. Press Apply Perks to put it in.') + (nt ? ' ' + (nt.length > 110 ? nt.slice(0, 107) + '...' : nt) : '');
+      renderPop(); return;
     }
     if (t.dataset.a === 'applyp' && x) {
       const d = DET[sel], id = x.id, list = d && !x.ro ? psChanges(d).filter((c) => c.ci) : []; if (!list.length) return;
@@ -2218,8 +2341,9 @@ ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="
         }
         if (k < list.length - 1) await new Promise((r) => setTimeout(r, 450));
       }
+      const locked = psChanges(d).filter((c) => !c.ci).length;
       psel = {}; plast = null; pex = '';
-      PMSG = bad.length ? (ok ? ok + ' of ' + list.length + ' perks changed. ' : '') + 'Failed: ' + bad[0] : 'Done. The perks were changed in game.';
+      PMSG = (bad.length ? (ok ? ok + ' of ' + list.length + ' perks changed. ' : '') + 'Failed: ' + bad[0] : 'Done. The perks were changed in game.') + (locked ? ' ' + locked + ' picked perk' + (locked > 1 ? 's are' : ' is') + ' not unlocked on this copy, so ' + (locked > 1 ? 'they were' : 'it was') + ' left as is.' : '');
       done.forEach(([si, ph]) => markPlug(id, si, ph));
       renderPop(); renderGrid();
       confirmPlugs(id, x.h, done);
@@ -2325,8 +2449,8 @@ ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="
     if (e.target.closest('.dp, .vt, #gtctx, #apm, #dled, #dlmod, .gtmodal')) return;
     sel = null; renderPop();
   }, true);
-  window.addEventListener('scroll', () => { if (sel) placePop(); }, true);
-  window.addEventListener('resize', () => { if (sel) placePop(); });
+  window.addEventListener('scroll', (e) => { if (sel && !(e.target && e.target.closest && e.target.closest('#vsheet'))) placePop('scroll'); }, true); // scrolling inside the pop-up must not move it
+  window.addEventListener('resize', () => { POS = null; if (sel) placePop(); });
   sec.addEventListener('input', (e) => {
     if (!e.target) return;
     if (e.target.id === 'vstq') stq = parseInt(e.target.value, 10) || 0;

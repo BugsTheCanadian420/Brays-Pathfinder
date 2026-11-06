@@ -37,7 +37,8 @@ html.gtweb{--gt-sat:env(safe-area-inset-top,0px)}
   html.gtweb #dled{top:calc(var(--gt-sat) + 6px)!important;height:auto!important;z-index:9100!important;border-radius:14px 14px 0 0}
   html.gtweb #dled .dl-ef{padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}
   html.gtweb #dled .dl-ef button{flex:1 1 auto}
-  html.gtweb #dlmod{z-index:9200!important}
+  html.gtweb #dlmod{z-index:9200!important;padding:calc(var(--gt-sat) + 8px) 8px calc(66px + env(safe-area-inset-bottom,0px));box-sizing:border-box}
+  html.gtweb #dlmod .dl-mc{max-height:100%;min-width:0;width:100%}
   html.gtweb #loimg{z-index:9200!important;padding:calc(var(--gt-sat) + 12px) 10px calc(12px + env(safe-area-inset-bottom,0px))}
   html.gtweb #loimg .li{max-height:100%;overflow:auto;padding:10px}
   html.gtweb #dlt{z-index:9300!important;left:12px!important;right:12px;max-width:none!important;bottom:calc(68px + env(safe-area-inset-bottom,0px))!important}

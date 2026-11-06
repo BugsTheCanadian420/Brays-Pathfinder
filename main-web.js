@@ -1,4 +1,4 @@
-/* Pathfinder 0.2.99: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.2.100: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -318,6 +318,30 @@ async function syncReq(method, body) {
 }
 H('sync:get', () => syncReq('GET'));
 H('sync:put', (e, v) => { OBJ(v); const body = JSON.stringify({ data: OBJ(v.data), wl: Array.isArray(v.wl) ? v.wl.filter((x) => typeof x === 'string').slice(0, 20) : [] }); if (body.length > 850000) throw new Error('too_big'); return syncReq('PUT', body); });
+// ---- share links like DIM's (https://d2pathfinder.com/abc1234/Equipped): the loadout is kept by the token service under a short code ----
+const WEBDOM = (() => { try { return require('./package.json').webDomain || 'd2pathfinder.com'; } catch (e) { return 'd2pathfinder.com'; } })();
+const shareUrl = () => (preset && preset.tokenUrl && /^https:\/\//i.test(preset.tokenUrl) ? preset.tokenUrl.replace(/\/+$/, '') + '/share' : '');
+const siteBase = () => { const lc = globalThis.location; return WEB && lc ? (lc.origin + lc.pathname.replace(/[^/]*$/, '')).replace(/\/+$/, '') : 'https://' + WEBDOM; };
+const slugOf = (n) => String(n || 'Loadout').replace(/[^\w\- ]+/g, '').trim().replace(/\s+/g, '-').slice(0, 40) || 'Loadout';
+const SHERR = { share_not_configured: 'Share links are not switched on in your token service yet (see SHARE-SETUP.txt).', share_unavailable: 'This copy of the app has no token service, so it cannot make share links.', too_many_today: 'You have made a lot of share links today. Try again tomorrow.', unauthorized: 'Sign in again to share.' };
+H('lo:share', async (e, v) => {
+  OBJ(v); const c = TXT(v.c, 65000), n = TXT(v.n || 'Loadout', 80);
+  if (!/^GTL1:[A-Za-z0-9+/=]+$/.test(c)) throw bad();
+  const u = shareUrl(); if (!u) throw new Error(SHERR.share_unavailable);
+  await fresh();
+  const r = await fetch(u, { method: 'POST', headers: { Authorization: 'Bearer ' + rd().tok.access, 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ c, n }) });
+  const j = await readJson(r).catch(() => ({}));
+  if (!r.ok || !j || !/^[A-Za-z0-9]{5,12}$/.test(String(j.code || ''))) throw new Error(SHERR[j && j.error] || (j && j.error) || 'HTTP ' + r.status);
+  return { url: siteBase() + '/' + j.code + '/' + encodeURIComponent(slugOf(n)), code: j.code };
+});
+H('lo:shareget', async (e, v) => {
+  OBJ(v); const code = TXT(v.code, 20); if (!/^[A-Za-z0-9]{5,12}$/.test(code)) throw bad();
+  const u = shareUrl(); if (!u) throw new Error(SHERR.share_unavailable);
+  const r = await fetch(u + '/' + code, { headers: { Accept: 'application/json' } });
+  const j = await readJson(r).catch(() => ({}));
+  if (!r.ok || !j || typeof j.c !== 'string') throw new Error(r.status === 404 ? 'That share link does not exist (or it was typed wrong).' : SHERR[j && j.error] || (j && j.error) || 'HTTP ' + r.status);
+  return { c: j.c, n: String(j.n || '') };
+});
 H('auth:login', () => loginWin((rd().tok || {}).part || 'persist:bungie'));
 // ---- more than one Bungie account (your alts, or a friend who shares their login): each keeps its own sign-in, tags stay shared ----
 // The active account is c.tok; the others wait in c.accts. Switching restarts the app so nothing from one account leaks into another.
@@ -376,7 +400,7 @@ H('acct:remove', async (e, v) => {
 });
 // Website only: the sign-in code Bungie sent back to the site (its state was already checked by the page).
 if (WEB) H('auth:webcode', async (e, v) => { OBJ(v); await tokenReq({ grant_type: 'authorization_code', code: TXT(v.code, 4000) }); const c = rd(); if (c.tok && c.accts && c.accts[c.tok.mid]) { delete c.accts[c.tok.mid]; wr(c); } return true; });
-const PMDEF = {}, ARTD = {}, TITLES = {}, ENTC = {}, OVR = {};
+const PMDEF = {}, TITLES = {}, ENTC = {}, OVR = {};
 // A character's equipped title (Immortal, Conqueror...), looked up once and remembered.
 // Whether a character's title is gilded (the small gold seal DIM shows next to it). Looked up from the account's records, kept for a few minutes.
 let GILD = { at: 0, v: {} };
@@ -409,26 +433,6 @@ async function isGilded(x) {
 }
 async function ent(type, h) { return api('/Destiny2/Manifest/' + type + '/' + h + '/', false); }
 // The seasonal artifact: which mods are unlocked right now, with names and icons.
-async function artifact(pr) {
-  const a = pr.profileProgression && pr.profileProgression.data && pr.profileProgression.data.seasonalArtifact;
-  if (!a || !a.artifactHash) return null;
-  const on = {};
-  (a.tiers || []).forEach((t) => (t.items || []).forEach((q) => { on[q.itemHash] = !!q.isActive; }));
-  if (!ARTD[a.artifactHash]) {
-    const o = await ent('DestinyArtifactDefinition', a.artifactHash);
-    const tiers = [];
-    for (const t of o.tiers || []) {
-      const items = await Promise.all((t.items || []).map(async (q) => {
-        try { const x = await ent('DestinyInventoryItemDefinition', q.itemHash), dp = x.displayProperties || {}; return { h: q.itemHash, n: dp.name || 'Mod', i: dp.icon || '', d: dp.description || '' }; }
-        catch (e) { return { h: q.itemHash, n: 'Mod', i: '', d: '' }; }
-      }));
-      tiers.push(items);
-    }
-    ARTD[a.artifactHash] = { n: (o.displayProperties && o.displayProperties.name) || 'Artifact', i: (o.displayProperties && o.displayProperties.icon) || '', tiers };
-  }
-  const d = ARTD[a.artifactHash];
-  return { n: d.n, i: d.i, bonus: a.powerBonus || 0, tiers: d.tiers.map((t) => t.map((m) => ({ ...m, on: !!on[m.h] }))) };
-}
 // Speed: ornament and title lookups are kept on disk (per game version), so a fresh start never repeats them.
 let XDL = '';
 function xdLoad(df) {
@@ -910,13 +914,16 @@ H('lo:clear', (e, v) => { v = LV(v); return lolog('clear', v, step('clearing the
 // Pull items out of the postmaster onto a character.
 H('pm:pull', async (e, v) => {
   OBJ(v); const items = ARR(v.items, 50).map(PITEM), char = ID(v.char);
-  let n = 0;
+  // Each item on its own: one that cannot come out (a full slot, for example) no longer stops the rest, and the page is told
+  // exactly which ones stayed, so only those go back into the postmaster on screen.
+  let n = 0; const failed = [];
   for (const it of items) {
     if (it.eg) continue;
-    await step('pulling ' + it.n + ' from the postmaster', () => post('/Destiny2/Actions/Items/PullFromPostmaster/', { itemReferenceHash: it.h, stackSize: it.q || 1, itemId: it.inst || it.id, characterId: char }));
-    n++;
+    try { await step('pulling ' + it.n + ' from the postmaster', () => post('/Destiny2/Actions/Items/PullFromPostmaster/', { itemReferenceHash: it.h, stackSize: it.q || 1, itemId: it.inst || it.id, characterId: char })); n++; }
+    catch (e) { failed.push({ id: it.id, n: it.n, why: String((e && e.message) || e).slice(0, 160) }); }
   }
-  return n;
+  if (!n && failed.length) throw new Error(failed[0].why);
+  return { n, revert: failed.map((f) => f.id), failed };
 });
 
 // ---------------- updates ----------------
@@ -1522,12 +1529,11 @@ async function pool(list, n, fn) {
 const ITD = {}, ACTD = {}, ATYPE = {}, OBJD = {};
 async function itemInfo(h) {
   if (ITD[h] && !ITD[h].bad) return ITD[h];
-  let last;
   for (let t = 0; t < 2; t++) {
     try {
       const x = await ent('DestinyInventoryItemDefinition', h), dp = x.displayProperties || {};
       return (ITD[h] = { n: dp.name || 'Item', i: dp.icon || '', d: dp.description || '', t: x.itemTypeDisplayName || '', r: (x.inventory && x.inventory.tierTypeName) || '', it: x.itemType || 0, pv: (x.preview && x.preview.previewVendorHash) || 0, ct: x.classType === undefined ? 3 : x.classType, cat: x.itemCategoryHashes || [], ob: (x.objectives && x.objectives.objectiveHashes) || [] });
-    } catch (e) { last = e; }
+    } catch (e) { /* tried twice, then given up for now */ }
   }
   // Not cached for good: a network hiccup is retried next time instead of showing "Item" until the app restarts.
   return (ITD[h] = { n: 'Item', i: '', d: '', t: '', r: '', it: 0, cat: [], ob: [], bad: 1 });
@@ -1552,7 +1558,6 @@ async function actInfo(h) {
 }
 
 // Today's rotations: whatever Bungie lists as available to the character right now.
-const ROT_OK = /raid|dungeon|nightfall|strike|lost sector|crucible|gambit|iron banner|trials|battleground|onslaught|exotic|empire hunt|expedition|portal|pinnacle|vanguard|heroic|pantheon|wellspring|altars/i;
 const OBJN = {};
 async function objName(h) {
   if (OBJN[h] !== undefined) return OBJN[h];
@@ -1598,7 +1603,6 @@ H('act:rot', async (e, v) => {
   if (sv.wk !== wk || !sv.f || sv.v !== 2) sv = { v: 2, wk, f: {} };
   nowF.forEach((x) => { sv.f[x.k + '|' + x.n.toLowerCase()] = { k: x.k, n: x.n, img: x.img || (sv.f[x.k + '|' + x.n.toLowerCase()] || {}).img || '' }; });
   try { fs.writeFileSync(apath('rotfeat.json'), JSON.stringify(sv)); } catch (e) { /* disk full or locked */ }
-  const live = new Set(nowF.map((x) => x.k + '|' + x.n.toLowerCase()));
   const featAll = Object.keys(sv.f).map((k) => ({ ...sv.f[k], dn: 0 }));
   // Pantheon: the week's featured Reprise and Encore bosses (the game lists them as "Featured Reprise: <boss>" / "Featured Encore: <boss>").
   try {
@@ -1709,40 +1713,6 @@ H('arm:sets', async (e, v) => {
   if (todo.length || sets.length) { try { fs.writeFileSync(SETF(), JSON.stringify(SETC)); } catch (er) { /* kept in memory */ } }
   const items = {}, used = {}; hs.forEach((h) => { const sh = SETC.i[h]; if (sh) { items[h] = sh; used[sh] = SETC.s[sh]; } });
   return { items, sets: used };
-});
-// Vendor deals: every vendor, every character, in one call each. Weapons come with the perks on sale (the window checks them
-// against your wish lists) and armor with its stats, so god rolls and high-stat armor can be found without opening each vendor.
-const DEAL_AB = new Set([3448274439, 3551918588, 14239492, 20886954, 1585787867]);
-H('act:deals', async () => {
-  const m = await acct(), chars = await charList(m), out = [], seen = new Set(), df = await defs();
-  const pr = await api(pbase(m) + '?components=200'), cls = {}; Object.values((pr.characters && pr.characters.data) || {}).forEach((x) => { cls[x.characterId] = x.classType; });
-  const res = await pool(chars, 3, (c) => api(pbase(m) + `Character/${c}/Vendors/?components=400,402,304,305,310`));
-  for (let ci = 0; ci < chars.length; ci++) {
-    const r = res[ci]; if (!r) continue;
-    const c = chars[ci], vd = (r.vendors && r.vendors.data) || {}, sales = (r.sales && r.sales.data) || {}, ic = r.itemComponents || {};
-    const vhs = Object.keys(sales).filter((vh) => !vd[vh] || vd[vh].enabled !== false);
-    const vds = await pool(vhs, 12, (vh) => vendorDef(+vh));
-    for (let vi = 0; vi < vhs.length; vi++) {
-      const vh = vhs[vi], d = vds[vi]; if (!d || !d.n || vkind(d) === 'skip') continue;
-      const ss = sales[vh].saleItems || {}, keys = Object.keys(ss).slice(0, 300);
-      const C = ic[vh] || {}, st = (C.stats && C.stats.data) || {}, sk = (C.sockets && C.sockets.data) || {}, rp = (C.reusablePlugs && C.reusablePlugs.data) || {};
-      keys.forEach((k) => {
-        const s = ss[k], g = df.d[s.itemHash]; if (!g) return; // only weapons and armor (from the saved item data: no extra requests)
-        const wep = TF_WB0.has(g.b), arm = DEAL_AB.has(g.b); if (!wep && !arm) return;
-        const f = { n: g.n, i: g.i, t: g.t, r: g.r, it: wep ? 3 : 2, ct: g.c === undefined ? 3 : g.c };
-        if (f.it === 2 && f.ct !== 3 && cls[c] !== undefined && f.ct !== cls[c]) return; // armor this character cannot wear
-        const pk = new Set();
-        ((sk[k] || {}).sockets || []).forEach((q) => q && q.plugHash && pk.add(q.plugHash));
-        Object.values(((rp[k] || {}).plugs) || {}).forEach((arr) => (arr || []).forEach((q) => q && q.plugItemHash && pk.add(q.plugItemHash)));
-        const stv = {}; let tot = 0;
-        if (f.it === 2) { const so = (st[k] || {}).stats || {}; ARSH.forEach((sh) => { const v = (so[sh] && so[sh].value) || 0; stv[sh] = v; tot += v; }); }
-        const pks = [...pk].slice(0, 40), key = vh + ':' + s.itemHash + ':' + (f.it === 2 ? c + ':' + tot : pks.slice().sort().join(','));
-        if (seen.has(key)) return; seen.add(key);
-        out.push({ v: +vh, vn: vlabel(d), c, cl: cls[c], h: s.itemHash, n: f.n, i: f.i, t: f.t, r: f.r, it: f.it, pk: pks, st: stv, tot, x: (s.failureIndexes || []).length ? 1 : 0 });
-      });
-    }
-  }
-  return { items: out, at: Date.now() };
 });
 // Xûr, split the way the game splits him: the weekly Xûr in the Tower, and Xûr's offers in the Dares of Eternity.
 const DSTN = {};

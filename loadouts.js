@@ -60,6 +60,40 @@
     return l;
   }
 
+  // Share links: https://d2pathfinder.com/<code>/<name> (or the GitHub address of the website).
+  const linkCode = (t) => { const m = /(?:d2pathfinder\.com|bugsthecanadian420\.github\.io\/Brays-Pathfinder)\/([A-Za-z0-9]{5,12})(?=[/?#\s]|$)/i.exec(String(t || '')); return m ? m[1] : ''; };
+  function importLo(l) {
+    l.id = newId(); l.t = l.k = Date.now();
+    resolve(l).forEach((r) => { if (r.x) r.en.id = r.x.id; });
+    if (l.c < 3 && !l.n) l.n = 'Imported loadout';
+    all().push(l); save();
+    if (l.c < 3) { const ch = V.chars().find((q) => q.cls === l.c); if (ch) CH = ch.id; }
+    FILT = ''; render();
+    const miss = missOf(l).length; toast('Imported ' + (l.n || 'loadout') + (miss ? ' (' + miss + ' item' + (miss > 1 ? 's' : '') + ' not in your inventory)' : ''));
+  }
+  // Someone opened a share link on the website: show the loadout (no sign-in needed to look), with a button to add it.
+  function shinHTML() {
+    const l = mod.l, signed = !!D0(), cls = l.c < 3 ? CL[l.c] : 'Any class';
+    const grp = (bs) => l.it.filter((q) => bs.includes(q.b)).sort((a, b) => bs.indexOf(a.b) - bs.indexOf(b.b));
+    const row = (q) => `<div class="dl-shi${q.e === 0 ? ' fade' : ''}"><span>${q.i ? `<img src="${esc(V.icon(q.i))}" alt="">` : ''}</span><b>${esc(q.n || 'Item')}</b></div>`;
+    const sec2 = (t, bs) => { const l2 = grp(bs); return l2.length ? `<h4>${t}</h4><div class="dl-shg">${l2.map(row).join('')}</div>` : ''; };
+    return `<div class="dl-mc dl-shin"><h3>${esc(l.n || 'Shared loadout')}</h3><p class="mute">${esc(cls)} &middot; shared with Pathfinder${l.o ? ' &middot; ' + esc(String(l.o).slice(0, 140)) : ''}</p>${sec2('Subclass', [SUB])}${sec2('Weapons', WB)}${sec2('Armor', AB)}${sec2('General', GB)}${l.a && l.a.length ? `<p class="mute">Includes ${l.a.length} artifact perks${l.fm && l.fm.length ? ' and ' + l.fm.length + ' mods' : ''}.</p>` : ''}${signed ? '' : '<div class="dl-wr">Sign in (Inventory tab) to add it to your loadouts. Items are matched to the ones you own.</div>'}<div class="dl-bt"><button class="b" data-md="shadd"${signed ? '' : ' disabled'}>Add to my loadouts</button><span class="dl-sp"></span><button class="g" data-md="x">Close</button></div></div>`;
+  }
+  (async () => {
+    let sp; try { sp = new URLSearchParams(location.search); } catch (e) { return; }
+    // Kept for this tab, so signing in (which leaves the page and comes back) does not lose the link you opened.
+    let code = sp.get('s'); if (!code) { try { code = sessionStorage.getItem('gt.share') || ''; } catch (e) { code = ''; } }
+    if (!code || !/^[A-Za-z0-9]{5,12}$/.test(code) || !gt.loShareGet) return;
+    try { sessionStorage.setItem('gt.share', code); } catch (e) { /* storage off */ }
+    try { sp.delete('s'); sp.delete('n'); history.replaceState(null, '', location.pathname + (sp.toString() ? '?' + sp : '') + location.hash); } catch (e) { /* keep the address */ }
+    try {
+      const r = await gt.loShareGet({ code }); const l = decode(r.c); if (!l.n && r.n) l.n = r.n;
+      mod = { t: 'shin', l }; drawMod();
+      // the Add button switches on as soon as your vault has loaded
+      const tick = setInterval(() => { if (!mod || mod.t !== 'shin') { clearInterval(tick); return; } if (D0()) { clearInterval(tick); drawMod(); } }, 1000);
+    } catch (er) { toast('Could not open that share link: ' + V.clean(er), { bad: 1 }); }
+  })();
+
   // ---------------- state ----------------
   let CH = null, FILT = '', ed = null, mod = null, tT = 0;
   let SORT = 'time'; try { SORT = localStorage.getItem('gt_dlsort') === 'name' ? 'name' : 'time'; } catch (e) { /* default */ }
@@ -694,9 +728,13 @@ ${pn('dl-p-art', 'Artifact', `<div class="dl-artrow">${d.ai && d.ai.i ? `<span c
     const D = D0(); let h = '';
     if (mod.t === 'sub') h = subHTML();
     else if (mod.t === 'imp') {
-      h = `<div class="dl-mc"><h3>Import loadout</h3><p class="mute">Paste a DIM loadout link (dim.gg/...) or a loadout code from this app (GTL1:...). Items are matched to the closest ones you own.</p><textarea id="dlimp" placeholder="https://dim.gg/..."" spellcheck="false">${esc(mod.text || '')}</textarea>${mod.msg ? `<div class="dl-wr">${esc(mod.msg)}</div>` : ''}<div class="dl-bt"><button class="g" data-md="paste">Paste from clipboard</button><span class="dl-sp"></span><button class="b" data-md="doimp">Import</button><button class="g" data-md="x">Cancel</button></div></div>`;
+      h = `<div class="dl-mc"><h3>Import loadout</h3><p class="mute">Paste a Pathfinder share link (d2pathfinder.com/...), a DIM loadout link (dim.gg/...) or a loadout code (GTL1:...). Items are matched to the closest ones you own.</p><textarea id="dlimp" placeholder="https://dim.gg/..."" spellcheck="false">${esc(mod.text || '')}</textarea>${mod.msg ? `<div class="dl-wr">${esc(mod.msg)}</div>` : ''}<div class="dl-bt"><button class="g" data-md="paste">Paste from clipboard</button><span class="dl-sp"></span><button class="b" data-md="doimp">Import</button><button class="g" data-md="x">Cancel</button></div></div>`;
     } else if (mod.t === 'shmenu') {
-      h = `<div class="dl-mc dl-ig-pop"><h3>Share loadout</h3><p class="mute">A picture is the easiest to send. A code lets your friend import the loadout into their own app.</p><div class="dl-bt dl-col"><button class="b" data-md="shpic">Share as a picture</button><button class="g" data-md="shcode">Copy loadout code</button>${navigator.share ? '<button class="g" data-md="shsend">Send the code...</button>' : ''}<button class="g" data-md="x">Close</button></div></div>`;
+      h = `<div class="dl-mc dl-ig-pop"><h3>Share loadout</h3><p class="mute">A link opens the loadout for anyone, in Pathfinder or in a browser, like a dim.gg link. A picture is easy to post anywhere.</p>${mod.msg ? `<div class="dl-wr">${esc(mod.msg)}</div>` : ''}<div class="dl-bt dl-col"><button class="b" data-md="shlink">Copy share link</button><button class="g" data-md="shpic">Share as a picture</button><button class="g" data-md="shcode">Copy loadout code</button>${navigator.share ? '<button class="g" data-md="shsend">Send the code...</button>' : ''}<button class="g" data-md="x">Close</button></div></div>`;
+    } else if (mod.t === 'shlink') {
+      h = `<div class="dl-mc dl-ig-pop"><h3>Share link</h3><p class="mute">${esc(mod.copied ? 'Copied. Paste it anywhere: Discord, a message, a forum post.' : 'Copy it and paste it anywhere: Discord, a message, a forum post.')}</p><input id="dlurl" class="dl-url" readonly value="${esc(mod.url)}"><div class="dl-bt"><button class="b" data-md="lcopy">Copy link</button>${navigator.share ? '<button class="g" data-md="lsend">Share...</button>' : ''}<span class="dl-sp"></span><button class="g" data-md="x">Close</button></div></div>`;
+    } else if (mod.t === 'shin') {
+      h = shinHTML();
     } else if (mod.t === 'share') {
       h = `<div class="dl-mc"><h3>Loadout code</h3><p class="mute">Copy this and send it to your friend.</p><textarea readonly spellcheck="false">${esc(mod.code)}</textarea><div class="dl-bt"><span class="dl-sp"></span><button class="g" data-md="x">Close</button></div></div>`;
     } else if (mod.t === 'igp' && D) {
@@ -755,12 +793,32 @@ ${pn('dl-p-art', 'Artifact', `<div class="dl-artrow">${d.ai && d.ai.i ? `<span c
       }
       return;
     }
-    if (e.target.id === 'dlmod') { mod = null; drawMod(); return; }
+    if (e.target.id === 'dlmod') { if (mod.t === 'shin') { try { sessionStorage.removeItem('gt.share'); } catch (er) { /* storage off */ } } mod = null; drawMod(); return; }
     const sw = e.target.closest('[data-sw]'), ic = e.target.closest('[data-ic]');
     if ((sw || ic) && mod.t === 'ident') { if (sw) mod.ch = +sw.dataset.sw; else mod.ih = +ic.dataset.ic; const nm = g('dlnm'), sl = g('dlslot'); if (nm) mod.nh = +nm.value; if (sl) mod.i = +sl.value; drawMod(); return; }
     const b = e.target.closest('[data-md]'); if (!b) return;
     const a = b.dataset.md, D = D0();
-    if (a === 'x') { mod = null; drawMod(); return; }
+    if (a === 'x') { if (mod.t === 'shin') { try { sessionStorage.removeItem('gt.share'); } catch (er) { /* storage off */ } } mod = null; drawMod(); return; }
+    if (mod.t === 'shmenu' && a === 'shlink') {
+      const l = mod.l; mod.msg = 'Making the link...'; drawMod();
+      try {
+        const r = await gt.loShare({ c: codeOf(l), n: l.n || 'Loadout' });
+        mod = { t: 'shlink', url: r.url, copied: false }; drawMod();
+        try { await gt.writeClipboard(r.url); if (!document.documentElement.classList.contains('gtweb')) { mod.copied = true; drawMod(); } } catch (er) { /* the Copy button is there */ }
+      } catch (er) { if (mod && mod.t === 'shmenu') { mod.msg = V.clean(er); drawMod(); } }
+      return;
+    }
+    if (mod.t === 'shlink') {
+      if (a === 'lcopy') {
+        const u = mod.url, done = () => { if (mod && mod.t === 'shlink') { mod.copied = true; drawMod(); } };
+        const inp = g('dlurl'); if (inp) { inp.focus(); inp.select(); }
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(u).then(done, () => gt.writeClipboard(u).then(done, () => {}));
+        else gt.writeClipboard(u).then(done, () => {});
+        return;
+      }
+      if (a === 'lsend' && navigator.share) { navigator.share({ url: mod.url, title: 'Pathfinder loadout' }).catch(() => {}); return; }
+    }
+    if (mod.t === 'shin' && a === 'shadd') { const l = mod.l; if (!D0()) return; try { sessionStorage.removeItem('gt.share'); } catch (er) { /* storage off */ } mod = null; drawMod(); importLo(l); window.show && window.show('loadouts'); return; }
     if (mod.t === 'shmenu') {
       const l = mod.l;
       if (a === 'shpic') { mod = null; drawMod(); toast('Drawing the picture...'); try { await loImage(l); } catch (er) { toast('Could not draw the picture: ' + V.clean(er), { bad: 1 }); } return; }
@@ -777,19 +835,15 @@ ${pn('dl-p-art', 'Artifact', `<div class="dl-artrow">${d.ai && d.ai.i ? `<span c
       const ta = g('dlimp'); mod.text = ta ? ta.value : mod.text;
       try {
         let l;
-        if (/GTL1:/.test(mod.text)) l = decode(mod.text);
+        const sc = linkCode(mod.text);
+        if (sc) { mod.msg = 'Getting the shared loadout...'; drawMod(); const r = await gt.loShareGet({ code: sc }); l = decode(r.c); if (!l.n && r.n) l.n = r.n; }
+        else if (/GTL1:/.test(mod.text)) l = decode(mod.text);
         else {
           if (!/\S/.test(mod.text || '')) throw new Error('Paste a DIM link or a loadout code first.');
           mod.msg = 'Getting the loadout from DIM...'; drawMod();
           l = fromDim(await gt.dimFetch({ text: mod.text }));
         }
-        l.id = newId(); l.t = l.k = Date.now();
-        resolve(l).forEach((r) => { if (r.x) r.en.id = r.x.id; });
-        if (l.c < 3 && !l.n) l.n = 'Imported loadout';
-        all().push(l); save(); mod = null; drawMod();
-        if (l.c < 3) { const ch = V.chars().find((q) => q.cls === l.c); if (ch) CH = ch.id; }
-        FILT = ''; render();
-        const miss = missOf(l).length; toast('Imported ' + (l.n || 'loadout') + (miss ? ' (' + miss + ' item' + (miss > 1 ? 's' : '') + ' not in your inventory)' : ''));
+        mod = null; drawMod(); importLo(l);
       } catch (er) { if (mod) { mod.msg = V.clean(er); drawMod(); } }
       return;
     }
@@ -980,7 +1034,7 @@ ${art ? `<div class="dl-mrow"><span class="dl-gl">Artifact &middot; ${esc(AR.ite
 .dl-side button,#dled button,#dlmod button{border-radius:3px;border:1px solid #3a3d43;color:#cfd2d8;background:#23262b;padding:6px 12px;cursor:pointer;font-size:13px}
 .dl-side button:hover,#dled button:hover,#dlmod button:hover,.dl-card button:hover{border-color:#cfd2d8;color:#fff}
 .dl-side button.b,.dl-card button.b,#dled button.b,#dlmod button.b{background:var(--g-accent2,#3a6ea5);border-color:transparent;color:var(--g-on-accent,#fff)}
-#dled button:disabled{opacity:.4;cursor:default}
+#dled button:disabled,#dlmod button:disabled{opacity:.4;cursor:default}
 .dl-card button{border-radius:3px;border:1px solid #3a3d43;color:#cfd2d8;background:#23262b;padding:5px 11px;cursor:pointer;font-size:12px}
 #dled button.on{background:#2c4a30;border-color:#4caf50;color:#fff}
 .dl-del:hover{border-color:#d9534f!important;color:#ff8a85!important}
@@ -1029,6 +1083,9 @@ ${art ? `<div class="dl-mrow"><span class="dl-gl">Artifact &middot; ${esc(AR.ite
 .dl-pk{background:#101216;padding:8px}.dl-pk input{width:100%;margin-bottom:8px}.dl-pl{display:flex;flex-wrap:wrap;gap:4px;max-height:30vh;overflow:auto}.dl-pi{cursor:pointer}.dl-pi.on .vt{outline:2px solid #6fd36f}
 .dl-wr{color:#ffb74d;font-size:13px}
 .dl-ef{display:flex;gap:8px;padding:10px 14px;border-top:1px solid #2b2d31;background:#0e1013;flex-wrap:wrap}
+#dlmod .dl-url{width:100%;box-sizing:border-box;font:13px ui-monospace,Consolas,monospace;padding:9px 10px;background:#0e1013;border:1px solid #3a3d43;border-radius:3px;color:#fff}
+.dl-shin{max-width:min(620px,94vw)}.dl-shin h4{margin:6px 0 2px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#8b8f97}
+.dl-shg{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}.dl-shin .dl-bt{position:sticky;bottom:-16px;background:#1a1c20;padding:10px 0 4px;margin-bottom:-4px}.dl-shin .dl-wr{margin-top:4px}.dl-shi{display:flex;align-items:center;gap:8px;font-size:13px}.dl-shi{min-width:0}.dl-shi b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}.dl-shi span{width:40px;height:40px;flex:none;background:#14161b;border:1px solid #3a3d43}.dl-shi img{width:100%;height:100%;display:block}.dl-shi.fade{opacity:.55}
 #dlmod{position:fixed;inset:0;z-index:95;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;--t:var(--gt-t,44px)}
 .dl-mc{background:#1a1c20;border:1px solid #4a4d54;border-radius:4px;padding:16px;min-width:300px;max-width:min(560px,92vw);max-height:86vh;overflow:auto;color:#e6e7ea;display:flex;flex-direction:column;gap:10px}
 .dl-mc h3{margin:0;font-size:16px;letter-spacing:1px}.dl-mc textarea{width:100%;height:130px;font-family:monospace;font-size:12px}.dl-mc label{font-size:12px;color:#aeb2b9;display:flex;flex-direction:column;gap:4px}

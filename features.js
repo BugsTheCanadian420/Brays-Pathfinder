@@ -88,7 +88,7 @@ body.ovl header{display:none}
     const D = V().D(), thr = lsGet('gt.pmwarn', 18); if (!thr || thr > 21) return '';
     let h = '';
     for (const c of D.chars) {
-      const its = D.items.filter((x) => x.loc === c.id && x.pm), n = (D.pm && D.pm[c.id]) || its.length;
+      const its = D.items.filter((x) => x.loc === c.id && x.pm), n = its.length;
       if (n >= thr) {
         h += `<div class="fxbar warn"><span>&#9888; <b>${esc(V().CL()[c.cls] || 'Guardian')}</b> postmaster is ${n}/21. Items at the back get deleted when it is full.</span><span class="sp"></span>${its.some((x) => !x.eg) ? `<button class="g" data-act="collect" data-c="${esc(c.id)}">Collect postmaster</button>` : ''}</div>`;
         if (lsGet('gt.pmnotify', true) && !st.pmNote[c.id]) { st.pmNote[c.id] = 1; gt.notify({ title: 'Postmaster almost full', body: (V().CL()[c.cls] || 'Guardian') + ' postmaster is ' + n + '/21.' }).catch(() => {}); }
@@ -210,7 +210,7 @@ body.ovl header{display:none}
     return out;
   }
   function makerHTML(x) {
-    const v = V(), cols = perkCols(x), w = st.wm[x.id] || (st.wm[x.id] = { chk: null, note: '', tag: '' });
+    const cols = perkCols(x), w = st.wm[x.id] || (st.wm[x.id] = { chk: null, note: '', tag: '' });
     if (!cols.length) return '<div class="pfp"><h5>Wish list maker</h5><span class="mute">Open the item first so its perks load.</span></div>';
     if (!w.chk) { const n = cols.length; w.chk = cols.map((c, i) => (n >= 5 ? i === n - 3 || i === n - 2 : n >= 3 ? i >= n - 2 : true)); }
     const mine = ((st.mine && st.mine[x.h]) || []).length;

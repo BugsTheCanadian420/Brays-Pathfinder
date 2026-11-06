@@ -29,6 +29,27 @@
   }
   const closeMore = () => sheet.classList.remove('open');
   bar.addEventListener('click', (e) => { const b = e.target.closest('[data-wt]'); if (!b) return; if (b.dataset.wt === 'more') { if (sheet.classList.contains('open')) closeMore(); else openMore(); return; } closeMore(); go(b.dataset.wt); });
+  // Swipe the sheet down to close it (from the handle, or anywhere once the list is scrolled to the top), like iOS sheets.
+  {
+    const sh = sheet.querySelector('.sh'); let y0 = 0, dy = 0, drag = false, t0 = 0, moved = false;
+    sh.addEventListener('touchstart', (e) => {
+      if (!sheet.classList.contains('open') || e.touches.length !== 1) return;
+      if (sh.scrollTop > 0 && !e.target.closest('.grab')) return;
+      drag = true; moved = false; y0 = e.touches[0].clientY; dy = 0; t0 = Date.now(); sh.style.transition = 'none';
+    }, { passive: true });
+    sh.addEventListener('touchmove', (e) => {
+      if (!drag) return; dy = Math.max(0, e.touches[0].clientY - y0);
+      if (dy > 6) { moved = true; sh.style.transform = 'translateY(' + dy + 'px)'; if (e.cancelable) e.preventDefault(); }
+    }, { passive: false });
+    const end = () => {
+      if (!drag) return; drag = false; sh.style.transition = ''; const fast = dy > 40 && Date.now() - t0 < 250;
+      sh.style.transform = '';
+      if (moved && (dy > Math.min(120, sh.offsetHeight * 0.25) || fast)) closeMore();
+    };
+    sh.addEventListener('touchend', end); sh.addEventListener('touchcancel', end);
+    // a swipe must not also count as a tap on the item under the finger
+    sh.addEventListener('click', (e) => { if (moved) { moved = false; e.stopPropagation(); e.preventDefault(); } }, true);
+  }
   sheet.addEventListener('click', (e) => { const b = e.target.closest('[data-wg]'); if (b) { closeMore(); go(b.dataset.wg); return; } if (e.target.closest('.bk')) closeMore(); });
   function sync() {
     const cur = nav.querySelector('button.on[data-t]'), id = cur ? cur.dataset.t : '';

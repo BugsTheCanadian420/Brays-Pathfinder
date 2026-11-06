@@ -24,7 +24,6 @@
 
   const css = document.createElement('style');
   css.textContent = `
-#activity .deal .dst{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-top:8px;font-size:13px;color:#fff;text-align:center}#activity .deal .dst i{display:block;font-style:normal;font-size:9.5px;color:#8b8f97;letter-spacing:.3px}#activity .deal .dst .tt{color:#f0d58a}#activity .tg.wl{border-color:#2f6b3a;color:#7be08c}#activity .dnote{font-style:italic;margin-top:4px}#activity .dctl{align-items:center;gap:18px}#activity .dctl label{display:flex;align-items:center;gap:6px;color:#cfd2d8;font-size:13px;white-space:nowrap;margin:0}#activity .dctl input{width:auto!important;margin:0;padding:3px 6px;min-height:0;height:auto}nav button[data-t=activity].hasnew::after{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:#e8a53a;margin-left:6px;vertical-align:middle}
 #activity .agrid>.rdet{grid-column:1/-1;margin:0 0 4px}#activity .wkt td.wk{text-align:center;width:120px;color:#cfd2d8}#activity .wkt td.ok{color:#4caf50;font-weight:700;font-size:16px}#activity .wkt td.todo{color:#8b8f97}#activity .wkt td.na{color:#555}#activity .wkp{display:inline-block;width:46px;height:5px;background:#2b2e33;border-radius:3px;overflow:hidden;margin-right:6px;vertical-align:middle}#activity .wkp i{display:block;height:100%;background:#e0b64a}#activity .pbc{cursor:pointer}#activity .pbc:hover{border-color:#8fb3d9}
 #activity .vlink{cursor:pointer}#activity .vlink:hover,#activity .vlink.open{border-color:#e5c158}#activity .vopen{font-size:11.5px;color:#e5c158;margin-top:4px;letter-spacing:.5px}#activity .vsub{border-left:3px solid #e5c158;padding:4px 0 6px 12px;margin:8px 0 12px;background:linear-gradient(90deg,rgba(229,193,88,.06),transparent 40%)}#activity .vsubh{display:flex;align-items:center;gap:10px;margin:4px 0}#activity .vsubh b{color:#fff;font-size:14px}#activity .vsubh button{margin-left:auto;padding:3px 10px!important;font-size:12px!important;letter-spacing:0!important;text-transform:none!important}#activity .vhd{display:flex;align-items:center;gap:10px;margin:0 0 6px}#activity .xsec{color:#e5c158}
 #activity .crow{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}#activity .crow .big small{font-size:13px}#activity .big.pos{color:#7be08c}#activity .ctrend{position:relative;display:flex;align-items:flex-end;gap:3px;height:120px;padding:8px;background:var(--g-panel,#1a1c20);border:1px solid var(--g-line,#2b2e33);border-radius:3px}#activity .ctrend i{flex:1;min-width:4px;border-radius:2px 2px 0 0;background:#4caf50;opacity:.85}#activity .ctrend i.l{background:#d9534f}#activity .ctrend .one{position:absolute;left:8px;right:8px;height:1px;border-top:1px dashed rgba(255,255,255,.35);pointer-events:none}#activity .ctbl td.pos{color:#7be08c}#activity .cwr{display:inline-block;width:60px;height:5px;background:#2b2e33;border-radius:3px;overflow:hidden;margin-right:8px;vertical-align:middle}#activity .cwr i{display:block;height:100%;background:#6aa6e0}
@@ -313,56 +312,6 @@
     return chips + `<div class="vhd"><span class="stat">${esc(cur ? cur.n : r.name)} &middot; ${num(r.items.length)} items</span>${homeBtn('vendor', st.vh, cur ? cur.n : r.name)}</div>` + (body || msg('Nothing matches that search.')) + noteCard('This is the vendor\'s full inventory as Bungie reports it. Wish list checks use the perks the vendor is selling. Tiles like "Strange Gear Offers" open to show what is inside.');
   };
 
-  // ---- deals: god rolls and high-stat armor on sale at any vendor, for every character ----
-  const STN = [[392767087, 'Health'], [4244567218, 'Melee'], [1735777505, 'Grenade'], [144602215, 'Super'], [1943323491, 'Class'], [2996146975, 'Weapons']]; // the game's order
-  const dealThr = () => Math.max(0, Math.min(200, +lsGet('gt.dealArmor', 65) || 0));
-  const dealKey = (x) => x.v + ':' + x.h + ':' + (x.it === 2 ? x.c + ':' + x.tot : x.pk.slice().sort().join(','));
-  function dealFind(r) {
-    const thr = dealThr(), w = [], a = [];
-    ((r && r.items) || []).forEach((x, i) => {
-      if (x.x) return; // you cannot buy it right now
-      if (x.it === 3) { const o = wishOf(x, 'd' + i); if (o.v === 1) w.push({ x, o }); }
-      else if (x.it === 2 && thr && x.tot >= thr) a.push({ x });
-    });
-    a.sort((p, q) => q.x.tot - p.x.tot);
-    return { w, a };
-  }
-  const dealCard = ({ x, o }) => {
-    const CL = (V().CL && V().CL()) || {}, pn = (V().pn && V().pn()) || {};
-    const who = x.it === 2 ? (CL[x.cl] || '') : '';
-    const perks = o ? x.pk.filter((h) => o.perks && o.perks.has(h)).map((h) => pn[h]).filter(Boolean) : [];
-    const stats = x.it === 2 ? `<div class="dst">${STN.map(([h, n]) => `<span><i>${n}</i>${x.st[h] || 0}</span>`).join('')}<span class="tt"><i>Total</i>${x.tot}</span></div>` : '';
-    return `<div class="acard vitem deal" style="--rc:${TIER[x.r] || '#3a3d43'}"><div class="vit${o ? ' w1' : ''}">${x.i ? `<span class="vimg"><img src="${esc(img(x.i))}" alt="" loading="lazy"></span>` : ''}<div><b>${esc(x.n)}</b><div class="sub">${esc(x.t)}${who ? ' &middot; ' + esc(who) : ''}</div><div class="sub">Sold by <b>${esc(x.vn)}</b></div>${perks.length ? `<div>${perks.map((n) => `<span class="tg wl">${esc(n)}</span>`).join('')}</div>` : ''}${o && o.notes && o.notes[0] ? `<div class="sub dnote">${esc(o.notes[0])}</div>` : ''}</div></div>${stats}</div>`;
-  };
-  RENDER.deal = async (force) => {
-    const r = await fetchCached('deal', () => gt().actDeals(), force);
-    st.dealR = r; dealSeen(r);
-    const { w, a } = dealFind(r), haveWL = !!(V().wlOn && V().wlOn());
-    const ctl = `<div class="chipb dctl"><label>Armor alert at stat total <input type="number" id="dthr" min="0" max="200" value="${dealThr()}" style="width:64px"></label><label><input type="checkbox" id="dnot"${lsGet('gt.dealNotify', true) ? ' checked' : ''}> Desktop alert when something new shows up</label></div>`;
-    const wsec = `<h3 class="sec">Wish list rolls on sale <small class="mute">${w.length}</small></h3>` + (w.length ? `<div class="agrid">${w.map(dealCard).join('')}</div>` : noteCard(haveWL ? 'No vendor is selling a roll from your wish lists right now.' : 'No vendor is selling a roll from your wish lists right now. Add a wish list in Settings to get thumbs up here.'));
-    const asec = `<h3 class="sec">High-stat armor <small class="mute">${a.length}</small></h3>` + (dealThr() ? (a.length ? `<div class="agrid">${a.map(dealCard).join('')}</div>` : noteCard('No armor at a stat total of ' + dealThr() + ' or more is on sale right now.')) : noteCard('Armor alerts are off (stat total 0).'));
-    return ctl + wsec + asec + noteCard('Checks every vendor for all of your characters. Armor is shown for the character that can buy it. Updated ' + new Date(r.at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) + '; the app checks again on its own every few hours.');
-  };
-  // Remembers what was already seen, so alerts are only for new deals.
-  function dealSeen(r) {
-    const { w, a } = dealFind(r), keys = [...w, ...a].map((o) => dealKey(o.x));
-    const old = new Set(lsGet('gt.dealSeen', [])), fresh = [...w, ...a].filter((o) => !old.has(dealKey(o.x)));
-    lsSet('gt.dealSeen', keys.slice(0, 400));
-    return fresh;
-  }
-  async function dealAlert() {
-    if (!gt().actDeals) return;
-    try {
-      const r = await gt().actDeals(); st.cache.deal = { at: Date.now(), v: r };
-      const fresh = dealSeen(r);
-      b.classList.toggle('hasnew', fresh.length > 0 && st.tab !== 'deal');
-      if (fresh.length && lsGet('gt.dealNotify', true)) {
-        const wl = fresh.filter((o) => o.x.it === 3);
-        await gt().notify({ title: wl.length ? 'A vendor is selling a wish list roll' : 'High-stat armor on sale', body: fresh.slice(0, 3).map((o) => o.x.n + ' (' + o.x.vn + ')').join(', ').slice(0, 190) });
-      }
-    } catch (e) { /* not signed in, or Bungie is busy */ }
-  }
-
   // ---- this week: what each character still has left (raid encounters, pinnacles, weekly milestones) ----
   // Season pass and artifact, with an estimate of your rank when the season ends (from how fast you have been ranking up lately).
   async function seasonHTML(force) {
@@ -614,14 +563,13 @@
     if (e.target.closest('[data-clb]')) { st.clrOpen = ''; load(); return; }
     const cf = e.target.closest('[data-clf]'); if (cf) { st.clrF = cf.dataset.clf; load(); return; }
     const t = e.target.closest('[data-a],[data-ax],[data-vs],[data-v],[data-wf],[data-sort]'); if (!t) return;
-    if (t.dataset.a) { if (t.dataset.a === 'clr' && st.tab === 'clr') st.clrOpen = ''; st.tab = t.dataset.a; if (st.tab === 'deal') b.classList.remove('hasnew'); load(); return; }
+    if (t.dataset.a) { if (t.dataset.a === 'clr' && st.tab === 'clr') st.clrOpen = ''; st.tab = t.dataset.a; load(); return; }
     if (t.dataset.ax === 'refresh') { load(true); return; }
     if (t.dataset.vs) { const h = +t.dataset.vs; if (st.vopen.has(h)) st.vopen.delete(h); else st.vopen.add(h); load(); return; }
     if (t.dataset.v) { st.vh = +t.dataset.v; st.vq = ''; load(); return; }
     if (t.dataset.wf) { st.wf = t.dataset.wf; load(); return; }
     if (t.dataset.sort) { st.sort = t.dataset.sort; load(); }
   });
-  s.addEventListener('change', (e) => { if (e.target.id === 'dthr') { lsSet('gt.dealArmor', Math.max(0, Math.min(200, parseInt(e.target.value, 10) || 0))); load(); return; } if (e.target.id === 'dnot') { lsSet('gt.dealNotify', e.target.checked); return; } if (e.target.id === 'achar') { st.char = e.target.value; load(); } else if (e.target.id === 'avsel' && e.target.value) { st.vh = +e.target.value; st.vq = ''; load(); } });
   s.addEventListener('input', (e) => {
     const id = e.target.id; if (id !== 'awq' && id !== 'avq') return;
     if (id === 'awq') st.wq = e.target.value; else st.vq = e.target.value;
@@ -634,20 +582,20 @@
     const v = im.closest('.vit'); if (v && !v.classList.contains('bi') && im.closest('.vimg') && im.naturalWidth / im.naturalHeight > 1.4) v.classList.add('wide');
   }, true);
   b.onclick = () => { show('activity'); load(); };
+  s.addEventListener('change', (e) => { if (e.target.id === 'achar') { st.char = e.target.value; load(); } else if (e.target.id === 'avsel' && e.target.value) { st.vh = +e.target.value; st.vq = ''; load(); } });
   // For the Home page: the same cached data, and a way to jump straight to one of these pages.
   window.__gta = {
     fetch: (k, force) => {
-      const F = { deal: ['deal', () => gt().actDeals()], season: ['season', () => gt().actSeason()], week: ['week', () => gt().actLockouts()], rot: ['rot' + st.char, () => gt().actRot(charArg())], bnt: ['bnt' + st.char, () => gt().actBounties(charArg())], xur: ['xur' + st.char, () => gt().actXur(charArg())], clr: ['clr', () => gt().actClears()], pb: ['pb', () => gt().actPbs()], rec: ['recent', () => gt().actRecent()], wep: ['wep', () => gt().actWeapons()], time: ['time', () => gt().actPlaytime()], cru: ['cru', () => gt().actCrucible({})] }[k];
+      const F = { season: ['season', () => gt().actSeason()], week: ['week', () => gt().actLockouts()], rot: ['rot' + st.char, () => gt().actRot(charArg())], bnt: ['bnt' + st.char, () => gt().actBounties(charArg())], xur: ['xur' + st.char, () => gt().actXur(charArg())], clr: ['clr', () => gt().actClears()], pb: ['pb', () => gt().actPbs()], rec: ['recent', () => gt().actRecent()], wep: ['wep', () => gt().actWeapons()], time: ['time', () => gt().actPlaytime()], cru: ['cru', () => gt().actCrucible({})] }[k];
       return F ? fetchCached(F[0], F[1], force) : Promise.reject(new Error('unknown'));
     },
     vendor: (h, force) => fetchCached('ven' + h + st.char, () => gt().actVendor({ h, ...charArg() }), force),
     wishOf: (x, i) => wishOf(x, i),
     openVendor: (h) => { st.tab = 'ven'; st.vh = +h; st.vq = ''; show('activity'); load(); },
-    dealFind: (r) => dealFind(r),
-    open: (t) => { if (t && t.startsWith('clr:')) { st.tab = 'clr'; st.clrOpen = t.slice(4); st.clrF = 'all'; t = 'clr'; } else if (t === 'clr') st.clrOpen = ''; if (t && RENDER[t]) st.tab = t; if (t === 'deal') b.classList.remove('hasnew'); show('activity'); load(); },
+    open: (t) => { if (t && t.startsWith('clr:')) { st.tab = 'clr'; st.clrOpen = t.slice(4); st.clrF = 'all'; t = 'clr'; } else if (t === 'clr') st.clrOpen = ''; if (t && RENDER[t]) st.tab = t; show('activity'); load(); },
   };
 
-  // Background work once you are signed in: vendor deal alerts and the recap baseline.
+  // Background work once you are signed in: the recap baseline.
   let tries = 0;
   const boot = async () => {
     if (!window.gt || !window.gt.actTotals) return;

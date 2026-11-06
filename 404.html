@@ -1,0 +1,8 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Pathfinder</title><meta name="robots" content="noindex"><style>body{background:#0e0f11;color:#cfd2d8;font:15px system-ui,sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0}</style></head><body><p>Opening Pathfinder...</p><script>
+(function () {
+  var p = location.pathname, b = /^\/Brays-Pathfinder(\/|$)/i.test(p) ? '/Brays-Pathfinder/' : '/';
+  var parts = p.slice(b.length).split('/').filter(Boolean);
+  if (parts[0] && /^[A-Za-z0-9]{5,12}$/.test(parts[0])) location.replace(b + '?s=' + parts[0] + (parts[1] ? '&n=' + encodeURIComponent(decodeURIComponent(parts[1]).slice(0, 60)) : ''));
+  else location.replace(b);
+})();
+</script></body></html>
