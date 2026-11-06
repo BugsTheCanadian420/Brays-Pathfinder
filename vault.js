@@ -129,6 +129,9 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 #gtctx .cs{cursor:default;color:#7d8088;font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:5px 14px 2px}#gtctx .cs:hover{background:none;color:#7d8088}
 #gtctx .ct{display:flex;gap:4px;padding:4px 10px}#gtctx .ct span{width:28px;height:26px;display:flex;align-items:center;justify-content:center;border:1px solid #3a3d43;border-radius:3px;cursor:pointer;color:var(--tc)}#gtctx .ct span:hover{border-color:var(--tc)}#gtctx .ct span.on{background:var(--tc);border-color:var(--tc);color:#111}#gtctx .ct span.on{background:rgba(255,255,255,.14)}
 .pmsg{margin:6px 12px;font-size:12px;color:#e6c46a}.pmsg.bad{color:#ef8a8a}
+#vqs{position:fixed;z-index:9700;background:var(--g-solid,#17181b);border:1px solid #3a3d43;border-radius:6px;box-shadow:0 12px 30px rgba(0,0,0,.6);padding:4px;max-height:60vh;overflow:auto;font-size:13px}
+#vqs .qs{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:4px;cursor:pointer;color:#e6e7ea}#vqs .qs span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:ui-monospace,Consolas,monospace;font-size:12.5px}#vqs .qs em{font-style:normal;font-size:11px;color:#8b8f97;text-transform:uppercase;letter-spacing:1px}
+#vqs .qs.on,#vqs .qs:hover{background:rgba(255,255,255,.08)}#vqs .qsh{padding:6px 10px 3px;font-size:11px;color:#6f747c;border-top:1px solid #2b2e33;margin-top:3px}
 #vhelp{display:none;font-size:12px;color:#b9bcc3;line-height:1.7;padding:6px 4px}#vhelp.open{display:block}#vhelp code{background:#0d0e11;padding:1px 5px;border-radius:2px;color:#e6e7ea}
 .vcur{display:flex;flex-wrap:wrap;gap:4px 16px;padding:4px 2px 0;font-size:12px;color:#cfd2d8}.vcur span{display:flex;align-items:center;gap:5px}.vcur img{width:16px;height:16px}
 .dsub{grid-column:1/-1;margin:8px 0 2px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#9da1a8}
@@ -1238,31 +1241,165 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
     catch (e) { delete sec.dataset.busy; msg(clean(e), true); }
   }
 
-  // DIM-style search. Space separates terms (all must match). A leading minus excludes.
-  // is:exotic|legendary|rare|common|weapon|armor|equipped   slot:kinetic|energy|power|helmet|gauntlets|chest|legs|classitem
-  // power:>1800 / power:<1800 / power:1800   class:titan|hunter|warlock   plain words match name or type
+  // ---------------- search, like DIM ----------------
+  // Words are ANDed; "or" between words ORs them; a leading minus (or not:) excludes; "quotes" keep words together.
+  // Plain words match the item's name, type, perks (weapon perks and their options, armor perks and mods, subclass aspects and
+  // fragments), ornament, notes and tag. Filters: is:/not:, perk:, exactperk:, name:, exactname:, notes:, tag:, element:, slot:,
+  // class:, ammo:, breaker:, power:/light:, stat:<name>:, total:, customtotal:, energy:, tier:, hash:, target:, wishlistnotes:.
+  const nz = (v) => String(v == null ? '' : v).toLowerCase().replace(/[^a-z0-9]/g, '');
+  const cmpN = (v, op, n) => (op === '>' ? v > n : op === '>=' ? v >= n : op === '<' ? v < n : op === '<=' ? v <= n : op === '!=' ? v !== n : v === n);
+  const ELN = { kinetic: 1, arc: 2, solar: 3, void: 4, stasis: 6, strand: 7 };
+  const AMMO = { primary: 1, special: 2, heavy: 3 };
+  const BRKQ = { barrier: 1, antibarrier: 1, shieldpiercing: 1, overload: 2, disruption: 2, unstoppable: 3, stagger: 3 };
+  // Short names DIM accepts for weapon and armor types (the full type name always works too, without spaces: is:handcannon).
+  const TYA = { hc: 'handcannon', auto: 'autorifle', ar: 'autorifle', pulse: 'pulserifle', scout: 'scoutrifle', smg: 'submachinegun', bow: 'combatbow', sniper: 'sniperrifle', fusion: 'fusionrifle', lfr: 'linearfusionrifle', linear: 'linearfusionrifle', gl: 'grenadelauncher', grenade: 'grenadelauncher', rocket: 'rocketlauncher', rl: 'rocketlauncher', mg: 'machinegun', lmg: 'machinegun', trace: 'tracerifle', cloak: 'hunter cloak', mark: 'titanmark', bond: 'warlockbond' };
+  const SLOTA = { kinetic: 1498876634, kineticslot: 1498876634, energy: 2465295065, energyslot: 2465295065, power: 953998645, powerslot: 953998645, heavyslot: 953998645, helmet: 3448274439, gauntlets: 3551918588, arms: 3551918588, chest: 14239492, legs: 20886954, leg: 20886954, classitem: 1585787867, class: 1585787867, ghost: 4023194814, sparrow: 2025709351, vehicle: 2025709351, ship: 284967655, emblem: 4274335291, subclass: 3284755031, finisher: 3683254069, emote: 3054419239 };
+  const STA = { weapons: 0, weapon: 0, health: 1, hp: 1, class: 2, grenade: 3, super: 4, melee: 5 };
+  const inLo = () => {
+    const s2 = new Set(); try { Object.values(D.lo || {}).forEach((l) => l.forEach((L) => (L.items || []).forEach((id) => s2.add(id)))); } catch (e) { /* none */ }
+    try { const ns = localStorage.getItem('gt_acct_ns') || ''; (JSON.parse(localStorage.getItem('gt_dimlo2' + ns)) || []).forEach((l) => (l.it || []).forEach((q) => s2.add(q.id))); } catch (e) { /* none */ }
+    return s2;
+  };
+  let LOSET = null, LOSETq = '';
+  // Tags and notes read once per moment, not once per item (a search runs over every item).
+  let QC = { t: 0, tags: {}, notes: {} };
+  const qc = () => { const n = Date.now(); if (n - QC.t > 400) QC = { t: n, tags: TAGS(), notes: NOTES() }; return QC; };
+  // Per item, worked out once: its words (name, type, ornament) and the names of its perks.
+  const SX = new WeakMap();
+  const sx = (x) => {
+    let o = SX.get(x); if (o) return o;
+    const pn = D.pn || {}, names = [...new Set([...(x.pk || []), ...(x.ap || [])].map((h) => pn[h]).filter(Boolean))];
+    o = { w: (x.n + ' ' + (x.t || '') + ' ' + (x.orn || '')).toLowerCase(), p: names.map((n) => n.toLowerCase()), pz: names.map(nz) };
+    SX.set(x, o); return o;
+  };
+  const isOf = (x, v) => {
+    if (v === 'weapon' || v === 'weapons') return WEAPON.has(x.b);
+    if (v === 'armor') return ARMOR.has(x.b);
+    if (v === 'equipped') return !!x.e;
+    if (v === 'unequipped') return !x.e;
+    if (v === 'locked') return !!x.lk;
+    if (v === 'unlocked') return !x.lk;
+    if (v === 'crafted') return !!x.cr;
+    if (v === 'masterwork' || v === 'masterworked' || v === 'mw') return !!x.mw;
+    if (v === 'deepsight' || v === 'pattern') return !!x.ds;
+    if (v === 'adept') return /\((adept|timelost|harrowed)\)/i.test(x.n);
+    if (v === 'tagged') return !!qc().tags[x.id];
+    if (v === 'untagged') return !qc().tags[x.id];
+    if (v === 'hasnotes' || v === 'notes') return !!qc().notes[x.id];
+    if (v === 'duplicate' || v === 'dupe' || v === 'dupes') return D.items.filter((o) => o.h === x.h).length > 1;
+    if (v === 'vault') return x.loc === 'vault';
+    if (v === 'postmaster') return !!x.pm;
+    if (v === 'target') return !!(window.__gtt && window.__gtt.hit(x));
+    if (v === 'wishlist') return wish(x).v === 1;
+    if (v === 'trashlist') return wish(x).v === -1;
+    if (v === 'inloadout') { if (!LOSET || LOSETq !== q) { LOSET = inLo(); LOSETq = q; } return LOSET.has(x.id); }
+    if (v === 'prismatic') return /prismatic/i.test(x.n);
+    if (ELN[v]) return x.el === ELN[v] || (x.b === 3284755031 && x.n.toLowerCase().includes(v));
+    if (AMMO[v]) return x.am === AMMO[v];
+    if (BRKQ[v]) return x.bt === BRKQ[v];
+    const ci = CL.findIndex((c) => c.toLowerCase() === v); if (ci >= 0) return x.c === ci;
+    if (SLOTA[v] !== undefined && v !== 'class') return x.b === SLOTA[v];
+    if (['exotic', 'legendary', 'rare', 'uncommon', 'common'].includes(v)) return String(x.r).toLowerCase() === v;
+    const ty = nz(x.t), want = TYA[v] ? nz(TYA[v]) : v;
+    return !!ty && (ty === want || (want.length > 3 && ty.endsWith(want)));
+  };
   function ok(x, t) {
     let m;
-    if ((m = t.match(/^is:(\w+)$/))) {
-      const v = m[1];
-      return v === 'weapon' ? WEAPON.has(x.b) : v === 'armor' ? ARMOR.has(x.b) : v === 'equipped' ? !!x.e : v === 'locked' ? !!x.lk : v === 'crafted' ? !!x.cr : v === 'masterwork' ? !!x.mw : v === 'tagged' ? !!TAGS()[x.id] : v === 'duplicate' ? D.items.filter((o) => o.h === x.h).length > 1 : v === 'vault' ? x.loc === 'vault' : v === 'postmaster' ? !!x.pm : v === 'target' ? !!(window.__gtt && window.__gtt.hit(x)) : v === 'wishlist' ? wish(x).v === 1 : v === 'trashlist' ? wish(x).v === -1 : String(x.r).toLowerCase() === v;
-    }
+    const u = (v) => v.replace(/^"|"$/g, '');
+    if ((m = t.match(/^(is|not):(\w+)$/))) return m[1] === 'not' ? !isOf(x, m[2]) : isOf(x, m[2]);
     if ((m = t.match(/^target:(\w+)$/))) return !!(window.__gtt && window.__gtt.hitBy(x, m[1]));
-    if ((m = t.match(/^wishlistnotes:(.+)$/))) return wish(x).notes.some((n) => n.toLowerCase().includes(m[1]));
-    if ((m = t.match(/^tag:(\w+)$/))) { const tg = TAGS()[x.id] || 'none'; return tg === m[1]; }
-    if ((m = t.match(/^element:(\w+)$/))) return !!ELEM[x.el] && ELEM[x.el][0].toLowerCase() === m[1];
-    if ((m = t.match(/^perk:(.+)$/))) return !!x.pk && x.pk.some((h) => ((D.pn || {})[h] || '').toLowerCase().includes(m[1]));
-    if ((m = t.match(/^stat:(\w+):([<>]?=?)(\d+)$/))) { const i = STN.indexOf(m[1]); if (i < 0 || !x.st) return false; const n = +m[3], v = x.st[i]; return m[2] === '>' ? v > n : m[2] === '>=' ? v >= n : m[2] === '<' ? v < n : m[2] === '<=' ? v <= n : v === n; }
-    if ((m = t.match(/^total:([<>]?=?)(\d+)$/))) { if (!x.st) return false; const n = +m[2], v = x.st.reduce((a, b) => a + b, 0); return m[1] === '>' ? v > n : m[1] === '>=' ? v >= n : m[1] === '<' ? v < n : m[1] === '<=' ? v <= n : v === n; }
-    if ((m = t.match(/^customtotal:([<>]?=?)(\d+)$/))) { const v = cTot(x); if (v === null) return false; const n = +m[2]; return m[1] === '>' ? v > n : m[1] === '>=' ? v >= n : m[1] === '<' ? v < n : m[1] === '<=' ? v <= n : v === n; }
-    if ((m = t.match(/^slot:(\w+)$/))) return slotName(x.b).toLowerCase().replace(/ /g, '') === m[1];
-    if ((m = t.match(/^power:([<>=]?)(\d+)$/))) { const n = +m[2]; return m[1] === '>' ? x.p > n : m[1] === '<' ? x.p < n : x.p === n; }
+    if ((m = t.match(/^wishlistnotes:(.+)$/))) return wish(x).notes.some((n) => n.toLowerCase().includes(u(m[1])));
+    if ((m = t.match(/^tag:(\w+)$/))) { const tg = qc().tags[x.id] || 'none'; return tg === m[1]; }
+    if ((m = t.match(/^element:(\w+)$/))) return isOf(x, m[1]);
+    if ((m = t.match(/^ammo:(\w+)$/))) return !!AMMO[m[1]] && x.am === AMMO[m[1]];
+    if ((m = t.match(/^breaker:(\w+)$/))) return !!BRKQ[m[1]] && x.bt === BRKQ[m[1]];
+    if ((m = t.match(/^(perk|perkname):(.+)$/))) { const w = u(m[2]), wz = nz(w); return sx(x).p.some((n) => n.includes(w)) || (!!wz && sx(x).pz.some((n) => n.includes(wz))); }
+    if ((m = t.match(/^exactperk:(.+)$/))) { const wz = nz(u(m[1])); return sx(x).pz.includes(wz); }
+    if ((m = t.match(/^name:(.+)$/))) return x.n.toLowerCase().includes(u(m[1]));
+    if ((m = t.match(/^exactname:(.+)$/))) return nz(x.n) === nz(u(m[1]));
+    if ((m = t.match(/^notes?:(.+)$/))) return (qc().notes[x.id] || '').toLowerCase().includes(u(m[1]));
+    if ((m = t.match(/^hash:(\d+)$/))) return String(x.h) === m[1];
+    if ((m = t.match(/^(?:stat|basestat):(\w+):(>=|<=|!=|[<>=]?)(\d+)$/))) { const i = STA[m[1]] !== undefined ? STA[m[1]] : STN.indexOf(m[1]); if (i < 0 || !x.st) return false; return cmpN(x.st[i], m[2], +m[3]); }
+    if ((m = t.match(/^total:(>=|<=|!=|[<>=]?)(\d+)$/))) { if (!x.st) return false; return cmpN(x.st.reduce((a, b) => a + b, 0), m[1], +m[2]); }
+    if ((m = t.match(/^customtotal:(>=|<=|!=|[<>=]?)(\d+)$/))) { const v = cTot(x); return v !== null && cmpN(v, m[1], +m[2]); }
+    if ((m = t.match(/^energy:(>=|<=|!=|[<>=]?)(\d+)$/))) return !!x.en && cmpN(x.en, m[1], +m[2]);
+    if ((m = t.match(/^tier:(>=|<=|!=|[<>=]?)(\d+)$/))) return !!x.gt && cmpN(x.gt, m[1], +m[2]);
+    if ((m = t.match(/^slot:(\w+)$/))) return SLOTA[m[1]] !== undefined ? x.b === SLOTA[m[1]] : nz(slotName(x.b)) === m[1];
+    if ((m = t.match(/^(?:power|light):(>=|<=|!=|[<>=]?)(\d+)$/))) return cmpN(x.p || 0, m[1], +m[2]);
     if ((m = t.match(/^class:(\w+)$/))) { const i = CL.findIndex((c) => c.toLowerCase() === m[1]); return i >= 0 && x.c === i; }
-    return (x.n + ' ' + x.t).toLowerCase().includes(t);
+    // plain words (or a "quoted phrase"): name, type, ornament, perks, notes, tag
+    const w = u(t); if (!w) return true;
+    const o = sx(x); if (o.w.includes(w) || o.p.some((n) => n.includes(w))) return true;
+    const wz = nz(w); if (wz.length > 2 && o.pz.some((n) => n.includes(wz))) return true;
+    const nt = qc().notes[x.id]; if (nt && nt.toLowerCase().includes(w)) return true;
+    const tg = qc().tags[x.id]; return !!tg && tg === w;
   }
-  // Half-typed filters ("is:", "power:>", a lone "-") are ignored until they have a value, like DIM, instead of hiding everything.
-  const match = (x) => !q || q.split(/\s+/).filter((t) => t && t !== '-' && !/^-?[^:]*:[<>=!]*$/.test(t)).every((t) => (t[0] === '-' && t.length > 1) ? !ok(x, t.slice(1)) : ok(x, t));
+  // The search, split once per change: "or" groups of words that must all match. Half-typed filters ("is:", "power:>") are skipped, like DIM.
+  let QP = { q: null, g: [] };
+  const qparts = () => {
+    if (QP.q === q) return QP.g;
+    const toks = (q.match(/-?[a-z]+:"[^"]*"?|-?"[^"]*"?|\S+/g) || []).filter((t) => t && t !== '-' && !/^-?[^:"]*:[<>=!]*$/.test(t));
+    const g2 = [[]]; toks.forEach((t) => { if (t === 'or' || t === '|') g2.push([]); else if (t !== 'and') g2[g2.length - 1].push(t); });
+    QP = { q, g: g2.filter((l) => l.length) }; return QP.g;
+  };
+  const one = (x, t) => ((t[0] === '-' && t.length > 1) ? !ok(x, t.slice(1)) : ok(x, t));
+  const match = (x) => { if (!q) return true; const G = qparts(); return !G.length || G.some((l) => l.every((t) => one(x, t))); };
 
+  // ---- suggestions under the search box (like DIM): filters, values, perk names and item names as you type ----
+  const SKEYS = ['is:', 'not:', 'perk:', 'exactperk:', 'name:', 'exactname:', 'notes:', 'tag:', 'element:', 'slot:', 'class:', 'ammo:', 'breaker:', 'power:>=', 'stat:', 'total:>=', 'customtotal:>=', 'energy:>=', 'tier:>=', 'target:', 'wishlistnotes:'];
+  const ISV = () => {
+    const ty = [...new Set(D.items.filter((x) => (WEAPON.has(x.b) || ARMOR.has(x.b)) && x.t).map((x) => nz(x.t)))];
+    return [...new Set(['exotic', 'legendary', 'rare', 'weapon', 'armor', 'equipped', 'unequipped', 'locked', 'unlocked', 'crafted', 'masterwork', 'deepsight', 'adept', 'duplicate', 'wishlist', 'trashlist', 'tagged', 'untagged', 'hasnotes', 'inloadout', 'vault', 'postmaster', 'target', 'kinetic', 'arc', 'solar', 'void', 'stasis', 'strand', 'prismatic', 'primary', 'special', 'heavy', 'barrier', 'overload', 'unstoppable', 'titan', 'hunter', 'warlock', 'kineticslot', 'energyslot', 'powerslot', 'helmet', 'gauntlets', 'chest', 'legs', 'classitem', 'ghost', 'sparrow', 'ship', 'subclass', ...ty])];
+  };
+  const SVALS = { tag: () => ['favorite', 'keep', 'infuse', 'junk', 'archive', 'none'], element: () => Object.keys(ELN), slot: () => ['kinetic', 'energy', 'power', 'helmet', 'gauntlets', 'chest', 'legs', 'classitem', 'ghost', 'sparrow', 'ship', 'subclass'], class: () => ['titan', 'hunter', 'warlock'], ammo: () => Object.keys(AMMO), breaker: () => ['barrier', 'overload', 'unstoppable'], stat: () => STN.map((n) => n + ':>='), target: () => [] };
+  let SUG = { list: [], i: -1 };
+  function sugList(tok) {
+    const t = tok.replace(/^-/, ''), neg = tok[0] === '-' ? '-' : '', out = [], add = (v, hint) => { if (out.length < 12 && !out.some((o) => o.v === v)) out.push({ v: neg + v, hint }); };
+    const quote = (n) => (/\s/.test(n) ? '"' + n + '"' : n);
+    const perks = () => [...new Set(Object.values(D.pn || {}))].filter(Boolean);
+    const m = t.match(/^([a-z]+):(.*)$/);
+    if (m) {
+      const k = m[1], v = m[2].replace(/^"/, '').toLowerCase();
+      if (k === 'is' || k === 'not') ISV().filter((o) => o.startsWith(v)).slice(0, 12).forEach((o) => add(k + ':' + o));
+      else if (k === 'perk' || k === 'exactperk' || k === 'perkname') { const l = perks().filter((n) => n.toLowerCase().includes(v)).sort((a, b) => (a.toLowerCase().startsWith(v) ? 0 : 1) - (b.toLowerCase().startsWith(v) ? 0 : 1) || a.localeCompare(b)); l.slice(0, 12).forEach((n) => add(k + ':' + quote(n.toLowerCase()), 'perk')); }
+      else if (k === 'name' || k === 'exactname') [...new Set(D.items.map((x) => x.n))].filter((n) => n.toLowerCase().includes(v)).slice(0, 12).forEach((n) => add(k + ':' + quote(n.toLowerCase()), 'item'));
+      else if (SVALS[k]) SVALS[k]().filter((o) => o.startsWith(v)).forEach((o) => add(k + ':' + o));
+      return out;
+    }
+    if (!t) return out;
+    SKEYS.filter((k) => k.startsWith(t)).forEach((k) => add(k, 'filter'));
+    ISV().filter((o) => o.startsWith(t) || (t.length > 2 && o.includes(t))).slice(0, 5).forEach((o) => add('is:' + o));
+    if (t.length > 1) {
+      perks().filter((n) => n.toLowerCase().includes(t)).sort((a, b) => (a.toLowerCase().startsWith(t) ? 0 : 1) - (b.toLowerCase().startsWith(t) ? 0 : 1)).slice(0, 5).forEach((n) => add('perk:' + quote(n.toLowerCase()), 'perk'));
+      [...new Set(D.items.map((x) => x.n))].filter((n) => n.toLowerCase().includes(t)).slice(0, 4).forEach((n) => add('name:' + quote(n.toLowerCase()), 'item'));
+    }
+    return out;
+  }
+  function sugDraw(inp) {
+    let box = document.getElementById('vqs');
+    const val = inp.value, caret = inp.selectionStart == null ? val.length : inp.selectionStart, before = val.slice(0, caret), mt = before.match(/(-?[a-z]+:"[^"]*|-?"[^"]*|\S*)$/), tok = mt ? mt[0] : '';
+    SUG = { list: D ? sugList(tok.toLowerCase()) : [], i: -1, tok, start: caret - tok.length, end: caret };
+    if (!SUG.list.length || document.activeElement !== inp) { if (box) box.remove(); return; }
+    if (!box) { box = document.createElement('div'); box.id = 'vqs'; document.body.appendChild(box); box.addEventListener('pointerdown', (e) => { const r = e.target.closest('[data-qs]'); if (!r) return; e.preventDefault(); sugPick(inp, +r.dataset.qs); }); }
+    const r = inp.getBoundingClientRect();
+    const bw = Math.min(Math.max(r.width, 280), innerWidth - 16), bl = Math.max(8, Math.min(r.left, innerWidth - bw - 8));
+    box.style.cssText = `left:${Math.round(bl)}px;top:${Math.round(r.bottom + 4)}px;width:${Math.round(bw)}px`;
+    box.innerHTML = SUG.list.map((o, i) => `<div class="qs${i === SUG.i ? ' on' : ''}" data-qs="${i}"><span>${esc(o.v)}</span>${o.hint ? `<em>${esc(o.hint)}</em>` : ''}</div>`).join('') + '<div class="qsh">Tab or Enter to use &middot; &uarr;&darr; to choose &middot; see ? for every filter</div>';
+  }
+  function sugPick(inp, i) {
+    const o = SUG.list[i]; if (!o) return;
+    const v = inp.value, add = o.v + (/[:<>=]$/.test(o.v) ? '' : ' ');
+    inp.value = v.slice(0, SUG.start) + add + v.slice(SUG.end).replace(/^\S*/, '');
+    const pos = SUG.start + add.length; inp.setSelectionRange(pos, pos); inp.focus();
+    q = inp.value.toLowerCase(); renderGrid(); sugDraw(inp);
+  }
+  function sugKey(e) {
+    const inp = e.target, box = document.getElementById('vqs');
+    if (e.key === 'Escape') { if (box) { box.remove(); e.stopPropagation(); } return; }
+    if (!box || !SUG.list.length) return;
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); SUG.i = (SUG.i + (e.key === 'ArrowDown' ? 1 : -1) + SUG.list.length) % SUG.list.length; box.querySelectorAll('.qs').forEach((n, k) => n.classList.toggle('on', k === SUG.i)); return; }
+    if (e.key === 'Tab' || (e.key === 'Enter' && SUG.i >= 0)) { e.preventDefault(); sugPick(inp, SUG.i >= 0 ? SUG.i : 0); }
+  }
   const CC = ['#4a5a78', '#5c6b49', '#7a5a3f'];
   const cname = (c) => `${CL[c.cls] || 'Guardian'} ${c.light}`;
   // ---- saved searches (kept on this computer) ----
@@ -1530,12 +1667,18 @@ ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="
     det: (id) => DET[id], pn: () => (D && D.pn) || {}, note: (t) => setNote(t), busy: () => busy, pmap: (l, f) => pmap(l, f), wish: (x) => wish(x), wlOn: () => !!WL, wlReload: () => wlLoad(), load: () => load(), PMSG: (t) => { PMSG = t; renderPop(); },
   };
   function shell() {
-    const hp = '<b>Search</b> (space between words means all must match, a leading minus excludes): <code>is:exotic</code> <code>is:weapon</code> <code>is:armor</code> <code>is:equipped</code> <code>is:locked</code> <code>is:wishlist</code> <code>is:trashlist</code> <code>is:target</code> <code>is:tagged</code> <code>is:duplicate</code> <code>is:postmaster</code> <code>is:crafted</code> <code>is:masterwork</code> <code>slot:kinetic</code> <code>element:solar</code> <code>perk:rampage</code> <code>power:&gt;1800</code> <code>stat:health:&gt;=30</code> <code>total:&gt;=65</code> <code>customtotal:&gt;=60</code> <code>class:titan</code> <code>tag:junk</code> <code>-is:equipped</code><br><b>Mouse:</b> click an item for details and perks, right-click for the item menu, drag to move or equip. <b>Keys:</b> <code>/</code> search, <code>Esc</code> close, <code>L</code> lock (item open), <code>Shift+1..5</code> tags (item open).';
-    const bar = `<div class="vbar"><span class="vnm" title="Signed in as ${esc(D.name || '')}">${esc(D.name || '')}</span><input id="vq" placeholder="Search items, perks, is:exotic, slot:kinetic, power:>1800..." value="${esc(q)}" autocomplete="off" spellcheck="false"><span class="vtg"><button class="g ib" data-act="savq" title="Saved searches"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z"/></svg></button></span><span class="vtg"><button class="g ib${FARM.on ? ' on' : ''}" data-act="farm" title="${FARM.on ? 'Farming mode is on: unequipped weapons and armor go to the vault so your inventory never fills. Click to stop.' : 'Farming mode: keep moving unequipped weapons and armor to the vault while you play'}"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v10M8 10.5l4 4 4-4M4.5 15.5V19a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1v-3.5"/></svg></button><button class="g ib" data-act="junk" title="Junk finder: duplicates and trash rolls you could dismantle"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7h15M9.5 7V4.8a.8.8 0 0 1 .8-.8h3.4a.8.8 0 0 1 .8.8V7M6.5 7l.8 12a1 1 0 0 0 1 .9h7.4a1 1 0 0 0 1-.9l.8-12M10 11v5.5M14 11v5.5"/></svg></button><button class="g ib" data-f="bulk" title="Select several items at once (Ctrl+click works any time)"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2.5"/><path d="M8.5 12.2l2.4 2.4 4.6-5"/></svg></button></span><span class="vtg"><button class="g ib" data-act="sets" title="Loadouts"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 7h11M8 12h11M8 17h11"/><circle cx="4.6" cy="7" r=".6" fill="currentColor"/><circle cx="4.6" cy="12" r=".6" fill="currentColor"/><circle cx="4.6" cy="17" r=".6" fill="currentColor"/></svg></button><button class="g ib" data-act="help" title="Search and shortcut help"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.4a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2.2-2.4 3.7M12 16.9v.2"/></svg></button><button class="g ib" data-act="refresh" title="Reload from Bungie"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3M19.5 4.5v4h-4"/></svg></button></span></div>`;
+    const hp = '<b>Search</b> works like DIM. Plain words match names, types and every perk (weapon perks and their options, armor perks and mods, subclass aspects and fragments). Words are all required; <code>or</code> between words means either; a leading <code>-</code> excludes; use quotes for phrases. Suggestions appear as you type (Tab or Enter to use one).<br>'
+      + '<b>is:</b> <code>is:exotic</code> <code>is:handcannon</code> <code>is:smg</code> <code>is:sword</code> <code>is:solar</code> <code>is:strand</code> <code>is:prismatic</code> <code>is:primary</code> <code>is:heavy</code> <code>is:barrier</code> <code>is:crafted</code> <code>is:deepsight</code> <code>is:adept</code> <code>is:masterwork</code> <code>is:locked</code> <code>is:equipped</code> <code>is:inloadout</code> <code>is:duplicate</code> <code>is:wishlist</code> <code>is:trashlist</code> <code>is:tagged</code> <code>is:hasnotes</code> <code>is:subclass</code> <code>is:titan</code> <code>not:locked</code><br>'
+      + '<b>Filters:</b> <code>perk:rampage</code> <code>perk:\"kill clip\"</code> <code>exactperk:\"firefly\"</code> <code>name:ace</code> <code>notes:pvp</code> <code>tag:junk</code> <code>element:void</code> <code>slot:kinetic</code> <code>ammo:special</code> <code>breaker:overload</code> <code>power:&gt;=550</code> <code>stat:health:&gt;=30</code> <code>total:&gt;=65</code> <code>customtotal:&gt;=60</code> <code>energy:&gt;=10</code> <code>tier:5</code> <code>class:titan</code> <code>is:shotgun or is:sniper</code><br><b>Mouse:</b> click an item for details and perks, right-click for the item menu, drag to move or equip. <b>Keys:</b> <code>/</code> search, <code>Esc</code> close, <code>L</code> lock (item open), <code>Shift+1..5</code> tags (item open).';
+    const bar = `<div class="vbar"><span class="vnm" title="Signed in as ${esc(D.name || '')}">${esc(D.name || '')}</span><input id="vq" placeholder="Search names, perks, subclasses, is:handcannon, perk:rampage, is:solar..." value="${esc(q)}" autocomplete="off" spellcheck="false"><span class="vtg"><button class="g ib" data-act="savq" title="Saved searches"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z"/></svg></button></span><span class="vtg"><button class="g ib${FARM.on ? ' on' : ''}" data-act="farm" title="${FARM.on ? 'Farming mode is on: unequipped weapons and armor go to the vault so your inventory never fills. Click to stop.' : 'Farming mode: keep moving unequipped weapons and armor to the vault while you play'}"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v10M8 10.5l4 4 4-4M4.5 15.5V19a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1v-3.5"/></svg></button><button class="g ib" data-act="junk" title="Junk finder: duplicates and trash rolls you could dismantle"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7h15M9.5 7V4.8a.8.8 0 0 1 .8-.8h3.4a.8.8 0 0 1 .8.8V7M6.5 7l.8 12a1 1 0 0 0 1 .9h7.4a1 1 0 0 0 1-.9l.8-12M10 11v5.5M14 11v5.5"/></svg></button><button class="g ib" data-f="bulk" title="Select several items at once (Ctrl+click works any time)"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2.5"/><path d="M8.5 12.2l2.4 2.4 4.6-5"/></svg></button></span><span class="vtg"><button class="g ib" data-act="sets" title="Loadouts"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 7h11M8 12h11M8 17h11"/><circle cx="4.6" cy="7" r=".6" fill="currentColor"/><circle cx="4.6" cy="12" r=".6" fill="currentColor"/><circle cx="4.6" cy="17" r=".6" fill="currentColor"/></svg></button><button class="g ib" data-act="help" title="Search and shortcut help"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.4a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2.2-2.4 3.7M12 16.9v.2"/></svg></button><button class="g ib" data-act="refresh" title="Reload from Bungie"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3M19.5 4.5v4h-4"/></svg></button></span></div>`;
     const slot = document.getElementById('gtsrch');
     sec.innerHTML = `${slot ? '' : '<div class="card vcard">' + bar + '</div>'}<div id="vfx"></div><div id="vhelp" class="card">${hp}</div><p id="vnote" class="mute"></p><div id="vgrid"></div><div id="vpop"></div>`;
     if (slot) { slot.replaceChildren(); slot.insertAdjacentHTML('beforeend', bar); slot.querySelector('.vbar').onclick = (e) => sec.onclick(e); }
-    g('vq').oninput = (e) => { q = e.target.value.toLowerCase(); renderGrid(); };
+    const vqi = g('vq');
+    vqi.oninput = (e) => { q = e.target.value.toLowerCase(); renderGrid(); sugDraw(e.target); };
+    vqi.onkeydown = sugKey;
+    vqi.onfocus = (e) => sugDraw(e.target);
+    vqi.onblur = () => setTimeout(() => { const bx = document.getElementById('vqs'); if (bx && document.activeElement !== g('vq')) bx.remove(); }, 120);
     renderGrid();
   }
 

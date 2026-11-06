@@ -1,4 +1,4 @@
-/* Pathfinder 0.2.98: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.2.99: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -205,7 +205,7 @@ function manifest() {
 async function defs() {
   const f = path.join(app.getPath('userData'), 'defs6.json');
   const m = await manifest();
-  const v = m.version + '.11';
+  const v = m.version + '.12';
   if (DEFS && DEFS.v === v) return DEFS;
   try { const o = JSON.parse(fs.readFileSync(f, 'utf8')); if (o.v === v) return (DEFS = o); } catch (e) { /* download below */ }
   send('Downloading item data. This only happens on the first run and after game updates.');
@@ -232,6 +232,7 @@ async function defs() {
       if (wv.length) d[k].wl = wv; else if (x.iconWatermark) d[k].w = wi(x.iconWatermark);
       const bty = TF_WB0.has(b) ? brkOf(x) : x.breakerType; if (bty) d[k].bt = bty;
       const ifc = x.quality && x.quality.infusionCategoryHashes; if (ifc && ifc.length) d[k].f = ifc[0];
+      const amt = x.equippingBlock && x.equippingBlock.ammoType; if (amt) d[k].am = amt; // 1 primary, 2 special, 3 heavy (is:primary and so on in search)
     }
     else if (x.plug) p[k] = { n: dp.name, i: dp.icon, d: dp.description, c: x.plug.plugCategoryIdentifier, s: (x.investmentStats || []).filter((q) => q.value && !q.isConditionallyActive).map((q) => [q.statTypeHash, q.value]) };
   }
@@ -492,6 +493,10 @@ H('vault:load', async () => {
   const ARB = new Set([3448274439, 3551918588, 14239492, 20886954, 1585787867]);
   const SH = [2996146975, 392767087, 1943323491, 1735777505, 144602215, 4244567218]; // weapons, health, class, grenade, super, melee
   const astats = (id) => { const o = ist[id] && ist[id].stats; return o ? SH.map((h) => (o[h] && o[h].value) || 0) : undefined; };
+  // Armor and subclasses: only the plugs in their sockets right now (archetype, exotic perk, mods, aspects, fragments...), for search.
+  // Kept apart from pk (weapon perks and their options), which the wish lists and targets read.
+  const SUBB = 3284755031;
+  const aplugs = (id) => { const o = []; ((sk[id] && sk[id].sockets) || []).forEach((q) => { const pl = q.plugHash && df.p[q.plugHash]; if (pl && pl.n && !/^(empty|default)\b/i.test(pl.n) && !/shader|ornament|skin|memento|tracker/i.test(pl.c || '')) o.push(q.plugHash); }); return o.length ? o : undefined; };
   const epl = (id) => ((sk[id] && sk[id].sockets) || []).map((q) => q.plugHash && df.p[q.plugHash]).filter((pl) => pl && pl.n && !/shader|masterwork|tracker|memento|skin|ornament|crafting|empty|default/i.test((pl.c || '') + ' ' + pl.n)).map((pl) => pl.n).slice(0, 9);
   // The weapon's frame (Adaptive, Rapid-Fire, Precision ...) icon, shown in the tile's top-right corner like DIM.
   const frI = (id) => { for (const q of (sk[id] && sk[id].sockets) || []) { const pl = q.plugHash && df.p[q.plugHash]; if (pl && pl.c === 'intrinsics' && pl.i) return pl.i; } return undefined; };
@@ -504,7 +509,7 @@ H('vault:load', async () => {
     const o = ovd && (ovd.fg || ovd.i) ? { n: ovd.n, i: ovd.fg || ovd.i, fg: !!ovd.fg } : orn(it.itemInstanceId);
     const s = it.itemInstanceId && inst[it.itemInstanceId] && inst[it.itemInstanceId].primaryStat;
     const wmi = f.wl && f.wl.length ? f.wl[Math.min(it.versionNumber || 0, f.wl.length - 1)] : f.w, stt = it.state || 0, gti = it.itemInstanceId && inst[it.itemInstanceId] && inst[it.itemInstanceId].gearTier;
-    return { wm: wmi >= 0 && df.W ? df.W[wmi] : undefined, bt: f.bt || undefined, fc: f.f || undefined, lk: stt & 1 ? 1 : undefined, mw: stt & 4 ? 1 : undefined, cr: stt & 8 ? 1 : undefined, gt: gti || undefined, id: it.itemInstanceId, h: it.itemHash, n: f.n, i: o ? o.i : f.i, bi: o ? f.i : undefined, orn: o ? o.n : undefined, of: o && o.fg ? 1 : undefined, pk: WB.has(f.b) && it.itemInstanceId ? perks(it.itemInstanceId) : undefined, fr: WB.has(f.b) && it.itemInstanceId ? frI(it.itemInstanceId) : undefined, ep: WB.has(f.b) && it.itemInstanceId ? epl(it.itemInstanceId) : undefined, st: ARB.has(f.b) && it.itemInstanceId ? astats(it.itemInstanceId) : undefined, r: f.r, t: f.t, b: f.b, c: f.c, p: s ? s.value : 0, el: (inst[it.itemInstanceId] && inst[it.itemInstanceId].damageType) || 0 };
+    return { wm: wmi >= 0 && df.W ? df.W[wmi] : undefined, bt: f.bt || undefined, fc: f.f || undefined, lk: stt & 1 ? 1 : undefined, mw: stt & 4 ? 1 : undefined, cr: stt & 8 ? 1 : undefined, gt: gti || undefined, id: it.itemInstanceId, h: it.itemHash, n: f.n, i: o ? o.i : f.i, bi: o ? f.i : undefined, orn: o ? o.n : undefined, of: o && o.fg ? 1 : undefined, pk: WB.has(f.b) && it.itemInstanceId ? perks(it.itemInstanceId) : undefined, fr: WB.has(f.b) && it.itemInstanceId ? frI(it.itemInstanceId) : undefined, ep: WB.has(f.b) && it.itemInstanceId ? epl(it.itemInstanceId) : undefined, st: ARB.has(f.b) && it.itemInstanceId ? astats(it.itemInstanceId) : undefined, ap: (ARB.has(f.b) || f.b === SUBB) && it.itemInstanceId ? aplugs(it.itemInstanceId) : undefined, am: f.am || undefined, en: (ARB.has(f.b) && inst[it.itemInstanceId] && inst[it.itemInstanceId].energy && inst[it.itemInstanceId].energy.energyCapacity) || undefined, ds: stt & 16 ? 1 : undefined, r: f.r, t: f.t, b: f.b, c: f.c, p: s ? s.value : 0, el: (inst[it.itemInstanceId] && inst[it.itemInstanceId].damageType) || 0 };
   };
   { // ornament definitions the cached item data does not have (new universal ornaments): look them up once
     const all = [...((pr.profileInventory.data || {}).items || [])]; for (const k in pr.characterEquipment.data) all.push(...(pr.characterEquipment.data[k].items || [])); for (const k in pr.characterInventories.data) all.push(...(pr.characterInventories.data[k].items || []));
@@ -531,7 +536,7 @@ H('vault:load', async () => {
     else if (lost) pmRaw.push({ it, loc });
     else if (df.g && df.g[it.itemHash]) {
       const f = df.g[it.itemHash], inst1 = it.itemInstanceId && it.itemInstanceId !== '0';
-      if (inst1) gen.push({ id: it.itemInstanceId, h: it.itemHash, n: f.n, i: f.i, r: f.r, t: f.t, b: f.b, c: f.c, p: 0, el: 0, q: 1, loc, e, ro: 1 });
+      if (inst1) gen.push({ id: it.itemInstanceId, h: it.itemHash, n: f.n, i: f.i, r: f.r, t: f.t, b: f.b, c: f.c, p: 0, el: 0, q: 1, loc, e, ro: 1, ap: f.b === SUBB ? aplugs(it.itemInstanceId) : undefined });
       else {
         // Stackable things (materials, consumables): one tile per kind and place, with the total.
         const k = loc + ':' + it.itemHash + ':' + e;
@@ -600,7 +605,7 @@ H('vault:load', async () => {
   let art = null;
   art = null; // the old artifact list is stale; see art:get
   const pn = {};
-  items.forEach((x) => (x.pk || []).forEach((h) => { if (!pn[h] && df.p[h]) pn[h] = df.p[h].n; }));
+  [...items, ...gen].forEach((x) => [...(x.pk || []), ...(x.ap || [])].forEach((h) => { if (!pn[h] && df.p[h]) pn[h] = df.p[h].n; }));
   const res = { ts: Date.parse(pr.responseMintedTimestamp) || 0, chars, sti, items, gen, cur, ic: { el: df.dm || {}, bk: df.bk || {} }, pm, lo, art, pn, name: m.bungieGlobalDisplayName || m.displayName };
   xdSave(df);
   { const mid = (rd().tok || {}).mid, f = apath('vcache.json'); setTimeout(() => { fs.promises.writeFile(f, JSON.stringify({ v: 1, at: Date.now(), mid, d: res })).catch(() => {}); }, 50); }
