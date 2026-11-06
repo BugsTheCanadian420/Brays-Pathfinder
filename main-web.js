@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.1: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.2: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -82,6 +82,39 @@ const send = (m) => win && win.webContents.send('progress', m);
 
 const UA = 'GuardianToolkit/0.1.0 (local desktop app)';
 // Read a reply as JSON, but report the HTTP status and body instead of crashing on empty or non-JSON replies.
+// Big manifest tables are read entry by entry while they download, so the whole file is never held in memory at once
+// (a phone browser closes a page that uses too much memory). Only one big table downloads at a time.
+let TBLQ = Promise.resolve();
+async function streamTable(url, fn) {
+  const r = await fetch(BASE + url, { headers: { 'User-Agent': UA } });
+  if (!r.ok) throw new Error('Bungie returned HTTP ' + r.status + ' for the item data');
+  if (!r.body || !r.body.getReader || typeof TextDecoder === 'undefined') { const o = await readJson(r); for (const k in o) fn(k, o[k]); return; }
+  const rd = r.body.getReader(), dec = new TextDecoder();
+  let buf = '', i = 0, depth = 0, inStr = false, esc = false, ks = -1, vs = -1, key = '', n = 0;
+  for (;;) {
+    const { done, value } = await rd.read();
+    if (done) break;
+    buf += dec.decode(value, { stream: true });
+    const L = buf.length;
+    for (; i < L; i++) {
+      const c = buf.charCodeAt(i);
+      if (inStr) { if (esc) esc = false; else if (c === 92) esc = true; else if (c === 34) { inStr = false; if (depth === 1 && vs < 0) key = buf.slice(ks + 1, i); } continue; }
+      if (c === 34) { inStr = true; if (depth === 1 && vs < 0) ks = i; }
+      else if (c === 123 || c === 91) { if (depth === 1 && vs < 0) vs = i; depth++; }
+      else if (c === 125 || c === 93) { depth--; if (depth === 1 && vs >= 0) { fn(key, JSON.parse(buf.slice(vs, i + 1))); vs = -1; n++; } }
+    }
+    const cut = vs >= 0 ? vs : inStr && depth === 1 ? ks : i;
+    if (cut > 0) { buf = buf.slice(cut); i -= cut; if (vs >= 0) vs -= cut; if (ks >= 0) ks -= cut; }
+  }
+  if (depth !== 0 || !n) throw new Error('The item data download was cut off. Try again.');
+}
+function table(url, fn) {
+  const run = TBLQ.then(() => streamTable(url, fn));
+  TBLQ = run.catch(() => { /* the next table still runs */ });
+  return run;
+}
+async function tableObj(url) { const o = {}; await table(url, (k, x) => { o[k] = x; }); return o; }
+
 async function readJson(r) {
   const t = await r.text();
   try { return JSON.parse(t); } catch (e) {
@@ -210,18 +243,19 @@ async function defs() {
   try { const o = JSON.parse(fs.readFileSync(f, 'utf8')); if (o.v === v) return (DEFS = o); } catch (e) { /* download below */ }
   send('Downloading item data. This only happens on the first run and after game updates.');
   const P = m.jsonWorldComponentContentPaths.en;
-  const get = async (k) => readJson(await fetch(BASE + P[k], { headers: { 'User-Agent': UA } }));
+  const get = (k) => tableObj(P[k]);
   const opt = async (k) => { try { return P[k] ? await get(k) : {}; } catch (e) { return {}; } };
-  const [all, stRaw, sgRaw, dtRaw, btRaw, sbRaw] = await Promise.all([get('DestinyInventoryItemDefinition'), get('DestinyStatDefinition'), get('DestinyStatGroupDefinition'), opt('DestinyDamageTypeDefinition'), opt('DestinyBreakerTypeDefinition'), opt('DestinySandboxPerkDefinition')]);
+  const sbRaw = await opt('DestinySandboxPerkDefinition'), stRaw = await get('DestinyStatDefinition'), sgRaw = await get('DestinyStatGroupDefinition'), dtRaw = await opt('DestinyDamageTypeDefinition'), btRaw = await opt('DestinyBreakerTypeDefinition');
   // Champion types: a weapon's built-in frame carries a perk named [Shield-Piercing] Barrier, [Disruption] Overload or [Stagger] Unstoppable (same data DIM reads).
   const brk = {};
   for (const k in sbRaw) { const n = (sbRaw[k].displayProperties || {}).name || '', q = n.match(/^\[(Disruption|Shield[- ]Piercing|Stagger)\]/i); if (q) brk[k] = /^dis/i.test(q[1]) ? 2 : /^shield/i.test(q[1]) ? 1 : 3; }
-  const brkOf = (x) => { if (x.breakerType) return x.breakerType; for (const e of (x.sockets && x.sockets.socketEntries) || []) { const pl = all[e.singleInitialItemHash]; if (pl && pl.perks) for (const q of pl.perks) if (brk[q.perkHash]) return brk[q.perkHash]; } return 0; };
+  const plugBrk = {}, needBrk = [];
   const d = {}, p = {}, st = {}, sg = {}, ar = {}, gx = {}, W = [], dm = {}, bk = {};
   const wi = (q) => { if (!q) return -1; let i = W.indexOf(q); if (i < 0) { W.push(q); i = W.length - 1; } return i; };
-  for (const k in all) {
-    const x = all[k], dp = x.displayProperties;
-    if (!dp || !dp.name) continue;
+  await table(P.DestinyInventoryItemDefinition, (k, x) => {
+    if (x.perks) for (const q of x.perks) if (brk[q.perkHash]) { plugBrk[k] = brk[q.perkHash]; break; }
+    const dp = x.displayProperties;
+    if (!dp || !dp.name) return;
     const b = x.inventory && x.inventory.bucketTypeHash;
     if (b === 1506418338 || x.itemTypeDisplayName === 'Artifact') ar[k] = 1;
     if (XB.has(b)) gx[k] = { n: dp.name, i: dp.icon, r: (x.inventory && x.inventory.tierTypeName) || 'Common', t: x.itemTypeDisplayName || '', b, c: x.classType, mx: (x.inventory && x.inventory.maxStackSize > 1) ? x.inventory.maxStackSize : undefined };
@@ -230,12 +264,14 @@ async function defs() {
       // Season watermark (top-left of the tile) and champion-breaker type (barrier / overload / unstoppable, top-right).
       const wv = ((x.quality && x.quality.displayVersionWatermarkIcons) || []).map(wi);
       if (wv.length) d[k].wl = wv; else if (x.iconWatermark) d[k].w = wi(x.iconWatermark);
-      const bty = TF_WB0.has(b) ? brkOf(x) : x.breakerType; if (bty) d[k].bt = bty;
+      if (x.breakerType) d[k].bt = x.breakerType;
+      else if (TF_WB0.has(b)) { const hs = ((x.sockets && x.sockets.socketEntries) || []).map((e) => e.singleInitialItemHash).filter(Boolean); if (hs.length) needBrk.push([k, hs]); }
       const ifc = x.quality && x.quality.infusionCategoryHashes; if (ifc && ifc.length) d[k].f = ifc[0];
       const amt = x.equippingBlock && x.equippingBlock.ammoType; if (amt) d[k].am = amt; // 1 primary, 2 special, 3 heavy (is:primary and so on in search)
     }
     else if (x.plug) p[k] = { n: dp.name, i: dp.icon, d: dp.description, c: x.plug.plugCategoryIdentifier, s: (x.investmentStats || []).filter((q) => q.value && !q.isConditionallyActive).map((q) => [q.statTypeHash, q.value]) };
-  }
+  });
+  needBrk.forEach(([k, hs]) => { for (const h of hs) if (plugBrk[h]) { d[k].bt = plugBrk[h]; break; } });
   for (const k in dtRaw) { const q = dtRaw[k]; if (q.enumValue !== undefined && q.displayProperties && q.displayProperties.icon) dm[q.enumValue] = q.displayProperties.icon; }
   for (const k in btRaw) { const q = btRaw[k]; if (q.enumValue && q.displayProperties && q.displayProperties.icon) bk[q.enumValue] = q.displayProperties.icon; }
   for (const k in stRaw) { const x = stRaw[k]; if (x.displayProperties && x.displayProperties.name) st[k] = { n: x.displayProperties.name, o: x.index }; }
@@ -253,8 +289,8 @@ async function lodefs() {
   const f = path.join(app.getPath('userData'), 'lodefs.json');
   try { const o = JSON.parse(fs.readFileSync(f, 'utf8')); if (o.v === m.version) return (LODEFS = o); } catch (e) { /* download below */ }
   const P = m.jsonWorldComponentContentPaths.en;
-  const get = async (k) => (P[k] ? readJson(await fetch(BASE + P[k], { headers: { 'User-Agent': UA } })) : {});
-  const [nm, co, ic] = await Promise.all([get('DestinyLoadoutNameDefinition'), get('DestinyLoadoutColorDefinition'), get('DestinyLoadoutIconDefinition')]);
+  const get = async (k) => (P[k] ? tableObj(P[k]) : {});
+  const nm = await get('DestinyLoadoutNameDefinition'), co = await get('DestinyLoadoutColorDefinition'), ic = await get('DestinyLoadoutIconDefinition');
   const o = { v: m.version, names: {}, colors: {}, icons: {} };
   for (const k in nm) o.names[k] = (nm[k].name || (nm[k].displayProperties && nm[k].displayProperties.name) || '');
   for (const k in co) o.colors[k] = co[k].colorImagePath || '';
@@ -1318,19 +1354,19 @@ async function trdefs() {
   try { const o = JSON.parse(fs.readFileSync(f, 'utf8')); if (o.v === v) return (TRD = o); } catch (e) { /* download below */ }
   send('Downloading triumph data. This only happens on the first run and after game updates.');
   const P = m.jsonWorldComponentContentPaths.en;
-  const get = async (k) => readJson(await fetch(BASE + P[k], { headers: { 'User-Agent': UA } }));
-  const [rc, pn, ob] = await Promise.all([get('DestinyRecordDefinition'), get('DestinyPresentationNodeDefinition'), get('DestinyObjectiveDefinition')]);
+  const ob = {};
+  await table(P.DestinyObjectiveDefinition, (k, x) => { ob[k] = { progressDescription: x.progressDescription, completionValue: x.completionValue }; });
   const o = { v, rec: {}, node: {}, obj: {} };
-  for (const k in rc) {
-    const x = rc[k], dp = x.displayProperties; if (!dp || !dp.name) continue;
+  await table(P.DestinyRecordDefinition, (k, x) => {
+    const dp = x.displayProperties; if (!dp || !dp.name) return;
     o.rec[k] = { n: dp.name, d: dp.description || '', i: dp.icon || '', o: x.objectiveHashes || [], s: (x.completionInfo && x.completionInfo.ScoreValue) || 0, t: x.titleInfo && x.titleInfo.hasTitle ? 1 : 0, ti: (x.titleInfo && x.titleInfo.titlesByGender && (x.titleInfo.titlesByGender.Male || x.titleInfo.titlesByGender.Female)) || '', gl: (x.titleInfo && x.titleInfo.gildingTrackingRecordHash) || 0, rw: (x.rewardItems || []).filter((q) => q && q.itemHash).slice(0, 6).map((q) => [q.itemHash, q.quantity || 1]), ex: x.expirationInfo && x.expirationInfo.hasExpiration ? String(x.expirationInfo.description || '').slice(0, 300) : '', ty: x.recordTypeName || '' };
     (x.objectiveHashes || []).forEach((h) => { if (!o.obj[h] && ob[h]) o.obj[h] = { d: ob[h].progressDescription || '', m: ob[h].completionValue || 1 }; });
-  }
-  for (const k in pn) {
-    const x = pn[k], dp = x.displayProperties; if (!dp || !dp.name) continue;
+  });
+  await table(P.DestinyPresentationNodeDefinition, (k, x) => {
+    const dp = x.displayProperties; if (!dp || !dp.name) return;
     const ch = x.children || {};
     o.node[k] = { n: dp.name, i: dp.icon || '', c: (ch.presentationNodes || []).map((q) => q.presentationNodeHash), r: (ch.records || []).map((q) => q.recordHash), cr: x.completionRecordHash || 0 };
-  }
+  });
   fs.writeFileSync(f, JSON.stringify(o));
   return (TRD = o);
 }
@@ -1926,13 +1962,12 @@ async function actsDefs() {
   const f = path.join(app.getPath('userData'), 'acts.json');
   try { const o = JSON.parse(fs.readFileSync(f, 'utf8')); if (o.v === v) return (ACTS = o); } catch (e) { /* download below */ }
   send('Downloading raid and dungeon data. This only happens on the first run and after game updates.');
-  const all = await readJson(await fetch(BASE + mf.jsonWorldComponentContentPaths.en.DestinyActivityDefinition, { headers: { 'User-Agent': UA } }));
   const o = { v, a: {} };
-  for (const k in all) {
-    const x = all[k], t = x.activityTypeHash; if (t !== 2043403989 && t !== 608898761) continue;
-    const n = x.displayProperties && x.displayProperties.name; if (!n) continue;
+  await table(mf.jsonWorldComponentContentPaths.en.DestinyActivityDefinition, (k, x) => {
+    const t = x.activityTypeHash; if (t !== 2043403989 && t !== 608898761) return;
+    const n = x.displayProperties && x.displayProperties.name; if (!n) return;
     o.a[k] = { n, t: t === 2043403989 ? 'raid' : 'dungeon', img: x.pgcrImage || '', l: x.activityLightLevel || 0 };
-  }
+  });
   fs.writeFileSync(f, JSON.stringify(o));
   return (ACTS = o);
 }
@@ -2035,13 +2070,12 @@ async function exoDefs() {
   try { const o = JSON.parse(fs.readFileSync(f, 'utf8')); if (o.v === v) return (EXD = o); } catch (e) { /* download below */ }
   const df = await defs(), P = m.jsonWorldComponentContentPaths.en;
   send('Downloading the collections list. This only happens on the first run and after game updates.');
-  const col = await readJson(await fetch(BASE + P.DestinyCollectibleDefinition, { headers: { 'User-Agent': UA } }));
   const GEAR = new Set([1498876634, 2465295065, 953998645, 3448274439, 3551918588, 14239492, 20886954, 1585787867]);
   const o = { v, c: {} };
-  for (const k in col) {
-    const x = col[k], d = df.d[x.itemHash]; if (!d || d.r !== 'Exotic' || !GEAR.has(d.b)) continue;
+  await table(P.DestinyCollectibleDefinition, (k, x) => {
+    const d = df.d[x.itemHash]; if (!d || d.r !== 'Exotic' || !GEAR.has(d.b)) return;
     o.c[k] = { ih: x.itemHash, n: d.n, i: d.i, b: d.b, cl: d.c === undefined ? 3 : d.c, t: d.t || '', src: String(x.sourceString || '').replace(/^Source:\s*/i, '').slice(0, 200) };
-  }
+  });
   try { fs.writeFileSync(f, JSON.stringify(o)); } catch (e) { /* kept in memory */ }
   return (EXD = o);
 }
@@ -2392,8 +2426,10 @@ async function tfdefs() {
   const f = path.join(app.getPath('userData'), 'tfdefs.json');
   try { const o = JSON.parse(fs.readFileSync(f, 'utf8')); if (o.v === v) return (TFD = o); } catch (e) { /* build below */ }
   const P = m.jsonWorldComponentContentPaths.en;
-  const get = async (k) => { try { return P[k] ? readJson(await fetch(BASE + P[k], { headers: { 'User-Agent': UA } })) : {}; } catch (e) { return {}; } };
-  const [col, sets] = await Promise.all([get('DestinyCollectibleDefinition'), get('DestinyEquipableItemSetDefinition')]);
+  const get = async (k, f2) => { try { if (P[k]) await table(P[k], f2); } catch (e) { /* that list is left out */ } };
+  const col = {}, sets = {};
+  await get('DestinyCollectibleDefinition', (k, c) => { if (c.sourceString && c.itemHash) col[k] = { sourceString: c.sourceString, itemHash: c.itemHash }; });
+  await get('DestinyEquipableItemSetDefinition', (k, x) => { sets[k] = { displayProperties: { name: (x.displayProperties || {}).name }, setItems: x.setItems }; });
   const wmap = {};
   for (const k in df.d) {
     const x = df.d[k]; if (!TF_WB.has(x.b) || (x.r !== 'Legendary' && x.r !== 'Exotic') || !x.n) continue;
