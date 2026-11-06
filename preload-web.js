@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.2: preload.js for the browser */
+/* Pathfinder 0.3.3: preload.js for the browser */
 (function (require) {
 const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('gt', {
@@ -36,6 +36,8 @@ contextBridge.exposeInMainWorld('gt', {
   wlAddRoll: (v) => ipcRenderer.invoke('wl:addRoll', v),
   wlDelRoll: (v) => ipcRenderer.invoke('wl:delRoll', v),
   wlMine: () => ipcRenderer.invoke('wl:mine'),
+  wlSyncGet: () => ipcRenderer.invoke('wl:syncGet'),
+  wlSyncApply: (v) => ipcRenderer.invoke('wl:syncApply', v),
   badge: (v) => ipcRenderer.invoke('app:badge', v),
   clarity: () => ipcRenderer.invoke('clarity:get'),
   tfGet: () => ipcRenderer.invoke('tf:get'),

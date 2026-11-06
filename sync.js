@@ -1,5 +1,5 @@
 // Sync across devices (optional, off until you turn it on in Settings > Accounts): loadouts, tags, notes, settings,
-// tracked triumphs, Home pins, hidden tabs, saved searches and wish list links. They are kept in your own token service
+// tracked triumphs, Home pins, hidden tabs, saved searches and wish lists (links, pasted lists and My wish list). They are kept in your own token service
 // (Cloudflare KV), under your Bungie.net account, and only your own sign-in can read or change them.
 // Each setting carries the time it was last changed, so the newest change wins on every device.
 (() => {
@@ -43,15 +43,20 @@
   };
   async function wlUrls() { try { const o = await gt.wlGet(); return ((o && o.lists) || []).map((l) => l.url).filter((u) => typeof u === 'string' && /^https:\/\//.test(u)); } catch (e) { return []; } }
 
-  function localDoc() {
+  // Wish lists live in the app's own storage (not in this page's settings), so they travel as one entry with their own time.
+  const wlOk = () => !!(gt.wlSyncGet && gt.wlSyncApply);
+  async function wlLocal() { try { return wlOk() ? await gt.wlSyncGet() : null; } catch (e) { return null; } }
+  async function localDoc() {
     const m = meta(), data = {};
     ['loadouts', ...SHARED].forEach((r) => { const v = ls.get(toLocal(r)); const t = m[r] || (v != null ? 1 : 0); if (t) data[r] = { v, t }; });
+    const w = await wlLocal(); if (w && w.t) data.wishlists = { v: w.doc, t: w.t };
     return data;
   }
+  window.addEventListener('gtwl', () => { if (on()) { clearTimeout(pushT); pushT = setTimeout(() => { push().catch(() => {}); }, 8000); } });
   async function push() {
     if (!on()) return;
     clearTimeout(pushT);
-    const r = await gt.syncPut({ data: localDoc(), wl: await wlUrls() }).catch((e) => { setStatus({ ...status(), err: clean(e) }); throw e; });
+    const r = await gt.syncPut({ data: await localDoc(), wl: await wlUrls() }).catch((e) => { setStatus({ ...status(), err: clean(e) }); throw e; });
     setStatus({ at: (r && r.at) || Date.now(), err: '' });
   }
   // Pull: the newer side wins for each setting. Returns how many settings changed here.
@@ -71,7 +76,19 @@
       }
     } finally { applying = false; }
     saveMeta(m);
-    // Wish list links from your other devices.
+    const rw = rd.wishlists;
+    if (wlOk() && rw && typeof rw.t === 'number' && typeof rw.v === 'string') {
+      const lw = await wlLocal(), lt = (lw && lw.t) || 0;
+      const first = !!(lw && !lw.synced);
+      if (rw.t > lt || (first && rw.v !== lw.doc)) {
+        // Until this device has taken lists from another device once, nothing here is dropped: both sides are combined and sent back.
+        const merge = first;
+        try { const r = await gt.wlSyncApply({ t: rw.t, doc: rw.v, merge }); if (r && r.changed) changed++; if (merge) needPush = true; } catch (e) { /* tried again next sync */ }
+      } else if (lt > rw.t) needPush = true;
+      return { changed, needPush };
+    }
+    if (wlOk()) { const lw = await wlLocal(); if (lw && lw.t) needPush = true; }
+    // Wish list links from a device that has not been updated yet.
     const have = await wlUrls();
     for (const u of (Array.isArray(doc && doc.wl) ? doc.wl : []).filter((x) => typeof x === 'string' && /^https:\/\//.test(x) && !have.includes(x)).slice(0, 10)) {
       try { await gt.wlSet({ url: u }); changed++; } catch (e) { /* that list is offline right now */ }

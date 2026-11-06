@@ -954,7 +954,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
     const st = S.status(), onv = S.on();
     const when = st.at ? new Date(st.at).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '';
     const line = !onv ? 'Off. Everything stays on ' + GT_HERE + ' only.' : st.err ? 'Last try did not work: ' + esc(st.err) : when ? 'Last synced ' + esc(when) + '.' : 'Syncing...';
-    return sx('Sync across devices', 'Keeps loadouts, tags, notes, settings, tracked triumphs, Home pins and wish list links the same on every device where you turn this on, for this Bungie account. Stored in your own token service. <br><span class="syst">' + line + '</span>' + (onv ? ' <button class="g" data-sa="syncnow" style="margin-left:6px">Sync now</button>' : ''), `<label class="tgl"><input type="checkbox" data-syncon${onv ? ' checked' : ''}><i></i></label>`);
+    return sx('Sync across devices', 'Keeps loadouts, tags, notes, settings, tracked triumphs, Home pins and wish lists (including My wish list) the same on every device where you turn this on, for this Bungie account. Stored in your own token service. <br><span class="syst">' + line + '</span>' + (onv ? ' <button class="g" data-sa="syncnow" style="margin-left:6px">Sync now</button>' : ''), `<label class="tgl"><input type="checkbox" data-syncon${onv ? ' checked' : ''}><i></i></label>`);
   }
   window.addEventListener('gtsync', () => { if (settingsSec.classList.contains('on')) drawSettings(); });
   function drawSettings() {
@@ -1049,6 +1049,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
       const o = await window.gt.wlSet(arg); WL = o && o.lists && o.lists.length ? o : null;
       WLMSG = o && o.warn ? 'Added, but: ' + o.warn : 'Added.';
       if (arg.url) WLD.wlurl = ''; if (arg.text) WLD.wltext = '';
+      window.dispatchEvent(new Event('gtwl'));
     } catch (er) { WLMSG = wlClean(er); }
     WLV++; drawSettings(); if (window.__gtRender) window.__gtRender();
   }
@@ -1092,6 +1093,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
         WLMSG = a === 'wlrefresh' ? 'Refreshing...' : ''; if (WLMSG) drawSettings();
         const o = a === 'wlrm' ? await window.gt.wlRemove({ id: b.dataset.id }) : a === 'wlrefresh' ? await window.gt.wlRefresh() : (await window.gt.wlClear(), null);
         WL = o && o.lists && o.lists.length ? o : null; WLMSG = a === 'wlrefresh' ? 'Refreshed.' : '';
+        if (a !== 'wlrefresh') window.dispatchEvent(new Event('gtwl'));
       } catch (er) { WLMSG = wlClean(er); }
       WLV++; drawSettings(); if (window.__gtRender) window.__gtRender(); return;
     }
@@ -2248,6 +2250,17 @@ ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="
   function placePop(why) {
     const dp = document.querySelector('#vsheet .dp'); if (!dp) return;
     const vw = innerWidth, vh = innerHeight;
+    // Phone website: a bottom sheet between the top of the screen and the tab bar, at normal size (Interface scale is left out so it always fits).
+    if (document.documentElement.classList.contains('gtweb') && vw < 640) {
+      const sh = dp.parentElement, z = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--gt-z')) || 1;
+      if (sh && sh.style.zoom !== String(1 / z)) sh.style.zoom = String(1 / z);
+      const tabs = document.getElementById('gtw-tabs'), tb = tabs && tabs.getClientRects().length ? tabs.getBoundingClientRect().top : vh;
+      const hd = document.querySelector('header.gtbar'), hb = hd && hd.getClientRects().length ? Math.max(0, hd.getBoundingClientRect().bottom) : 0;
+      const room = Math.max(240, Math.round(Math.min(vh, tb) - hb - 8));
+      dp.querySelectorAll('.dpm,.dps').forEach((n) => { n.style.maxHeight = room + 'px'; });
+      dp.style.left = ''; dp.style.top = ''; POS = null;
+      return;
+    }
     dp.querySelectorAll('.dpm,.dps').forEach((n) => { n.style.maxHeight = (vh - 16) + 'px'; });
     const w = dp.offsetWidth, h = dp.offsetHeight, t = anchorEl();
     let L, T;

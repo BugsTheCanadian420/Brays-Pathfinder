@@ -204,7 +204,7 @@ ${mine ? `<div class="mute" style="margin-top:4px">You have ${mine} roll${mine =
     try {
       const o = await gt.wlAddRoll({ h: x.h, perks, note: w.note || '', tags: w.tag || '', trash: !!trash, name: x.n });
       st.wmMsg = trash ? 'Saved as a trash roll.' : 'Saved to My wish list.';
-      st.mine = (await gt.wlMine()).rolls; v.wlReload(); void o;
+      st.mine = (await gt.wlMine()).rolls; v.wlReload(); void o; window.dispatchEvent(new Event('gtwl'));
     } catch (er) { st.wmMsg = 'Could not save: ' + String((er && er.message) || er).replace(/^Error invoking remote method '[^']*': (Error: )?/, ''); }
     v.pop();
   }
@@ -315,8 +315,8 @@ ${mine ? `<div class="mute" style="margin-top:4px">You have ${mine} roll${mine =
       try {
         if (a === 'farm') { const r = await gt.farmSet({ on: !st.farm.on }); st.farm = r; }
         else if (a === 'ovl') { await setOverlay(!st.ovl); return; }
-        else if (a === 'delroll') { await gt.wlDelRoll({ h: +b.dataset.h, i: +b.dataset.i }); st.mine = (await gt.wlMine()).rolls; V() && V().wlReload(); }
-        else if (a === 'wipe') { if (!confirm('Remove every roll in My wish list?')) return; for (const h of Object.keys(st.mine || {})) { while ((st.mine[h] || []).length) { await gt.wlDelRoll({ h: +h, i: 0 }); st.mine = (await gt.wlMine()).rolls; } } V() && V().wlReload(); }
+        else if (a === 'delroll') { await gt.wlDelRoll({ h: +b.dataset.h, i: +b.dataset.i }); st.mine = (await gt.wlMine()).rolls; V() && V().wlReload(); window.dispatchEvent(new Event('gtwl')); }
+        else if (a === 'wipe') { if (!confirm('Remove every roll in My wish list?')) return; for (const h of Object.keys(st.mine || {})) { while ((st.mine[h] || []).length) { await gt.wlDelRoll({ h: +h, i: 0 }); st.mine = (await gt.wlMine()).rolls; } } V() && V().wlReload(); window.dispatchEvent(new Event('gtwl')); }
         else if (a === 'bkexp') {
           const ls = {}; try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (/^gt[._]/.test(k)) ls[k] = localStorage.getItem(k); } } catch (er) { /* storage off */ }
           const r = await gt.bkExport({ ls }); st.bkMsg = r && r.ok ? 'Saved ' + r.file + '.' : '';

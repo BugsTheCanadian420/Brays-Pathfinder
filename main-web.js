@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.2: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.3: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -1248,13 +1248,13 @@ H('wl:set', async (e, v) => {
   }
   if (!added) throw new Error(errs.join(' ') || 'Nothing was added.');
   if (lists.length > 20) lists = lists.slice(-20);
-  wlWrite(lists);
+  wlWrite(lists); wlTouch();
   const pub = wlPub(lists); if (errs.length) pub.warn = errs.join(' ');
   return pub;
 });
-H('wl:remove', (e, v) => { const id = TXT(OBJ(v).id, 20); const lists = wlRead().filter((l) => l.id !== id); wlWrite(lists); return wlPub(lists); });
+H('wl:remove', (e, v) => { const id = TXT(OBJ(v).id, 20); const lists = wlRead().filter((l) => l.id !== id); wlWrite(lists); wlTouch(); return wlPub(lists); });
 H('wl:refresh', async () => { const lists = wlRead(); await Promise.all(lists.filter((l) => l.url).map(wlRefreshOne)); wlWrite(lists); return wlPub(lists); });
-H('wl:clear', async () => { WLC = null; wlQ = wlQ.then(() => Promise.all([wlPath(), wlPath2()].map((f) => fs.promises.unlink(f).catch(() => {})))); await wlQ; return true; });
+H('wl:clear', async () => { WLC = null; wlTouch(); wlQ = wlQ.then(() => Promise.all([wlPath(), wlPath2()].map((f) => fs.promises.unlink(f).catch(() => {})))); await wlQ; return true; });
 
 // ---------------- wish list maker: "My wish list" is a list you build from your own weapons ----------------
 const mineOf = (lists) => { let l = lists.find((x) => x.id === 'mine'); if (!l) { l = { id: 'mine', url: '', title: 'My wish list', desc: 'Rolls you picked in the item popup', n: 0, at: Date.now(), rolls: {} }; lists.push(l); } return l; };
@@ -1271,13 +1271,89 @@ H('wl:addRoll', (e, v) => {
   const i = arr.findIndex((r) => r[0].slice().sort().join(',') === key && !!r[2] === !!v.trash);
   const roll = [perks, note.replace(/[\r\n#|]/g, ' '), v.trash ? 1 : 0, tags, name];
   if (i >= 0) arr[i] = roll; else arr.push(roll);
-  mineCount(l); wlWrite(lists); return wlPub(lists);
+  mineCount(l); wlWrite(lists); wlTouch(); return wlPub(lists);
 });
 H('wl:delRoll', (e, v) => {
   OBJ(v); const h = HASH(v.h), i = INT(v.i, 0, 10000);
   const lists = wlRead(), l = mineOf(lists);
   if (l.rolls[h]) { l.rolls[h].splice(i, 1); if (!l.rolls[h].length) delete l.rolls[h]; }
-  mineCount(l); wlWrite(lists); return wlPub(lists);
+  mineCount(l); wlWrite(lists); wlTouch(); return wlPub(lists);
+});
+// ---- wish lists across devices: the set of lists (links, pasted lists, My wish list) travels with Sync, newest change wins ----
+const wlSyncPath = () => path.join(app.getPath('userData'), 'wlsync.json');
+// t: when the lists last changed here. s: this device has taken lists from another device at least once (until then, lists merge).
+// k: lists too big to travel, which stay on this device only.
+const wlSS = () => { try { const o = JSON.parse(fs.readFileSync(wlSyncPath(), 'utf8')); return { t: Number(o.t) || 0, s: o.s ? 1 : 0, k: Array.isArray(o.k) ? o.k.filter((x) => typeof x === 'string') : [] }; } catch (e) { return { t: 0, s: 0, k: [] }; } };
+const wlT = () => wlSS().t;
+const wlSave = (o) => { try { fs.writeFileSync(wlSyncPath(), JSON.stringify(o)); } catch (e) { /* kept in memory only */ } };
+const wlSetT = (t, s) => { const o = wlSS(); wlSave({ ...o, t, s: s === undefined ? o.s : s }); };
+function wlTouch() { wlSetT(Date.now()); }
+const WLS_MAX = 600000; // the whole Sync document must stay under about 850 KB
+const packRolls = (rolls) => { const o = {}; for (const k in rolls || {}) o[k] = rolls[k].map((r) => [r[0].join(','), r[1] || '', r[2] ? 1 : 0, r[3] || '', r[4] || '']); return o; };
+function unpackRolls(o, cap) {
+  const out = {}; let n = 0;
+  if (!o || typeof o !== 'object') return { rolls: out, n };
+  for (const k of Object.keys(o).slice(0, 20000)) {
+    if (k !== '*' && !/^\d{1,10}$/.test(k)) continue;
+    const arr = Array.isArray(o[k]) ? o[k].slice(0, 200) : [];
+    for (const r of arr) {
+      if (!Array.isArray(r) || n >= cap) continue;
+      const pk = String(r[0] || '').split(',').map(Number).filter((x) => Number.isInteger(x) && x > 0 && x <= 4294967295).slice(0, 12);
+      (out[k] = out[k] || []).push([pk, String(r[1] || '').slice(0, 200), r[2] ? 1 : 0, /^[a-z,]{0,40}$/.test(String(r[3] || '')) ? String(r[3] || '') : '', String(r[4] || '').slice(0, 80)]); n++;
+    }
+  }
+  return { rolls: out, n };
+}
+H('wl:syncGet', () => {
+  const lists = wlRead();
+  let t = wlT(); if (!t && lists.length) t = 1; // lists made before syncing existed: send them once
+  const doc = { links: [], pasted: [], mine: null, left: 0 };
+  for (const l of lists) {
+    if (l.id === 'mine') doc.mine = packRolls(l.rolls);
+    else if (l.url) doc.links.push({ id: l.id, url: l.url });
+    else doc.pasted.push({ id: l.id, title: l.title || '', desc: l.desc || '', rolls: packRolls(l.rolls) });
+  }
+  // Big pasted or uploaded lists cannot travel (Sync holds a few hundred KB); the biggest are left out first.
+  const size = () => JSON.stringify(doc).length;
+  const left = [];
+  while (doc.pasted.length && size() > WLS_MAX) { let bi = 0; doc.pasted.forEach((x, i) => { if (JSON.stringify(x).length > JSON.stringify(doc.pasted[bi]).length) bi = i; }); left.push(doc.pasted[bi].id); doc.pasted.splice(bi, 1); doc.left++; }
+  if (size() > WLS_MAX) { doc.mine = null; doc.left++; }
+  const ss = wlSS(); if (JSON.stringify(ss.k) !== JSON.stringify(left)) wlSave({ ...ss, k: left });
+  return { t, doc: JSON.stringify(doc), synced: ss.s };
+});
+// Applies the lists from another device. merge (first sync on this device): nothing here is dropped, theirs is added.
+H('wl:syncApply', async (e, v) => {
+  OBJ(v); const t = Number(v.t) || 0, merge = !!v.merge; let d;
+  try { d = JSON.parse(TXT(v.doc, 900000)); } catch (er) { throw bad(); }
+  if (!d || typeof d !== 'object') throw bad();
+  const okId = (x) => typeof x === 'string' && /^[\w-]{1,20}$/.test(x);
+  const links = (Array.isArray(d.links) ? d.links : []).filter((x) => x && okId(x.id) && typeof x.url === 'string' && /^https:\/\//i.test(x.url) && x.url.length < 2000).slice(0, 20);
+  const pasted = (Array.isArray(d.pasted) ? d.pasted : []).filter((x) => x && okId(x.id) && x.id !== 'mine').slice(0, 20);
+  let lists = wlRead(); const old = lists.slice(); let changed = 0; const kLeft = wlSS().k;
+  const keep = merge ? old : old.filter((l) => (l.id === 'mine') || (l.url ? links.some((x) => x.url === l.url) : pasted.some((x) => x.id === l.id) || (!l.url && kLeft.includes(l.id))));
+  if (keep.length !== old.length) changed++;
+  lists = keep;
+  for (const x of links) {
+    if (lists.some((l) => l.url === x.url)) continue;
+    const l = { id: x.id, url: x.url, title: '', desc: '', n: 0, at: 0, rolls: {} };
+    await wlRefreshOne(l); if (l.err && !l.n) { l.at = 0; } lists.push(l); changed++;
+  }
+  for (const x of pasted) {
+    if (lists.some((l) => l.id === x.id)) continue;
+    const u = unpackRolls(x.rolls, 400000); if (!u.n) continue;
+    lists.push({ id: x.id, url: '', title: String(x.title || 'Pasted wish list').slice(0, 120), desc: String(x.desc || '').slice(0, 300), n: u.n, at: Date.now(), rolls: u.rolls }); changed++;
+  }
+  if (d.mine && typeof d.mine === 'object') {
+    const u = unpackRolls(d.mine, 20000), l = mineOf(lists), before = JSON.stringify(l.rolls);
+    if (merge) { for (const k in u.rolls) { const arr = (l.rolls[k] = l.rolls[k] || []); for (const r of u.rolls[k]) { const key = r[0].slice().sort().join(',') + '|' + r[2]; if (!arr.some((q) => q[0].slice().sort().join(',') + '|' + (q[2] ? 1 : 0) === key)) arr.push(r); } } }
+    else l.rolls = u.rolls;
+    mineCount(l); if (JSON.stringify(l.rolls) !== before) changed++;
+    if (!l.n) lists = lists.filter((q) => q !== l);
+  }
+  if (lists.length > 20) lists = lists.slice(-20);
+  if (changed) wlWrite(lists);
+  wlSetT(merge ? Date.now() : t, 1);
+  return { changed };
 });
 H('wl:mine', () => { const l = wlRead().find((x) => x.id === 'mine'); return { rolls: l ? l.rolls : {} }; });
 // The list as a standard DIM wish list file (mine, or any list you loaded) so you can share it or load it in DIM.

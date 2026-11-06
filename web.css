@@ -46,10 +46,11 @@ html.gtweb{--gt-sat:env(safe-area-inset-top,0px)}
   /* floating Notes button and toasts sit above the tab bar */
   html.gtweb #gtnfab{bottom:calc(68px + env(safe-area-inset-bottom,0px))!important}
 
-  /* item popup becomes a bottom sheet */
-  html.gtweb #vsheet .dp{left:0!important;right:0!important;top:auto!important;bottom:calc(56px + env(safe-area-inset-bottom,0px))!important;width:auto!important;max-height:72vh;filter:none;box-shadow:0 -10px 30px rgba(0,0,0,.6)}
-  html.gtweb #vsheet .dp .dpm{flex:1;width:auto!important;max-height:72vh;border-radius:14px 0 0 0!important}
-  html.gtweb #vsheet .dp .dps{max-height:72vh;border-radius:0 14px 0 0!important}
+  /* item popup becomes a bottom sheet, over the top bar and character headers */
+  html.gtweb #vsheet{z-index:8500!important}
+  html.gtweb #vsheet .dp{left:0!important;right:0!important;top:auto!important;bottom:calc(56px + env(safe-area-inset-bottom,0px))!important;width:auto!important;max-height:none;filter:none;box-shadow:0 -10px 30px rgba(0,0,0,.6)}
+  html.gtweb #vsheet .dp .dpm{flex:1;min-width:0;width:auto!important;border-radius:14px 0 0 0!important}
+  html.gtweb #vsheet .dp .dps{flex:none;border-radius:0 14px 0 0!important}
 
   /* Activity sub-pages: one row that scrolls sideways instead of five rows of pills */
   html.gtweb #activity .abar{flex-wrap:nowrap!important;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin:0 -12px;padding:8px 12px!important;scroll-snap-type:x proximity}
