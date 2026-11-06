@@ -1,0 +1,55 @@
+/* =====================================================================================================
+   BETA — the experimental interface style (Settings > Interface style > Beta) and theme (Settings > Theme > Beta).
+   Everything for both lives in this one file so it can change a lot without touching the other styles.
+   Interface style rules start with  :root[data-ui="beta"]   Theme rules start with  :root[data-gt="beta"]
+   ===================================================================================================== */
+
+/* ---------- BETA INTERFACE STYLE: rounded "floating glass" panels, soft depth, accent glow ---------- */
+:root[data-ui="beta"]{
+  --g-panel:rgba(22,24,34,.62)!important;--g-solid:#171a24!important;--g-col:rgba(255,255,255,.025)!important;
+  --g-line:rgba(255,255,255,.09)!important;--g-btn:rgba(255,255,255,.06)!important;--g-deep:rgba(0,0,0,.35)!important;
+  --b-radius:12px;--b-radius-s:8px;--b-shadow:0 10px 30px rgba(0,0,0,.35),0 1px 0 rgba(255,255,255,.04) inset;
+}
+:root[data-ui="beta"] body{font-family:'Open Sans','Segoe UI',Arial,sans-serif!important;letter-spacing:.005em}
+:root[data-ui="beta"]:not([data-gx="1"]) body{background:radial-gradient(1200px 700px at 15% -10%,rgba(120,110,255,.14),transparent 60%),radial-gradient(1000px 600px at 100% 110%,var(--g-accent-soft,rgba(94,234,212,.12)),transparent 60%),#0c0e14 fixed!important}
+
+/* top bar */
+:root[data-ui="beta"] header.gtbar{background:rgba(12,14,20,.72)!important;border-bottom:1px solid rgba(255,255,255,.06)!important;-webkit-backdrop-filter:blur(18px) saturate(1.3);backdrop-filter:blur(18px) saturate(1.3)}
+:root[data-ui="beta"] header.gtbar nav button{border-radius:999px!important;text-transform:none!important;letter-spacing:.01em!important;font-weight:600!important;font-size:13.5px!important;color:rgba(255,255,255,.62)!important;padding:0 14px!important;margin:0 1px!important;height:32px!important;line-height:1!important;align-self:center!important;transition:color .15s,background .15s}
+:root[data-ui="beta"] header.gtbar nav button:hover{color:#fff!important;background:rgba(255,255,255,.06)!important}
+:root[data-ui="beta"] header.gtbar nav button.on{color:var(--g-on-accent,#fff)!important;background:var(--g-accent2)!important;box-shadow:0 0 0 1px rgba(255,255,255,.06),0 6px 18px var(--g-accent-soft,rgba(0,0,0,.3))!important}
+:root[data-ui="beta"] #gtsrch .vbar input{border-radius:999px!important;background:rgba(255,255,255,.05)!important;border:1px solid rgba(255,255,255,.08)!important}
+:root[data-ui="beta"] #gtsrch .vbar .vtg{border-radius:999px!important;background:rgba(255,255,255,.04)!important;border-color:rgba(255,255,255,.07)!important}
+:root[data-ui="beta"] #gtsrch .vbar button.g{border-radius:999px!important}
+
+/* panels and cards */
+:root[data-ui="beta"] .card,:root[data-ui="beta"] section.gdark .card,:root[data-ui="beta"] #home .hm-c,:root[data-ui="beta"] #activity .acard{border-radius:var(--b-radius)!important;background:var(--g-panel)!important;border:1px solid rgba(255,255,255,.07)!important;box-shadow:var(--b-shadow)!important;-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+:root[data-ui="beta"] #home .hm-c::before{height:0!important}
+:root[data-ui="beta"] #home .hm-c:hover,:root[data-ui="beta"] #activity .acard:hover{border-color:var(--g-accent)!important;box-shadow:var(--b-shadow),0 0 0 1px var(--g-accent-soft) !important}
+:root[data-ui="beta"] section.gdark h2,:root[data-ui="beta"] .card h2{letter-spacing:.04em!important;text-transform:none!important;font-weight:700}
+:root[data-ui="beta"] .dsec,:root[data-ui="beta"] #activity h3.sec,:root[data-ui="beta"] #home .hm-sec{letter-spacing:.12em!important;color:rgba(255,255,255,.7)!important}
+
+/* buttons, chips, inputs */
+:root[data-ui="beta"] section.gdark button,:root[data-ui="beta"] #vault button.g,:root[data-ui="beta"] #vault button.b,:root[data-ui="beta"] button.g,:root[data-ui="beta"] button.b{border-radius:999px!important;border:1px solid rgba(255,255,255,.1)!important;letter-spacing:.01em!important;text-transform:none!important;transition:background .15s,border-color .15s}
+:root[data-ui="beta"] section.gdark button:hover,:root[data-ui="beta"] button.g:hover{background:rgba(255,255,255,.1)!important;border-color:rgba(255,255,255,.2)!important}
+:root[data-ui="beta"] button.b,:root[data-ui="beta"] section.gdark button.on,:root[data-ui="beta"] #activity .abar button.on,:root[data-ui="beta"] .chip.on{background:var(--g-accent2)!important;color:var(--g-on-accent,#fff)!important;border-color:transparent!important}
+:root[data-ui="beta"] #activity .abar button{letter-spacing:.03em!important;text-transform:none!important;font-size:13px!important}
+:root[data-ui="beta"] section.gdark input:not([type=checkbox]):not([type=range]):not([type=color]),:root[data-ui="beta"] section.gdark select,:root[data-ui="beta"] section.gdark textarea{border-radius:var(--b-radius-s)!important;background:rgba(255,255,255,.05)!important;border:1px solid rgba(255,255,255,.09)!important}
+:root[data-ui="beta"] input[type=range]{accent-color:var(--g-accent)}
+
+/* item tiles and characters */
+:root[data-ui="beta"] .vt{border-radius:9px!important;box-shadow:0 2px 6px rgba(0,0,0,.35)}
+:root[data-ui="beta"] .vt>img:first-child{border-radius:8px}
+:root[data-ui="beta"] .vt:hover{box-shadow:0 0 0 2px var(--g-accent),0 6px 16px rgba(0,0,0,.45)}
+:root[data-ui="beta"] .cht{border-radius:var(--b-radius)!important;overflow:hidden}
+:root[data-ui="beta"] #home .hm-ch{border-radius:var(--b-radius)!important}
+
+/* item popup */
+:root[data-ui="beta"] .dpm,:root[data-ui="beta"] .dps{border-radius:var(--b-radius)!important;background:rgba(16,18,26,.9)!important;border:1px solid rgba(255,255,255,.1)!important;-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);box-shadow:0 20px 50px rgba(0,0,0,.55)!important}
+:root[data-ui="beta"] .dps button{border-radius:999px!important}
+
+/* settings picker preview for this style */
+.uic.u-beta i{background:radial-gradient(circle at 25% 20%,rgba(120,110,255,.55),transparent 55%),radial-gradient(circle at 85% 90%,rgba(94,234,212,.5),transparent 55%),#141722;border-radius:10px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
+
+/* ---------- BETA THEME (colours and background; the base colours come from the theme list in vault.js) ---------- */
+:root[data-gt="beta"]{--g-bg:#0b0d16;--g-panel:rgba(20,22,36,.7);--g-col:rgba(18,20,32,.6);--g-line:#262a40;--g-deep:rgba(8,9,16,.8);--g-btn:#1c1f33;--g-solid:#141627}

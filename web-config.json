@@ -1,0 +1,9 @@
+{
+    "_help":  "The Bungie app the Pathfinder website signs in with. Public values only (no client secret). Run set-web-app.bat to change it.",
+    "bungie":  {
+                   "apiKey":  "000c0b4eb4e34dc9b52d5c4d2a7474fe",
+                   "clientId":  "56296",
+                   "tokenUrl":  "https://gt-token.brandonwkindred.workers.dev",
+                   "redirect":  "https://bugsthecanadian420.github.io/Brays-Pathfinder/"
+               }
+}

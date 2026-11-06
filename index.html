@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com data:; img-src 'self' data: blob: https://www.bungie.net; connect-src 'self' https://www.bungie.net https://stats.bungie.net https://*.workers.dev https:; frame-src 'none'; object-src 'none'; media-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pathfinder</title>
+<link rel="icon" type="image/png" href="logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Open+Sans:wght@400;600;700&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="beta.css?v=0.2.90">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#eef0f3;--panel:#fff;--line:#d3d8e0;--text:#1b2230;--mute:#667085;--gold:#9a7416;--arc:#1b6aa5;--ok:#2e7d4f;--inp:#f5f7fa}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10151e;--panel:#192130;--line:#2a3548;--text:#e8e4d8;--mute:#8d99ad;--gold:#e3bd62;--arc:#6cb8f0;--ok:#6fcf97;--inp:#121a27}}
+:root[data-theme="dark"]{--bg:#10151e;--panel:#192130;--line:#2a3548;--text:#e8e4d8;--mute:#8d99ad;--gold:#e3bd62;--arc:#6cb8f0;--ok:#6fcf97;--inp:#121a27}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--text);font:500 16px/1.45 Rajdhani,system-ui,sans-serif}
+header{padding:14px 16px 6px}
+h1{margin:0;font-size:26px;font-weight:700;letter-spacing:.5px}
+h1 small{display:block;font-size:14px;color:var(--mute);font-weight:500;letter-spacing:0}
+nav{display:flex;gap:6px;overflow-x:auto;padding:8px 16px;position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);z-index:5;border-bottom:1px solid var(--line)}
+nav button{flex:none;background:none;border:1px solid var(--line);color:var(--mute);padding:7px 14px;border-radius:999px;font:inherit;font-weight:600;cursor:pointer}
+nav button.on{background:var(--gold);color:var(--bg);border-color:var(--gold)}
+main{padding:14px 16px 40px;max-width:720px;margin:0 auto}
+section{display:none}section.on{display:block}
+/* the inventory stays laid out while another tab is open, so coming back to it is instant instead of re-laying out thousands of items */
+section#vault:not(.on){display:block;content-visibility:hidden;contain-intrinsic-size:0 0;height:0;overflow:hidden;margin:0!important;padding:0!important}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:12px}
+h2{margin:0 0 8px;font-size:20px}
+.mute{color:var(--mute);font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+label{display:block;font-size:14px;color:var(--mute)}
+input,select,textarea{width:100%;background:var(--inp);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:9px;font:inherit;font-size:16px;margin-top:2px}
+button.b{background:var(--arc);color:var(--bg);border:0;border-radius:8px;padding:9px 14px;font:inherit;font-weight:700;cursor:pointer}
+button.g{background:none;border:1px solid var(--line);color:var(--mute);border-radius:8px;padding:6px 10px;font:inherit;cursor:pointer}
+.big{font-size:34px;font-weight:700;color:var(--gold);line-height:1.1}
+.row{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
+.row:first-child{border-top:0}
+.row input[type=checkbox]{width:22px;height:22px;margin:0;flex:none}
+.row span{flex:1}.done span{text-decoration:line-through;color:var(--mute)}
+.bar{height:8px;background:var(--inp);border-radius:4px;overflow:hidden;margin:6px 0 10px}
+.bar i{display:block;height:100%;background:var(--ok);width:0}
+.res{margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.res div{background:var(--inp);border-radius:8px;padding:8px}.res b{display:block;font-size:22px;color:var(--arc)}
+.gcard{display:block;width:100%;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px;color:var(--text);font:inherit;cursor:pointer}.gcard b{font-size:18px}.gcard small{color:var(--gold);font-weight:600;margin-left:6px}.gcard .mute{margin-top:2px}
+.toc{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}.toc a{border:1px solid var(--line);border-radius:999px;padding:4px 12px;color:var(--arc);text-decoration:none;font-size:14px}
+.enc h3{margin:0 0 6px;font-size:20px}.enc h4{margin:12px 0 4px;font-size:16px;color:var(--gold)}.enc ul{margin:4px 0;padding-left:20px}.enc li{margin-bottom:4px}
+.slot{margin:10px 0;border:1px dashed var(--line);border-radius:10px;padding:10px;background:var(--inp)}.slot img{display:block;max-width:100%;border-radius:8px;margin-bottom:8px}.slot .cap{font-weight:700;font-size:15px}.slot .row2{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}.slot input[type=url]{flex:1;min-width:140px;margin:0;padding:6px;font-size:14px}.slot input[type=file]{font-size:13px;width:auto;margin:0;padding:4px}
+.tag{display:inline-block;border:1px solid var(--line);border-radius:6px;padding:1px 8px;font-size:13px;color:var(--mute);margin:0 4px 4px 0}
+.back{margin-bottom:10px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.chips button{background:none;border:1px solid var(--line);color:var(--mute);border-radius:999px;padding:5px 12px;font:inherit;cursor:pointer}.chips button.on{background:var(--arc);color:var(--bg);border-color:var(--arc)}
+details{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px}summary{cursor:pointer;font-weight:700;font-size:18px}summary small{color:var(--gold);font-weight:600;margin-left:6px}details ul{margin:8px 0;padding-left:20px}details li{margin-bottom:4px}details a{color:var(--arc)}details h3{margin:14px 0 4px;font-size:16px;color:var(--gold)}
+:focus-visible{outline:2px solid var(--arc);outline-offset:2px}
+:root{--panel:#fff;--line:#cfd5de;--bg:#e4e7ec;--inp:#f1f3f6;--gold:#8a6600;--arc:#0f5f9c;--cr:#c24a1c;--cd:#0f5f9c;--cx:#8a6600;--cs:#6a3fc2}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0c0e12;--panel:rgba(24,28,36,.88);--line:rgba(255,255,255,.09);--text:#e9e7e0;--mute:#8f98a6;--gold:#f0c85a;--arc:#7cc4ff;--ok:#7bd88f;--inp:rgba(0,0,0,.38);--cr:#ff8a5b;--cd:#7cc4ff;--cx:#f0c85a;--cs:#b68cff}}
+:root[data-theme="dark"]{--bg:#0c0e12;--panel:rgba(24,28,36,.88);--line:rgba(255,255,255,.09);--text:#e9e7e0;--mute:#8f98a6;--gold:#f0c85a;--arc:#7cc4ff;--ok:#7bd88f;--inp:rgba(0,0,0,.38);--cr:#ff8a5b;--cd:#7cc4ff;--cx:#f0c85a;--cs:#b68cff}
+body{background:radial-gradient(900px 420px at 80% -8%,rgba(124,196,255,.12),transparent 70%),radial-gradient(700px 400px at 0% 0%,rgba(240,200,90,.07),transparent 70%),var(--bg);background-attachment:fixed;font-variant-numeric:tabular-nums}
+header{display:flex;align-items:center;gap:12px;max-width:1040px;margin:0 auto;padding:16px 16px 8px}
+header svg,header .plogo{flex:none;width:38px;height:38px;color:var(--gold)}
+h1{font-size:24px;letter-spacing:3px;text-transform:uppercase}h1 small{letter-spacing:.3px;text-transform:none;font-size:13px}
+nav{background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);padding:0 12px;gap:2px;justify-content:flex-start}
+nav button{border:0;border-bottom:2px solid transparent;border-radius:0;background:none;padding:12px 14px;letter-spacing:1.2px;text-transform:uppercase;font-size:14px}
+nav button:hover{color:var(--text)}nav button.on{background:none;color:var(--gold);border-color:var(--gold)}
+main{max-width:1040px}
+.card{position:relative;border-radius:3px;backdrop-filter:blur(8px)}
+.card::before{content:"";position:absolute;left:-1px;top:-1px;width:16px;height:16px;border-top:2px solid var(--gold);border-left:2px solid var(--gold);pointer-events:none}
+h2{font-size:17px;letter-spacing:2px;text-transform:uppercase}
+.big{font-size:36px;letter-spacing:1px}
+#reset.on{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}#reset .card{margin:0}
+input,select,textarea{border-radius:2px;background:var(--inp)}
+input:focus,select:focus,textarea:focus{border-color:var(--gold);outline:none}
+input[type=checkbox]{accent-color:var(--gold)}
+button.b{background:var(--gold);color:#14110a;border-radius:2px;letter-spacing:.8px;text-transform:uppercase;font-size:14px}
+button.g{border-radius:2px}button.g:hover{color:var(--text);border-color:var(--mute)}
+.row{background:var(--inp);border:1px solid var(--line);padding:10px 12px;margin-bottom:6px;border-radius:2px}.row:first-child{border-top:1px solid var(--line)}
+.row.done{border-left:3px solid var(--ok)}
+.bar{height:6px;border-radius:0}.bar i{background:linear-gradient(90deg,var(--gold),var(--ok));transition:width .3s}
+.res div{border-radius:2px;border-left:2px solid var(--arc)}
+.chips button{border-radius:2px;text-transform:uppercase;letter-spacing:.8px;font-size:13px}.chips button.on{background:var(--gold);border-color:var(--gold);color:#14110a}
+.tag{border-radius:2px;text-transform:uppercase;letter-spacing:.6px;font-size:12px}
+#glist{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px}
+.gcard{margin:0;border-radius:2px;border-left:4px solid var(--mute);background:var(--panel);transition:transform .15s,border-color .15s}.gcard:hover{transform:translateY(-2px);border-color:var(--gold)}
+.gcard[data-cat="Raid"]{border-left-color:var(--cr)}.gcard[data-cat="Dungeon"]{border-left-color:var(--cd)}.gcard[data-cat="Exotic mission"]{border-left-color:var(--cx)}.gcard[data-cat="Secret triumph"]{border-left-color:var(--cs)}
+.gcard small{display:block;margin:0 0 2px;font-size:12px;text-transform:uppercase;letter-spacing:1px}
+.toc{position:sticky;top:calc(env(safe-area-inset-top,0px) + 46px);z-index:4;padding:8px 0;background:color-mix(in srgb,var(--bg) 90%,transparent)}
+.toc a{border-radius:2px;text-transform:uppercase;letter-spacing:.6px;font-size:12px}.toc a:hover{border-color:var(--gold)}
+.enc h3{letter-spacing:1px}
+.slot{border-radius:2px;border-style:solid}.slot img{border-radius:2px}
+@media (max-width:560px){h1{font-size:20px;letter-spacing:2px}.big{font-size:30px}}
+:root{--vig:rgba(0,0,0,.1);--cr:#8a5bb8;--cd:#4f7fb8;--cx:#b8962a;--cs:#3f8a52}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#07090e;--panel:rgba(16,20,29,.78);--line:rgba(255,255,255,.16);--text:#f1f1ee;--mute:#98a2b0;--gold:#ceae33;--arc:#9fc4e8;--inp:rgba(0,0,0,.4);--vig:rgba(0,0,0,.62);--cr:#9b6bcc;--cd:#5b8fc9;--cx:#ceae33;--cs:#4f9b62}}
+:root[data-theme="dark"]{--bg:#07090e;--panel:rgba(16,20,29,.78);--line:rgba(255,255,255,.16);--text:#f1f1ee;--mute:#98a2b0;--gold:#ceae33;--arc:#9fc4e8;--inp:rgba(0,0,0,.4);--vig:rgba(0,0,0,.62);--cr:#9b6bcc;--cd:#5b8fc9;--cx:#ceae33;--cs:#4f9b62}
+body{background:radial-gradient(1100px 560px at 50% -12%,rgba(80,118,163,.30),transparent 72%),radial-gradient(600px 400px at 100% 100%,rgba(80,118,163,.12),transparent 70%),var(--bg);background-attachment:fixed}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:1;background:radial-gradient(ellipse at center,transparent 50%,var(--vig))}
+header{flex-direction:column;text-align:center;gap:6px;padding:22px 16px 10px}
+header svg,header .plogo{width:54px;height:54px;color:var(--text)}
+h1{font-size:26px;font-weight:600;letter-spacing:7px}h1 small{letter-spacing:.4px;margin-top:4px}
+header::after{content:"";display:block;width:min(460px,72%);height:1px;margin-top:8px;background:linear-gradient(90deg,transparent,var(--text),transparent);opacity:.45}
+nav{justify-content:safe center;gap:4px;border-bottom:1px solid var(--line);padding:0 8px}
+nav button{position:relative;font-size:16px;font-weight:600;letter-spacing:3px;padding:14px 18px 18px;color:var(--mute);border-bottom:0}
+nav button:hover{color:var(--text)}
+nav button.on{color:var(--text);border:0}
+nav button.on::after{content:"";position:absolute;left:50%;bottom:6px;width:7px;height:7px;background:var(--text);transform:translateX(-50%) rotate(45deg)}
+.card{border:1px solid var(--line);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 8px 24px rgba(0,0,0,.25)}
+.card::before{border-color:var(--text);width:10px;height:10px;opacity:.9}
+.card::after{content:"";position:absolute;right:-1px;bottom:-1px;width:10px;height:10px;border-right:2px solid var(--text);border-bottom:2px solid var(--text);opacity:.9;pointer-events:none}
+h2{font-size:15px;letter-spacing:4px;padding-bottom:8px;border-bottom:1px solid var(--line);margin-bottom:12px}
+.big{font-weight:500;color:var(--text);letter-spacing:3px}
+button.b{background:transparent;color:var(--text);border:1px solid var(--text);letter-spacing:2px}
+button.b:hover{background:var(--text);color:var(--bg)}
+button.g{border-color:var(--line);letter-spacing:1px}
+.row{border:1px solid var(--line);transition:border-color .12s}.row:hover{border-color:var(--text)}
+.bar i{background:var(--text)}
+.res div{border-left:0;border:1px solid var(--line)}.res b{color:var(--text);font-weight:500;letter-spacing:1px}
+.chips button.on{background:var(--text);color:var(--bg);border-color:var(--text)}
+.gcard{border:1px solid var(--line);border-top:4px solid var(--mute);padding:14px}
+.gcard:hover{border-color:var(--text);transform:none;box-shadow:0 0 0 1px var(--text),0 8px 22px rgba(0,0,0,.4)}
+.gcard[data-cat="Raid"]{border-top-color:var(--cr);border-left-color:var(--line)}.gcard[data-cat="Dungeon"]{border-top-color:var(--cd);border-left-color:var(--line)}.gcard[data-cat="Exotic mission"]{border-top-color:var(--cx);border-left-color:var(--line)}.gcard[data-cat="Secret triumph"]{border-top-color:var(--cs);border-left-color:var(--line)}
+.gcard:hover[data-cat]{border-left-color:var(--text)}
+.gcard small{color:var(--mute);letter-spacing:2px}.gcard b{letter-spacing:1px}
+.toc a{color:var(--text);border-color:var(--line)}.toc a:hover{background:var(--text);color:var(--bg)}
+.enc h3{letter-spacing:3px;text-transform:uppercase;font-size:17px}.enc h4{color:var(--gold);letter-spacing:2px;text-transform:uppercase;font-size:13px}
+main{position:relative;z-index:2}
+@media (max-width:560px){h1{font-size:20px;letter-spacing:4px}nav button{padding:12px 12px 16px;letter-spacing:2px;font-size:14px}}
+#lb{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.94);overflow:auto;cursor:zoom-out}#lb img{display:block;width:max(100%,1200px);max-width:none}.slot img{cursor:zoom-in}
+#glist.hubgrid{grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px}
+.cat{position:relative;overflow:hidden;min-height:170px;text-align:left;border:1px solid var(--line);border-top:4px solid var(--mute);background:var(--panel);color:var(--text);font:inherit;padding:18px;cursor:pointer;transition:box-shadow .15s}
+.cat:hover{box-shadow:0 0 0 1px var(--text),0 10px 26px rgba(0,0,0,.4)}
+.cat .bg{position:absolute;right:-30px;top:-20px;height:150%;opacity:.2;pointer-events:none;mask-image:linear-gradient(90deg,transparent,#000 60%);-webkit-mask-image:linear-gradient(90deg,transparent,#000 60%)}
+.cat h3{position:relative;margin:0 0 4px;font-size:24px;letter-spacing:4px;text-transform:uppercase}.cat .mute,.cat .big{position:relative}
+.thumb{display:block;width:calc(100% + 28px);margin:-14px -14px 10px;aspect-ratio:16/9;object-fit:cover}
+.thumb.ph{background:linear-gradient(135deg,rgba(80,118,163,.35),rgba(0,0,0,.45))}
+</style>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b0d16">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pathfinder">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="web.css?v=0.2.90">
+<script>window.__GT_VER__="0.2.90";</script>
+<script src="shims.js?v=0.2.90"></script><script src="pako.min.js?v=0.2.90"></script><script src="preload-web.js?v=0.2.90"></script><script src="main-web.js?v=0.2.90"></script>
+<script>window.__GT_WEB__.start();document.documentElement.classList.add('gtweb');</script>
+<script src="mobile.js?v=0.2.90" defer></script>
+</head><body>
+<header><img class="plogo" src="logo.png" alt="" aria-hidden="true"><h1>Pathfinder<small>Works without a Bungie API key. Your data stays in this browser.</small></h1></header>
+<nav id="nav"></nav>
+<main>
+
+<section id="check">
+ <div class="card"><h2>Checklist</h2><div class="mute">Daily items clear at daily reset. Weekly items clear at weekly reset.</div>
+ <div class="bar"><i id="cbar"></i></div><div id="clist"></div>
+ <div style="display:flex;gap:8px;margin-top:10px"><input id="cnew" placeholder="Add an activity"><select id="ctype" style="width:110px"><option value="d">Daily</option><option value="w">Weekly</option></select><button class="b" id="cadd">Add</button></div></div>
+</section>
+
+<section id="power">
+ <div class="card"><h2>Power level</h2><div class="mute">Enter the power of each slot. Average is rounded down, as the game does.</div>
+ <div class="grid" id="pgrid" style="margin-top:8px"></div>
+ <div class="res"><div>Average<b id="pavg">–</b></div><div>To next level<b id="pnext">–</b></div></div>
+ <label style="margin-top:10px">Target power<input type="number" id="ptgt" placeholder="e.g. 2000"></label><div class="mute" id="pgap"></div></div>
+</section>
+
+<section id="dps">
+ <div class="card"><h2>Damage calculator</h2><div class="grid">
+ <label>Damage per shot<input type="number" id="d1" value="20000"></label>
+ <label>Rounds per minute<input type="number" id="d2" value="140"></label>
+ <label>Magazine size<input type="number" id="d3" value="7"></label>
+ <label>Reload (seconds)<input type="number" id="d4" step=".1" value="2.5"></label>
+ <label>Total ammo<input type="number" id="d5" value="21"></label>
+ <label>Boss health<input type="number" id="d6" placeholder="optional"></label></div>
+ <div class="res" id="dres"></div></div>
+</section>
+
+<section id="wish">
+ <div class="card"><h2>Weapon wishlist</h2><div class="mute">Track the rolls you are hunting.</div>
+ <div class="grid" style="margin-top:8px"><label>Weapon<input id="wn"></label><label>Type<select id="wt"><option>Kinetic</option><option>Energy</option><option>Power</option><option>Armor</option></select></label></div>
+ <label style="margin-top:8px">Perks and notes<textarea id="wp" rows="2"></textarea></label>
+ <button class="b" id="wadd" style="margin-top:8px">Add to wishlist</button></div>
+ <input id="wsearch" placeholder="Search wishlist" style="margin-bottom:12px"><div id="wlist"></div>
+</section>
+
+<section id="farm">
+ <div class="card"><h2>Farm counters</h2><div class="mute">Count runs, drops or kills toward a goal.</div>
+ <div style="display:flex;gap:8px;margin-top:8px"><input id="fn" placeholder="What are you farming?"><input id="fg" type="number" placeholder="Goal" style="width:90px"><button class="b" id="fadd">Add</button></div></div>
+ <div id="flist"></div>
+</section>
+
+<section id="guides">
+ <div id="ghub">
+  <div class="card"><h2>Helpful</h2><div class="mute">Choose a category, then an activity. Search finds any guide.</div>
+  <input id="gsearch" placeholder="Search all guides" style="margin-top:8px"><div class="chips" id="gchips"></div></div>
+  <div id="glist"></div>
+ </div>
+ <div id="gpage" hidden></div>
+</section>
+
+<section id="build">
+ <div class="card"><h2>Build notebook</h2><div class="grid">
+ <label>Name<input id="bn"></label>
+ <label>Class<select id="bc"><option>Titan</option><option>Hunter</option><option>Warlock</option></select></label>
+ <label>Subclass<select id="bs"><option>Solar</option><option>Arc</option><option>Void</option><option>Stasis</option><option>Strand</option><option>Prismatic</option></select></label>
+ <label>Exotic<input id="be"></label></div>
+ <label style="margin-top:8px">Aspects, fragments, mods, playstyle<textarea id="bt" rows="3"></textarea></label>
+ <button class="b" id="badd" style="margin-top:8px">Save build</button></div>
+ <div id="blist"></div>
+</section>
+<section id="vault"></section>
+</main>
+<div id="lb" hidden></div>
+<script>
+const $=id=>document.getElementById(id);
+const ST={get(k,d){try{const v=localStorage.getItem('gt_'+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem('gt_'+k,JSON.stringify(v))}catch(e){}}};
+const tabs=[['guides','Helpful'],['check','Checklist']];
+tabs.forEach(([id,n],i)=>{const b=document.createElement('button');b.textContent=n;b.onclick=()=>show(id);b.dataset.t=id;$('nav').appendChild(b)});
+function show(id){const R=document.documentElement,sx=document.getElementById(id);R.dataset.gsec=id;R.dataset.dark=sx&&sx.classList.contains('gdark')?'1':'0';document.querySelectorAll('section').forEach(s=>s.classList.toggle('on',s.id===id));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===id));ST.set('tab',id)}
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=ms=>{const s=Math.max(0,Math.floor(ms/1e3)),d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);return(d?d+'d ':'')+h+'h '+m+'m '+(s%60)+'s'};
+
+/* resets */
+function lastReset(weekly){const n=new Date();let r=Date.UTC(n.getUTCFullYear(),n.getUTCMonth(),n.getUTCDate(),17);if(r>n)r-=864e5;if(weekly){while(new Date(r).getUTCDay()!==2)r-=864e5}return r}
+
+
+/* checklist */
+let C=ST.get('chk',null)||{items:[['Daily Heroic Strike / Vanguard playlist','d'],['Complete bounties','d'],['Spend Glimmer and shards','d'],['Weekly Nightfall','w'],['Weekly raid or dungeon','w'],['Pinnacle challenges','w'],['Clan engrams','w'],['Check Xûr','w']].map(([t,k])=>({t,k,x:0})),dr:0,wr:0};
+function rolloverC(){const d=lastReset(false),w=lastReset(true);let ch=0;if(C.dr<d){C.items.forEach(i=>{if(i.k==='d')i.x=0});C.dr=d;ch=1}if(C.wr<w){C.items.forEach(i=>{if(i.k==='w')i.x=0});C.wr=w;ch=1}if(ch)ST.set('chk',C)}
+function drawC(){rolloverC();const done=C.items.filter(i=>i.x).length;$('cbar').style.width=(C.items.length?done/C.items.length*100:0)+'%';
+$('clist').innerHTML=C.items.map((it,i)=>`<div class="row ${it.x?'done':''}"><input type="checkbox" ${it.x?'checked':''} data-i="${i}" aria-label="Done"><span>${esc(it.t)} <small class="mute">${it.k==='d'?'daily':'weekly'}</small></span><button class="g" data-del="${i}" aria-label="Remove">✕</button></div>`).join('')||'<div class="mute">Nothing here yet. Add an activity below.</div>'}
+$('clist').onclick=e=>{const t=e.target;if(t.dataset.i!==undefined){C.items[t.dataset.i].x=t.checked?1:0}else if(t.dataset.del!==undefined){C.items.splice(t.dataset.del,1)}else return;ST.set('chk',C);drawC()};
+$('cadd').onclick=()=>{const v=$('cnew').value.trim();if(!v)return;C.items.push({t:v,k:$('ctype').value,x:0});$('cnew').value='';ST.set('chk',C);drawC()};
+drawC();setInterval(drawC,60000);
+
+/* power */
+const slots=['Kinetic','Energy','Power','Helmet','Gauntlets','Chest','Legs','Class item'];let P=ST.get('pow',slots.map(()=>''));
+$('pgrid').innerHTML=slots.map((s,i)=>`<label>${s}<input type="number" inputmode="numeric" data-p="${i}" value="${P[i]}"></label>`).join('');
+function calcP(){const v=P.map(Number);const ok=v.every(x=>x>0);const sum=v.reduce((a,b)=>a+b,0);
+$('pavg').textContent=ok?Math.floor(sum/8):'–';$('pnext').textContent=ok?(8-sum%8)+' pts':'–';
+const t=+$('ptgt').value;$('pgap').textContent=ok&&t?(Math.floor(sum/8)>=t?'You are at or above target.':'Total power needed: '+(t*8-sum)+' across slots.'):''}
+$('pgrid').oninput=e=>{P[e.target.dataset.p]=e.target.value;ST.set('pow',P);calcP()};$('ptgt').oninput=calcP;calcP();
+
+/* damage */
+function calcD(){const [dmg,rpm,mag,rl,ammo,hp]=['d1','d2','d3','d4','d5','d6'].map(i=>+$(i).value||0);
+if(!dmg||!rpm||!mag){$('dres').innerHTML='';return}
+const sh=60/rpm,burst=dmg*rpm/60,mt=(mag-1)*sh+sh,cyc=mt+rl,sus=dmg*mag/cyc,tot=dmg*ammo;
+let h=`<div>Burst DPS<b>${Math.round(burst).toLocaleString()}</b></div><div>Sustained DPS<b>${Math.round(sus).toLocaleString()}</b></div><div>Damage per mag<b>${(dmg*mag).toLocaleString()}</b></div><div>Total from ammo<b>${tot.toLocaleString()}</b></div>`;
+if(hp){const shots=Math.ceil(hp/dmg),reloads=Math.max(0,Math.ceil(shots/mag)-1),t=shots*sh+reloads*rl;h+=`<div>Shots to kill<b>${shots}</b></div><div>Time to kill<b>${t.toFixed(1)}s</b></div>`;if(shots>ammo)h+=`<div style="grid-column:1/3">You need ${shots-ammo} more rounds than you have.</div>`}
+$('dres').innerHTML=h}
+document.querySelectorAll('#dps input').forEach(i=>i.oninput=calcD);calcD();
+
+/* generic list builder */
+function list(key,box,render){let A=ST.get(key,[]);const draw=()=>{box.innerHTML=A.length?A.map(render).join(''):'<div class="card mute">Nothing saved yet.</div>'};
+box.addEventListener('click',e=>{const t=e.target;if(t.dataset.rm!==undefined){A.splice(t.dataset.rm,1)}else if(t.dataset.inc!==undefined){A[t.dataset.inc].n=Math.max(0,(A[t.dataset.inc].n||0)+(+t.dataset.d))}else return;ST.set(key,A);draw()});
+return{add(o){A.unshift(o);ST.set(key,A);draw()},draw,get:()=>A}}
+const W=list('wish',$('wlist'),(w,i)=>`<div class="card" data-s="${esc((w.n+' '+w.p).toLowerCase())}"><div style="display:flex;justify-content:space-between;gap:8px"><b>${esc(w.n)} <small class="mute">${esc(w.t)}</small></b><button class="g" data-rm="${i}">Remove</button></div><div class="mute" style="white-space:pre-wrap">${esc(w.p)}</div></div>`);
+$('wadd').onclick=()=>{const n=$('wn').value.trim();if(!n)return;W.add({n,t:$('wt').value,p:$('wp').value});$('wn').value=$('wp').value=''};
+$('wsearch').oninput=e=>{const q=e.target.value.toLowerCase();document.querySelectorAll('#wlist .card[data-s]').forEach(c=>c.style.display=c.dataset.s.includes(q)?'':'none')};W.draw();
+const F=list('farm',$('flist'),(f,i)=>{const pct=f.g?Math.min(100,(f.n||0)/f.g*100):0;return`<div class="card"><div style="display:flex;justify-content:space-between"><b>${esc(f.t)}</b><button class="g" data-rm="${i}">Remove</button></div><div class="bar"><i style="width:${pct}%"></i></div><div style="display:flex;align-items:center;gap:10px"><button class="g" data-inc="${i}" data-d="-1">−1</button><span class="big" style="font-size:26px">${f.n||0}${f.g?' / '+f.g:''}</span><button class="b" data-inc="${i}" data-d="1">+1</button><button class="g" data-inc="${i}" data-d="5">+5</button></div></div>`});
+$('fadd').onclick=()=>{const t=$('fn').value.trim();if(!t)return;F.add({t,g:+$('fg').value||0,n:0});$('fn').value=$('fg').value=''};F.draw();
+const B=list('build',$('blist'),(b,i)=>`<div class="card"><div style="display:flex;justify-content:space-between;gap:8px"><b>${esc(b.n)} <small class="mute">${esc(b.c)} · ${esc(b.s)}</small></b><button class="g" data-rm="${i}">Remove</button></div>${b.e?`<div class="mute">Exotic: ${esc(b.e)}</div>`:''}<div class="mute" style="white-space:pre-wrap">${esc(b.t)}</div></div>`);
+$('badd').onclick=()=>{const n=$('bn').value.trim();if(!n)return;B.add({n,c:$('bc').value,s:$('bs').value,e:$('be').value,t:$('bt').value});$('bn').value=$('be').value=$('bt').value=''};B.draw();
+/* guides */
+const GD=[
+["Raid","Raid prep: every raid","Six players, voice chat, and clear roles beat any single loadout.",["Pick callout roles before the first encounter: add clear, relic or plate holder, and damage.","Bring a Well of Radiance, Rally Barricade or similar support so one wipe is not run-ending.","Carry anti-Barrier, Overload and Unstoppable options across the fireteam.","Stock heavy ammo and a Special-slot weapon with a strong adds-clear perk before the boss."]],
+["Raid","Vault of Glass","Vex raid built on timing and callouts. Encounters run Confluxes, Oracles, Templar, Gatekeepers, then Atheon.",["Oracles: shoot them in the order they appear, and keep a fixed caller.","Templar: the Relic holder cleanses the shield while others clear adds.","Atheon: players are teleported into the Vex realm, so callouts matter most here."]],
+["Raid","Last Wish","A long, well-known raid that ends in Riven. It rewards strong heavy damage and add control.",["Assign one player to each side task rather than everyone chasing the same objective.","Save your best burst weapons for the final boss damage windows.","New players should watch a full walkthrough once before their first run."]],
+["Raid","King’s Fall","Hive raid with heavy mechanics and a famously long final fight against Oryx.",["Learn the role-swap pattern early: players alternate between supporting and damage tasks.","Bring a clean solo-capable loadout so a downed teammate does not stall the group.","Practice the earlier encounters first; the final boss assumes you already know the basics."]],
+["Dungeon","Dungeon basics","Three-player activities that reward solo skill. Expect fewer callouts and more survival.",["Bring a defensive weapon or ability for each encounter: healing, a damage buff or crowd control.","Learn each boss’s damage phase and save your power ammo for it.","Use the Flawless and Solo runs only after learning the full route."]],
+["Dungeon","Shattered Throne","Classic Taken dungeon that ends with a boss fight against Vorgeth’s master.",["The Wizard and Pit of Heresy-style encounters are about positioning, not DPS.","Equip a strong add-clear primary and a reliable heavy weapon for the finale."]],
+["Dungeon","Duality","Dreaming City dungeon built around two moving sides. Careful teamwork matters more than damage.",["Stick to your assigned side and call out changes before they happen.","A defensive aspect or Well can save the group in the final encounter."]],
+["Dungeon","Ghosts of the Deep","Underwater Hive dungeon with long corridors and Taken-style enemies.",["Use area-clear weapons for the corridors.","Keep your super and grenades for the final boss to speed up the damage phase."]],
+["Exotic mission","Whisper of the Worm","Hard solo-friendly mission that rewards the exotic sniper Whisper of the Worm.",["Take a defensive build with healing or damage resistance.","Play it on a high difficulty only after you can clear it on normal."]],
+["Exotic mission","Zero Hour","Strike-style mission that rewards the exotic pulse rifle Outbreak Perfected after completing its steps.",["Complete it on normal first, then replay on a harder setting for the catalyst steps.","Memorize the enemy waves so you can clear them quickly."]],
+["Exotic mission","Presage","Dungeon-style Hive mission that rewards the exotic Divinity trace rifle.",["Bring a strong add-clear weapon and healing.","Learn the boss pattern so you can save heavy ammo."]],
+["Exotic mission","Vox Obscura","Vex mission with puzzle sections that rewards the exotic sidearm Vox Obscura.",["Take your time and read the on-screen prompts.","Bring a mobile build for the platforming and timed sections."]],
+["Secret triumph","How to find secret triumphs","Secret triumphs stay hidden until you meet a condition. They are tied to puzzles, lore or specific actions.",["Check the Triumphs menu for entries marked as secret or hidden.","Search community databases and Reddit using the exact name once it appears.","Do not use exploits or glitches: Bungie can ban accounts for them."]],
+["Secret triumph","Lore and puzzle triumphs","Many secrets come from reading item descriptions and revisiting old areas.",["Read weapon and armor flavor text for clues about where to go.","Follow in-game environmental cues: symbols, sounds and glowing objects.","Ask a clan or community for a spoiler-free nudge before looking up the full solution."]],
+["Secret triumph","Seasonal secrets","Seasonal activities often hide triumphs that only appear after finishing several steps.",["Finish the main seasonal story before hunting secrets.","Track your progress in the Checklist tab so you can see what is left each week."]]
+];
+const DET={
+"Vault of Glass":[
+["Before you go",["Six players. Plan for Overload Champions: bring Overload mods or a weapon that locks them down on every fireteam member who needs it.","Strong picks reported for this raid: Xenophage for heavy damage, and Deathbringer with Argent Ordnance to melt Wyverns, Champions, the Templar and Atheon.","Wear armor with grenade and super regeneration, since the boss fights reward ability uptime."]],
+["Opening the Vault",["Clear all three plates, then build the spire to open the Vault doors.","Loot the chest just inside the gate before you move on."]],
+["Confluxes",["Defend the Confluxes from Vex waves. The encounter starts with left and right sides, then moves to all three at once.","Overload Minotaurs appear, so assign someone to deal with them quickly.","Split the team evenly across the three Confluxes and call out when a side is overwhelmed."]],
+["Oracles",["Seven Oracles appear in waves, chiming at different pitches. Shoot them in the order they appeared.","With seven Oracles and six players, one Guardian shoots two. Agree who that is before you start.","Use a fixed caller and one player per Oracle to avoid double shots. Hobgoblins try to block your sightlines, so clear them first."]],
+["Templar",["This fight combines the boss with Oracles. Pick up the Relic to start the encounter.","The Relic wielder charges the Relic super and hits the Templar to bring its shield down.","Others handle Oracles, Fanatics and Overload Minotaurs while the Relic wielder works. Rotate the Relic if the wielder dies."]],
+["Gorgons’ Maze",["A short stealth-style section between the Templar and the Gatekeepers. Move together and avoid the Gorgons’ line of sight.","The jumping puzzle that follows reuses the Vex plates. After the first few platforms, double or triple jump to skip ahead."]],
+["Gatekeepers",["Defeat one Gatekeeper each in the past, present and future. Treat each as its own mini encounter.","Keep your heavy ammo for the Gatekeepers and use special ammo for the adds in between."]],
+["Atheon",["The final boss lives in Time’s Conflux. Players are teleported through time, so callouts matter more here than anywhere else.","The Aegis Relic can cleanse your team of negative status effects in this fight.","Burn Atheon with heavy and super damage when he is exposed, and keep the Relic wielder alive."]],
+["Common mistakes",["Shooting Oracles out of order or two players shooting the same one.","Forgetting to rotate the Relic.","Ignoring Overload Champions until they overwhelm the team."]]
+],
+"Raid prep: every raid":[
+["Fireteam setup",["Fill the roles first: a caller, a clear specialist, a boss damage dealer and a backup who can revive. Rotate roles between runs so everyone learns.","Voice chat is not optional. Decide on short, consistent callouts before the first encounter."]],
+["Loadout checklist",["Primary: an add-clear weapon. Special: matched to the encounter. Heavy: your best boss damage option.","Bring artifact mods that counter Barrier, Overload and Unstoppable Champions.","Stack armor for resilience and recovery. A bubble or Well of Radiance on the team lowers wipe risk."]],
+["Learning the raid",["Watch the encounter once, then run it with a patient team. Do not skip normal mode to chase a challenge.","After each wipe, name the one thing that went wrong. Fix it before the next attempt."]]
+],
+"Last Wish":[
+["Before you go",["This is a long raid with five encounters. Bring heavy ammo mods and a reliable add-clear loadout.","Plan for at least one player who knows the encounters well so the rest can learn by doing."]],
+["How to approach it",["Run it one encounter at a time. Learn the side tasks and who owns each before you push for damage.","Save your burst weapons and supers for the final boss damage windows."]],
+["Common mistakes",["Everyone chasing the same objective and leaving adds uncontrolled.","Using heavy ammo on adds instead of saving it for bosses."]]
+],
+"King’s Fall":[
+["Before you go",["This raid has heavy mechanics and a long final boss. Bring a durable build and anti-Champion options.","Expect long attempts: schedule a full session and bring snacks."]],
+["How to approach it",["Learn the earlier encounters first. They teach the role-swap pattern the final boss expects.","Players alternate between support and damage tasks. Call out swaps clearly."]],
+["Common mistakes",["Skipping practice on the early encounters.","Not saving heavy ammo and supers for Oryx’s damage windows."]]
+],
+"Dungeon basics":[
+["Loadout",["Take one weapon for adds, one for bosses, and a healing or damage-buff option.","Armor mods that reload your weapons or restore your abilities pay off in long fights."]],
+["Strategy",["Learn the route and each boss’s damage phase before attempting a solo or flawless run.","Sword and glaive builds shine in tight dungeon rooms, but only if you can survive the incoming damage."]],
+["Common mistakes",["Rushing past enemies that will chase you into the boss room.","Wasting power ammo before the damage phase starts."]]
+],
+"Shattered Throne":[["What to expect",["A Taken-themed dungeon that ends in a boss fight. Expect Taken blights, Champion waves and tight platforming.","Bring a weapon with strong add-clear and a power weapon for the finale."]]],
+"Duality":[["What to expect",["A Dreaming City dungeon where two sides must stay in sync. Assign one player to each side so no one is overloaded.","A Well of Radiance or similar defensive tool helps in the final encounter."]]],
+"Ghosts of the Deep":[["What to expect",["An underwater Hive dungeon. Use area-clear weapons in the corridors and save supers for the final boss.","Learn the exploration sections first so you do not waste time on missed turns."]]],
+"Whisper of the Worm":[
+["Before you go",["Run it first on normal difficulty to learn the route and enemy types.","Take a defensive build with healing or damage resistance and a weapon that can handle Champions."]],
+["Strategy",["Take it slow. Clear each area, pick off Champions with your anti-Champion weapon, and avoid rushing into sniper sightlines.","On higher difficulties, bring a super-based option so you can clear tough waves."]],
+["Common mistakes",["Rushing past enemies that will chase you.","Playing it like a normal strike instead of a careful route clear."]]
+],
+"Zero Hour":[
+["Before you go",["Learn the mission on normal first. The exotic reward and catalyst steps are layered on top of the base run.","Bring add-clear and anti-Champion options."]],
+["Strategy",["Memorize wave timing so you can pre-position and use your abilities at the right moment.","Replay on a harder difficulty for the follow-up steps once you can clear it consistently."]]
+],
+"Presage":[["Strategy",["A Hive mission with dungeon-style pacing. Use add-clear and healing, learn the boss pattern, and save heavy ammo for the boss."]]],
+"Vox Obscura":[["Strategy",["A Vex mission with puzzle sections. Read on-screen prompts, move carefully through timed sections and keep a mobile build equipped."]]],
+"How to find secret triumphs":[["Method",["Open the Triumphs menu and look for entries that are hidden or marked secret.","Note the exact name when one appears, then search community databases like light.gg and Reddit.","Keep a short list of the steps you have already tried so you do not repeat them."]],["Safety",["Never use exploits or glitches. Bungie can ban accounts for them."]]],
+"Lore and puzzle triumphs":[["Method",["Read weapon and armor flavor text, lore tab entries and item descriptions for clues.","Revisit old locations and watch for symbols, sounds and glowing objects.","Ask your clan for a hint before opening a full solution."]]],
+"Seasonal secrets":[["Method",["Finish the main seasonal story first, since many secrets unlock after the final mission.","Check the seasonal triumph list each week and log what is left in the Checklist tab."]]]
+};
+const FULL={
+"Shattered Throne":{
+ intro:"A three-player Taken dungeon in the Dreaming City, set in Mara Sov’s Throne World. Four encounters take you from the Erebus labyrinth through the Descent, Vorgeth, and a climb up the Spire to Dûl Incaru. Tap any map to enlarge it.",
+ tags:["Dungeon","3 players","Dreaming City","Taken","Exotic: Wish-Ender"],
+ src:["Maps by tenrouken and pryanie","Loot table by Rocketbiscuits and Blueberries.gg","paracausality.com","Destinypedia"],
+ sections:[
+ {t:"Overview and loot",p:"Every encounter can drop any piece from the dungeon loot pool. It rewards Season of the Lost weapons and Season of Defiance armor, at Tier 3 by default and Tier 5 when the dungeon is the weekly featured one. It requires the Forsaken pack.",
+  b:[["Loot pool",["Wish-Ender: exotic bow. The exotic quest is required, and its catalyst can also drop here.","Chrysura Melo: support auto rifle.","Fractethyst: precision shotgun.","Vulpecula: precision hand cannon.","Canis Major: rapid-fire heavy grenade launcher.","Techeun’s Regalia: the armor set."]],
+  ["Origin trait: Ignoble Deeds",["Gain charges by inflicting subclass debuffs on targets, and spend them by defeating combatants.","While charged, the weapon gains handling, reload speed and Sword charge rate."]],
+  ["Armor set bonuses",["2 pieces: gain a strong overshield while performing a finisher, and release a slowing burst when you finish a target.","4 pieces: gain increasing damage resistance when you deal damage or land final blows. Finishers grant accelerated progress, and at max stacks your ability recharge rate also increases."]],
+  ["Triumph",["Come at Me: complete the dungeon while wearing a full set of unpurified Reverie Dawn armor."]]],
+  img:["Dungeon loot table","Dungeon emblem"]},
+ {t:"Erebus (first encounter)",p:"Search for safe passage through a labyrinth of Awoken towers. The encounter is about finding your way with symbols.",
+  b:[["Search for safe passage",["Kill the Labyrinth Architect to reveal a symbol.","Go to the matching area and kill another Architect to reveal the next symbol.","Repeat this seven times. The last symbol is always the falling bird, which leads you to the Hallowed Ground area.","Kill the last Labyrinth Architect to open safe passage."]],
+  ["Areas on the map",["Temple of the Infinite, Tower of the Sky, Shattered Cliffs, Binary Shrine, Tower of the Deep, Garden of the Prophet, Hallowed Ground and The Ingress."]],
+  ["Hunters’ Remembrance quest (Wish-Ender)",["Purify the Awoken mementos by hunting three Taken in the dungeon: a Minotaur in Erebus, a Captain in The Descent and an Ogre in Eleusinia.","Take the relic from the top floor of the Tower of the Deep to the round gazebo on the roof of the Hallowed Ground building. You can melee lunge with the relic, but do not throw it away.","Several statues hold relics, and only one has an empty hand. Interact with that statue to place the relic.","The Taken Minotaur boss Theratos, Archersbane spawns. After it dies, Querim, The Waking spawns. Defeat both."]],
+  ["Collectibles marked on the map",["A Corrupted Egg is on top of the roof of the Tower of the Sky, reached using the bath water.","An Ahamkara Bone is inside a cave down the cliff near the Tower of the Deep."]]],
+  img:["Erebus map and walkthrough"]},
+ {t:"The Descent (second encounter)",p:"A long traversal through a gorge, with relics to carry and bosses to defeat. You start at the lower right of the map.",
+  b:[["Journey to the Spire",["Drop down into the gorge to the left, then turn right and follow the ledge.","Two Taken bosses upstairs must be defeated before the door opens.","Cross the snipers’ passage by jumping through the middle or by using the wall ledges.","On the beams in the next room, watch for Hallowed Ogres that push you off, and Taken blights with orbiting parts. Both are randomized each run."]],
+  ["Press onward",["Entering the Thrallway gives a debuff that stops you from sprinting. You can still jump and use other movement abilities.","Turn left into the narrow hallway, then left again after leaving it. Drop down through the Taken fog wall."]],
+  ["Cross the chasm",["Reach the opposite side of the gorge and turn right.","Either walk the narrow rocky ledge with pulsating Taken blights, or enter the corridor and go upstairs, where enemies wait and the floors are covered in Taken essence.","Jump over the abyss to the Awoken building, clear enemies if needed, and enter."]],
+  ["Hunters’ Remembrance quest",["Carry two relics through the encounter to the matching deposit spots marked on the map. The door to Eriviks, The Waking requires you to carry and deposit two relics.","After the Thrallway, the doors on the opposite side of the gorge open. Go inside and face a wave of enemies followed by a Taken boss."]]],
+  img:["The Descent map and walkthrough"]},
+ {t:"Vorgeth, the Boundless Hunger (third encounter)",p:"A Taken Ogre protected by an immunity shield. You drop into the boss arena from the Descent.",
+  b:[["Overcome the Keeper of Petitions",["Four Keeper of Petitions Taken Wizards spawn along the four walls. Each leaves a transparent purple orb when it dies.","Each orb gives a stack of Petitioner’s Mark and gives you a 45-second timer that refreshes with every orb. If it runs out, you die.","At four stacks the buff becomes Petitioner’s Burden, with another 45 seconds to use it.","Deposit it at one of the deposit spots to extinguish Vorgeth’s shield. The damage phase starts immediately.","If you do not kill Vorgeth in one go, repeat the process and deposit at a different spot."]],
+  ["Hunters’ Remembrance quest",["When you deposit the Burden and start damage, a Fleeing Shade Taken Minotaur spawns at the far right corner of the arena. Defeat it quickly.","A relic spawns at the top of the stairs. Take it to a statue with an empty hand at the near left corner of the arena.","Another Taken Ogre boss, Xavoth, the Waking, spawns behind you. The quest progresses as soon as you kill it."]],
+  ["After the fight",["Go to the next room and interact with Sjur Eido’s statue. This is also where you finish the Wish-Ender quest.","Collectibles on the map: a Corrupted Egg in Sjur Eido’s room and another on the ledge above the arena."]]],
+  img:["Vorgeth arena map and walkthrough"]},
+ {t:"Ascending the Spire",p:"The climb from Sjur Eido’s room to Dûl Incaru’s chambers. Nothing fights back until the top, but the jumps are tricky.",
+  b:[["Route",["From Sjur Eido’s room, jump across rocks to a floating island beneath the Spire.","Enter the elevating beam to reach the first floor.","Visit the right wing and ascend again, cross to the left wing and ascend, then cross to the right wing once more.","The outer shell is shattered at the third floor of the right wing. From there, walk the narrow ledge to a balcony at the middle section of the Spire.","Enter the middle section and ascend one last time to Dûl Incaru’s chambers."]]],
+  img:["Spire ascent map"]},
+ {t:"Dûl Incaru, the Eternal Return (fourth encounter)",p:"The final boss. You cannot hurt her without a buff you get by killing her Fatesmiths.",
+  b:[["Face Dûl Incaru",["The three Fatesmiths of Dûl Incaru hunt you down. Each leaves a transparent purple orb when it dies.","The first orb gives the Finite Thought buff with a 45-second timer that cannot be refreshed.","You need at least one stack of Finite Thought to damage Dûl Incaru.","More orbs raise your stacks up to x3 but do not refresh the timer, so kill all the Fatesmiths together and grab their orbs quickly.","The Fatesmiths come back some time after all three are defeated."]],
+  ["Getting rid of the buff",["If you do not kill her within one buff timer, you must dispose of it before time runs out or you die.","Jump onto the central raised plate to remove all your Finite Thought stacks.","Keep collecting and disposing of the buff to deal damage until she is dead."]],
+  ["Collectibles marked on the map",["A Corrupted Egg is on the ledge outside her chambers.","Another egg is easy to see by looking up after the first elevating beam.","Two Ahamkara Bones are marked: one below the Spire, which needs a tincture, and one on the top floor before ascending, in the left corridor."]]],
+  img:["Dûl Incaru map and walkthrough"]},
+ {t:"Secret chests and collectibles",p:"Each map above marks Corrupted Eggs and Ahamkara Bones. Use them as your checklist.",
+  b:[["Tips",["Eggs are numbered on the maps in the order you reach them.","Some bones need a tincture or a careful jump, so check the handwritten notes beside them on the maps."]]],
+  img:["Your own secret chest screenshots"]}
+ ]}
+};
+const BUILT={"Shattered Throne|0_0":"g/184.webp","Shattered Throne|0_1":"g/55.webp","Shattered Throne|1_0":"g/211.webp","Shattered Throne|2_0":"g/117.webp","Shattered Throne|3_0":"g/144.webp","Shattered Throne|4_0":"g/135.webp","Shattered Throne|5_0":"g/135.webp"};
+Object.assign(BUILT,{"Crota’s End|0_0":"g/11.webp","Crota’s End|0_1":"g/120.webp","Crota’s End|0_2":"g/45.webp","Crota’s End|1_0":"g/101.webp","Crota’s End|2_0":"g/87.webp","Crota’s End|3_0":"g/230.webp","Crota’s End|4_0":"g/206.webp","Deep Stone Crypt|0_0":"g/138.webp","Deep Stone Crypt|0_1":"g/76.webp","Deep Stone Crypt|1_0":"g/3.webp","Deep Stone Crypt|1_1":"g/136.webp","Deep Stone Crypt|2_0":"g/153.webp","Deep Stone Crypt|2_1":"g/167.webp","Deep Stone Crypt|3_0":"g/97.webp","Deep Stone Crypt|4_0":"g/91.webp","Deep Stone Crypt|5_0":"g/189.webp","Desert Perpetual|0_0":"g/193.webp","Desert Perpetual|0_1":"g/177.webp","Desert Perpetual|0_2":"g/57.webp","Desert Perpetual|1_0":"g/166.webp","Desert Perpetual|1_1":"g/149.webp","Desert Perpetual|2_0":"g/216.webp","Desert Perpetual|2_1":"g/119.webp","Desert Perpetual|3_0":"g/74.webp","Desert Perpetual|3_1":"g/210.webp","Desert Perpetual|4_0":"g/114.webp","Desert Perpetual|4_1":"g/181.webp","Desert Perpetual|4_2":"g/141.webp","Desert Perpetual|4_3":"g/14.webp","Desert Perpetual|5_0":"g/191.webp","Desert Perpetual|5_1":"g/62.webp","Desert Perpetual|5_2":"g/15.webp","Garden of Salvation|0_0":"g/148.webp","Garden of Salvation|0_1":"g/185.webp","Garden of Salvation|1_0":"g/92.webp","Garden of Salvation|1_1":"g/40.webp","Garden of Salvation|2_0":"g/70.webp","Garden of Salvation|2_1":"g/180.webp","Garden of Salvation|3_0":"g/85.webp","Garden of Salvation|3_1":"g/147.webp","Garden of Salvation|3_2":"g/100.webp","King’s Fall|0_0":"g/32.webp","King’s Fall|0_1":"g/86.webp","King’s Fall|0_2":"g/204.webp","King’s Fall|0_3":"g/154.webp","King’s Fall|1_0":"g/159.webp","King’s Fall|2_0":"g/71.webp","King’s Fall|3_0":"g/197.webp","King’s Fall|3_1":"g/228.webp","King’s Fall|3_2":"g/169.webp","King’s Fall|4_0":"g/52.webp","King’s Fall|5_0":"g/200.webp","King’s Fall|6_0":"g/73.webp","Last Wish|0_0":"g/221.webp","Last Wish|0_1":"g/155.webp","Last Wish|0_2":"g/160.webp","Last Wish|0_3":"g/18.webp","Last Wish|1_0":"g/173.webp","Last Wish|1_1":"g/77.webp","Last Wish|2_0":"g/130.webp","Last Wish|3_0":"g/225.webp","Last Wish|3_1":"g/23.webp","Last Wish|4_0":"g/174.webp","Last Wish|4_1":"g/46.webp","Last Wish|4_2":"g/95.webp","Last Wish|4_3":"g/94.webp","Last Wish|4_4":"g/6.webp","Root of Nightmares|0_0":"g/162.webp","Root of Nightmares|0_1":"g/123.webp","Root of Nightmares|1_0":"g/89.webp","Root of Nightmares|2_0":"g/90.webp","Root of Nightmares|3_0":"g/0.webp","Root of Nightmares|4_0":"g/25.webp","Salvation’s Edge|0_0":"g/115.webp","Salvation’s Edge|0_1":"g/131.webp","Salvation’s Edge|1_0":"g/8.webp","Salvation’s Edge|2_0":"g/31.webp","Salvation’s Edge|3_0":"g/81.webp","Salvation’s Edge|4_0":"g/183.webp","Salvation’s Edge|5_0":"g/26.webp","Salvation’s Edge|6_0":"g/127.webp","Salvation’s Edge|6_1":"g/112.webp","Vault of Glass|0_0":"g/12.webp","Vault of Glass|0_1":"g/82.webp","Vault of Glass|1_0":"g/13.webp","Vault of Glass|2_0":"g/35.webp","Vault of Glass|2_1":"g/195.webp","Vault of Glass|2_2":"g/103.webp","Vault of Glass|3_0":"g/75.webp","Vault of Glass|4_0":"g/164.webp","Vault of Glass|4_1":"g/158.webp","Vault of Glass|4_2":"g/134.webp","Vow of the Disciple|0_0":"g/64.webp","Vow of the Disciple|0_1":"g/124.webp","Vow of the Disciple|0_2":"g/16.webp","Vow of the Disciple|0_3":"g/196.webp","Vow of the Disciple|0_4":"g/29.webp","Vow of the Disciple|1_0":"g/128.webp","Vow of the Disciple|2_0":"g/142.webp","Vow of the Disciple|2_1":"g/222.webp","Vow of the Disciple|2_2":"g/126.webp","Vow of the Disciple|3_0":"g/17.webp","Vow of the Disciple|4_0":"g/42.webp","Vow of the Disciple|4_1":"g/172.webp","Duality|0_0":"g/84.webp","Duality|0_1":"g/213.webp","Duality|1_0":"g/209.webp","Duality|2_0":"g/44.webp","Duality|3_0":"g/96.webp","Equilibrium|0_0":"g/168.webp","Equilibrium|0_1":"g/88.webp","Equilibrium|0_2":"g/176.webp","Equilibrium|1_0":"g/98.webp","Equilibrium|1_1":"g/37.webp","Equilibrium|1_2":"g/53.webp","Equilibrium|1_3":"g/21.webp","Equilibrium|1_4":"g/111.webp","Equilibrium|1_5":"g/202.webp","Equilibrium|1_6":"g/1.webp","Equilibrium|1_7":"g/208.webp","Equilibrium|1_8":"g/121.webp","Equilibrium|1_9":"g/182.webp","Equilibrium|1_10":"g/192.webp","Equilibrium|2_0":"g/143.webp","Equilibrium|2_1":"g/33.webp","Equilibrium|2_2":"g/24.webp","Equilibrium|2_3":"g/30.webp","Equilibrium|2_4":"g/22.webp","Equilibrium|2_5":"g/179.webp","Equilibrium|2_6":"g/10.webp","Equilibrium|2_7":"g/48.webp","Ghosts of the Deep|0_0":"g/188.webp","Ghosts of the Deep|0_1":"g/161.webp","Ghosts of the Deep|1_0":"g/38.webp","Ghosts of the Deep|1_1":"g/133.webp","Ghosts of the Deep|1_2":"g/67.webp","Ghosts of the Deep|1_3":"g/194.webp","Ghosts of the Deep|2_0":"g/190.webp","Ghosts of the Deep|2_1":"g/72.webp","Ghosts of the Deep|2_2":"g/224.webp","Ghosts of the Deep|3_0":"g/49.webp","Ghosts of the Deep|3_1":"g/20.webp","Grasp of Avarice|0_0":"g/41.webp","Grasp of Avarice|0_1":"g/145.webp","Grasp of Avarice|1_0":"g/28.webp","Grasp of Avarice|1_1":"g/156.webp","Grasp of Avarice|1_2":"g/205.webp","Grasp of Avarice|1_3":"g/59.webp","Grasp of Avarice|2_0":"g/199.webp","Grasp of Avarice|2_1":"g/5.webp","Grasp of Avarice|2_2":"g/80.webp","Grasp of Avarice|3_0":"g/54.webp","Grasp of Avarice|3_1":"g/51.webp","Grasp of Avarice|3_2":"g/104.webp","Grasp of Avarice|4_0":"g/125.webp","Grasp of Avarice|4_1":"g/226.webp","Grasp of Avarice|4_2":"g/129.webp","Grasp of Avarice|4_3":"g/214.webp","Grasp of Avarice|4_4":"g/9.webp","Pit of Heresy|0_0":"g/102.webp","Pit of Heresy|0_1":"g/198.webp","Pit of Heresy|1_0":"g/4.webp","Pit of Heresy|2_0":"g/157.webp","Prophecy|0_0":"g/118.webp","Prophecy|0_1":"g/109.webp","Prophecy|1_0":"g/19.webp","Prophecy|1_1":"g/105.webp","Prophecy|1_2":"g/171.webp","Prophecy|1_3":"g/108.webp","Prophecy|1_4":"g/186.webp","Spire of the Watcher|0_0":"g/207.webp","Spire of the Watcher|0_1":"g/178.webp","Spire of the Watcher|1_0":"g/47.webp","Spire of the Watcher|1_1":"g/163.webp","Spire of the Watcher|2_0":"g/78.webp","Spire of the Watcher|2_1":"g/132.webp","Spire of the Watcher|2_2":"g/58.webp","Spire of the Watcher|3_0":"g/201.webp","Spire of the Watcher|3_1":"g/7.webp","Spire of the Watcher|4_0":"g/34.webp","Sundered Doctrine|0_0":"g/68.webp","Sundered Doctrine|0_1":"g/43.webp","Sundered Doctrine|0_2":"g/227.webp","Sundered Doctrine|1_0":"g/122.webp","Sundered Doctrine|2_0":"g/219.webp","Sundered Doctrine|2_1":"g/61.webp","Sundered Doctrine|3_0":"g/170.webp","Sundered Doctrine|3_1":"g/36.webp","Sundered Doctrine|3_2":"g/50.webp","Vesper’s Host|0_0":"g/63.webp","Vesper’s Host|0_1":"g/187.webp","Vesper’s Host|1_0":"g/212.webp","Vesper’s Host|1_1":"g/39.webp","Vesper’s Host|2_0":"g/229.webp","Vesper’s Host|2_1":"g/146.webp","Vesper’s Host|2_2":"g/106.webp","Vesper’s Host|2_3":"g/79.webp","Vesper’s Host|2_4":"g/110.webp","Vesper’s Host|2_5":"g/137.webp","Vesper’s Host|2_6":"g/116.webp","Vesper’s Host|2_7":"g/139.webp","Vesper’s Host|2_8":"g/60.webp","Vesper’s Host|2_9":"g/69.webp","Vesper’s Host|2_10":"g/150.webp","Vesper’s Host|2_11":"g/218.webp","Vesper’s Host|2_12":"g/27.webp","Vesper’s Host|2_13":"g/93.webp","Vesper’s Host|2_14":"g/107.webp","Vesper’s Host|2_15":"g/65.webp","Warlord’s Ruin|0_0":"g/223.webp","Warlord’s Ruin|0_1":"g/83.webp","Warlord’s Ruin|1_0":"g/151.webp","Warlord’s Ruin|2_0":"g/175.webp","Warlord’s Ruin|3_0":"g/66.webp","Warlord’s Ruin|4_0":"g/56.webp","Warlord’s Ruin|5_0":"g/215.webp","Warlord’s Ruin|5_1":"g/99.webp","Warlord’s Ruin|5_2":"g/203.webp","Warlord’s Ruin|5_3":"g/152.webp","Warlord’s Ruin|5_4":"g/2.webp","Warlord’s Ruin|5_5":"g/165.webp","Warlord’s Ruin|5_6":"g/113.webp","Warlord’s Ruin|5_7":"g/217.webp","Warlord’s Ruin|5_8":"g/140.webp","Warlord’s Ruin|5_9":"g/220.webp"});
+Object.assign(FULL,{"Crota’s End":{"intro":"Maps and encounter references for Crota’s End. Tap any image to enlarge it.","tags":["Raid","6 players"],"src":["Community maps and guides you supplied (creator credits appear on each image)"],"sections":[{"t":"Overview and loot","img":["Loot table","Master cheat sheet","Raid emblem"]},{"t":"The Abyss","img":["The Abyss map and walkthrough"]},{"t":"Oversoul Throne bridge","img":["Bridge map and walkthrough"]},{"t":"Ir Yût, the Deathsinger","img":["Ir Yût map and walkthrough"]},{"t":"Crota, Son of Oryx","img":["Crota map and walkthrough"]}],"notes":false},"Deep Stone Crypt":{"intro":"Maps and encounter references for Deep Stone Crypt. Tap any image to enlarge it.","tags":["Raid","6 players"],"src":["Community maps and guides you supplied (creator credits appear on each image)"],"sections":[{"t":"Overview and loot","img":["Loot table","Raid emblem"]},{"t":"Crypt Security","img":["Basement map","Top floor map"]},{"t":"Atraks-1","img":["Basement map","Space map"]},{"t":"The Descent (sparrow)","img":["Sparrow route"]},{"t":"Rapture","img":["Rapture map"]},{"t":"Taniks, the Abomination","img":["Taniks map"]}],"notes":false},"Desert Perpetual":{"intro":"Maps and encounter references for Desert Perpetual. Tap any image to enlarge it.","tags":["Raid","6 players"],"src":["Community maps and guides you supplied (creator credits appear on each image)"],"sections":[{"t":"Overview and loot","img":["Loot table","Raid emblem","Planet symbols"]},{"t":"Agraios, Inherent","img":["Normal mode map","Epic mode map"]},{"t":"Epoptes, Lord of Quanta","img":["Normal mode map","Epic mode map"]},{"t":"Iatros, Inward-Turned","img":["Normal mode map","Epic mode map"]},{"t":"Keregos, the Worldline","img":["Normal mode map","Normal mode diagram","Epic mode main map","Epic mode minigame map"]},{"t":"Secret chest puzzles","img":["Secret chest puzzle 1","Secret chest puzzle 2","Secret chest puzzle 3"]}],"notes":false},"Garden of Salvation":{"intro":"Maps and encounter references for Garden of Salvation. Tap any image to enlarge it.","tags":["Raid","6 players"],"src":["Community maps and guides you supplied (creator credits appear on each image)"],"sections":[{"t":"Overview and loot","img":["Loot table","Raid emblem"]},{"t":"Evade the Consecrated Mind","img":["Voltaic overflow","Tether"]},{"t":"Defeat the Consecrated Mind","img":["Pavilion map","Undergrowth map"]},{"t":"Sanctified Mind","img":["Sanctified Mind","Eye diagram","Outer and inner eyes"]},{"t":"Still needs maps","p":"These slots are open so you can add the missing maps yourself.","img":["Add map: Summon the Gatekeeper"]}],"notes":false},"King’s Fall":{"intro":"Maps and encounter references for King’s Fall. Tap any image to enlarge it.","tags":["Raid","6 players"],"src":["Community maps and guides you supplied (creator credits appear on each image)"],"sections":[{"t":"Overview and loot","img":["Loot table","Master cheat sheet","Relic spawn locations","Raid emblem"]},{"t":"Totems","img":["Totems map and walkthrough"]},{"t":"Warpriest","img":["Warpriest map and walkthrough"]},{"t":"Golgoroth","img":["Golgoroth encounter","Golgoroth’s cellar (labeled)","Golgoroth’s cellar (blank)"]},{"t":"Daughters of Oryx","img":["Sisters walkthrough"]},{"t":"Oryx, the Taken King","img":["Oryx walkthrough"]},{"t":"Secret chest","img":["Red border chest"]}],"notes":false},"Last Wish":{"intro":"Maps and encounter references for Last Wish. Tap any image to enlarge it.","tags":["Raid","6 players"],"src":["Community maps and guides you supplied (creator credits appear on each image)"],"sections":[{"t":"Overview and loot","img":["Loot table","Raid emblem","Symbols","Wishing wall"]},{"t":"Kalli, the Corrupted","img":["Kalli plates","Kalli room"]},{"t":"Shuro Chi, the Corrupted","img":["Puzzle room examples"]},{"t":"The Vault","img":["Vault view","Vault diagram"]},{"t":"Riven of a Thousand Voices","img":["Riven’s eyes","Riven room","Riven chamber","Riven callouts","Riven’s heart beams"]},{"t":"Still needs maps","p":"These slots are open so you can add the missing maps yourself.","img":["Add map: Morgeth, Wish-Ender of Realms"]}],"notes":true},"Root of Nightmares":{"intro":"Maps and encounter references for Root of Nightmares. Tap any image to enlarge it.","tags":["Raid","6 players"],"src":["Community maps and guides you supplied (creator credits appear on each image)"],"sections":[{"t":"Overview and loot","img":["Loot table","Raid emblem"]},{"t":"Cataclysm","img":["Cataclysm map and walkthrough"]},{"t":"Macrocosm","img":["Macrocosm map and walkthrough"]},{"t":"Scission","img":["Scission map and walkthrough"]},{"t":"Nezarec, Final God of Pain","img":["Nezarec map and walkthrough"]}],"notes":false},"Salvation’s Edge":{"intro":"Maps and encounter references for Salvation’s Edge. Tap any image to enlarge it.","tags":["Raid","6 players"],"src":["Community maps and guides you supplied (creator credits appear on each image)"],"sections":[{"t":"Overview and loot","img":["Loot table","Raid emblem"]},{"t":"Substratum","img":["Substratum map"]},{"t":"Dissipation","img":["Dissipation map and walkthrough"]},{"t":"Repository","img":["Repository map"]},{"t":"Verity","img":["Verity map and walkthrough"]},{"t":"The Witness","img":["The Witness encounter"]},{"t":"Traversal sections","img":["Warren","Monolith approach"]}],"notes":false},"Vault of Glass":{"intro":"Maps and encounter references for Vault of Glass. Tap any image to enlarge it.","tags":["Raid","6 players"],"src":["Community maps and guides you supplied (creator credits appear on each image)"],"sections":[{"t":"Overview and loot","img":["Loot table","Raid emblem"]},{"t":"Confluxes (Waking Ruins)","img":["Waking Ruins callouts"]},{"t":"Oracles and Templar","img":["Templar map","Templar’s Well, conflux 3","Templar’s Well, Oracles"]},{"t":"Gorgons’ Maze","img":["Gorgons’ Labyrinth map"]},{"t":"Atheon","img":["Throne room map","Teleport and Oracle callouts","Oracle callouts"]},{"t":"Still needs maps","p":"These slots are open so you can add the missing maps yourself.","img":["Add map: Gatekeepers"]}],"notes":true},"Vow of the Disciple":{"intro":"Maps and encounter references for Vow of the Disciple. Tap any image to enlarge it.","tags":["Raid","6 players"],"src":["Community maps and guides you supplied (creator credits appear on each image)"],"sections":[{"t":"Overview and loot","img":["Loot table","Master cheat sheet","Symbols","Symbol callouts cheat sheet","Raid emblem"]},{"t":"Acquisition (first encounter)","img":["Room layout and walkthrough"]},{"t":"Caretaker (second encounter)","img":["Floor 1","Floor 2","Floor 3"]},{"t":"Exhibition (third encounter)","img":["Third encounter map"]},{"t":"Rhulk, Disciple of the Witness","img":["Final encounter walkthrough","Rhulk buff rotation"]}],"notes":false},"Duality":{"intro":"Maps and encounter references for Duality. Tap any image to enlarge it.","tags":["Dungeon","3 players"],"src":["Community maps and guides you supplied (creator credits appear on each image)"],"sections":[{"t":"Overview and loot","img":["Loot table","Dungeon emblem"]},{"t":"First encounter","img":["Encounter 1 map"]},{"t":"Second encounter","img":["Encounter 2 map"]},{"t":"Final encounter","img":["Final encounter map"]}],"notes":false},"Equilibrium":{"intro":"Maps and encounter references for Equilibrium. Tap any image to enlarge it.","tags":["Dungeon","3 players"],"src":["Community maps and guides you supplied (creator credits appear on each image)"],"sections":[{"t":"Overview and loot","img":["Loot table","Dungeon emblem","Encounter challenges"]},{"t":"Harvester and Harrow screenshots","img":["Control panels in the hangar","Destroying fuses","Destroying the array","Gathering shadow","Harvester sparrow encounter","Jumping section, 1","Jumping section, 2","Jumping section, 3","Jumping section, 4","Taken panels","The final vent"]},{"t":"Dredgen Sere screenshots","img":["Dredgen Sere","Dredgen Sere shoots lightning","Fighting Sere’s shadows","Compel 2-3","Shooting the Taken orbs","Lure of the Dark","Shadow Apprentice buff","Shadow Novice grenade"]},{"t":"Still needs maps","p":"These slots are open so you can add the missing maps yourself.","img":["Add map: first encounter","Add map: second encounter","Add map: Dredgen Sere"]}],"notes":false},"Ghosts of the Deep":{"intro":"Maps and encounter references for Ghosts of the Deep. Tap any image to enlarge it.","tags":["Dungeon","3 players"],"src":["Community maps and guides you supplied (creator credits appear on each image)"],"sections":[{"t":"Overview and loot","img":["Loot table","Dungeon emblem"]},{"t":"The Ritual","img":["Ritual map and walkthrough","Ritual statue","Ritual symbol","Ritual sites glowing"]},{"t":"Ecthar, the Shield of Savathûn","img":["Ecthar map and walkthrough","Ecthar rune underwater","Ecthar runes"]},{"t":"Šimmumah Ur-Nokru","img":["Šimmumah map and walkthrough","Symbol line-up"]}],"notes":false},"Grasp of Avarice":{"intro":"Maps and encounter references for Grasp of Avarice. Tap any image to enlarge it.","tags":["Dungeon","3 players"],"src":["Community maps and guides you supplied (creator credits appear on each image)"],"sections":[{"t":"Overview and loot","img":["Loot table","Dungeon emblem"]},{"t":"Mines and buttons","img":["Mine A button","Mine B button","Mine C button","Mine D button"]},{"t":"Circular room and scorch cannon","img":["Circular room generator","Circular room","Scorch cannon generator door"]},{"t":"Puzzles","img":["Flip door puzzle","Trap puzzle, open pipes","Trap puzzle, platform"]},{"t":"Other screenshots","img":["Avarokk fight generators","Burdened by riches","Captain Avarokk engrams","Loot cave crystal","Phry’zhia crystal"]},{"t":"Still needs maps","p":"These slots are open so you can add the missing maps yourself.","img":["Add map: area and boss maps"]}],"notes":false},"Pit of Heresy":{"intro":"Maps and encounter references for Pit of Heresy. Tap any image to enlarge it.","tags":["Dungeon","3 players"],"src":["Community maps and guides you supplied (creator credits appear on each image)"],"sections":[{"t":"Overview and loot","img":["Loot table","Dungeon emblem"]},{"t":"Tunnels of Despair","img":["Tunnels of Despair map"]},{"t":"The Harrow","img":["The Harrow map"]},{"t":"Still needs maps","p":"These slots are open so you can add the missing maps yourself.","img":["Add map: Zulmak boss fight"]}],"notes":false},"Prophecy":{"intro":"Maps and encounter references for Prophecy. Tap any image to enlarge it.","tags":["Dungeon","3 players"],"src":["Community maps and guides you supplied (creator credits appear on each image)"],"sections":[{"t":"Overview and loot","img":["Loot table","Dungeon emblem"]},{"t":"Screenshots","img":["Wasteland encounter","Dark motes","Light motes","Hexahedron orb","Tunnel"]},{"t":"Still needs maps","p":"These slots are open so you can add the missing maps yourself.","img":["Add map: encounter maps"]}],"notes":false},"Spire of the Watcher":{"intro":"Maps and encounter references for Spire of the Watcher. Tap any image to enlarge it.","tags":["Dungeon","3 players"],"src":["Community maps and guides you supplied (creator credits appear on each image)"],"sections":[{"t":"Overview and loot","img":["Loot table","Dungeon emblem"]},{"t":"Bridge","img":["Bridge map","Ascend, part 1"]},{"t":"Entrance rooms","img":["Entrance","Entrance, 2","Entrance center"]},{"t":"Persys","img":["Persys map","Persys nodes"]},{"t":"Pillory","img":["Pillory"]},{"t":"Still needs maps","p":"These slots are open so you can add the missing maps yourself.","img":["Add map: encounter maps"]}],"notes":false},"Sundered Doctrine":{"intro":"Maps and encounter references for Sundered Doctrine. Tap any image to enlarge it.","tags":["Dungeon","3 players"],"src":["Community maps and guides you supplied (creator credits appear on each image)"],"sections":[{"t":"Overview and loot","img":["Loot table","Dungeon emblem","Babylon location"]},{"t":"Isolate Preservation","img":["Isolate Preservation map"]},{"t":"Flooded Inspection","img":["Flooded Inspection map","Flooded Inspection statement logic"]},{"t":"Final encounter","img":["Altered convolution and zoetic lockstep","Boss glyphs","Lie and truth"]}],"notes":false},"Vesper’s Host":{"intro":"Maps and encounter references for Vesper’s Host. Tap any image to enlarge it.","tags":["Dungeon","3 players"],"src":["Community maps and guides you supplied (creator credits appear on each image)"],"sections":[{"t":"Overview and loot","img":["Loot table","Dungeon emblem"]},{"t":"Maps","img":["Map 1","Map 2"]},{"t":"Screenshots","img":["Activation room","Nuclear core","Radiation core","Tiny Raneiks","Suppressed","Raneiks suppressed","Raneiks unified","Scanning columns","Lower stacks","Communes with anomaly","Deposit core","Lightning","DPS suppress","Mobs and augments","Radar differences","Augments"]},{"t":"Still needs maps","p":"These slots are open so you can add the missing maps yourself.","img":["Add map: third encounter","Add map: fourth encounter"]}],"notes":false},"Warlord’s Ruin":{"intro":"Maps and encounter references for Warlord’s Ruin. Tap any image to enlarge it.","tags":["Dungeon","3 players"],"src":["Community maps and guides you supplied (creator credits appear on each image)"],"sections":[{"t":"Overview and loot","img":["Loot table","Dungeon emblem"]},{"t":"Rathil, First Broken Knight of Fikrul","img":["Rathil map and walkthrough"]},{"t":"Locus of Wailing Grief","img":["Locus map and walkthrough"]},{"t":"Imprisoned","img":["Imprisoned map and walkthrough"]},{"t":"Hefnd’s Vengeance, Blighted Chimaera","img":["Hefnd’s Vengeance map and walkthrough"]},{"t":"Screenshots","img":["Step 18-15","Step 18-42","Cage eyes","Rathil cage blights","Lantern blue","Lantern radius","Rest corruption","Tempest orb","Tempest pyres","Tempest torch"]}],"notes":false}});
+GD.push(...[["Raid","Crota’s End","Maps and encounter references for Crota’s End.",[]],["Raid","Deep Stone Crypt","Maps and encounter references for Deep Stone Crypt.",[]],["Raid","Desert Perpetual","Maps and encounter references for Desert Perpetual.",[]],["Raid","Garden of Salvation","Maps and encounter references for Garden of Salvation.",[]],["Raid","Root of Nightmares","Maps and encounter references for Root of Nightmares.",[]],["Raid","Salvation’s Edge","Maps and encounter references for Salvation’s Edge.",[]],["Raid","Vow of the Disciple","Maps and encounter references for Vow of the Disciple.",[]],["Dungeon","Equilibrium","Maps and encounter references for Equilibrium.",[]],["Dungeon","Grasp of Avarice","Maps and encounter references for Grasp of Avarice.",[]],["Dungeon","Pit of Heresy","Maps and encounter references for Pit of Heresy.",[]],["Dungeon","Prophecy","Maps and encounter references for Prophecy.",[]],["Dungeon","Spire of the Watcher","Maps and encounter references for Spire of the Watcher.",[]],["Dungeon","Sundered Doctrine","Maps and encounter references for Sundered Doctrine.",[]],["Dungeon","Vesper’s Host","Maps and encounter references for Vesper’s Host.",[]],["Dungeon","Warlord’s Ruin","Maps and encounter references for Warlord’s Ruin.",[]]]);
+GD.splice(0,GD.length,...GD.filter(g=>!/^(Raid prep|Dungeon basics)/.test(g[1])));
+GD.sort((a,b)=>{const o=["Raid","Dungeon","Exotic mission","Secret triumph"],f=g=>/^(Raid prep|Dungeon basics)/.test(g[1])?0:1;return o.indexOf(a[0])-o.indexOf(b[0])||f(a)-f(b)||a[1].localeCompare(b[1])});
+let gcat="All";const gcats=["All",...new Set(GD.map(g=>g[0]))];
+function drawG(){const q=$('gsearch').value.toLowerCase();
+$('gchips').innerHTML=gcats.map(c=>`<button class="${c===gcat?'on':''}" data-c="${c}">${c}</button>`).join('');
+$('glist').innerHTML=GD.filter(g=>(gcat==='All'||g[0]===gcat)&&(g[1]+g[2]+g[3].join(' ')).toLowerCase().includes(q)).map(g=>`<button class="gcard" data-cat="${esc(g[0])}" data-g="${esc(g[1])}"><b>${esc(g[1])}</b><small>${g[0]}</small>${FULL[g[1]]?'<span class="tag" style="margin-left:8px">Full guide</span>':''}<div class="mute">${esc(g[2])}</div></button>`).join('')||'<div class="card mute">No guides match. Try a different search.</div>'}
+const IMG=ST.get('imgs',{});
+const NOUP=new Set(["Crota’s End","Deep Stone Crypt","Desert Perpetual","King’s Fall","Root of Nightmares","Salvation’s Edge","Vow of the Disciple","Duality","Ghosts of the Deep","Sundered Doctrine","Warlord’s Ruin","Shattered Throne"]);
+function slotHTML(gid,sid,cap){const k=gid+'|'+sid,u=IMG[k]||BUILT[k];if(NOUP.has(gid)||(BUILT[k]&&!IMG[k])){const b=NOUP.has(gid)?BUILT[k]:(IMG[k]||BUILT[k]);return b?`<div class="slot"><img src="${esc(b)}" alt="${esc(cap)}"><div class="cap">${esc(cap)}</div></div>`:''}return`<div class="slot" data-k="${esc(k)}">${u?`<img src="${esc(u)}" alt="${esc(cap)}">`:''}<div class="cap">${esc(cap)}</div>${u?'':'<div class="mute">No image yet. Paste a link or upload a screenshot or map.</div>'}<div class="row2"><input type="url" placeholder="Image link" data-url><button class="g" data-seturl>Set</button><input type="file" accept="image/*" data-file>${IMG[k]?'<button class="g" data-clr>Remove mine</button>':''}</div></div>`}
+function openGuide(name){const g=GD.find(x=>x[1]===name),F=FULL[name];if(!g)return;if(F&&F.sections)F.sections=F.sections.filter(s=>!/^still needs maps$/i.test(s.t||''));$('gpage').dataset.cur=name;$('ghub').hidden=true;const p=$('gpage');p.hidden=false;
+let h=`<button class="g back" id="gback">Back</button><div class="card"><h2>${esc(g[1])} ${window.__gth?window.__gth.btn('guide',g[1],g[1]):''}</h2><span class="tag">${g[0]}</span>`;
+if(!F){h+=`<p class="mute">${esc(g[2])}</p><ul>${g[3].map(t=>`<li>${esc(t)}</li>`).join('')}</ul>${(DET[g[1]]||[]).map(s=>`<h4 style="color:var(--gold)">${esc(s[0])}</h4><ul>${s[1].map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`).join('')}<p class="mute">This is not a full guide yet. Ask for it to be built out next.</p><a href="https://www.youtube.com/results?search_query=${encodeURIComponent('Destiny 2 '+g[1]+' guide')}" target="_blank" rel="noopener" style="color:var(--arc)">Find a full walkthrough</a></div>`}
+else{h+=`<p>${esc(F.intro)}</p>${F.tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}<div class="toc">${F.sections.map((s,i)=>`<a href="#sec${i}">${esc(s.t)}</a>`).join('')}</div></div>`;
+if(F.notes&&DET[name])h+=`<div class="card enc"><h3>Quick notes</h3><p class="mute">Written from memory, not verified.</p>${DET[name].map(s=>`<h4>${esc(s[0])}</h4><ul>${s[1].map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`).join('')}</div>`;
+F.sections.forEach((s,i)=>{h+=`<div class="card enc" id="sec${i}"><h3>${esc(s.t)}</h3>${s.p?`<p>${esc(s.p)}</p>`:''}${(s.b||[]).map(b=>`<h4>${esc(b[0])}</h4><ul>${b[1].map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`).join('')}${(s.img||[]).map((c,j)=>slotHTML(name,i+'_'+j,c)).join('')}</div>`});
+h+=`<div class="card mute">Sources checked: ${F.src.map(esc).join(', ')}. Compare against your paracausality.com guide before trusting any detail.</div>`}
+p.innerHTML=h;window.scrollTo(0,0)}
+$('glist').onclick=e=>{const b=e.target.closest('[data-g]');if(b)openGuide(b.dataset.g)};
+$('gpage').onclick=e=>{const t=e.target;if(t.id==='gback'){$('gpage').hidden=true;$('ghub').hidden=false;return}const sl=t.closest('.slot');if(!sl)return;const k=sl.dataset.k;if(t.dataset.seturl!==undefined){const v=sl.querySelector('[data-url]').value.trim();if(v){IMG[k]=v;ST.set('imgs',IMG);rerender()}}else if(t.dataset.clr!==undefined){delete IMG[k];ST.set('imgs',IMG);rerender()}};
+$('gpage').onchange=e=>{const t=e.target;if(t.dataset.file===undefined||!t.files[0])return;const k=t.closest('.slot').dataset.k,r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const c=document.createElement('canvas'),s=Math.min(1,1000/im.width);c.width=im.width*s;c.height=im.height*s;c.getContext('2d').drawImage(im,0,0,c.width,c.height);IMG[k]=c.toDataURL('image/jpeg',.7);ST.set('imgs',IMG);rerender()};im.src=r.result};r.readAsDataURL(t.files[0])};
+$('gpage').addEventListener('click',e=>{if(e.target.tagName==='IMG'){$('lb').innerHTML='<img src="'+e.target.src+'" alt="">';$('lb').hidden=false}});$('lb').onclick=()=>{$('lb').hidden=true};
+const CATS=[["Raid","Raids","Six-player endgame activities with multi-encounter mechanics.","--cr"],["Dungeon","Dungeons","Three-player activities, good for duo and solo practice.","--cd"],["Exotic mission","Exotic missions","Missions that reward exotic weapons and catalysts.","--cx"],["Secret triumph","Secret triumphs","Hidden triumphs, puzzles and lore hunts.","--cs"]];
+function thumbOf(name){const F=FULL[name];if(!F)return'';for(let i=0;i<F.sections.length;i++){const im=F.sections[i].img||[];for(let j=0;j<im.length;j++){if(/emblem/i.test(im[j])){const u=BUILT[name+'|'+i+'_'+j];if(u)return u}}}return''}
+function tileHTML(g){const t=thumbOf(g[1]),full=!!FULL[g[1]],done=NOUP.has(g[1]);return`<button class="gcard" data-cat="${esc(g[0])}" data-g="${esc(g[1])}">${t?`<img class="thumb" src="${t}" alt="">`:'<div class="thumb ph"></div>'}<b>${esc(g[1])}</b><small>${esc(g[0])}</small>${full?`<span class="tag">${done?'Complete':'Needs maps'}</span>`:'<span class="tag">Coming soon</span>'}<div class="mute">${esc(g[2])}</div></button>`}
+function drawG(){const q=$('gsearch').value.trim().toLowerCase(),L=$('glist');
+$('gchips').innerHTML=(gcat!=='All'&&!q)?`<button data-c="All">\u2190 Helpful</button><span class="mute" style="align-self:center">${(CATS.find(c=>c[0]===gcat)||[])[1]||''}</span>`:'';
+if(!q&&gcat==='All'){L.className='hubgrid';L.innerHTML=CATS.map(c=>{const n=GD.filter(g=>g[0]===c[0]).length,ex=GD.find(g=>g[0]===c[0]&&thumbOf(g[1])),t=ex?thumbOf(ex[1]):'';return`<button class="cat" data-c="${c[0]}" style="border-top-color:var(${c[3]})">${t?`<img class="bg" src="${t}" alt="">`:''}<h3>${c[1]}</h3><div class="mute">${c[2]}</div><div class="big" style="font-size:28px;margin-top:10px">${n}<small class="mute" style="font-size:14px;letter-spacing:1px"> ${n===1?'guide':'guides'}</small></div></button>`}).join('');return}
+L.className='';const list=GD.filter(g=>q?(g[1]+g[2]+g[3].join(' ')).toLowerCase().includes(q):g[0]===gcat);
+L.innerHTML=list.length?list.map(tileHTML).join(''):'<div class="card mute">No guides match. Try a different search.</div>'}
+$('glist').addEventListener('click',e=>{const c=e.target.closest('.cat');if(c){gcat=c.dataset.c;drawG();window.scrollTo(0,0)}});
+function rerender(){const y=window.scrollY;openGuide($('gpage').dataset.cur);window.scrollTo(0,y)}
+$('gchips').onclick=e=>{if(e.target.dataset.c){gcat=e.target.dataset.c;drawG()}};$('gsearch').oninput=drawG;drawG();
+{const t=ST.get('tab','guides');show(tabs.some(x=>x[0]===t)?t:'guides')}
+</script>
+<script src="vault.js?v=0.2.90"></script><script src="features.js?v=0.2.90"></script><script src="extras.js?v=0.2.90"></script><script src="activity.js?v=0.2.90"></script><script src="notes.js?v=0.2.90"></script><script src="targets.js?v=0.2.90"></script><script src="loadouts.js?v=0.2.90"></script>
+<script src="home.js?v=0.2.90"></script>
+<script src="layout.js?v=0.2.90"></script><script src="lists.js?v=0.2.90"></script></body></html>
