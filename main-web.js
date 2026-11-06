@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.0: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.1: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -1883,6 +1883,13 @@ H('act:playtime', async () => {
   const per = {}, tot = {}; let bad = 0;
   jobs.forEach(([c, n], i) => { const v = got[i]; if (v < 0) { bad++; return; } (per[c] = per[c] || {})[n] = v; tot[n] = (tot[n] || 0) + v; });
   const pm = 'Private matches'; tot.Crucible = (tot.Crucible || 0) + (tot[pm] || 0); Object.values(per).forEach((p) => { p.Crucible = (p.Crucible || 0) + (p[pm] || 0); });
+  // Crucible time from your match history too: Bungie's per-mode total for Crucible can come back empty even with matches
+  // played. The larger of the two is used, account-wide and per character. PvE is then at most the rest of the active time.
+  try {
+    const L = HISTC && Date.now() - HISTC.at < 30 * 60000 ? HISTC.pvp : await histAll(m, ids, 5, 3000), hp = {}; let ht = 0;
+    L.forEach((x) => { const v = hv(x, 'timePlayedSeconds'); hp[x._c] = (hp[x._c] || 0) + v; ht += v; });
+    if (ht > (tot.Crucible || 0)) { tot.Crucible = ht; Object.keys(hp).forEach((c) => { const q = (per[c] = per[c] || {}); q.Crucible = Math.max(q.Crucible || 0, hp[c]); }); }
+  } catch (e) { /* the per-mode totals stand */ }
   const byId = {}; (st.characters || []).forEach((c) => { byId[c.characterId] = c; });
   const rows = Object.values(cd).map((x) => {
     const s = byId[x.characterId] || {}, p = per[x.characterId] || {};
@@ -1901,7 +1908,8 @@ H('act:playtime', async () => {
     for (let i = 29; i >= 0; i--) { const d = ymd(now - i * 864e5); days.push({ d, s: acc[d] || 0 }); }
     if (!days.some((q) => q.s > 0)) days = [];
   } catch (e) { days = []; }
-  return { rows, del: delSec, live, total, acts, idle: Math.max(0, total - acts), pve: tot.PvE || 0, pvp: tot.Crucible || 0, types, days, bad, at: Date.now() };
+  rows.forEach((r) => { r.pve = Math.max(0, Math.min(r.pve, r.act - r.pvp)); });
+  return { rows, del: delSec, live, total, acts, idle: Math.max(0, total - acts), pve: Math.max(0, Math.min(tot.PvE || 0, acts - (tot.Crucible || 0))), pvp: tot.Crucible || 0, types, days, bad, at: Date.now() };
 });
 H('act:totals', async () => {
   const m = await acct();
@@ -2052,58 +2060,6 @@ H('act:exotics', async () => {
   }
   return { items: Object.values(by).sort((a, b) => a.n.localeCompare(b.n)) };
 });
-// ---- Pinned goals: progress for the triumphs you pinned, and every quest your characters carry ----
-H('goal:state', async (e, v) => {
-  OBJ(v); const want = ARR(v.r || [], 40).map(HASH);
-  const m = await acct(), T = want.length ? await trdefs() : null;
-  const pr = await api(pbase(m) + '?components=200,201,202,301' + (want.length ? ',900' : ''));
-  const recs = [];
-  if (T) {
-    const p = (pr.profileRecords && pr.profileRecords.data && pr.profileRecords.data.records) || {}, cr = (pr.characterRecords && pr.characterRecords.data) || {};
-    for (const h of want) {
-      const d = T.rec[h]; if (!d) continue;
-      let r = p[h]; if (!r) for (const c in cr) { const q = (cr[c].records || {})[h]; if (q && (!r || !(q.state & 4))) r = q; }
-      const obj = ((r && r.objectives) || []).map((q) => ({ t: ((T.obj[q.objectiveHash] || {}).d) || '', p: q.progress || 0, m: q.completionValue || 1, c: q.complete ? 1 : 0 }));
-      recs.push({ h, n: d.n, i: d.i, d: d.d, obj, done: r ? (r.state & 4 ? 0 : 1) : 0 });
-    }
-  }
-  const quests = [], cd = (pr.characters && pr.characters.data) || {}, inv = (pr.characterInventories && pr.characterInventories.data) || {};
-  const ob = (pr.itemComponents && pr.itemComponents.objectives && pr.itemComponents.objectives.data) || {}, prog = (pr.characterProgressions && pr.characterProgressions.data) || {};
-  for (const c of Object.keys(inv)) {
-    const its = (inv[c].items || []).filter((x) => x.bucketHash === 1345459588).slice(0, 120);
-    const infos = await pool(its, 8, (x) => itemInfo(x.itemHash));
-    for (let k = 0; k < its.length; k++) {
-      const x = its[k], d = infos[k]; if (!d || d.bad || d.it === 26 || d.cat.includes(1784235469)) continue; // bounties are on the Bounties tab
-      if (d.it !== 12 && d.it !== 15 && !d.ob.length) continue;
-      const os = x.itemInstanceId ? ((ob[x.itemInstanceId] || {}).objectives || []) : ((((prog[c] || {}).uninstancedItemObjectives) || {})[x.itemHash] || []);
-      if (!os.length) continue;
-      const ds = await pool(os, 4, (o) => objInfo(o.objectiveHash));
-      quests.push({ k: 'q' + x.itemHash, h: x.itemHash, n: d.n, i: d.i, d: String(d.d || '').slice(0, 300), c, cl: (cd[c] || {}).classType, obj: os.map((o, j) => ({ t: ds[j] || '', p: o.progress || 0, m: o.completionValue || 1, c: o.complete ? 1 : 0 })) });
-    }
-  }
-  return { recs, quests };
-});
-// ---- Season: season pass rank, artifact, and the numbers needed to estimate where you will end up ----
-H('act:season', async () => {
-  const m = await acct();
-  const pr = await api(pbase(m) + '?components=100,104,200,202');
-  const prof = (pr.profile && pr.profile.data) || {}, sh = prof.currentSeasonHash;
-  const sd = sh ? await entDef('DestinySeasonDefinition', sh) : null;
-  const passH = sd && (sd.seasonPassHash || ((sd.seasonPassList || []).slice(-1)[0] || {}).seasonPassHash);
-  const sp = passH ? await entDef('DestinySeasonPassDefinition', passH) : null;
-  const cd = (pr.characters && pr.characters.data) || {}, prog = (pr.characterProgressions && pr.characterProgressions.data) || {};
-  const c0 = Object.keys(cd).sort((a, b) => String(cd[b].dateLastPlayed).localeCompare(String(cd[a].dateLastPlayed)))[0];
-  const P = (h) => (h && c0 && ((prog[c0] || {}).progressions || {})[h]) || null;
-  const rw = P(sp && sp.rewardProgressionHash), pp = P(sp && sp.prestigeProgressionHash);
-  const pick = (q) => (q ? { lvl: q.level || 0, cap: q.levelCap || 0, cur: q.progressToNextLevel || 0, next: q.nextLevelAt || 0, tot: q.currentProgress || 0, wk: q.weeklyProgress || 0, wkL: q.weeklyLimit || 0 } : null);
-  const out = { name: (sd && sd.displayProperties && sd.displayProperties.name) || '', end: sd && sd.endDate ? Date.parse(sd.endDate) || 0 : 0, start: sd && sd.startDate ? Date.parse(sd.startDate) || 0 : 0, pass: pick(rw), pre: pick(pp), art: null };
-  const a = pr.profileProgression && pr.profileProgression.data && pr.profileProgression.data.seasonalArtifact;
-  if (a && a.artifactHash) {
-    const ad = await entDef('DestinyArtifactDefinition', a.artifactHash);
-    out.art = { n: (ad && ad.displayProperties && ad.displayProperties.name) || 'Artifact', i: (ad && ad.displayProperties && ad.displayProperties.icon) || '', pts: a.pointsAcquired || 0, used: a.pointsUsed || 0, pb: ((a.powerBonusProgression || {}).level) || a.powerBonus || 0, xp: pick(a.pointProgression), pbx: pick(a.powerBonusProgression) };
-  }
-  return out;
-});
 // Activity history for PvE and Crucible, read once and shared by Personal bests and the Crucible tab (kept for 30 minutes).
 let HISTC = null;
 async function histBoth(force) {
@@ -2176,35 +2132,6 @@ H('act:crucible', async (e, v) => {
   const week = L.filter((x) => Date.now() - Date.parse(x.period) < 7 * 864e5);
   let curS = 0; for (const x of L) { if (isWin(x)) curS++; else break; }
   return { total: sum(L), week: sum(week), last25: sum(L.slice(0, 25)), playlists: Object.values(pm).sort((a, b) => b.m - a.m), maps, recent, trend, streak: curS };
-});
-// Weekly lockouts: what each character still has to do this week (raid encounters, pinnacle rewards and other weekly milestones).
-// Bungie drops a milestone from a character once it is fully done, so one that another character still has counts as done.
-H('act:lockouts', async () => {
-  const m = await acct();
-  const pr = await api(pbase(m) + '?components=200,202');
-  const cd = (pr.characters && pr.characters.data) || {}, prog = (pr.characterProgressions && pr.characterProgressions.data) || {};
-  const ch = Object.keys(cd).sort((a, b) => String(cd[b].dateLastPlayed).localeCompare(String(cd[a].dateLastPlayed)));
-  const all = new Set(); ch.forEach((c) => Object.keys(((prog[c] || {}).milestones) || {}).forEach((h) => all.add(h)));
-  const defsL = await pool([...all], 10, (h) => entDef('DestinyMilestoneDefinition', +h));
-  const rows = [];
-  [...all].forEach((h, i) => {
-    const d = defsL[i]; if (!d || d.milestoneType !== 3) return; // weekly only
-    const dp = d.displayProperties || {}, nm = dp.name || ''; if (!nm) return;
-    const per = {};
-    ch.forEach((c) => {
-      const ms = (((prog[c] || {}).milestones) || {})[h];
-      if (!ms) { per[c] = { done: 1, gone: 1 }; return; }
-      let pd = 0, pt = 0, cd2 = 0, ct = 0, re = 0, rt = 0;
-      (ms.activities || []).forEach((a) => { (a.phases || []).forEach((p) => { pt++; if (p.complete) pd++; }); (a.challenges || []).forEach((q) => { ct++; if (q.objective && q.objective.complete) cd2++; }); });
-      (ms.rewards || []).forEach((r) => (r.entries || []).forEach((e) => { rt++; if (e.earned) re++; }));
-      const tot = pt || ct || rt, dn = pt ? pd : ct ? cd2 : re;
-      per[c] = { done: tot && dn >= tot ? 1 : 0, p: dn, t: tot, kind: pt ? 'encounters' : ct ? 'challenges' : rt ? 'rewards' : '' };
-    });
-    if (ch.every((c) => per[c].gone)) return;
-    rows.push({ h: +h, n: nm, d: String(dp.description || '').slice(0, 200), i: dp.icon || '', per, raid: (ch.some((c) => per[c].kind === 'encounters')) ? 1 : 0 });
-  });
-  rows.sort((a, b) => b.raid - a.raid || a.n.localeCompare(b.n));
-  return { chars: ch.map((c) => ({ id: c, cls: cd[c].classType, light: cd[c].light })), rows };
 });
 // Recent activities (all modes), newest first, for the recap.
 H('act:recent', async () => {
@@ -2404,11 +2331,16 @@ H('img:fetch', async (e, v) => {
 const pngOf = (d) => { const s = TXT(d, 20e6); if (!/^data:image\/png;base64,/.test(s)) throw bad(); return nativeImage.createFromDataURL(s); };
 H('img:copy', (e, v) => {
   OBJ(v); const im = pngOf(v.d); if (im.isEmpty()) throw new Error('The picture is empty.');
-  // Newer Electron versions dropped clipboard.writeImage on some builds; use whichever this one has. The page falls back to the browser clipboard if neither works.
-  if (typeof clipboard.writeImage === 'function') clipboard.writeImage(im);
-  else if (typeof clipboard.write === 'function') clipboard.write({ image: im });
-  else throw new Error('no-native-image-clipboard');
-  return true;
+  // Every way this Electron has, each one checked by reading the clipboard back: one of them used to report success without
+  // putting anything there. If none sticks, the page is told, so it never says "Copied" when nothing was copied.
+  const got = () => { try { if (typeof clipboard.readImage === 'function') { const r = clipboard.readImage(); if (r && !r.isEmpty()) return true; } } catch (er) { /* check the formats instead */ } try { return (clipboard.availableFormats() || []).some((f) => /image|png|bitmap/i.test(f)); } catch (er) { return false; } };
+  const ways = [
+    () => clipboard.writeImage(im),
+    () => clipboard.write({ image: im }),
+    () => { clipboard.clear(); clipboard.writeBuffer('PNG', im.toPNG()); },
+  ];
+  for (const w of ways) { try { w(); if (got()) return true; } catch (er) { /* try the next way */ } }
+  throw new Error('no-native-image-clipboard');
 });
 H('img:save', async (e, v) => {
   OBJ(v); const im = pngOf(v.d), name = String(v.name || 'loadout').replace(/[^\w \-]+/g, '').trim().slice(0, 60) || 'loadout';

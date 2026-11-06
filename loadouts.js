@@ -526,12 +526,13 @@
       const k = b.dataset.li;
       if (k === 'share') { navigator.share({ files: [file], title: l.n || 'Loadout' }).then(() => say('Shared.'), (er) => { if (!er || er.name !== 'AbortError') say('Could not share: ' + V.clean(er)); }); return; }
       if (k === 'copy') {
-        // In a browser: copy right here, straight from the tap. On the PC app: the app's own clipboard.
-        if (isWeb && navigator.clipboard && window.ClipboardItem) { navigator.clipboard.write([new window.ClipboardItem({ 'image/png': blob })]).then(() => say('Copied. Paste it into Discord or anywhere else.'), () => say('This browser would not copy it. Hold your finger on the picture and choose Copy, or use Download.')); return; }
-        gt.imgCopy({ d: data }).then(() => say('Copied. Paste it into Discord or anywhere else.'), () => {
-          if (navigator.clipboard && window.ClipboardItem) navigator.clipboard.write([new window.ClipboardItem({ 'image/png': blob })]).then(() => say('Copied. Paste it into Discord or anywhere else.'), (er) => say(V.clean(er)));
-          else say('Could not copy. Use Save as PNG instead.');
-        });
+        // Copied straight from the click with the browser clipboard (on the website and in the PC app alike: it writes a real
+        // picture Discord can paste). If that is refused, the PC app tries its own clipboard, which checks that it worked.
+        const okMsg = () => say('Copied. Paste it into Discord or anywhere else.');
+        const viaApp = () => (isWeb || !gt.imgCopy ? Promise.reject(new Error('no')) : gt.imgCopy({ d: data }));
+        const fail = () => say(isWeb ? 'This browser would not copy it. Hold your finger on the picture and choose Copy, or use Download.' : 'Could not copy the picture. Use Save as PNG and drag the file into Discord instead.');
+        if (navigator.clipboard && window.ClipboardItem) navigator.clipboard.write([new window.ClipboardItem({ 'image/png': blob })]).then(okMsg, () => viaApp().then(okMsg, fail));
+        else viaApp().then(okMsg, fail);
         return;
       }
       gt.imgSave({ d: data, name: l.n || 'loadout' }).then((r) => { if (r && r.ok) say((isWeb ? 'Downloaded ' : 'Saved ') + r.file + '.'); }, (er) => say(V.clean(er)));

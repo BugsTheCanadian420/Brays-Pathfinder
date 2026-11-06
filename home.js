@@ -1,10 +1,10 @@
 /* global openGuide, GD */
-// Home: one page with what matters right now (characters, resets, season, goals, the week) plus anything you pinned
+// Home: one page with what matters right now (characters, resets, play time, inventory) plus anything you pinned
 // with "+ Home" elsewhere in the app: vendors, items, loadouts, activity pages, Hub sites and guides.
 (() => {
   const nav = document.getElementById('nav'), vsec = document.getElementById('vault');
   if (!nav || !vsec || !window.gt) return;
-  const V = () => window.__gtv || {}, A = () => window.__gta || {}, F = () => window.__gtf || {};
+  const V = () => window.__gtv || {}, A = () => window.__gta || {};
   const esc = (t) => String(t == null ? '' : t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const lsGet = (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } };
   const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* storage off */ } };
@@ -60,7 +60,7 @@
 #home .hm-c{grid-column:span 4;position:relative;background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,0) 60px),var(--g-panel,#1a1c20);border:1px solid var(--g-line,#2b2e33);border-radius:6px;padding:14px 16px;cursor:pointer;overflow:hidden;min-height:150px;transition:border-color .15s,transform .15s,box-shadow .15s}
 #home .hm-c::before{content:'';position:absolute;left:0;top:0;right:0;height:2px;background:var(--hc,var(--g-accent,#6aa6e0));opacity:.85}
 #home .hm-c:hover{border-color:rgba(255,255,255,.28);transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,0,0,.35)}
-#home .hm-c.w12{grid-column:span 12}#home .hm-c.w6{grid-column:span 6}#home .hm-c.w8{grid-column:span 8}#home .hm-c.w3{grid-column:span 3}
+#home .hm-c.w12{grid-column:span 12}#home .hm-c.w6{grid-column:span 6}#home .hm-c.w8{grid-column:span 8}#home .hm-c.w3{grid-column:span 3}#home .hm-c.w4{grid-column:span 4}
 #home .hm-h{display:flex;align-items:center;gap:8px;margin:0 0 10px;font-size:11.5px;letter-spacing:2.5px;text-transform:uppercase;color:#aeb2b9;font-weight:600}
 #home .hm-h svg{color:var(--hc,var(--g-accent,#6aa6e0))}
 #home .hm-h .ct{margin-left:auto;letter-spacing:0;text-transform:none;color:#8b8f97;font-weight:400;font-size:12px}
@@ -107,12 +107,12 @@
 #home .hm-c .apply{margin-top:10px;padding:4px 12px}
 .hmpin{display:inline-flex!important;align-items:center;gap:5px;padding:3px 9px!important;font-size:11.5px!important;letter-spacing:.5px!important;text-transform:none!important;white-space:nowrap}
 .hmpin.on{color:#e5c158!important;border-color:#8a6a2a!important}
-@media (max-width:1250px){#home .hm-c,#home .hm-c.w3{grid-column:span 6}#home .hm-c.w8{grid-column:span 12}}
+@media (max-width:1250px){#home .hm-c,#home .hm-c.w3,#home .hm-c.w4{grid-column:span 6}#home .hm-c.w8{grid-column:span 12}}
 @media (max-width:760px){#home .hm-g{grid-template-columns:1fr}#home .hm-c,#home .hm-c.w3,#home .hm-c.w6,#home .hm-c.w8,#home .hm-c.w12{grid-column:1/-1}#home .hm-chs{grid-template-columns:1fr}}
 `;
   document.head.appendChild(css);
 
-  const H = { season: null, week: null, err: {}, act: {}, ven: {} };
+  const H = { err: {}, act: {}, ven: {} };
   let busy = false;
   const rsF = () => {
     const L = typeof lastReset === 'function' ? lastReset : null; if (!L) return null;
@@ -142,7 +142,7 @@
     const r = rsF(), when = (t) => new Date(t).toLocaleString([], { weekday: 'short', hour: 'numeric', minute: '2-digit' });
     const same = r && r.d === r.w, here = r && r.n >= r.fri;
     const rows = [['d', same ? 'Daily + weekly' : 'Daily', r ? when(r.d) : ''], ...(same ? [] : [['w', 'Weekly', r ? when(r.w) : '']]), ['x', here ? 'X&ucirc;r leaves' : 'X&ucirc;r arrives', r ? when(here ? r.w : r.fri) + (here && same ? ' (with the reset)' : '') : '']];
-    return card({ w: 'w3', i: 'clock', h: 'Resets', go: 'activity:rot', c: '#7fb6e8' }, `<div class="hm-rs">${rows.map(([k, l, w]) => `<div class="rs"><b><em data-hrs="${k}" style="font-style:normal">${esc(rs(k))}</em><span>${l}</span></b><div class="hm-bar"><i data-rsp="${k === 'd' && same ? 'w' : k}" style="width:${Math.round(rsPct(k === 'd' && same ? 'w' : k) * 100)}%"></i></div><small class="hm-when">${esc(w)}</small></div>`).join('')}</div>`);
+    return card({ w: 'w4', i: 'clock', h: 'Resets', go: 'activity:rot', c: '#7fb6e8' }, `<div class="hm-rs">${rows.map(([k, l, w]) => `<div class="rs"><b><em data-hrs="${k}" style="font-style:normal">${esc(rs(k))}</em><span>${l}</span></b><div class="hm-bar"><i data-rsp="${k === 'd' && same ? 'w' : k}" style="width:${Math.round(rsPct(k === 'd' && same ? 'w' : k) * 100)}%"></i></div><small class="hm-when">${esc(w)}</small></div>`).join('')}</div>`);
   };
   // Play time, as Time Wasted on Destiny counts it: active time is time inside activities; AFK and idle (orbit, menus, loading, AFK) is left out.
   const PT_COL = ['#5b9bd5', '#6cc07a', '#e3a33b', '#b07fe0', '#e8706a', '#46c2b8', '#c9b458', '#8f96a0', '#7d8be0']; // the same colours, in the same order, as Activity > Play time
@@ -155,20 +155,10 @@
     const types = (r.types || []).slice().sort((a, b) => b.s - a.s), den = Math.max(r.acts || 0, types.reduce((t, q) => t + q.s, 0)) || 1, pc = (v) => Math.round(v / den * 100) + '%';
     return `<div class="hm-big">${esc(hm(r.acts))} <small>active time</small></div>${types.length ? `<div class="hm-tb">${types.map((q, i) => `<i title="${esc(q.n + ' ' + pc(q.s))}" style="width:${(q.s / den * 100).toFixed(2)}%;background:${PT_COL[i % PT_COL.length]}"></i>`).join('')}</div><div class="hm-tl">${types.slice(0, 4).map((q, i) => `<span><i style="background:${PT_COL[i % PT_COL.length]}"></i>${esc(q.n)} ${pc(q.s)}</span>`).join('')}</div>` : ''}<div class="hm-kv"><span>AFK and idle (not counted)</span><b>${esc(hm(r.idle))}</b></div><div class="hm-kv"><span>Platform total</span><b>${esc(hm(r.total))}</b></div>`;
   }
-  const timeCard = () => card({ w: 'w3', i: 'clock', h: 'Play time', go: 'activity:time', c: '#7fb6e8' }, ptBody());
+  const timeCard = () => card({ w: 'w4', i: 'clock', h: 'Play time', go: 'activity:time', c: '#7fb6e8' }, ptBody());
   function invCard(D) {
     const vault = D.items.filter((x) => x.loc === 'vault' && !x.pm).length, cap = 1300; // same vault size the Inventory page shows
-    return card({ w: 'w3', i: 'box', h: 'Inventory', go: 'vault', c: '#6fbf73' }, `<div class="hm-big">${num(vault)} <small>items in the vault</small></div><div class="hm-bar"><i style="width:${Math.min(100, Math.round(vault / cap * 100))}%"></i></div><div class="hm-sub">${num(vault)} of ${num(cap)} vault slots used</div>`);
-  }
-  function weekCard(pin) {
-    const r = H.week, CL = (V().CL && V().CL()) || [];
-    if (!r) return card({ i: 'cal', h: 'Left this week', go: 'activity:week', pin, c: '#7fd48a' }, msgSub('week'));
-    return card({ i: 'cal', h: 'Left this week', go: 'activity:week', pin, c: '#7fd48a' }, r.chars.map((c) => { const n = r.rows.filter((x) => x.per[c.id] && !x.per[c.id].done).length, t = r.rows.filter((x) => x.per[c.id]).length; return `<div class="hm-row"><div style="flex:1"><b>${esc(CL[c.cls] || 'Guardian')}</b><div class="hm-bar" style="margin-top:4px"><i style="width:${t ? Math.round((t - n) / t * 100) : 0}%"></i></div></div><span class="r">${n ? n + ' to do' : '&#10003; all done'}</span></div>`; }).join('') || '<div class="hm-sub">No weekly milestones listed.</div>');
-  }
-  function goalsCard() {
-    const g = F().goals ? F().goals() : null, qp = F().qpins ? F().qpins() : [];
-    const list = g ? [...g.recs, ...g.quests.filter((x) => qp.includes(x.k))] : [];
-    return card({ w: 'w3', i: 'flag', h: 'Pinned goals', ct: list.length ? list.length + ' pinned' : '', go: 'vault', c: '#5d93c9' }, list.length ? list.slice(0, 4).map((x) => { const o = (x.obj || []).find((q) => !q.c) || (x.obj || [])[0]; return `<div class="hm-row">${x.i ? `<img src="${esc(img(x.i))}" alt="" loading="lazy" style="width:32px;height:32px">` : ''}<div style="flex:1;min-width:0"><b>${esc(x.n)}</b>${o ? `<div class="gob"><span>${esc(o.t || 'Progress')}</span><i><b style="width:${Math.min(100, Math.round(o.p / (o.m || 1) * 100))}%"></b></i><em>${o.m > 1 ? num(Math.min(o.p, o.m)) + '/' + num(o.m) : ''}</em></div>` : ''}</div></div>`; }).join('') : `<div class="hm-sub">${g ? 'Nothing pinned yet. Pin triumphs with the pin in Triumphs, or quests on the Inventory page.' : 'Loading...'}</div>`);
+    return card({ w: 'w4', i: 'box', h: 'Inventory', go: 'vault', c: '#6fbf73' }, `<div class="hm-big">${num(vault)} <small>items in the vault</small></div><div class="hm-bar"><i style="width:${Math.min(100, Math.round(vault / cap * 100))}%"></i></div><div class="hm-sub">${num(vault)} of ${num(cap)} vault slots used</div>`);
   }
 
   // ---------- pinned cards ----------
@@ -189,7 +179,7 @@
   }
   function pinCard(p, D) {
     const pin = { t: p.t, id: p.id };
-    if (p.t === 'act' && p.id === 'week') return weekCard(pin);
+    if (p.t === 'act' && p.id === 'week') return ''; // the old This week pin (that page is gone)
     if (p.t === 'act' && p.id === 'deal') return ''; // the old Vendor deals pin (that page is gone)
     if (p.t === 'act' && ACT[p.id]) return card({ i: ACT[p.id][1], h: ACT[p.id][0], go: 'activity:' + p.id, pin, c: '#9fc4ee' }, actBody(p.id));
     if (p.t === 'vendor') {
@@ -218,22 +208,19 @@
     if (!D) { s.innerHTML = '<div class="hm-g"><div class="hm-c w12"><div class="hm-h">Home</div><div class="hm-sub">Sign in on the Inventory tab to fill this page.</div></div></div>'; return; }
     const pins = PINS();
     s.innerHTML = `<div class="hm-hd"><h2>Home</h2><button class="g" data-hx="refresh">&#8635; Refresh</button><label><input type="checkbox" id="hstart"${lsGet('gt.home.start', false) ? ' checked' : ''}> Open the app on this page</label></div>
-<div class="hm-g">${charsCard(D)}${resetsCard()}${timeCard()}${invCard(D)}${goalsCard()}
+<div class="hm-g">${charsCard(D)}${resetsCard()}${timeCard()}${invCard(D)}
 <div class="hm-sec">Your pins</div>${pins.length ? pins.map((p) => pinCard(p, D)).join('') : '<div class="hm-empty">Use <b>+ Home</b> on vendors, items, loadouts, Activity pages, Hub sites and guides to add them here.</div>'}</div>`;
   }
   async function load(force) {
     if (busy) return; busy = true; draw();
-    if (F().goalLoad) F().goalLoad(!!force);
     const redraw = () => { if (s.classList.contains('on')) draw(); };
     const get = async (k) => { try { if (A().fetch) { H[k] = await A().fetch(k, force); H.err[k] = ''; } } catch (e) { H.err[k] = clean(e); } redraw(); };
     const pins = PINS();
     const jobs = [get('time')];
-    if (pins.some((p) => p.t === 'act' && p.id === 'week')) jobs.push(get('week'));
     pins.filter((p) => p.t === 'act' && ACT[p.id]).forEach((p) => jobs.push((async () => { try { H.act[p.id] = await A().fetch(p.id, force); H.err['a' + p.id] = ''; } catch (e) { H.err['a' + p.id] = clean(e); } redraw(); })()));
     pins.filter((p) => p.t === 'vendor').forEach((p) => jobs.push((async () => { try { H.ven[p.id] = await A().vendor(+p.id, force); H.err['v' + p.id] = ''; } catch (e) { H.err['v' + p.id] = clean(e); } redraw(); })()));
     await Promise.all(jobs);
     busy = false; redraw();
-    setTimeout(redraw, 2500); // pinned goals arrive a moment later
   }
   s.addEventListener('click', (e) => {
     if (e.target.closest('[data-hx=refresh]')) { load(true); return; }

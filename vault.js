@@ -624,7 +624,10 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 /* settings page */
 #settings{--t:var(--gt-t,44px)}
 :root[data-gsec="settings"] main{max-width:none!important;padding:14px 16px 40px!important}
-#settings.on{columns:440px;column-gap:16px;max-width:1600px;margin:0 auto}
+#settings.on{max-width:1600px!important;width:100%;box-sizing:border-box;margin:0 auto}
+#settings .scols{display:flex;gap:16px;align-items:flex-start}#settings .scol{flex:1 1 0;min-width:0}
+#settings .sg{grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:6px}#settings .th{padding:6px 6px 7px;font-size:12.5px}#settings .th i{height:20px;margin-bottom:5px}
+#settings .uis{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
 #settings .setgrid{display:contents}
 #settings .card{max-width:none;margin:0 0 16px;break-inside:avoid;padding:14px 18px}
 #settings .card h2{padding-bottom:8px;margin-bottom:4px;border-bottom:1px solid var(--g-line)}
@@ -1010,13 +1013,36 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
       <div class="sg">${themeGrid()}</div>
       ${sx('Background picture dimming', 'For themes with a picture or glow. Higher is darker and easier to read.', rng('bgdim', 25, 90, '%'))}
       ${sx('Accent color', '', `<input type="color" data-sk="accent" value="${esc(SET.accent)}">`)}
-      ${sx('Interface scale', '', rng('scale', 80, 140, '%'))}
+    </div>
+    <div class="card sc"><h2>Display</h2>
+      ${sx('Interface scale', 'Makes everything bigger or smaller.', rng('scale', 80, 140, '%'))}
       ${sx('Show emblems on characters', '', tgl('emblems'))}
       ${sx('Show postmaster', '', tgl('postmaster'))}
       ${sx('Tighter spacing', 'Packs items, rows and sections closer together so more fits on screen.', tgl('compact'))}
       <p><button class="g" data-sa="reset">Reset display settings</button></p>
     </div>${tabsCard}${wlc}${upd}${acct}</div>`;
   }
+  // Settings cards in even columns: each card, in a sensible order, goes into whichever column is shortest, so no side runs
+  // far longer than the other. Re-done when cards are added (Farming, Reminders... come from another file) or the window resizes.
+  const SORD = ['Accounts', 'Item display', 'Inventory display', 'Appearance', 'Display', 'Tabs', 'Wish lists', 'My wish list', 'Farming', 'Reminders', 'Backup', 'Updates'];
+  let balT = 0, balN = 0;
+  function balanceSettings(force) {
+    const root = settingsSec; if (!root || !root.isConnected || !root.classList.contains('on')) return;
+    const cards = [...root.querySelectorAll('.card')].filter((c) => c.parentElement && (c.parentElement === root || c.parentElement.classList.contains('setgrid') || c.parentElement.classList.contains('scol')));
+    if (!cards.length) return;
+    const n = Math.max(1, Math.min(3, Math.floor((root.clientWidth + 16) / 436)));
+    const loose = cards.some((c) => !c.parentElement.classList.contains('scol'));
+    if (!force && !loose && n === balN) return;
+    balN = n;
+    const key = (c) => { const h = (c.querySelector('h2') || {}).textContent || ''; const i = SORD.indexOf(h.trim()); return i < 0 ? 99 : i; };
+    cards.sort((a, b) => key(a) - key(b));
+    let wrap = root.querySelector(':scope > .scols'); if (!wrap) { wrap = document.createElement('div'); wrap.className = 'scols'; root.appendChild(wrap); }
+    wrap.replaceChildren(); const cols = Array.from({ length: n }, () => { const d = document.createElement('div'); d.className = 'scol'; wrap.appendChild(d); return d; });
+    cards.forEach((c) => { const col = cols.reduce((a, b) => (b.offsetHeight < a.offsetHeight ? b : a)); col.appendChild(c); });
+    root.querySelectorAll(':scope > .setgrid').forEach((g2) => { if (!g2.children.length) g2.remove(); });
+  }
+  new MutationObserver(() => { clearTimeout(balT); balT = setTimeout(() => balanceSettings(false), 30); }).observe(settingsSec, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+  window.addEventListener('resize', () => { clearTimeout(balT); balT = setTimeout(() => balanceSettings(false), 120); });
   async function wlDo(arg) {
     try {
       WLMSG = 'Loading...'; drawSettings();

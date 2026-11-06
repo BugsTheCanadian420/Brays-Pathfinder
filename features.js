@@ -44,9 +44,6 @@ header{position:relative}
 .fxbar button{padding:4px 9px;font-size:12px}
 .fxbar.warn{border-color:#8a6a20;background:#221d10;color:#f0d79a}
 .fxbar.bulk{border-color:#3f6c93;background:#101b25}
-.fxgoal{background:#17181b;border:1px solid #2f3238;padding:6px 8px;margin-bottom:6px}.fxgoal h4{margin:0;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#cfd2d8;display:flex;align-items:center;gap:8px}.fxgoal h4>span[data-f]{cursor:pointer}.fxgoal h4 small{color:#7c7f86;letter-spacing:0;text-transform:none;margin-left:6px}.fxgoal h4 button{padding:2px 8px!important;font-size:11px;letter-spacing:0;text-transform:none}
-.pglist{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:6px;margin-top:6px}.pgcard{position:relative;display:flex;gap:8px;background:#1d1f23;border:1px solid #2f3238;padding:6px 26px 6px 6px}.pgcard.ok{border-color:#2f6b3a}.pgcard img{width:36px;height:36px;flex:none;border:1px solid #3a3d43}.pgbd{flex:1;min-width:0}.pgbd b{display:block;color:#fff;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pgbd small{color:#8b8f97;font-size:11px}.pgob{display:grid;grid-template-columns:1fr 60px auto;gap:6px;align-items:center;font-size:11.5px;color:#b9bec6;margin-top:3px}.pgob span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pgob i{height:5px;background:#2c2f34;border-radius:3px;overflow:hidden}.pgob i b{display:block;height:100%;background:#5d93c9}.pgob.ok{color:#7fd48a}.pgob.ok i b{background:#4caf50}.pgob em{font-style:normal;color:#cfd2d8;font-size:11px}.pgx{position:absolute;top:2px;right:2px;background:none!important;border:0!important;color:#8b8f97;cursor:pointer;font-size:15px;padding:0 5px!important}.pgx:hover{color:#fff}
-.pgmenu{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;max-height:220px;overflow:auto}.pgmenu button{background:#1d1f23;border:1px solid #3a3d43;color:#cfd2d8;padding:4px 10px;font-size:12px;cursor:pointer;border-radius:3px;text-align:left}.pgmenu button.on{border-color:#8fb3d9;color:#fff}.pgmenu button small{color:#8b8f97;margin-left:6px}
 .fxfeed{background:#17181b;border:1px solid #2f3238;padding:6px 8px}
 .fxfeed h4{margin:0;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#cfd2d8;display:flex;align-items:center;gap:8px;cursor:pointer}
 .fxfeed h4 small{color:#7c7f86;letter-spacing:0;text-transform:none}
@@ -154,31 +151,11 @@ body.ovl header{display:none}
     return `<div class="fxfeed"><h4 data-f="feedt">${st.feedOpen ? '&#9662;' : '&#9656;'} New items <small>${feed.length} since you last looked</small><span style="flex:1"></span><button class="g" data-f="feedx" style="padding:2px 8px;font-size:11px">Dismiss all</button></h4>${st.feedOpen ? `<div class="fxrow">${feed.map((x) => V().tile(x)).join('')}</div>` : ''}</div>`;
   }
 
-  // ---------- pinned goals: triumphs you pinned (star in Triumphs) and quests you pin here ----------
-  const TPIN = () => lsGet('gt_tpin', []), QPIN = () => lsGet('gt.qpin', []);
-  st.goals = null; st.goalAt = 0; st.goalBusy = false; st.goalMenu = false;
-  function goalLoad(force) {
-    if (st.goalBusy || !gt.goalState) return;
-    if (!force && st.goals && Date.now() - st.goalAt < 90000) return;
-    st.goalBusy = true;
-    gt.goalState({ r: TPIN().slice(0, 40) }).then((r) => { st.goals = r; st.goalAt = Date.now(); }).catch(() => { st.goalAt = Date.now(); }).finally(() => { st.goalBusy = false; if (V() && V().D()) after(); });
-  }
-  const objLine = (o) => `<div class="pgob${o.c ? ' ok' : ''}"><span>${esc(o.t || 'Objective')}</span><i><b style="width:${Math.min(100, Math.round(o.p / (o.m || 1) * 100))}%"></b></i><em>${o.m > 1 ? Math.min(o.p, o.m).toLocaleString() + '/' + o.m.toLocaleString() : o.c ? '&#10003;' : ''}</em></div>`;
-  function goalsHTML() {
-    const open = lsGet('gt.goals.open', true), g = st.goals || { recs: [], quests: [] };
-    const qp = QPIN(), qs = g.quests.filter((x) => qp.includes(x.k)), rs = g.recs, n = rs.length + qs.length;
-    const CL = (V().CL && V().CL()) || [];
-    const card = (x, kind) => `<div class="pgcard${x.done ? ' ok' : ''}">${x.i ? `<img src="${esc(V().icon(x.i))}" alt="">` : ''}<div class="pgbd"><b title="${esc(x.d || '')}">${esc(x.n)}</b>${kind === 'q' && CL[x.cl] ? `<small>${esc(CL[x.cl])}</small>` : ''}${(x.obj || []).slice(0, 4).map(objLine).join('')}${x.done ? '<div class="pgob ok"><span>Complete</span></div>' : ''}</div><button class="pgx" data-f="${kind === 'q' ? 'qunpin' : 'tunpin'}" data-k="${esc(kind === 'q' ? x.k : String(x.h))}" title="Unpin">&times;</button></div>`;
-    const menu = st.goalMenu ? `<div class="pgmenu">${g.quests.length ? g.quests.map((x) => `<button data-f="qpin" data-k="${esc(x.k)}" class="${qp.includes(x.k) ? 'on' : ''}">${qp.includes(x.k) ? '&#10003; ' : ''}${esc(x.n)}<small>${esc(CL[x.cl] || '')}</small></button>`).join('') : `<p class="mute">${st.goalBusy ? 'Loading your quests...' : 'No quests with progress on your characters.'}</p>`}</div>` : '';
-    return `<div class="fxgoal"><h4><span data-f="goalt">${open ? '&#9662;' : '&#9656;'} Pinned goals <small>${n ? n + ' pinned' : 'Pin triumphs and seal steps with the pin in Triumphs, or pin a quest here'}</small></span><span style="flex:1"></span><button class="g" data-f="goalm">${st.goalMenu ? 'Done' : '+ Pin a quest'}</button>${n ? '<button class="g" data-f="goalr" title="Refresh">&#8635;</button>' : ''}</h4>${menu}${open && n ? `<div class="pglist">${rs.map((x) => card(x, 't')).join('')}${qs.map((x) => card(x, 'q')).join('')}</div>` : ''}</div>`;
-  }
-
   // ---------- all of the above, drawn into #vfx ----------
   function after() {
     const box = document.getElementById('vfx'); if (!box || !V() || !V().D()) return;
     feedUpdate();
-    goalLoad(false);
-    box.innerHTML = warnHTML() + bulkHTML() + goalsHTML() + feedHTML();
+    box.innerHTML = warnHTML() + bulkHTML() + feedHTML();
     document.body.classList.toggle('fxbulk', st.bulk);
     document.querySelectorAll('[data-f=bulk]').forEach((b) => b.classList.toggle('on', st.bulk || st.sel.size > 0));
   }
@@ -254,11 +231,6 @@ ${mine ? `<div class="mute" style="margin-top:4px">You have ${mine} roll${mine =
       if (a === 'feedx') { const D = v.D(); lsSet('gt.feed.' + (D.name || 'x'), []); } else st.feedOpen = !st.feedOpen;
       e.stopPropagation(); v.render(); return true;
     }
-    if (a === 'goalt') { lsSet('gt.goals.open', !lsGet('gt.goals.open', true)); e.stopPropagation(); after(); return true; }
-    if (a === 'goalm') { st.goalMenu = !st.goalMenu; if (st.goalMenu) goalLoad(true); e.stopPropagation(); after(); return true; }
-    if (a === 'goalr') { goalLoad(true); e.stopPropagation(); return true; }
-    if (a === 'qpin' || a === 'qunpin') { const k = f.dataset.k, l = QPIN(); lsSet('gt.qpin', l.includes(k) ? l.filter((z) => z !== k) : [...l, k].slice(-20)); e.stopPropagation(); after(); return true; }
-    if (a === 'tunpin') { const h = +f.dataset.k; lsSet('gt_tpin', TPIN().filter((z) => z !== h)); if (st.goals) st.goals.recs = st.goals.recs.filter((r) => r.h !== h); e.stopPropagation(); after(); return true; }
     if (a === 'bulk') { st.bulk = !st.bulk; v.render(); return true; }
     if (a === 'bdone') { st.sel.clear(); st.bulk = false; st.msg = ''; v.render(); return true; }
     if (a === 'ball') { if (!v.q()) { st.msg = 'Type a search first, then select the results.'; } else { gear().filter((o) => v.match(o) && !o.ro).forEach((o) => st.sel.add(o.id)); st.msg = ''; } v.render(); return true; }
@@ -296,7 +268,7 @@ ${mine ? `<div class="mute" style="margin-top:4px">You have ${mine} roll${mine =
     if (e.key === 'Escape' && st.sel.size && V() && !V().sel()) { st.sel.clear(); st.bulk = false; V().render(); }
   });
 
-  window.__gtf = { isSel: (id) => st.sel.has(id), onClick, pop, after, goals: () => st.goals, goalLoad: (f) => goalLoad(f), qpins: () => QPIN(), newCount: () => { const D = V() && V().D(); return D ? lsGet('gt.feed.' + (D.name || 'x'), []).length : 0; } };
+  window.__gtf = { isSel: (id) => st.sel.has(id), onClick, pop, after, newCount: () => { const D = V() && V().D(); return D ? lsGet('gt.feed.' + (D.name || 'x'), []).length : 0; } };
   // The vault may already have drawn itself before this file loaded: draw again so the new panels appear.
   setTimeout(() => { try { if (V() && V().D()) V().render(); } catch (e) { /* not loaded yet */ } }, 0);
 

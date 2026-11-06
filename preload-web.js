@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.0: preload.js for the browser */
+/* Pathfinder 0.3.1: preload.js for the browser */
 (function (require) {
 const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('gt', {
@@ -54,12 +54,9 @@ contextBridge.exposeInMainWorld('gt', {
   actVendors: (v) => ipcRenderer.invoke('act:vendors', v),
   armSets: (v) => ipcRenderer.invoke('arm:sets', v),
   actPbs: () => ipcRenderer.invoke('act:pbs'),
-  actLockouts: () => ipcRenderer.invoke('act:lockouts'),
   bkExport: (v) => ipcRenderer.invoke('bk:export', v),
   bkImport: () => ipcRenderer.invoke('bk:import'),
   actExotics: () => ipcRenderer.invoke('act:exotics'),
-  goalState: (v) => ipcRenderer.invoke('goal:state', v),
-  actSeason: () => ipcRenderer.invoke('act:season'),
   imgFetch: (v) => ipcRenderer.invoke('img:fetch', v),
   imgCopy: (v) => ipcRenderer.invoke('img:copy', v),
   imgSave: (v) => ipcRenderer.invoke('img:save', v),

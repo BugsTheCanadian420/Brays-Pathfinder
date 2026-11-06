@@ -15,7 +15,7 @@
   const clock = (ms) => { const s = Math.round(ms / 1000), h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), r = s % 60; return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(r).padStart(2, '0'); };
   const cap = (t) => String(t).replace(/\b\w/g, (c) => c.toUpperCase());
 
-  const TABS = [['rot', 'Rotations'], ['week', 'This week'], ['xur', 'X&ucirc;r'], ['bnt', 'Bounties'], ['ven', 'Vendors'], ['wep', 'Weapon stats'], ['clr', 'Raids and dungeons'], ['cru', 'Crucible'], ['pb', 'Personal bests'], ['time', 'Play time'], ['rec', 'Recap']];
+  const TABS = [['rot', 'Rotations'], ['xur', 'X&ucirc;r'], ['bnt', 'Bounties'], ['ven', 'Vendors'], ['wep', 'Weapon stats'], ['clr', 'Raids and dungeons'], ['cru', 'Crucible'], ['pb', 'Personal bests'], ['time', 'Play time'], ['rec', 'Recap']];
   const st = { vopen: new Set(), tab: 'rot', vh: 0, vq: '', char: '', cache: {}, wf: 'All', wq: '', sort: 'kills', busy: 0 };
 
   const s = document.createElement('section'); s.id = 'activity'; s.className = 'gdark'; vsec.parentNode.appendChild(s);
@@ -165,7 +165,7 @@
   const chars = () => { const d = V().D && V().D(); return (d && d.chars) || []; };
   const charArg = () => (st.char ? { char: st.char } : {});
 
-  const PINNABLE = { week: 'Left this week', cru: 'Crucible', rot: 'Rotations', bnt: 'Bounties', xur: 'Xûr', clr: 'Raids and dungeons', pb: 'Personal bests', time: 'Play time', rec: 'Recap', wep: 'Weapon stats' };
+  const PINNABLE = { cru: 'Crucible', rot: 'Rotations', bnt: 'Bounties', xur: 'Xûr', clr: 'Raids and dungeons', pb: 'Personal bests', time: 'Play time', rec: 'Recap', wep: 'Weapon stats' };
   function frame() {
     const cs = chars(), CL = (V().CL && V().CL()) || {};
     const showChar = ['bnt', 'ven', 'xur'].includes(st.tab) && cs.length > 1;
@@ -312,44 +312,6 @@
     return chips + `<div class="vhd"><span class="stat">${esc(cur ? cur.n : r.name)} &middot; ${num(r.items.length)} items</span>${homeBtn('vendor', st.vh, cur ? cur.n : r.name)}</div>` + (body || msg('Nothing matches that search.')) + noteCard('This is the vendor\'s full inventory as Bungie reports it. Wish list checks use the perks the vendor is selling. Tiles like "Strange Gear Offers" open to show what is inside.');
   };
 
-  // ---- this week: what each character still has left (raid encounters, pinnacles, weekly milestones) ----
-  // Season pass and artifact, with an estimate of your rank when the season ends (from how fast you have been ranking up lately).
-  async function seasonHTML(force) {
-    if (!gt().actSeason) return '';
-    let r; try { r = await fetchCached('season', () => gt().actSeason(), force); } catch (e) { return ''; }
-    if (!r || !r.pass) return '';
-    const P = r.pass, Q = r.pre, per = (Q && Q.next) || P.next || 100000;
-    const rank = P.lvl + (Q ? Q.lvl : 0), tot = (P.tot || 0) + ((Q && Q.tot) || 0), now = Date.now();
-    // remember a reading every few hours to measure your pace
-    let hist = lsGet('gt.season.hist', []); if (!Array.isArray(hist) || (hist[0] && hist[0].s !== r.name)) hist = [];
-    if (!hist.length || now - hist[hist.length - 1].t > 3 * 3600e3) { hist.push({ s: r.name, t: now, x: tot }); hist = hist.slice(-120); lsSet('gt.season.hist', hist); }
-    const old = hist.find((h) => now - h.t < 14 * 864e5) || hist[0];
-    const days = old ? (now - old.t) / 864e5 : 0, rate = days >= 0.9 ? Math.max(0, (tot - old.x) / days) : 0;
-    // Some "seasons" (like the Monument of Triumph pass) have no real end date (Bungie says 2099), so no countdown for those.
-    const left0 = r.end ? Math.max(0, (r.end - now) / 864e5) : 0, hasEnd = !!r.end && left0 < 400, left = hasEnd ? left0 : 0;
-    const perDay = rate / per, proj = rate && hasEnd ? Math.floor((tot + rate * left) / per) : 0;
-    const paceTxt = rate ? `${num(Math.round(perDay * 10) / 10)} rank${Math.round(perDay * 10) === 10 ? '' : 's'} a day lately` : 'Your pace shows up after a day or two of play.';
-    const bar = (cur, next) => `<div class="abar2"><i style="width:${next ? Math.round(cur / next * 100) : 0}%"></i></div>`;
-    const useP = P.lvl < P.cap || !Q, cur = useP ? P.cur : Q.cur, next = useP ? P.next : Q.next;
-    const endC = hasEnd ? `<div class="acard"><div class="stat">Season ends</div><div class="big">${left >= 1 ? num(Math.floor(left)) + ' <small class="mute">days left</small>' : 'Today'}</div><div class="sub">${esc(new Date(r.end).toLocaleDateString())}</div>${proj ? `<div class="sub">At this pace you will reach about <b>rank ${num(Math.max(rank, proj))}</b> by the end.</div>` : ''}</div>` : '';
-    const paceC = `<div class="acard"><div class="stat">Your pace</div><div class="big">${rate ? num(Math.round(perDay * 7 * 10) / 10) + ' <small class="mute">ranks a week</small>' : '&ndash;'}</div><div class="sub">${paceTxt}</div>${P.wkL ? `<div class="sub">Weekly bonus XP: ${num(P.wk)} / ${num(P.wkL)}</div>` : ''}</div>`;
-    return `<h3 class="sec">${esc(r.name || 'Season')}</h3><div class="row3"><div class="acard plan"><div class="stat">Rank</div><div class="big">${num(rank)}</div>${bar(cur, next)}<div class="sub">${num(cur)} / ${num(next)} XP to the next rank</div></div>${paceC}${endC}</div>`;
-  }
-  RENDER.week = async (force) => {
-    const sea = await seasonHTML(force);
-    const r = await fetchCached('week', () => gt().actLockouts(), force);
-    const CL = (V().CL && V().CL()) || ['Titan', 'Hunter', 'Warlock'];
-    if (!r.rows.length) return sea + msg('Bungie is not listing any weekly milestones for your characters right now.');
-    const cell = (o) => {
-      if (!o) return '<td class="wk na">-</td>';
-      if (o.done) return `<td class="wk ok" title="${o.gone ? 'Done (Bungie no longer lists it for this character)' : 'Done'}">&#10003;</td>`;
-      return o.t ? `<td class="wk" title="${o.p} of ${o.t} ${esc(o.kind)}"><span class="wkp"><i style="width:${Math.round(o.p / o.t * 100)}%"></i></span>${o.p}/${o.t}</td>` : '<td class="wk todo" title="Not done yet">&#9675;</td>';
-    };
-    const left = r.chars.map((c) => r.rows.filter((x) => x.per[c.id] && !x.per[c.id].done).length);
-    const head = `<div class="row3">${r.chars.map((c, i) => `<div class="acard"><div class="stat">${esc(CL[c.cls] || 'Guardian')} ${c.light}</div><div class="big ${left[i] ? '' : 'pos'}">${left[i] ? left[i] + ' <small class="mute">left this week</small>' : 'All done'}</div></div>`).join('')}</div>`;
-    const table = (list, title) => list.length ? `<h3 class="sec">${title}</h3><table class="tbl wkt"><thead><tr><th>Milestone</th>${r.chars.map((c) => `<th>${esc(CL[c.cls] || 'Guardian')}</th>`).join('')}</tr></thead><tbody>${list.map((x) => `<tr><td class="n" title="${esc(x.d)}">${x.i ? `<img src="${esc(img(x.i))}" alt="">` : ''}<span>${esc(x.n)}</span></td>${r.chars.map((c) => cell(x.per[c.id])).join('')}</tr>`).join('')}</tbody></table>` : '';
-    return sea + `<h3 class="sec">Weekly progress</h3>` + head + table(r.rows.filter((x) => x.raid), 'Raid and dungeon encounters') + table(r.rows.filter((x) => !x.raid), 'Weekly milestones') + noteCard('Resets ' + esc(resetIn()) + ' from now. Encounters show how many you have cleared this week; a tick means the reward is claimed.');
-  };
   // ---- personal bests ----
   RENDER.pb = async (force) => {
     const r = await fetchCached('pb', () => gt().actPbs(), force);
@@ -492,7 +454,6 @@
   };
 
   // ---- recap: what you did lately, like an activity feed ----
-  const startT = Date.now();
   let base = null;
   async function pollTotals(force) {
     try {
@@ -516,7 +477,7 @@
     const dk = sum(day, 'k'), dd = sum(day, 'd');
     const tile = (l, v, c) => `<div class="acard"><div class="stat">${l}</div><div class="big ${c || ''}">${v}</div></div>`;
     const d = { k: t.kills - base.kills, d: t.deaths - base.deaths, c: t.cleared - base.cleared };
-    const head = `<div class="row3">${tile('Last 24 hours', day.length + ' <small class="mute">activities</small>')}${tile('Time played (24h)', esc(dur(sum(day, 's'))))}${tile('Kills (24h)', num(dk), dk ? 'pos' : '')}${tile('K/D (24h)', dd ? (dk / dd).toFixed(2) : dk ? dk.toFixed(2) : '0.00')}${tile('This session', '+' + num(d.k) + ' <small class="mute">kills</small>')}${tile('App open for', esc(dur((Date.now() - startT) / 1000)))}</div>`;
+    const head = `<div class="row3">${tile('Last 24 hours', day.length + ' <small class="mute">activities</small>')}${tile('Time played (24h)', esc(dur(sum(day, 's'))))}${tile('Kills (24h)', num(dk), dk ? 'pos' : '')}${tile('K/D (24h)', dd ? (dk / dd).toFixed(2) : dk ? dk.toFixed(2) : '0.00')}${tile('This session', '+' + num(d.k) + ' <small class="mute">kills</small>')}</div>`;
     const rows = R.acts.map((a) => {
       const pvp = PVP.has(a.md), res = pvp ? (a.st === 0 ? ['Victory', 'win'] : ['Defeat', 'loss']) : a.ok ? ['Completed', 'win'] : ['Not finished', 'mid'];
       return `<div class="ract ${res[1]}" data-pg="${esc(a.id)}" title="Click to see who was there" style="cursor:pointer">${a.img ? `<div class="rimg" style="background-image:url('${esc(img(a.img))}')"></div>` : '<div class="rimg"></div>'}<div class="rmain"><b>${esc(a.n)}</b><div class="sub">${[esc(a.tn || ''), a.cz ? 'Custom difficulty' : '', a.cls !== undefined && CL[a.cls] ? CL[a.cls] : '', a.pc > 1 ? a.pc + ' players' : a.pc === 1 ? 'solo' : ''].filter(Boolean).join(' &middot; ')}</div></div><div class="rres">${res[0]}</div><div class="rst"><span><i>K</i>${num(a.k)}</span><span><i>D</i>${num(a.d)}</span><span><i>A</i>${num(a.a)}</span><span><i>K/D</i>${(a.kd || 0).toFixed(2)}</span></div><div class="rtime">${esc(dur(a.s))}<small>${esc(ago(a.at))}</small></div></div>`;
@@ -586,7 +547,7 @@
   // For the Home page: the same cached data, and a way to jump straight to one of these pages.
   window.__gta = {
     fetch: (k, force) => {
-      const F = { season: ['season', () => gt().actSeason()], week: ['week', () => gt().actLockouts()], rot: ['rot' + st.char, () => gt().actRot(charArg())], bnt: ['bnt' + st.char, () => gt().actBounties(charArg())], xur: ['xur' + st.char, () => gt().actXur(charArg())], clr: ['clr', () => gt().actClears()], pb: ['pb', () => gt().actPbs()], rec: ['recent', () => gt().actRecent()], wep: ['wep', () => gt().actWeapons()], time: ['time', () => gt().actPlaytime()], cru: ['cru', () => gt().actCrucible({})] }[k];
+      const F = { rot: ['rot' + st.char, () => gt().actRot(charArg())], bnt: ['bnt' + st.char, () => gt().actBounties(charArg())], xur: ['xur' + st.char, () => gt().actXur(charArg())], clr: ['clr', () => gt().actClears()], pb: ['pb', () => gt().actPbs()], rec: ['recent', () => gt().actRecent()], wep: ['wep', () => gt().actWeapons()], time: ['time', () => gt().actPlaytime()], cru: ['cru', () => gt().actCrucible({})] }[k];
       return F ? fetchCached(F[0], F[1], force) : Promise.reject(new Error('unknown'));
     },
     vendor: (h, force) => fetchCached('ven' + h + st.char, () => gt().actVendor({ h, ...charArg() }), force),
