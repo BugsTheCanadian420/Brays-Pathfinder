@@ -234,7 +234,8 @@
 .tr .td{color:#a3a6ad;font-size:12px;line-height:1.35;margin-top:2px}
 .tr .to{margin-top:6px;display:grid;gap:5px}.tr .ob{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:10px;align-items:center;font-size:12px;color:#b9bcc4}
 .tr .bar,.seal .sbar{height:7px;background:#2c2f34;border-radius:4px;position:relative;overflow:hidden}.tr .bar i,.seal .sbar i{display:block;height:100%;background:linear-gradient(90deg,#5d93c9,#8cb4d6);border-radius:4px}.tr.done .bar i,.seal .sbar i.dn{background:linear-gradient(90deg,#4fa85a,#7fd48a)}
-.tr .pin{flex:none;width:30px;padding:0!important;text-align:center;font-size:15px}.tr .pin.on{color:#e8b84a;background:#2a2517}
+.tr .pin{flex:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:4px 10px!important;font-size:12px!important}.tr .pin .tkd,.trd .tkb .tkd{width:9px;height:9px;border-radius:50%;border:1.5px solid #6fcf7a;flex:none}.tr .pin.on,.trd .tkb.on{color:#bff0c4!important;background:#1d3322!important;border-color:#3f8f4c!important}.tr .pin.on .tkd,.trd .tkb.on .tkd{background:#6fcf7a;box-shadow:0 0 6px #6fcf7a}
+.tr{cursor:pointer}.tr:hover{background:rgba(255,255,255,.025)}
 .tr .ck{color:#7fd48a;font-weight:700}
 .tr .how{flex:none;font-size:11px!important;padding:3px 9px!important;white-space:nowrap}.tr .how.on{background:var(--g-accent2)!important;border-color:var(--g-accent)!important;color:var(--g-on-accent,#fff)!important}
 .tr .acts2{display:flex;flex-direction:column;gap:5px;align-items:stretch}
@@ -305,7 +306,7 @@
   }
   function ensureRw(h) {
     const r = DEF.rec[h]; if (!r || !r.rw || !window.gt || !window.gt.itemInfo) return;
-    r.rw.forEach(([ih]) => { if (RW[ih] === undefined) { RW[ih] = null; window.gt.itemInfo({ h: ih }).then((o) => { RW[ih] = o || {}; draw(); }).catch(() => { RW[ih] = {}; }); } });
+    r.rw.forEach(([ih]) => { if (RW[ih] === undefined) { RW[ih] = null; window.gt.itemInfo({ h: ih }).then((o) => { RW[ih] = o || {}; draw(); if (dOpen) drawDet(); }).catch(() => { RW[ih] = {}; }); } });
   }
   function howHTML(h) {
     const r = DEF.rec[h]; if (!r) return '';
@@ -334,7 +335,7 @@
       const od = DEF.obj[oh] || {}, mm = m || od.m || 1, pc = Math.min(100, Math.round((p / mm) * 100));
       return `<div class="ob"><span>${esc(od.d || '')} ${mm > 1 ? esc(p + ' / ' + mm) : ''}</span><div class="bar"><i style="width:${c ? 100 : pc}%"></i></div></div>`;
     }).join('');
-    return `<div class="tr${done ? ' done' : ''}" data-r="${h}"><div class="ti">${r.i ? `<img src="${esc(icon(r.i))}" alt="">` : ''}</div><div class="tb"><div class="tt">${obs ? '???' : esc(r.n)}${r.s ? `<span class="pts">${r.s} pts</span>` : ''}${done ? '<span class="ck">&#10003;</span>' : ''}</div><div class="td">${obs ? 'Hidden until unlocked.' : esc(r.d)}</div>${obj ? `<div class="to">${obj}</div>` : ''}${hw[h] ? howHTML(h) : ''}</div><div class="acts2"><button class="pin${pins ? ' on' : ''}" data-pin="${h}" title="Track here">&#9733;</button><button class="how${hw[h] ? ' on' : ''}" data-how="${h}" title="What you have to do to get this">How to get</button></div></div>`;
+    return `<div class="tr${done ? ' done' : ''}" data-r="${h}"><div class="ti">${r.i ? `<img src="${esc(icon(r.i))}" alt="">` : ''}</div><div class="tb"><div class="tt">${obs ? '???' : esc(r.n)}${r.s ? `<span class="pts">${r.s} pts</span>` : ''}${done ? '<span class="ck">&#10003;</span>' : ''}</div><div class="td">${obs ? 'Hidden until unlocked.' : esc(r.d)}</div>${obj ? `<div class="to">${obj}</div>` : ''}${hw[h] ? howHTML(h) : ''}</div><div class="acts2"><button class="pin${pins ? ' on' : ''}" data-pin="${h}" title="${pins ? 'Stop tracking' : 'Track: keeps it in Tracked, the side column and the Inventory page'}"><i class="tkd"></i>${pins ? 'Tracked' : 'Track'}</button><button class="how${hw[h] ? ' on' : ''}" data-how="${h}" title="What you have to do to get this">How to get</button></div></div>`;
   }
   const pass = (h) => { const r = DEF.rec[h]; if (!r || hidden(h)) return false; const d = isDone(h); if (filt === 'todo' && d) return false; if (filt === 'done' && !d) return false; return true; };
   function nodeHTML(nh, depth) {
@@ -470,9 +471,98 @@ ${quick.length ? `<div class="tcol" style="margin-top:14px">Quick wins: almost d
       SIDEC = { s: S, near: all.map((h) => [h, pct(h)]).filter((x) => x[1] > 0).sort((a, b) => b[1] - a[1]).slice(0, 10).map((x) => x[0]) };
     }
     const trk = [...new Set([...S.tracked, ...PIN()])].filter((h) => DEF.rec[h]).slice(0, 8);
-    const row = (h) => { const r = DEF.rec[h], p = isDone(h) ? 1 : pct(h); return `<div class="tsr" data-sq="${esc(r.n)}" title="${esc(r.d)}">${r.i ? `<img src="${esc(icon(r.i))}" alt="">` : '<i></i>'}<div><b>${esc(r.n)}</b><div class="sbar"><i class="${p >= 1 ? 'dn' : ''}" style="width:${Math.round(p * 100)}%"></i></div></div><em>${Math.round(p * 100)}%</em></div>`; };
-    return `<aside class="tside"><div class="card"><div class="tcol">Tracked and pinned</div>${trk.length ? trk.map(row).join('') : '<p class="mute">Pin a triumph with its pin button to keep it here and on the Inventory page.</p>'}</div><div class="card"><div class="tcol">Closest to done</div>${SIDEC.near.map(row).join('') || '<p class="mute">Nothing in progress.</p>'}</div></aside>`;
+    const row = (h) => { const r = DEF.rec[h], p = isDone(h) ? 1 : pct(h); return `<div class="tsr" data-rd="${h}" title="${esc(r.d)}">${r.i ? `<img src="${esc(icon(r.i))}" alt="">` : '<i></i>'}<div><b>${esc(r.n)}</b><div class="sbar"><i class="${p >= 1 ? 'dn' : ''}" style="width:${Math.round(p * 100)}%"></i></div></div><em>${Math.round(p * 100)}%</em></div>`; };
+    return `<aside class="tside"><div class="card"><div class="tcol">Tracked</div>${trk.length ? trk.map(row).join('') : '<p class="mute">Press Track on any triumph to keep it here and on the Inventory page.</p>'}</div><div class="card"><div class="tcol">Closest to done</div>${SIDEC.near.map(row).join('') || '<p class="mute">Nothing in progress.</p>'}</div></aside>`;
   }
+  // ---- one triumph in detail, with which friends and clan members have it (like Braytech) ----
+  let dOpen = 0, WHOR = null, whoTab = 'friend', whoT = 0;
+  const cleanE = (e) => String((e && e.message) || e || '').replace(/^Error invoking remote method '[^']*': (Error: )?/, '');
+  async function whoFetch(h, reload) {
+    clearTimeout(whoT);
+    try { WHOR = await window.gt.trWho({ h, reload: !!reload }); } catch (e) { WHOR = { st: 'error', err: { all: cleanE(e) } }; }
+    if (dOpen !== h) return;
+    drawDet();
+    if (WHOR && WHOR.st === 'loading') whoT = setTimeout(() => whoFetch(h), 900);
+  }
+  function openDet(h) { if (!DEF || !DEF.rec[h]) return; dOpen = h; WHOR = null; drawDet(); if (window.gt.trWho) whoFetch(h); }
+  function closeDet() { dOpen = 0; clearTimeout(whoT); const m = document.getElementById('trd'); if (m) m.remove(); }
+  function whoHTML() {
+    if (!window.gt.trWho) return '<p class="mute">Friends and clan need the desktop app or website signed in.</p>';
+    const W = WHOR;
+    if (!W) return '<p class="mute">Looking up your friends and clan...</p>';
+    if (W.st === 'loading') { const p = W.total ? Math.round((W.done / W.total) * 100) : 5; return `<p class="mute">Looking up your friends and clan${W.total ? ': ' + W.done + ' of ' + W.total : '...'}<br><small>This happens once. After that every triumph opens instantly.</small></p><div class="wbar"><i style="width:${p}%"></i></div>`; }
+    if (W.st === 'error') return `<p class="mute">Could not look up your friends and clan: ${esc((W.err && W.err.all) || 'unknown error')}</p><button data-who="reload">Try again</button>`;
+    const ppl = (W.people || []).filter((p) => p.s.includes(whoTab));
+    const nF = (W.people || []).filter((p) => p.s.includes('friend')), nC = (W.people || []).filter((p) => p.s.includes('clan'));
+    const cnt = (l) => l.filter((p) => p.d).length + ' / ' + l.length;
+    const tabs = `<div class="wtabs"><button data-wt="friend" class="${whoTab === 'friend' ? 'on' : ''}">Friends <small>${cnt(nF)}</small></button><button data-wt="clan" class="${whoTab === 'clan' ? 'on' : ''}">Clan${W.clan ? ' &middot; ' + esc(W.clan) : ''} <small>${cnt(nC)}</small></button><button class="wrl" data-who="reload" title="Look everyone up again">&#8635;</button></div>`;
+    const er = whoTab === 'friend' ? W.err && W.err.friends : W.err && W.err.clan;
+    let note = '';
+    if (er === 'scope') note = 'Bungie did not let Pathfinder read your friends list. Your clan still works.';
+    else if (er === 'none') note = 'You are not in a clan.';
+    else if (er) note = 'Could not load: ' + esc(er);
+    const name = (p) => `<div class="wp${p.d ? ' wdn' : ''}${p.priv ? ' wpv' : ''}" title="${p.priv ? 'Private profile: Bungie does not share their triumphs' : ''}"><b>${esc(p.n)}</b>${p.c ? `<span>#${esc(p.c)}</span>` : ''}</div>`;
+    const by = (a, b) => a.n.localeCompare(b.n);
+    const dn = ppl.filter((p) => p.d).sort(by), nd = ppl.filter((p) => !p.d && !p.priv).sort(by), pv = ppl.filter((p) => !p.d && p.priv).sort(by);
+    const grp = (t, l) => l.length ? `<h5>${t} <small>${l.length}</small></h5><div class="wgrid">${l.map(name).join('')}</div>` : '';
+    return tabs + (note ? `<p class="mute">${note}</p>` : '') + (ppl.length ? grp('Completed', dn) + grp('Not completed', nd) + grp('Private profiles', pv) : (note ? '' : '<p class="mute">Nobody here yet.</p>'));
+  }
+  function drawDet() {
+    let m = document.getElementById('trd');
+    if (!dOpen) { if (m) m.remove(); return; }
+    const h = dOpen, r = DEF.rec[h]; if (!r) { closeDet(); return; }
+    if (!m) {
+      m = document.createElement('div'); m.id = 'trd'; m.className = 'trd'; document.body.appendChild(m);
+      m.addEventListener('click', (e) => {
+        if (e.target === m || e.target.closest('[data-dx]')) { closeDet(); return; }
+        const wt = e.target.closest('[data-wt]'); if (wt) { whoTab = wt.dataset.wt; drawDet(); return; }
+        if (e.target.closest('[data-who]')) { WHOR = null; drawDet(); whoFetch(dOpen, true); return; }
+        const tk = e.target.closest('[data-tk]'); if (tk) { const k = +tk.dataset.tk, a = PIN(); savePIN(a.includes(k) ? a.filter((x) => x !== k) : [...a, k]); drawDet(); draw(); }
+      });
+    }
+    const st = state(h), done = isDone(h), obs = st && (st[0] & 8), on = PIN().includes(+h);
+    ensureRw(h);
+    const obj = (st ? st[1] : []).map(([oh, p, mx, c]) => { const od = DEF.obj[oh] || {}, mm = mx || od.m || 1, pc = c ? 100 : Math.min(100, Math.round((p / mm) * 100)); return `<div class="dob${c ? ' ok' : ''}"><i class="bx"></i><div class="db"><i style="width:${pc}%"></i><span>${esc(od.d || 'Progress')}</span><em>${esc((p || 0).toLocaleString() + (mm > 1 ? ' / ' + mm.toLocaleString() : ''))}</em></div></div>`; }).join('');
+    const rw = (r.rw || []).map(([ih, n]) => { const o = RW[ih]; return `<div class="drw">${o && o.i ? `<img src="${esc(icon(o.i))}" alt="">` : '<i></i>'}<span>${o ? esc(o.n || 'Reward') : 'Loading...'}${n > 1 ? ' x' + n : ''}</span></div>`; }).join('');
+    const path = crumbs(h);
+    m.innerHTML = `<div class="trdp" role="dialog" aria-label="${esc(r.n)}"><button class="dx" data-dx="1" title="Close (Esc)">&times;</button>
+      <div class="dl"><div class="dhd">${r.i ? `<img src="${esc(icon(r.i))}" alt="">` : ''}<div><h3>${obs ? '???' : esc(r.n)}</h3>${path.length ? `<small>${path.map(esc).join(' &rsaquo; ')}</small>` : ''}</div></div>
+        <p class="dd">${obs ? 'Hidden until the game reveals it.' : esc(r.d)}</p>
+        <div class="dmeta">${r.s ? `<span>${r.s} points</span>` : ''}${done ? '<span class="ok">&#10003; Completed</span>' : '<span>Not completed yet</span>'}</div>
+        ${obj ? `<h5>Objectives</h5>${obj}` : ''}
+        ${r.t && r.ti ? `<h5>Title</h5><p class="dd">Unlocks the title <b>${esc(r.ti)}</b>.</p>` : ''}
+        ${rw ? `<h5>Rewards</h5>${rw}` : ''}
+        <button class="tkb${on ? ' on' : ''}" data-tk="${h}"><i class="tkd"></i>${on ? 'Tracked' : 'Track this triumph'}</button>
+      </div>
+      <div class="dr"><div class="dme"><b>You</b>${done ? '<span class="ok">Completed</span>' : '<span>Not completed</span>'}</div>${whoHTML()}</div></div>`;
+  }
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && dOpen) closeDet(); });
+  { const ds = document.createElement('style'); ds.textContent = `
+.trd{position:fixed;inset:0;z-index:9600;background:rgba(5,6,9,.72);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:flex;align-items:flex-start;justify-content:center;padding:5vh 16px;overflow:auto}
+.trdp{position:relative;display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:0;width:min(1100px,100%);background:var(--g-panel,#1a1c20);border:1px solid var(--g-line,#2b2e33);border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,.6);color:#e6e7ea;overflow:hidden}
+.trdp .dx{position:absolute;top:8px;right:10px;background:none;border:0;color:#9aa0a8;font-size:26px;line-height:1;cursor:pointer;padding:2px 8px}.trdp .dx:hover{color:#fff}
+.trdp .dl{padding:20px 22px;border-right:1px solid var(--g-line,#2b2e33);background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,0))}
+.trdp .dr{padding:20px 22px;min-height:320px}
+.trdp .dhd{display:flex;gap:12px;align-items:center}.trdp .dhd img{width:56px;height:56px;flex:none;border-radius:6px;background:#111}
+.trdp h3{margin:0;font-size:20px;color:#fff;font-weight:600}.trdp .dhd small{display:block;color:#8b8f97;font-size:11.5px;margin-top:3px}
+.trdp .dd{color:#c3c7cd;font-size:13.5px;line-height:1.5;margin:12px 0}
+.trdp h5{margin:16px 0 8px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#8b8f97;font-weight:700}.trdp h5 small{color:#6a6f77;margin-left:4px}
+.trdp .dmeta{display:flex;gap:8px;flex-wrap:wrap}.trdp .dmeta span,.trdp .dme span{font-size:12px;padding:2px 8px;border:1px solid #3a3d43;border-radius:10px;color:#b9bec6}.trdp .ok{color:#9fe3a8!important;border-color:#3f8f4c!important}
+.trdp .dob{display:flex;gap:8px;align-items:center;margin-bottom:6px}.trdp .dob .bx{width:14px;height:14px;border:1px solid #6a6f77;flex:none}.trdp .dob.ok .bx{background:#5fbf6c;border-color:#5fbf6c}
+.trdp .db{position:relative;flex:1;height:24px;background:#23262b;overflow:hidden;border-radius:2px}.trdp .db i{position:absolute;inset:0 auto 0 0;background:#3f8f4c}.trdp .dob.ok .db i{background:#4b9e58}
+.trdp .db span,.trdp .db em{position:absolute;top:0;line-height:24px;font-size:12.5px;color:#fff;font-style:normal}.trdp .db span{left:8px;right:80px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.trdp .db em{right:8px}
+.trdp .drw{display:flex;gap:8px;align-items:center;margin-bottom:6px;font-size:13px}.trdp .drw img,.trdp .drw i{width:28px;height:28px;border-radius:3px;background:#111;flex:none}
+.trdp .tkb{margin-top:18px;display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:1px solid #3a3d43;border-radius:5px;background:var(--g-btn);color:#e6e7ea;cursor:pointer;font-size:13px}
+.trdp .dme{display:flex;align-items:center;gap:10px;margin:0 0 12px}.trdp .dme b{color:#fff}
+.trdp .wtabs{display:flex;gap:6px;align-items:center;border-bottom:1px solid var(--g-line,#2b2e33);margin-bottom:6px;padding-bottom:8px}
+.trdp .wtabs button{background:none;border:0;border-bottom:2px solid transparent;color:#9aa0a8;padding:6px 4px;margin-right:10px;cursor:pointer;font-size:14px;font-weight:600}.trdp .wtabs button small{color:#6a6f77;font-weight:400;margin-left:3px}
+.trdp .wtabs button.on{color:#fff;border-bottom-color:var(--g-accent,#7ab8e8)}.trdp .wtabs .wrl{margin-left:auto;margin-right:0;font-size:16px}
+.trdp .wgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:4px}
+.trdp .wp{display:flex;align-items:baseline;gap:2px;min-width:0;padding:7px 10px;background:#24272c;border-left:3px solid #3a3d43;font-size:13px}.trdp .wp b{font-weight:600;color:#e6e7ea;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.trdp .wp span{color:#7d828a;font-size:11.5px;flex:none}.trdp .wp b{display:inline!important;min-width:0}
+.trdp .wp.wdn{background:#2d2333;border-left-color:#c79bdc}.trdp .wp.wpv{opacity:.5}
+.trdp .wbar{height:6px;background:#23262b;border-radius:3px;overflow:hidden;max-width:360px}.trdp .wbar i{display:block;height:100%;background:var(--g-accent,#7ab8e8);transition:width .3s}
+@media (max-width:760px){.trdp{grid-template-columns:1fr;align-content:start}.trdp .dl{border-right:0;border-bottom:1px solid var(--g-line,#2b2e33)}.trd{padding:0}.trdp{border-radius:0;min-height:100%}}
+`; document.head.appendChild(ds); }
   function draw() {
     if (!window.gt) return;
     if (err) { s.innerHTML = `<div class="card"><p class="mute">${esc(err)}</p><button id="tre">Try again</button></div>`; return; }
@@ -486,7 +576,7 @@ ${quick.length ? `<div class="tcol" style="margin-top:14px">Quick wins: almost d
       body = sortRecs(ids).slice(0, 80).map(recHTML).join('') || '<p class="mute">Nothing matches.</p>';
     } else if (tab === 'trk') {
       const ids = [...new Set([...S.tracked, ...PIN()])].filter((h) => DEF.rec[h]);
-      body = sortRecs(ids).map(recHTML).join('') || '<p class="mute">Nothing tracked yet. Click the star on any triumph to track it here. Triumphs you track in the game show up here too.</p>';
+      body = sortRecs(ids).map(recHTML).join('') || '<p class="mute">Nothing tracked yet. Press Track on any triumph to keep it here. Triumphs you track in the game show up here too.</p>';
     } else if (tab === 'near') {
       const all = [...allRecs(S.cat, new Set(), new Set()), ...allRecs(S.seals, new Set(), new Set())].filter((h) => DEF.rec[h] && !hidden(h) && !isDone(h) && pct(h) > 0);
       body = all.sort((x, y) => pct(y) - pct(x)).slice(0, 60).map(recHTML).join('') || '<p class="mute">Nothing in progress yet.</p>';
@@ -524,6 +614,7 @@ ${quick.length ? `<div class="tcol" style="margin-top:14px">Quick wins: almost d
     const gg = t.closest('[data-g]'); if (gg) { window.open('https://www.google.com/search?q=' + gg.dataset.g); return; }
     const g2 = t.closest('[data-g2]'); if (g2) { window.open('https://www.youtube.com/results?search_query=' + g2.dataset.g2); return; }
     const pn = t.closest('[data-pin]'); if (pn) { const h = +pn.dataset.pin, a = PIN(); savePIN(a.includes(h) ? a.filter((x) => x !== h) : [...a, h]); draw(); return; }
+    const rdb = t.closest('[data-rd]'); if (rdb) { openDet(+rdb.dataset.rd); return; }
     const sq = t.closest('[data-sq]'); if (sq) { q = sq.dataset.sq.toLowerCase(); const ti = document.getElementById('tq'); if (ti) ti.value = sq.dataset.sq; draw(); return; }
     const plb = t.closest('[data-pl]'); if (plb) { const k = plb.dataset.pl, a = PLS(); try { localStorage.setItem('gt.tplan', JSON.stringify(a.includes(k) ? a.filter((z) => z !== k) : [...a, k])); } catch (er) { /* storage off */ } draw(); return; }
     if (t.closest('#exor')) { exoLoad(); draw(); return; }
@@ -534,6 +625,7 @@ ${quick.length ? `<div class="tcol" style="margin-top:14px">Quick wins: almost d
     const so = t.closest('[data-sort]'); if (so) { sortM = so.dataset.sort; draw(); return; }
     if (t.closest('[data-sealback]')) { sealOpen = 0; draw(); return; }
     const sl = t.closest('[data-seal]'); if (sl) { sealOpen = +sl.dataset.seal; draw(); window.scrollTo(0, 0); return; }
+    const rr = t.closest('.tr[data-r]'); if (rr && !t.closest('button,a,input,select,.howp')) { openDet(+rr.dataset.r); return; }
     const nh = t.closest('[data-n]'); if (nh) { const k = nh.dataset.n; open[k] = !open[k]; draw(); }
   });
   s.addEventListener('input', (e) => { if (e.target.id === 'tq') { q = e.target.value.toLowerCase().trim(); clearTimeout(s._t); s._t = setTimeout(draw, 250); } });
@@ -576,19 +668,28 @@ ${quick.length ? `<div class="tcol" style="margin-top:14px">Quick wins: almost d
 #hub .hnote{color:var(--mute);font-size:12px;margin-top:14px}
 #hub .cpbox{height:calc(100vh - 190px);min-height:360px;border:1px solid var(--g-line);background:#0b0c0f}
 #hub webview{width:100%;height:100%;display:flex}
-#hub .cpmsg{padding:30px;text-align:center;color:var(--mute)}`;
+#hub .cpmsg{padding:30px;text-align:center;color:var(--mute)}
+#hub .hcard .go .nt{display:inline-block;margin-left:4px;font-size:13px}
+#hub.webm .hbar .sp{display:none!important}
+#hub.webm .hcard{border-top-color:var(--g-accent,#6aa6e0)}
+#hub.webm .hcard:hover .go{color:#fff}`;
   document.head.appendChild(st);
   let cur = 'home';
   const wvs = {}, boxes = {};
+  // The website cannot show other sites inside itself (they refuse to be framed, and their sign-ins would break), so there each site opens in a new tab.
+  const WEBM = () => !!window.__GT_WEB__ || !document.createElement('webview').reload; // checked when used, after the desktop app has set up its <webview>
+  const ext = (x) => { try { window.open(x.url, '_blank', 'noopener'); } catch (e) { /* blocked */ } };
+  window.__gthub = { url: (id) => { const x = SITES.find((q) => q.id === id); return x ? x.url : ''; }, get web() { return WEBM(); } };
   const draw = () => {
+    s.classList.toggle('webm', WEBM());
     s.innerHTML = '<div class="hbar"><button data-h="home">Hub</button>' + SITES.map((x) => `<button data-h="${x.id}">${x.name}</button>`).join('') + '<span class="sp"><button data-hx="back">&lsaquo; Back</button><button data-hx="fwd">Forward &rsaquo;</button><button data-hx="site">Site home</button><button data-hx="reload">Reload</button><button data-hx="ext">Open in browser</button></span></div><div id="hhome"></div>' + SITES.map((x) => `<div class="cpbox" id="hbox-${x.id}" style="display:none"></div>`).join('');
     SITES.forEach((x) => { boxes[x.id] = s.querySelector('#hbox-' + x.id); delete wvs[x.id]; });
-    s.querySelector('#hhome').innerHTML = '<div class="hgrid">' + SITES.map((x) => `<div class="hcard" data-h="${x.id}"><h3>${x.name}${window.__gth ? window.__gth.btn('hub', x.id, x.name) : ''}</h3><p>${x.desc}</p><span class="go">Open &rsaquo;</span></div>`).join('') + '</div><p class="hnote">These are the real websites, shown inside the app. They are not part of Pathfinder and have nothing to do with your vault. Links to other sites open in your normal browser.</p>';
+    s.querySelector('#hhome').innerHTML = '<div class="hgrid">' + SITES.map((x) => `<div class="hcard" data-h="${x.id}"><h3>${x.name}${window.__gth ? window.__gth.btn('hub', x.id, x.name) : ''}</h3><p>${x.desc}</p><span class="go">${WEBM() ? 'Open in a new tab <span class="nt">&#8599;</span>' : 'Open &rsaquo;'}</span></div>`).join('') + '</div><p class="hnote">' + (WEBM() ? 'These are the real websites. On the Pathfinder website they open in a new tab, because they do not allow being shown inside another site. In the desktop app they open right here.' : 'These are the real websites, shown inside the app. They are not part of Pathfinder and have nothing to do with your vault. Links to other sites open in your normal browser.') + '</p>';
     go(cur);
   };
   const open = (x) => {
     const box = boxes[x.id]; if (!box || wvs[x.id]) return;
-    if (!document.createElement('webview').reload) { box.innerHTML = '<div class="cpmsg">This page needs the desktop app. Use "Open in browser" instead.</div>'; wvs[x.id] = 1; return; }
+    if (WEBM()) { box.innerHTML = `<div class="cpmsg"><p>${x.name} opens in its own browser tab.</p><button class="b" data-hext="${x.id}">Open ${x.name} &#8599;</button></div>`; wvs[x.id] = 1; return; }
     const w = document.createElement('webview'); w.setAttribute('src', x.url); w.setAttribute('partition', 'persist:hub-' + x.id);
     w.addEventListener('did-fail-load', (e) => { if (e.errorCode !== -3 && e.isMainFrame) { box.innerHTML = '<div class="cpmsg">Could not load ' + x.name + ' (' + (e.errorDescription || 'offline') + '). Check your connection, then press Reload.</div>'; delete wvs[x.id]; } });
     box.appendChild(w); wvs[x.id] = w;
@@ -602,7 +703,10 @@ ${quick.length ? `<div class="tcol" style="margin-top:14px">Quick wins: almost d
     const site = SITES.find((x) => x.id === id); if (site) open(site);
   }
   s.addEventListener('click', (e) => {
-    const h = e.target.closest('[data-h]'); if (h) { go(h.dataset.h); return; }
+    if (e.target.closest('[data-hpin]')) return; // the + Home button only pins, it does not open the site
+    const xb = e.target.closest('[data-hext]'); if (xb) { const x = SITES.find((q) => q.id === xb.dataset.hext); if (x) ext(x); return; }
+    if (e.target.closest('.hmpin')) return;
+    const h = e.target.closest('[data-h]'); if (h) { const x = WEBM() && SITES.find((q) => q.id === h.dataset.h); if (x) { ext(x); return; } go(h.dataset.h); return; }
     const t = e.target.closest('[data-hx]'); if (!t) return;
     const site = SITES.find((x) => x.id === cur); if (!site) return;
     const w = wvs[site.id], live = w && w.reload;

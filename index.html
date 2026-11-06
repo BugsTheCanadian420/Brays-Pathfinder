@@ -5,7 +5,7 @@
 <title>Pathfinder</title>
 <link rel="icon" type="image/png" href="logo.png">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Open+Sans:wght@400;600;700&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="beta.css?v=0.2.90">
+<link rel="stylesheet" href="beta.css?v=0.2.91">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
 --bg:#eef0f3;--panel:#fff;--line:#d3d8e0;--text:#1b2230;--mute:#667085;--gold:#9a7416;--arc:#1b6aa5;--ok:#2e7d4f;--inp:#f5f7fa}
@@ -137,11 +137,11 @@ main{position:relative;z-index:2}
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Pathfinder">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="web.css?v=0.2.90">
-<script>window.__GT_VER__="0.2.90";</script>
-<script src="shims.js?v=0.2.90"></script><script src="pako.min.js?v=0.2.90"></script><script src="preload-web.js?v=0.2.90"></script><script src="main-web.js?v=0.2.90"></script>
+<link rel="stylesheet" href="web.css?v=0.2.91">
+<script>window.__GT_VER__="0.2.91";</script>
+<script src="shims.js?v=0.2.91"></script><script src="pako.min.js?v=0.2.91"></script><script src="preload-web.js?v=0.2.91"></script><script src="main-web.js?v=0.2.91"></script>
 <script>window.__GT_WEB__.start();document.documentElement.classList.add('gtweb');</script>
-<script src="mobile.js?v=0.2.90" defer></script>
+<script src="mobile.js?v=0.2.91" defer></script>
 </head><body>
 <header><img class="plogo" src="logo.png" alt="" aria-hidden="true"><h1>Pathfinder<small>Works without a Bungie API key. Your data stays in this browser.</small></h1></header>
 <nav id="nav"></nav>
@@ -394,7 +394,7 @@ $('gpage').onchange=e=>{const t=e.target;if(t.dataset.file===undefined||!t.files
 $('gpage').addEventListener('click',e=>{if(e.target.tagName==='IMG'){$('lb').innerHTML='<img src="'+e.target.src+'" alt="">';$('lb').hidden=false}});$('lb').onclick=()=>{$('lb').hidden=true};
 const CATS=[["Raid","Raids","Six-player endgame activities with multi-encounter mechanics.","--cr"],["Dungeon","Dungeons","Three-player activities, good for duo and solo practice.","--cd"],["Exotic mission","Exotic missions","Missions that reward exotic weapons and catalysts.","--cx"],["Secret triumph","Secret triumphs","Hidden triumphs, puzzles and lore hunts.","--cs"]];
 function thumbOf(name){const F=FULL[name];if(!F)return'';for(let i=0;i<F.sections.length;i++){const im=F.sections[i].img||[];for(let j=0;j<im.length;j++){if(/emblem/i.test(im[j])){const u=BUILT[name+'|'+i+'_'+j];if(u)return u}}}return''}
-function tileHTML(g){const t=thumbOf(g[1]),full=!!FULL[g[1]],done=NOUP.has(g[1]);return`<button class="gcard" data-cat="${esc(g[0])}" data-g="${esc(g[1])}">${t?`<img class="thumb" src="${t}" alt="">`:'<div class="thumb ph"></div>'}<b>${esc(g[1])}</b><small>${esc(g[0])}</small>${full?`<span class="tag">${done?'Complete':'Needs maps'}</span>`:'<span class="tag">Coming soon</span>'}<div class="mute">${esc(g[2])}</div></button>`}
+function tileHTML(g){const t=thumbOf(g[1]),full=!!FULL[g[1]],done=NOUP.has(g[1]);return`<button class="gcard" data-cat="${esc(g[0])}" data-g="${esc(g[1])}">${t?`<img class="thumb" src="${t}" alt="">`:'<div class="thumb ph"></div>'}<b>${esc(g[1])}</b><div class="gm"><small>${esc(g[0])}</small>${full?`<span class="tag">${done?'Complete':'Needs maps'}</span>`:'<span class="tag">Coming soon</span>'}</div><div class="mute">${esc(g[2])}</div></button>`}
 function drawG(){const q=$('gsearch').value.trim().toLowerCase(),L=$('glist');
 $('gchips').innerHTML=(gcat!=='All'&&!q)?`<button data-c="All">\u2190 Helpful</button><span class="mute" style="align-self:center">${(CATS.find(c=>c[0]===gcat)||[])[1]||''}</span>`:'';
 if(!q&&gcat==='All'){L.className='hubgrid';L.innerHTML=CATS.map(c=>{const n=GD.filter(g=>g[0]===c[0]).length,ex=GD.find(g=>g[0]===c[0]&&thumbOf(g[1])),t=ex?thumbOf(ex[1]):'';return`<button class="cat" data-c="${c[0]}" style="border-top-color:var(${c[3]})">${t?`<img class="bg" src="${t}" alt="">`:''}<h3>${c[1]}</h3><div class="mute">${c[2]}</div><div class="big" style="font-size:28px;margin-top:10px">${n}<small class="mute" style="font-size:14px;letter-spacing:1px"> ${n===1?'guide':'guides'}</small></div></button>`}).join('');return}
@@ -405,6 +405,6 @@ function rerender(){const y=window.scrollY;openGuide($('gpage').dataset.cur);win
 $('gchips').onclick=e=>{if(e.target.dataset.c){gcat=e.target.dataset.c;drawG()}};$('gsearch').oninput=drawG;drawG();
 {const t=ST.get('tab','guides');show(tabs.some(x=>x[0]===t)?t:'guides')}
 </script>
-<script src="vault.js?v=0.2.90"></script><script src="features.js?v=0.2.90"></script><script src="extras.js?v=0.2.90"></script><script src="activity.js?v=0.2.90"></script><script src="notes.js?v=0.2.90"></script><script src="targets.js?v=0.2.90"></script><script src="loadouts.js?v=0.2.90"></script>
-<script src="home.js?v=0.2.90"></script>
-<script src="layout.js?v=0.2.90"></script><script src="lists.js?v=0.2.90"></script></body></html>
+<script src="vault.js?v=0.2.91"></script><script src="features.js?v=0.2.91"></script><script src="extras.js?v=0.2.91"></script><script src="activity.js?v=0.2.91"></script><script src="notes.js?v=0.2.91"></script><script src="targets.js?v=0.2.91"></script><script src="loadouts.js?v=0.2.91"></script>
+<script src="home.js?v=0.2.91"></script>
+<script src="layout.js?v=0.2.91"></script><script src="lists.js?v=0.2.91"></script></body></html>

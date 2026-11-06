@@ -10,7 +10,8 @@
   window.__gtl = { render() {}, reset() {} };
   if (!V || !sec || !gt) return;
   const esc = V.esc, g = (id) => document.getElementById(id), CL = V.CL();
-  const KEY = 'gt_dimlo2';
+  // Each Bungie account has its own saved loadouts (the first account keeps the original list).
+  const KEY = () => { let ns = ''; try { ns = localStorage.getItem('gt_acct_ns') || ''; } catch (e) { ns = ''; } return 'gt_dimlo2' + ns; };
   const KIN = 1498876634, ENE = 2465295065, PWR = 953998645, HEL = 3448274439, GAU = 3551918588, CHE = 14239492, LEG = 20886954, CLS = 1585787867;
   const GHO = 4023194814, SPA = 2025709351, SHP = 284967655, SUB = 3284755031;
   const WB = [KIN, ENE, PWR], AB = [HEL, GAU, CHE, LEG, CLS], GB = [GHO, SPA, SHP], ALLB = [SUB, ...WB, ...AB, ...GB];
@@ -46,8 +47,8 @@
     };
   }
   let LS = null;
-  const all = () => { if (!LS) { try { const a = JSON.parse(localStorage.getItem(KEY)); LS = Array.isArray(a) ? a.map(norm).filter(Boolean) : []; } catch (e) { LS = []; } } return LS; };
-  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(all())); } catch (e) { /* storage unavailable */ } };
+  const all = () => { if (!LS) { try { const a = JSON.parse(localStorage.getItem(KEY())); LS = Array.isArray(a) ? a.map(norm).filter(Boolean) : []; } catch (e) { LS = []; } } return LS; };
+  const save = () => { try { localStorage.setItem(KEY(), JSON.stringify(all())); } catch (e) { /* storage unavailable */ } };
   const b64e = (s) => { const u = new TextEncoder().encode(s); let o = ''; for (let i = 0; i < u.length; i++) o += String.fromCharCode(u[i]); return btoa(o); };
   const b64d = (b) => { const s = atob(b), u = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return new TextDecoder().decode(u); };
   const codeOf = (l) => 'GTL1:' + b64e(JSON.stringify({ v: 1, n: l.n, c: l.c, o: l.o, a: l.a, ai: l.ai, fm: l.fm, mv: l.mv, it: l.it.map((q) => ({ h: q.h, b: q.b, n: q.n, i: q.i, e: q.e, m: q.m })) }));
@@ -329,20 +330,32 @@
     const mods = [...(l.fm || []).map((p) => p[2]), ...l.it.filter((q) => AB.includes(q.b)).flatMap((q) => (q.m || []).map((p) => p[2]))].filter(Boolean).slice(0, 25);
     const subPl = sub && sub.en.m ? sub.en.m.map((p) => p[2]).filter(Boolean).slice(0, 12) : [];
     const ic = (r) => (r && (r.x ? rawIcon(r.x.i) : r.en.i)) || '';
-    const paths = [ic(sub), ...weps.map(ic), ...arms.map(ic), ...mods, ...subPl].filter(Boolean);
+    const artPk = (l.a || []).map((p) => p[2]).filter(Boolean).slice(0, 14), artIc = (l.ai && l.ai.i) || '', hasArt = !!(artIc || artPk.length);
+    const paths = [ic(sub), ...weps.map(ic), ...arms.map(ic), ...mods, ...subPl, artIc, ...artPk].filter(Boolean);
     let D = {}; try { D = await gt.imgFetch({ p: paths }); } catch (e) { /* drawn without icons */ }
     const imgs = {}; await Promise.all(Object.entries(D).map(([k, v]) => new Promise((ok) => { const im = new Image(); im.onload = () => { imgs[k] = im; ok(); }; im.onerror = ok; im.src = v; })));
     const st = [0, 0, 0, 0, 0, 0]; let hasSt = false; arms.forEach((r) => { if (r && r.x && r.x.st) { hasSt = true; r.x.st.forEach((v, i) => { st[i] += v || 0; }); } });
-    const W = 1200, H = 675, cv = document.createElement('canvas'); cv.width = W; cv.height = H; const g2 = cv.getContext('2d');
-    const bg = g2.createLinearGradient(0, 0, W, H); bg.addColorStop(0, '#15171c'); bg.addColorStop(1, '#0c0d10'); g2.fillStyle = bg; g2.fillRect(0, 0, W, H);
-    g2.fillStyle = 'rgba(255,255,255,.04)'; for (let x = -H; x < W; x += 28) { g2.fillRect(x, 0, 1, H); }
+    const W = 1200, H = hasArt ? 775 : 675, cv = document.createElement('canvas'); cv.width = W; cv.height = H; const g2 = cv.getContext('2d');
+    // Background: dark base, a glow in the class colour, a faded subclass emblem, a fine pattern and a vignette.
+    const ACC = [['#5d8ae6', '#2c4a9a'], ['#45c48d', '#1d6f4d'], ['#e8c25a', '#8a6a1c']][l.c] || ['#a98bff', '#4b3a99'];
+    const bg = g2.createLinearGradient(0, 0, W, H); bg.addColorStop(0, '#171a22'); bg.addColorStop(.55, '#101218'); bg.addColorStop(1, '#0a0b0f'); g2.fillStyle = bg; g2.fillRect(0, 0, W, H);
+    const glow = (x, y, r, col, a) => { const q = g2.createRadialGradient(x, y, 0, x, y, r); q.addColorStop(0, col + a); q.addColorStop(1, col + '00'); g2.fillStyle = q; g2.fillRect(0, 0, W, H); };
+    glow(W * .88, -40, 760, ACC[0], '38'); glow(-60, H + 40, 640, ACC[1], '55'); glow(W * .5, H * .55, 520, ACC[1], '16');
+    if (sub && imgs[ic(sub)]) { g2.save(); g2.globalAlpha = .07; g2.drawImage(imgs[ic(sub)], W - 520, -70, 560, 560); g2.restore(); }
+    g2.save(); g2.strokeStyle = 'rgba(255,255,255,.035)'; g2.lineWidth = 1; for (let x = -H; x < W; x += 26) { g2.beginPath(); g2.moveTo(x, H); g2.lineTo(x + H, 0); g2.stroke(); } g2.restore();
+    const vg = g2.createRadialGradient(W / 2, H / 2, H * .45, W / 2, H / 2, W * .75); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.55)'); g2.fillStyle = vg; g2.fillRect(0, 0, W, H);
+    const bar = g2.createLinearGradient(0, 0, W, 0); bar.addColorStop(0, ACC[0]); bar.addColorStop(1, ACC[1] + '00'); g2.fillStyle = bar; g2.fillRect(0, 0, W, 5);
+    const rr = (x, y, w, h, r) => { g2.beginPath(); if (g2.roundRect) g2.roundRect(x, y, w, h, r); else g2.rect(x, y, w, h); };
+    const panel = (x, y, w, h) => { rr(x, y, w, h, 14); g2.fillStyle = 'rgba(255,255,255,.04)'; g2.fill(); g2.strokeStyle = 'rgba(255,255,255,.09)'; g2.lineWidth = 1; g2.stroke(); };
     const font = (sz, w) => { g2.font = `${w || 400} ${sz}px "Open Sans","Segoe UI",Arial,sans-serif`; };
     const txt = (t, x, y, sz, col, w, max) => { font(sz, w); g2.fillStyle = col; let s2 = String(t || ''); if (max) while (s2.length > 1 && g2.measureText(s2).width > max) s2 = s2.slice(0, -2) + '…'; g2.fillText(s2, x, y); };
     const box = (r, x, y, sz) => {
       const rc = r && r.x ? IMRC[r.x.r] || '#3a3d43' : '#3a3d43';
-      g2.fillStyle = '#0d0f12'; g2.fillRect(x, y, sz, sz);
-      const im = imgs[ic(r)]; if (im) g2.drawImage(im, x, y, sz, sz);
-      g2.strokeStyle = rc; g2.lineWidth = 3; g2.strokeRect(x + 1.5, y + 1.5, sz - 3, sz - 3);
+      // The rarity colour goes behind the picture, so an item whose icon has a see-through or dark background (ornaments, for example) still looks like the others.
+      const fg = g2.createLinearGradient(x, y, x, y + sz); fg.addColorStop(0, rc); fg.addColorStop(1, '#14161b');
+      g2.save(); rr(x, y, sz, sz, 7); g2.clip(); g2.fillStyle = '#14161b'; g2.fillRect(x, y, sz, sz); g2.globalAlpha = .9; g2.fillStyle = fg; g2.fillRect(x, y, sz, sz); g2.globalAlpha = 1;
+      const im = imgs[ic(r)]; if (im) g2.drawImage(im, x, y, sz, sz); g2.restore();
+      rr(x + 1.5, y + 1.5, sz - 3, sz - 3, 7); g2.strokeStyle = rc === '#522f65' ? '#8a5fb0' : rc; g2.lineWidth = 3; g2.stroke();
     };
     // header
     txt(l.n || 'Loadout', 48, 78, 46, '#ffffff', 700, 760);
@@ -350,6 +363,7 @@
     if (sub && imgs[ic(sub)]) g2.drawImage(imgs[ic(sub)], W - 150, 30, 104, 104);
     subPl.forEach((p, i) => { const im = imgs[p]; if (im) g2.drawImage(im, W - 150 - (subPl.length - i) * 34, 140, 30, 30); });
     g2.fillStyle = '#2b2e33'; g2.fillRect(48, 180, W - 96, 1);
+    panel(32, 196, 520, 320); panel(584, 196, 584, 400); if (mods.length) panel(32, 526, 520, 110);
     // weapons
     txt('WEAPONS', 48, 220, 14, '#8b8f97', 700);
     weps.forEach((r, i) => { const y = 236 + i * 92; box(r, 48, y, 76); txt(r ? (r.x || r.en).n : 'Empty', 140, y + 34, 22, r ? '#fff' : '#555', 600, 380); txt(r && r.x ? (r.x.t || '') + (r.x.p ? '  ·  ' + r.x.p : '') : '', 140, y + 62, 15, '#9aa0a8', 400, 380); });
@@ -368,7 +382,16 @@
     }
     // mods
     if (mods.length) { txt('MODS', 48, 540, 14, '#8b8f97', 700); mods.forEach((p, i) => { const im = imgs[p], x = 48 + (i % 13) * 40, y = 552 + Math.floor(i / 13) * 40; g2.fillStyle = '#0d0f12'; g2.fillRect(x, y, 36, 36); if (im) g2.drawImage(im, x, y, 36, 36); }); }
-    txt('Made with Pathfinder', W - 220, H - 24, 14, '#5c6067', 600);
+    // artifact
+    if (hasArt) {
+      const y0 = 662; panel(32, y0 - 16, W - 64, 96);
+      txt('ARTIFACT', 48, y0 + 8, 14, '#8b8f97', 700);
+      if (artIc && imgs[artIc]) { rr(48, y0 + 16, 52, 52, 8); g2.fillStyle = '#1a1c22'; g2.fill(); g2.drawImage(imgs[artIc], 48, y0 + 16, 52, 52); rr(48.5, y0 + 16.5, 51, 51, 8); g2.strokeStyle = '#ceae33'; g2.lineWidth = 2; g2.stroke(); }
+      txt((l.ai && l.ai.n) || 'Artifact', 114, y0 + 40, 20, '#ffffff', 600, 280);
+      txt(artPk.length ? artPk.length + ' perks selected' : '', 114, y0 + 62, 14, '#9aa0a8', 400);
+      artPk.forEach((p, i) => { const im = imgs[p], x = 420 + i * 52, y = y0 + 18; rr(x, y, 46, 46, 23); g2.fillStyle = '#14161b'; g2.fill(); if (im) { g2.save(); rr(x, y, 46, 46, 23); g2.clip(); g2.drawImage(im, x, y, 46, 46); g2.restore(); } rr(x + .5, y + .5, 45, 45, 22.5); g2.strokeStyle = 'rgba(255,255,255,.35)'; g2.lineWidth = 1.5; g2.stroke(); });
+    }
+    txt('Made with Pathfinder', W - 220, H - 12, 14, '#6a6f77', 600);
     const data = cv.toDataURL('image/png');
     let m = g('loimg'); if (m) m.remove();
     m = document.createElement('div'); m.id = 'loimg';

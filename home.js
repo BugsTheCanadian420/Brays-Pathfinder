@@ -1,5 +1,5 @@
 /* global openGuide, GD */
-// Home: one page with what matters right now (characters, resets, season, deals, goals, the week) plus anything you pinned
+// Home: one page with what matters right now (characters, resets, season, goals, the week) plus anything you pinned
 // with "+ Home" elsewhere in the app: vendors, items, loadouts, activity pages, Hub sites and guides.
 (() => {
   const nav = document.getElementById('nav'), vsec = document.getElementById('vault');
@@ -186,7 +186,7 @@
   function pinCard(p, D) {
     const pin = { t: p.t, id: p.id };
     if (p.t === 'act' && p.id === 'week') return weekCard(pin);
-    if (p.t === 'act' && p.id === 'deal') return dealCard(pin);
+    if (p.t === 'act' && p.id === 'deal') return '';
     if (p.t === 'act' && ACT[p.id]) return card({ i: ACT[p.id][1], h: ACT[p.id][0], go: 'activity:' + p.id, pin, c: '#9fc4ee' }, actBody(p.id));
     if (p.t === 'vendor') {
       const r = H.ven[p.id], items = r && r.items ? r.items : null, W = A().wishOf;
@@ -225,7 +225,6 @@
     const pins = PINS();
     const jobs = [get('season')];
     if (pins.some((p) => p.t === 'act' && p.id === 'week')) jobs.push(get('week'));
-    if (pins.some((p) => p.t === 'act' && p.id === 'deal')) jobs.push(get('deal'));
     pins.filter((p) => p.t === 'act' && ACT[p.id]).forEach((p) => jobs.push((async () => { try { H.act[p.id] = await A().fetch(p.id, force); H.err['a' + p.id] = ''; } catch (e) { H.err['a' + p.id] = clean(e); } redraw(); })()));
     pins.filter((p) => p.t === 'vendor').forEach((p) => jobs.push((async () => { try { H.ven[p.id] = await A().vendor(+p.id, force); H.err['v' + p.id] = ''; } catch (e) { H.err['v' + p.id] = clean(e); } redraw(); })()));
     await Promise.all(jobs);
@@ -242,6 +241,7 @@
     if (t === 'vendor' && A().openVendor) { A().openVendor(sub); return; }
     if (t === 'item') { const nb = nav.querySelector('button[data-t=vault]'); if (nb) nb.click(); setTimeout(() => { if (V().open) V().open(sub); }, 60); return; }
     if (t === 'lo') { if (window.__gtl && window.__gtl.go) window.__gtl.go(sub); return; }
+    if (t === 'hub' && window.__gthub && window.__gthub.web) { const u = window.__gthub.url(sub); if (u) { window.open(u, '_blank', 'noopener'); return; } }
     if (t === 'hub') { const nb = nav.querySelector('button[data-t=hub]'); if (nb) nb.click(); setTimeout(() => { const h = document.querySelector('#hub .hbar [data-h="' + CSS.escape(sub) + '"]'); if (h) h.click(); }, 60); return; }
     if (t === 'guide') { const nb = nav.querySelector('button[data-t=guides]'); if (nb) nb.click(); setTimeout(() => { if (typeof openGuide === 'function') openGuide(sub); }, 60); return; }
     const nb = nav.querySelector('button[data-t="' + t + '"]'); if (nb) nb.click(); else show(t);
@@ -270,6 +270,24 @@
     box.onclick = (e) => { const c = e.target.closest('[data-gf]'); if (c && typeof openGuide === 'function') openGuide(c.dataset.gf); };
   }
   { const gb = () => nav.querySelector('button[data-t=guides]'); const t = setInterval(() => { const g = gb(); if (g) { clearInterval(t); g.addEventListener('click', () => setTimeout(guideFeat, 0)); } }, 300); setTimeout(() => clearInterval(t), 20000); }
+  // Helpful: square, even cards (the theme's pill buttons made these look like bubbles).
+  { const hs = document.createElement('style'); hs.id = 'gtq-help';
+    hs.textContent = `
+:root #guides .cat,:root #guides .gcard,:root #guides .gfc,:root #gall .gai,:root #guides .back,:root #guides #gback{border-radius:6px!important}
+:root #guides .cat{min-height:176px;overflow:hidden}
+:root #guides #glist:not(.hubgrid){display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:14px;align-items:stretch}
+:root #guides #glist:not(.hubgrid)>.gcard{display:flex;flex-direction:column;height:100%;margin:0;padding:0 0 14px;overflow:hidden;border:1px solid var(--g-line,#2b2e33);border-top:3px solid var(--mute,#8b8f97);background:var(--g-panel,#1a1c20);text-align:left;transition:border-color .15s,box-shadow .15s}
+:root #guides #glist:not(.hubgrid)>.gcard[data-cat="Raid"]{border-top-color:var(--cr,#c77dff)}:root #guides #glist:not(.hubgrid)>.gcard[data-cat="Dungeon"]{border-top-color:var(--cd,#4aa3df)}:root #guides #glist:not(.hubgrid)>.gcard[data-cat="Exotic mission"]{border-top-color:var(--cx,#e0b64a)}:root #guides #glist:not(.hubgrid)>.gcard[data-cat="Secret triumph"]{border-top-color:var(--cs,#5fcf8a)}
+:root #guides #glist:not(.hubgrid)>.gcard:hover{transform:none;border-color:var(--g-accent,#7ab8e8);box-shadow:0 0 0 1px var(--g-accent,#7ab8e8),0 10px 24px rgba(0,0,0,.4)}
+:root #guides #glist:not(.hubgrid)>.gcard .thumb{width:100%;margin:0 0 12px;aspect-ratio:16/9;object-fit:cover;border-radius:0!important}
+:root #guides #glist:not(.hubgrid)>.gcard>b{display:block;margin:0 14px;font-size:17px;line-height:1.25}
+:root #guides #glist:not(.hubgrid)>.gcard .gm{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:6px 14px 8px}
+:root #guides #glist:not(.hubgrid)>.gcard .gm small{display:inline;margin:0}:root #guides #glist:not(.hubgrid)>.gcard .gm .tag{margin:0}
+:root #guides #glist:not(.hubgrid)>.gcard>.mute{margin:0 14px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+:root #guides .gfl{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:12px}
+:root #guides .gfc{min-height:84px}
+:root #guides #glist:not(.hubgrid)~#gall{display:none}
+`; document.head.appendChild(hs); }
   b.onclick = () => { show('home'); load(false); };
   if (lsGet('gt.home.start', false)) {
     let n = 0; const t = setInterval(() => { const D = V().D && V().D(); if (D || ++n > 60) { clearInterval(t); if (D) { show('home'); load(false); } } }, 500);

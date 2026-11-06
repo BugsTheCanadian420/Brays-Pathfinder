@@ -1,3 +1,4 @@
+/* global openGuide, GD */
 // Activity tab: rotations, bounty planner, vendors (with wish list check), weapon stats, raid and dungeon clears,
 // session recap and fireteam. Read-only: it never changes anything in the game.
 (() => {
@@ -14,7 +15,7 @@
   const clock = (ms) => { const s = Math.round(ms / 1000), h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), r = s % 60; return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(r).padStart(2, '0'); };
   const cap = (t) => String(t).replace(/\b\w/g, (c) => c.toUpperCase());
 
-  const TABS = [['rot', 'Rotations'], ['week', 'This week'], ['xur', 'X&ucirc;r'], ['bnt', 'Bounties'], ['ven', 'Vendors'], ['wep', 'Weapon stats'], ['clr', 'Raids and dungeons'], ['cru', 'Crucible'], ['pb', 'Personal bests'], ['rec', 'Recap'], ['deal', 'Deals']];
+  const TABS = [['rot', 'Rotations'], ['week', 'This week'], ['xur', 'X&ucirc;r'], ['bnt', 'Bounties'], ['ven', 'Vendors'], ['wep', 'Weapon stats'], ['clr', 'Raids and dungeons'], ['cru', 'Crucible'], ['pb', 'Personal bests'], ['rec', 'Recap']];
   const st = { vopen: new Set(), tab: 'rot', vh: 0, vq: '', char: '', cache: {}, wf: 'All', wq: '', sort: 'kills', busy: 0 };
 
   const s = document.createElement('section'); s.id = 'activity'; s.className = 'gdark'; vsec.parentNode.appendChild(s);
@@ -51,6 +52,7 @@
 #activity .acard .sub{color:var(--mute,#9aa0a8);font-size:12px;margin-top:2px}
 #activity .acard .big{font-size:22px;margin-top:6px;color:#fff}
 #activity .acard.ok{border-color:#2f6b3a}
+#activity .acard .gdl{margin-top:auto;padding-top:6px;color:var(--g-accent,#7ab8e8);font-size:11.5px;letter-spacing:.04em;opacity:.85}#activity .acard.clk:hover .gdl{opacity:1}
 #activity .acard.clk{cursor:pointer;transition:border-color .15s,transform .15s,box-shadow .15s}#activity .acard.clk:hover{border-color:var(--g-accent,#7ab8e8);box-shadow:0 0 0 1px var(--g-accent-soft,rgba(122,184,232,.2)),0 8px 22px rgba(0,0,0,.35);transform:translateY(-1px)}#activity .acard.clk:hover .abgi{opacity:.42}
 #activity .cdhd{margin:2px 0 10px}
 #activity .cdban{position:relative;overflow:hidden;border:1px solid var(--g-line,#2b2e33);border-radius:4px;min-height:clamp(110px,14vw,190px);display:flex;align-items:flex-end;background:#0d0f12;margin-bottom:12px}
@@ -146,7 +148,7 @@
   const chars = () => { const d = V().D && V().D(); return (d && d.chars) || []; };
   const charArg = () => (st.char ? { char: st.char } : {});
 
-  const PINNABLE = { week: 'Left this week', deal: 'Vendor deals', cru: 'Crucible', rot: 'Rotations', bnt: 'Bounties', xur: 'Xûr', clr: 'Raids and dungeons', pb: 'Personal bests', rec: 'Recap', wep: 'Weapon stats' };
+  const PINNABLE = { week: 'Left this week', cru: 'Crucible', rot: 'Rotations', bnt: 'Bounties', xur: 'Xûr', clr: 'Raids and dungeons', pb: 'Personal bests', rec: 'Recap', wep: 'Weapon stats' };
   function frame() {
     const cs = chars(), CL = (V().CL && V().CL()) || {};
     const showChar = ['bnt', 'ven', 'xur'].includes(st.tab) && cs.length > 1;
@@ -183,10 +185,29 @@
     return `<h3 class="sec">Resets</h3><div class="agrid fit">${c('d', 'Daily reset', 'Every day at 17:00 UTC (' + esc(dl) + ' your time)' + (L(false) + 864e5 === L(true) + 6048e5 ? '. The next one is also the weekly reset.' : ''))}${c('w', 'Weekly reset', 'Tuesdays at 17:00 UTC. New Nightfall, raid and dungeon rotators.')}${c('x', 'X&ucirc;r', 'Arrives Friday reset and leaves at the next weekly reset. Click to see what he is selling.').replace('class="acard plan"', 'class="acard plan xurc" data-a="xur" title="See what Xûr is selling" style="cursor:pointer"')}</div>`;
   };
   setInterval(() => { if (!s.classList.contains('on')) return; s.querySelectorAll('[data-rs]').forEach((n) => { n.textContent = rsText(n.dataset.rs); }); }, 1000); // only this page's timers (Home has its own)
+  // A rotation card opens that activity's page in Helpful. Pantheon bosses open the raid they come from; anything without a guide opens Helpful searched for its name.
+  const GALIAS = { 'consecrated mind': 'Garden of Salvation', 'sanctified mind': 'Garden of Salvation', 'atraks': 'Deep Stone Crypt', 'taniks': 'Deep Stone Crypt', 'kalli': 'Last Wish', 'shuro chi': 'Last Wish', 'morgeth': 'Last Wish', 'riven': 'Last Wish', 'nezarec': 'Root of Nightmares', 'akelous': 'Vow of the Disciple', 'caretaker': 'Vow of the Disciple', 'rhulk': 'Vow of the Disciple', 'oryx': 'King\u2019s Fall', 'golgoroth': 'King\u2019s Fall', 'warpriest': 'King\u2019s Fall', 'ir yut': 'Crota\u2019s End', 'crota': 'Crota\u2019s End', 'atheon': 'Vault of Glass', 'templar': 'Vault of Glass', 'gorgons': 'Vault of Glass', 'the witness': 'Salvation\u2019s Edge', 'verity': 'Salvation\u2019s Edge', 'epoptes': 'Desert Perpetual', 'iatros': 'Desert Perpetual', 'agraios': 'Desert Perpetual', 'koregos': 'Desert Perpetual' };
+  const gnorm = (t) => String(t || '').toLowerCase().replace(/^the\s+/, '').replace(/[^a-z0-9]+/g, ' ').trim();
+  function guideFor(n) {
+    let gd = []; try { gd = typeof GD !== 'undefined' && Array.isArray(GD) ? GD : []; } catch (e) { gd = []; }
+    const a = gnorm(n); if (!a) return '';
+    let hit = gd.find((g) => gnorm(g[1]) === a) || gd.find((g) => { const b = gnorm(g[1]); return b && (b.includes(a) || a.includes(b)); });
+    if (!hit) { const k = Object.keys(GALIAS).find((q) => a.includes(q)); if (k) hit = gd.find((g) => g[1] === GALIAS[k]); }
+    return hit ? hit[1] : '';
+  }
+  function openHelp(name) {
+    const nb = document.querySelector('nav button[data-t=guides]'); if (nb) nb.click();
+    window.scrollTo(0, 0);
+    setTimeout(() => {
+      const g = guideFor(name);
+      if (g && typeof openGuide === 'function') openGuide(g);
+      else { const gp = document.getElementById('gpage'), bk = document.getElementById('gback'); if (gp && !gp.hidden && bk) bk.click(); const q = document.getElementById('gsearch'); if (q) { q.value = name; q.dispatchEvent(new Event('input', { bubbles: true })); } }
+    }, 90);
+  }
   RENDER.rot = async (force) => {
     const r = await fetchCached('rot' + st.char, () => gt().actRot(charArg()), force);
-    const part = (k, title) => { const l = (r.feat || []).filter((x) => x.k === k); return l.length ? `<h3 class="sec">${title}</h3><div class="agrid fit">${l.map((x) => `<div class="acard bg plan">${x.img ? `<div class="abgi" style="background-image:url('${esc(img(x.img))}')"></div>` : ''}<b>${esc(x.n)}</b><div class="sub">Weekly ${k.toLowerCase()} challenge</div><div class="sub">Ends in ${esc(resetIn())}</div></div>`).join('')}</div>` : ''; };
-    const feat = rsCards() + part('Raid', 'Featured raids this week') + part('Dungeon', 'Featured dungeons this week');
+    const part = (k, title) => { const l = (r.feat || []).filter((x) => x.k === k); return l.length ? `<h3 class="sec">${title}</h3><div class="agrid fit">${l.map((x) => `<div class="acard bg plan clk" data-gd="${esc(x.n)}" title="Open the ${esc(x.n)} guide in Helpful">${x.img ? `<div class="abgi" style="background-image:url('${esc(img(x.img))}')"></div>` : ''}<b>${esc(x.n)}</b><div class="sub">${k === 'Pantheon' ? 'Featured ' + esc(x.s || 'Pantheon') : 'Weekly ' + k.toLowerCase() + ' challenge'}</div><div class="sub">Ends in ${esc(resetIn())}</div><div class="sub gdl">Open the guide &rsaquo;</div></div>`).join('')}</div>` : ''; };
+    const feat = rsCards() + part('Raid', 'Featured raids this week') + part('Dungeon', 'Featured dungeons this week') + part('Pantheon', 'Featured Pantheon this week');
     return feat || msg('No featured raids or dungeons found yet. Try Refresh in a moment.');
   };
 
@@ -536,6 +557,7 @@
   }
   s.addEventListener('click', (e) => {
     const pgr = e.target.closest('.ract[data-pg], .pbc[data-pg]'); if (pgr) { togglePg(pgr); return; }
+    const gdc = e.target.closest('[data-gd]'); if (gdc) { openHelp(gdc.dataset.gd); return; }
     const cl = e.target.closest('[data-cl]'); if (cl && !e.target.closest('[data-hpin]')) { st.clrOpen = cl.dataset.cl; st.clrF = 'all'; load(); s.scrollTop = 0; window.scrollTo(0, 0); return; }
     if (e.target.closest('[data-clb]')) { st.clrOpen = ''; load(); return; }
     const cf = e.target.closest('[data-clf]'); if (cf) { st.clrF = cf.dataset.clf; load(); return; }
@@ -580,8 +602,6 @@
     const d = V().D && V().D();
     if (!d) { if (tries++ < 20) setTimeout(boot, 3000); return; }
     await pollTotals();
-    setTimeout(dealAlert, 4000);
-    setInterval(dealAlert, 3 * 3600 * 1000);
     setInterval(() => { pollTotals(); }, 300000);
   };
   setTimeout(boot, 6000);

@@ -1,4 +1,4 @@
-/* Pathfinder 0.2.90: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.2.91: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -20,7 +20,7 @@ const appCfg = (() => { try { return JSON.parse(fs.readFileSync(path.join(__dirn
 const preset = appCfg.bungie && appCfg.bungie.apiKey && appCfg.bungie.clientId ? appCfg.bungie : null;
 // Sign-in tokens and the app secret are only ever written to disk encrypted by the operating system (Windows DPAPI).
 // If that is not available they stay in memory only, so you sign in again next launch instead of leaving them in a readable file.
-let memSecret = {}, lastGood = null;
+let memSecret = {}, lastGood = null, PEND_PART = '';
 // The settings file is read (and decrypted) on every Bungie request; keep the last result until the file changes.
 let RDC = null;
 function rd() {
@@ -116,12 +116,15 @@ async function tokenReq(params) {
     j = await readJson(r); status = r.status;
   }
   if (!j.access_token) throw new Error((j.error_description || j.Message || j.error || 'Token request failed') + ' (HTTP ' + status + ')');
+  const prev = c.tok || {}, same = String(prev.mid || '') === String(j.membership_id || '');
   c.tok = {
     access: j.access_token, refresh: j.refresh_token,
     exp: Date.now() + j.expires_in * 1000,
     rexp: Date.now() + (j.refresh_expires_in || 7776000) * 1000,
     mid: j.membership_id, cid: c.clientId,
+    part: PEND_PART || (same ? prev.part : '') || '', m: same ? prev.m : undefined, n: same ? prev.n : '',
   };
+  PEND_PART = '';
   wr(c);
 }
 async function fresh() {
@@ -154,7 +157,7 @@ function silentAuth() {
     cookieLog('at silent start');
     alog('silent sign-in start; preset=' + !!preset + ' clientId=' + !!c.clientId + ' redirect=' + (c.redirect || '(none)'));
     if (!preset || !c.clientId) { alog('no app set up'); return res(false); }
-    let w; try { w = new BrowserWindow({ show: false, width: 520, height: 780, webPreferences: { partition: 'persist:bungie', backgroundThrottling: false, sandbox: true, contextIsolation: true, nodeIntegration: false, webSecurity: true } }); } catch (e) { alog('window error ' + e.message); return res(false); }
+    let w; try { w = new BrowserWindow({ show: false, width: 520, height: 780, webPreferences: { partition: (c.tok && c.tok.part) || 'persist:bungie', backgroundThrottling: false, sandbox: true, contextIsolation: true, nodeIntegration: false, webSecurity: true } }); } catch (e) { alog('window error ' + e.message); return res(false); }
     const state = crypto.randomBytes(12).toString('hex'), origin = new URL(c.redirect || 'https://localhost/redirect').origin;
     let done = false;
     const fin = (ok, why) => { if (done) return; done = true; clearTimeout(t); alog('finish ok=' + ok + (why ? ' ' + why : '')); try { w.destroy(); } catch (e) { /* gone */ } res(ok); };
@@ -191,9 +194,17 @@ async function api(p, auth = true) {
   return j.Response;
 }
 let DEFS = null;
+// Speed: the manifest index (which game version is live) is asked for once every 10 minutes, not before every lookup.
+let MFQ = null;
+function manifest() {
+  if (MFQ && Date.now() - MFQ.at < 600000) return MFQ.p;
+  const p = api('/Destiny2/Manifest/', false); MFQ = { at: Date.now(), p };
+  p.catch(() => { if (MFQ && MFQ.p === p) MFQ = null; });
+  return p;
+}
 async function defs() {
   const f = path.join(app.getPath('userData'), 'defs6.json');
-  const m = await api('/Destiny2/Manifest/', false);
+  const m = await manifest();
   const v = m.version + '.11';
   if (DEFS && DEFS.v === v) return DEFS;
   try { const o = JSON.parse(fs.readFileSync(f, 'utf8')); if (o.v === v) return (DEFS = o); } catch (e) { /* download below */ }
@@ -236,7 +247,7 @@ async function defs() {
 // In-game loadout names, colors and icons (small, cached separately so a failure here never blocks the vault).
 let LODEFS = null;
 async function lodefs() {
-  const m = await api('/Destiny2/Manifest/', false);
+  const m = await manifest();
   if (LODEFS && LODEFS.v === m.version) return LODEFS;
   const f = path.join(app.getPath('userData'), 'lodefs.json');
   try { const o = JSON.parse(fs.readFileSync(f, 'utf8')); if (o.v === m.version) return (LODEFS = o); } catch (e) { /* download below */ }
@@ -251,16 +262,19 @@ async function lodefs() {
   return (LODEFS = o);
 }
 
-H('cfg:get', () => { const c = rd(); return { apiKey: !!c.apiKey, clientId: c.clientId || '', redirect: c.redirect || 'https://localhost/redirect', secret: !!c.clientSecret, signedIn: !!c.tok, preset: !!preset }; });
+H('cfg:get', () => { const c = rd(); return { apiKey: !!c.apiKey, clientId: c.clientId || '', redirect: c.redirect || 'https://localhost/redirect', secret: !!c.clientSecret, signedIn: !!c.tok, preset: !!preset, mid: c.tok ? String(c.tok.mid || '') : '', prim: String(c.prim || '') }; });
 H('clip:read', () => clipboard.readText());
 H('clip:write', (e, t) => { clipboard.writeText(String(t || '')); return true; });
 // Signing out also forgets the Bungie web login, so the next person (or account) gets a fresh sign-in page.
 H('auth:logout', async () => {
-  const c = rd(); delete c.tok; wr(c); M = null; farm.on = false; clearInterval(farm.t);
-  try { await session.fromPartition('persist:bungie').clearStorageData(); } catch (e) { /* nothing stored */ }
-  return true;
+  const c = rd(), part = (c.tok && c.tok.part) || 'persist:bungie'; delete c.tok; M = null; farm.on = false; clearInterval(farm.t);
+  const next = Object.keys(c.accts || {})[0];
+  if (next) { c.tok = c.accts[next]; delete c.accts[next]; }
+  wr(c);
+  try { await session.fromPartition(part).clearStorageData(); } catch (e) { /* nothing stored */ }
+  return next ? { switched: 1, ...(await restartApp()) } : true;
 });
-H('auth:login', () => new Promise((res, rej) => {
+const loginWin = (part) => new Promise((res, rej) => {
   const c = rd();
   if (!preset) return rej(new Error('This copy of the app has no Bungie app set up yet.'));
   if (WEB) {
@@ -269,7 +283,7 @@ H('auth:login', () => new Promise((res, rej) => {
     globalThis.__GT_WEB__.authRedirect(`${BASE}/en/OAuth/Authorize?client_id=${encodeURIComponent(c.clientId)}&response_type=code&state=${st}`, st);
     return; // the page navigates away, so this never resolves
   }
-  const w = new BrowserWindow({ width: 520, height: 780, parent: win, modal: true, webPreferences: { partition: 'persist:bungie', sandbox: true, contextIsolation: true, nodeIntegration: false, webSecurity: true, allowRunningInsecureContent: false } });
+  const w = new BrowserWindow({ width: 520, height: 780, parent: win, modal: true, webPreferences: { partition: part || 'persist:bungie', sandbox: true, contextIsolation: true, nodeIntegration: false, webSecurity: true, allowRunningInsecureContent: false } });
   // The Bungie sign-in page only: https only, no pop-up windows, no permissions (camera, location...).
   w.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   w.webContents.on('will-navigate', (ev, u) => { if (!/^https:\/\//i.test(u)) ev.preventDefault(); });
@@ -290,9 +304,65 @@ H('auth:login', () => new Promise((res, rej) => {
   });
   w.on('closed', () => { if (!done) rej(new Error('Sign-in window was closed.')); });
   w.loadURL(`${BASE}/en/OAuth/Authorize?client_id=${encodeURIComponent(c.clientId)}&response_type=code&state=${state}`);
-}));
+});
+H('auth:login', () => loginWin((rd().tok || {}).part || 'persist:bungie'));
+// ---- more than one Bungie account (your alts, or a friend who shares their login): each keeps its own sign-in, tags stay shared ----
+// The active account is c.tok; the others wait in c.accts. Switching restarts the app so nothing from one account leaks into another.
+function restartApp() {
+  if (WEB) { const f = globalThis.__GT_WEB__ && globalThis.__GT_WEB__.flush; return f ? f().then(() => ({ reload: 1 }), () => ({ reload: 1 })) : { reload: 1 }; } // the switch is saved before the page reloads
+  setTimeout(() => { try { app.relaunch(); } catch (e) { /* manual start */ } app.exit(0); }, 200);
+  return { restart: 1 };
+}
+const acctRow = (t, on) => ({ mid: String(t.mid || ''), n: t.n || (t.m && (t.m.bungieGlobalDisplayName || t.m.displayName)) || 'Bungie account', code: t.m && t.m.bungieGlobalDisplayNameCode ? String(t.m.bungieGlobalDisplayNameCode).padStart(4, '0') : '', on: on ? 1 : 0, ok: t.refresh && Date.now() < (t.rexp || 0) ? 1 : 0 });
+H('acct:list', () => {
+  const c = rd(), out = [];
+  if (c.tok) out.push(acctRow(c.tok, true));
+  Object.values(c.accts || {}).forEach((t) => { if (t && t.mid && (!c.tok || String(t.mid) !== String(c.tok.mid))) out.push(acctRow(t, false)); });
+  return { list: out, prim: String(c.prim || (c.tok && c.tok.mid) || ''), web: WEB ? 1 : 0 };
+});
+H('acct:add', async () => {
+  const c = rd();
+  if (!preset) throw new Error('This copy of the app has no Bungie app set up yet.');
+  const keep = c.tok || null;
+  if (keep) { c.prim = c.prim || String(keep.mid); c.accts = c.accts || {}; c.accts[keep.mid] = keep; }
+  delete c.tok; wr(c); M = null;
+  // A fresh, empty Bungie sign-in page (its own cookie jar), so you can log in as someone else while the first login stays remembered.
+  PEND_PART = 'persist:bungie-' + crypto.randomBytes(6).toString('hex');
+  if (WEB) {
+    const st = crypto.randomBytes(12).toString('hex');
+    globalThis.__GT_WEB__.authRedirect(`${BASE}/en/OAuth/Authorize?client_id=${encodeURIComponent(c.clientId)}&response_type=code&state=${st}&reauth=true`, st);
+    return new Promise(() => {}); // the page navigates away
+  }
+  try { await loginWin(PEND_PART); }
+  catch (e) { PEND_PART = ''; const c2 = rd(); if (!c2.tok && keep) { c2.tok = keep; if (c2.accts) delete c2.accts[keep.mid]; wr(c2); } throw e; }
+  const c3 = rd();
+  if (c3.tok && c3.accts) delete c3.accts[c3.tok.mid]; // the same account signed in again: keep just one copy
+  wr(c3);
+  return restartApp();
+});
+H('acct:switch', (e, v) => {
+  OBJ(v); const mid = ID(v.mid), c = rd();
+  if (c.tok && String(c.tok.mid) === mid) return { same: 1 };
+  const t = c.accts && c.accts[mid]; if (!t) throw new Error('That account is no longer saved here.');
+  c.accts = c.accts || {};
+  if (c.tok) { c.prim = c.prim || String(c.tok.mid); c.accts[c.tok.mid] = c.tok; }
+  c.tok = t; delete c.accts[mid]; wr(c); M = null;
+  return restartApp();
+});
+H('acct:remove', async (e, v) => {
+  OBJ(v); const mid = ID(v.mid), c = rd();
+  let part = '';
+  if (c.tok && String(c.tok.mid) === mid) {
+    part = c.tok.part || 'persist:bungie'; delete c.tok;
+    const next = Object.keys(c.accts || {})[0];
+    if (next) { c.tok = c.accts[next]; delete c.accts[next]; }
+  } else if (c.accts && c.accts[mid]) { part = c.accts[mid].part || ''; delete c.accts[mid]; }
+  wr(c); M = null;
+  if (part && !WEB) { try { await session.fromPartition(part).clearStorageData(); } catch (er) { /* nothing stored */ } }
+  return restartApp();
+});
 // Website only: the sign-in code Bungie sent back to the site (its state was already checked by the page).
-if (WEB) H('auth:webcode', async (e, v) => { OBJ(v); await tokenReq({ grant_type: 'authorization_code', code: TXT(v.code, 4000) }); return true; });
+if (WEB) H('auth:webcode', async (e, v) => { OBJ(v); await tokenReq({ grant_type: 'authorization_code', code: TXT(v.code, 4000) }); const c = rd(); if (c.tok && c.accts && c.accts[c.tok.mid]) { delete c.accts[c.tok.mid]; wr(c); } return true; });
 const PMDEF = {}, ARTD = {}, TITLES = {}, ENTC = {}, OVR = {};
 // A character's equipped title (Immortal, Conqueror...), looked up once and remembered.
 // Whether a character's title is gilded (the small gold seal DIM shows next to it). Looked up from the account's records, kept for a few minutes.
@@ -314,9 +384,15 @@ async function titleOf(x) {
   }
   return TITLES[h][x.genderType === 1 ? 'Female' : 'Male'] || '';
 }
+let GLC = null;
+const glcSave = () => { try { fs.writeFileSync(apath('gild.json'), JSON.stringify(GLC || {})); } catch (e) { /* remembered next time */ } };
 async function isGilded(x) {
   const h = x.titleRecordHash, t = h && TITLES[h]; if (!t || !t.g) return 0;
-  const r = (await gildedSet())[t.g]; return r && r.completedCount > 0 ? 1 : 0;
+  if (!GLC) { try { GLC = JSON.parse(fs.readFileSync(apath('gild.json'), 'utf8')) || {}; } catch (e) { GLC = {}; } }
+  const val = () => { const r = GILD.v[t.g]; return r && r.completedCount > 0 ? 1 : 0; };
+  const fresh1 = GILD.at && Date.now() - GILD.at < 600000;
+  if (!fresh1 && GLC[t.g] !== undefined) { gildedSet().then(() => { const v2 = val(); if (GLC[t.g] !== v2) { GLC[t.g] = v2; glcSave(); } }).catch(() => {}); return GLC[t.g]; }
+  await gildedSet(); const v = val(); if (GLC[t.g] !== v) { GLC[t.g] = v; glcSave(); } return v;
 }
 async function ent(type, h) { return api('/Destiny2/Manifest/' + type + '/' + h + '/', false); }
 // The seasonal artifact: which mods are unlocked right now, with names and icons.
@@ -340,14 +416,42 @@ async function artifact(pr) {
   const d = ARTD[a.artifactHash];
   return { n: d.n, i: d.i, bonus: a.powerBonus || 0, tiers: d.tiers.map((t) => t.map((m) => ({ ...m, on: !!on[m.h] }))) };
 }
+// Speed: ornament and title lookups are kept on disk (per game version), so a fresh start never repeats them.
+let XDL = '';
+function xdLoad(df) {
+  if (XDL === df.v) return; XDL = df.v;
+  try { const o = JSON.parse(fs.readFileSync(path.join(app.getPath('userData'), 'xdefs.json'), 'utf8')); if (o && o.v === df.v) { Object.assign(OVR, o.o || {}); Object.assign(TITLES, o.t || {}); } } catch (e) { /* first run */ }
+}
+let XDN = -1;
+function xdSave(df) {
+  const n = Object.keys(OVR).length + Object.keys(TITLES).length; if (n === XDN) return; XDN = n;
+  fs.promises.writeFile(path.join(app.getPath('userData'), 'xdefs.json'), JSON.stringify({ v: df.v, o: OVR, t: TITLES })).catch(() => {});
+}
+// Files that belong to one Bungie account. The first account keeps the old places; others get their own folder.
+function apath(name) {
+  const c = rd(), mid = c.tok && c.tok.mid;
+  if (mid && c.prim && String(mid) !== String(c.prim)) {
+    const d = path.join(app.getPath('userData'), 'acct-' + String(mid).replace(/\D/g, ''));
+    try { fs.mkdirSync(d, { recursive: true }); } catch (e) { /* exists */ }
+    return path.join(d, name);
+  }
+  return path.join(app.getPath('userData'), name);
+}
+// Speed, like DIM: the last vault is saved, shown instantly on the next start, and replaced as soon as Bungie answers.
+H('vault:cached', () => {
+  try {
+    const o = JSON.parse(fs.readFileSync(apath('vcache.json'), 'utf8')), t = rd().tok;
+    if (!o || !o.d || !t || String(o.mid) !== String(t.mid) || Date.now() - o.at > 14 * 864e5) return null;
+    return { ...o.d, stale: 1, cachedAt: o.at };
+  } catch (e) { return null; }
+});
 H('vault:load', async () => {
-  const ms = await api('/User/GetMembershipsForCurrentUser/');
-  const m = ms.destinyMemberships.find((x) => x.membershipId === ms.primaryMembershipId) || ms.destinyMemberships[0];
-  M = m;
+  const m = await memb();
+  const ldP = lodefs().catch(() => ({ names: {}, colors: {}, icons: {} })); // in parallel with the profile, not after it
   const [df, pr] = await Promise.all([defs(), api(`/Destiny2/${m.membershipType}/Profile/${m.membershipId}/?components=102,103,200,201,205,206,300,304,305,310`)]);
+  xdLoad(df);
   const d = df.d;
-  let ld = { names: {}, colors: {}, icons: {} };
-  try { ld = await lodefs(); } catch (e) { /* names fall back to numbers */ }
+  const ld = await ldP; // names fall back to numbers
   const inst = (pr.itemComponents && pr.itemComponents.instances && pr.itemComponents.instances.data) || {};
   const sk = (pr.itemComponents && pr.itemComponents.sockets && pr.itemComponents.sockets.data) || {};
   // Equipped ornament: its plug icon replaces the item's icon, like DIM.
@@ -485,7 +589,10 @@ H('vault:load', async () => {
   art = null; // the old artifact list is stale; see art:get
   const pn = {};
   items.forEach((x) => (x.pk || []).forEach((h) => { if (!pn[h] && df.p[h]) pn[h] = df.p[h].n; }));
-  return { ts: Date.parse(pr.responseMintedTimestamp) || 0, chars, sti, items, gen, cur, ic: { el: df.dm || {}, bk: df.bk || {} }, pm, lo, art, pn, name: m.bungieGlobalDisplayName || m.displayName };
+  const res = { ts: Date.parse(pr.responseMintedTimestamp) || 0, chars, sti, items, gen, cur, ic: { el: df.dm || {}, bk: df.bk || {} }, pm, lo, art, pn, name: m.bungieGlobalDisplayName || m.displayName };
+  xdSave(df);
+  { const mid = (rd().tok || {}).mid, f = apath('vcache.json'); setTimeout(() => { fs.promises.writeFile(f, JSON.stringify({ v: 1, at: Date.now(), mid, d: res })).catch(() => {}); }, 50); }
+  return res;
 });
 
 // Stats and perks for one item (opened from the click menu).
@@ -1164,7 +1271,7 @@ H('farm:get', () => ({ on: farm.on, moved: farm.moved, last: farm.last }));
 // ---------------- triumphs ----------------
 let TRD = null;
 async function trdefs() {
-  const m = await api('/Destiny2/Manifest/', false);
+  const m = await manifest();
   const v = m.version + '.t3';
   if (TRD && TRD.v === v) return TRD;
   const f = path.join(app.getPath('userData'), 'triumphs.json');
@@ -1199,6 +1306,76 @@ H('tr:state', async () => {
   return { score: { active: p.activeScore || 0, lifetime: p.lifetimeScore || 0, legacy: p.legacyScore || 0 }, cat: p.recordCategoriesRootNodeHash, seals: p.recordSealsRootNodeHash, tracked: p.trackedRecordHash ? [p.trackedRecordHash] : [], recs };
 });
 
+// ---------------- friends and clan on a triumph (like Braytech): who has it done ----------------
+// Loaded once (every clan member and Bungie.net friend, then each one's public triumphs) and kept for 30 minutes,
+// so opening any triumph after that is instant. Nothing about other people is written to disk.
+let WHO = null;
+const pad4 = (c) => (c || c === 0 ? String(c).padStart(4, '0') : '');
+async function whoLoad() {
+  const W = { at: Date.now(), st: 'loading', done: 0, total: 0, people: [], err: {}, clan: '' }; WHO = W;
+  await ensureM(); const me = M;
+  const list = new Map();
+  const add = (mt, mid, n, code, src) => {
+    if (!mid || !mt || mt === 254) return;
+    const k = mt + ':' + mid, o = list.get(k);
+    if (o) { if (!o.src.includes(src)) o.src.push(src); return; }
+    list.set(k, { k, mt, mid: String(mid), n: String(n || 'Guardian').slice(0, 40), code: pad4(code), src: [src] });
+  };
+  await Promise.all([
+    (async () => {
+      try {
+        const g = await api(`/GroupV2/User/${me.membershipType}/${me.membershipId}/0/1/`);
+        const grp = g && g.results && g.results[0] && g.results[0].group;
+        if (!grp) { W.err.clan = 'none'; return; }
+        W.clan = grp.name || '';
+        const r = await api(`/GroupV2/${grp.groupId}/Members/?currentpage=1`);
+        (r.results || []).forEach((m) => { const u = m.destinyUserInfo || {}; add(u.membershipType, u.membershipId, u.bungieGlobalDisplayName || u.displayName, u.bungieGlobalDisplayNameCode, 'clan'); });
+      } catch (e) { W.err.clan = e.message; }
+    })(),
+    (async () => {
+      try {
+        const f = await api('/Social/Friends/');
+        await pool((f && f.friends) || [], 6, async (x) => {
+          const bn = x.bungieNetUser && x.bungieNetUser.membershipId;
+          let mt = x.lastSeenAsBungieMembershipType, mid = x.lastSeenAsMembershipId;
+          if (bn) {
+            try {
+              const ms = await api(`/User/GetMembershipsById/${bn}/254/`, false), dm = (ms && ms.destinyMemberships) || [];
+              const p = dm.find((d) => ms.primaryMembershipId && d.membershipId === ms.primaryMembershipId) || dm.find((d) => !d.crossSaveOverride || d.crossSaveOverride === d.membershipType) || dm[0];
+              if (p) { mt = p.membershipType; mid = p.membershipId; }
+            } catch (e) { /* use the last seen account */ }
+          }
+          add(mt, mid, x.bungieGlobalDisplayName || (x.bungieNetUser && x.bungieNetUser.uniqueName), x.bungieGlobalDisplayNameCode, 'friend');
+        });
+      } catch (e) { W.err.friends = /scope|privilege|permission|authoriz|access/i.test(e.message) ? 'scope' : e.message; }
+    })(),
+  ]);
+  list.delete(me.membershipType + ':' + me.membershipId);
+  W.people = [...list.values()]; W.total = W.people.length;
+  await pool(W.people, 8, async (p) => {
+    try {
+      const pr = await api(`/Destiny2/${p.mt}/Profile/${p.mid}/?components=900`);
+      const set = new Set(), put = (h, r) => { if (r && !(r.state & 4)) set.add(+h); };
+      const pd = pr.profileRecords && pr.profileRecords.data;
+      if (!pd) p.priv = 1; else for (const h in pd.records || {}) put(h, pd.records[h]);
+      const cr = (pr.characterRecords && pr.characterRecords.data) || {};
+      for (const c in cr) for (const h in cr[c].records || {}) put(h, cr[c].records[h]);
+      p.set = set;
+    } catch (e) { p.priv = 1; }
+    W.done++;
+  });
+  W.st = 'ready'; W.at = Date.now();
+}
+H('tr:who', async (e, v) => {
+  OBJ(v); const h = HASH(v.h);
+  if (v.reload || !WHO || WHO.st === 'error' || (WHO.st === 'ready' && Date.now() - WHO.at > 1800000)) {
+    whoLoad().catch((er) => { WHO = { st: 'error', err: { all: er.message }, people: [], done: 0, total: 0, at: Date.now() }; });
+  }
+  const W = WHO;
+  if (W.st !== 'ready') return { st: W.st, done: W.done, total: W.total, err: W.err };
+  return { st: 'ready', clan: W.clan, err: W.err, people: W.people.map((p) => ({ n: p.n, c: p.code, s: p.src, priv: p.priv ? 1 : 0, d: p.set && p.set.has(h) ? 1 : 0 })) };
+});
+
 // ---------------- seasonal artifact (an equippable item with perk sockets) ----------------
 const ARTP = {};
 async function plugInfo(hs) {
@@ -1207,10 +1384,20 @@ async function plugInfo(hs) {
     catch (e) { ARTP[h] = { n: 'Perk', i: '', d: '', c: '' }; }
   }));
 }
-async function ensureM() {
-  if (M) return;
+// Speed: the account's Destiny membership is remembered with the sign-in, so loading the vault starts with the profile request
+// instead of waiting for a membership lookup first.
+async function memb() {
+  if (M) return M;
+  const t = rd().tok;
+  if (t && t.mid && t.m && String(t.m.bid) === String(t.mid) && t.m.membershipId) { M = t.m; return M; }
   const ms = await api('/User/GetMembershipsForCurrentUser/');
   M = ms.destinyMemberships.find((x) => x.membershipId === ms.primaryMembershipId) || ms.destinyMemberships[0];
+  try { const c = rd(); if (c.tok) { c.tok.m = { membershipType: M.membershipType, membershipId: M.membershipId, displayName: M.displayName || '', bungieGlobalDisplayName: M.bungieGlobalDisplayName || '', bungieGlobalDisplayNameCode: M.bungieGlobalDisplayNameCode || 0, bid: c.tok.mid }; c.tok.n = c.tok.n || M.bungieGlobalDisplayName || M.displayName || ''; wr(c); } } catch (e) { /* remembered next time */ }
+  return M;
+}
+async function ensureM() {
+  if (M) return;
+  await memb();
 }
 const ALOG = (t) => { try { fs.appendFileSync(path.join(app.getPath('userData'), 'art-log.txt'), t + '\n'); } catch (e) { /* log only */ } };
 // ---- Seasonal artifacts, the way DIM handles them: the artifacts are items you own (one slot per character), each with its own perk slots. ----
@@ -1388,12 +1575,23 @@ H('act:rot', async (e, v) => {
   // Once a featured raid or dungeon is finished Bungie stops listing its weekly challenge, so it used to vanish from the page.
   // Remember this week's featured ones (they change at weekly reset, Tuesday 17:00 UTC) and show the finished ones as completed.
   const nowF = Object.values(feat);
-  let sv = {}; try { sv = JSON.parse(fs.readFileSync(path.join(app.getPath('userData'), 'rotfeat.json'), 'utf8')) || {}; } catch (e) { sv = {}; }
+  let sv = {}; try { sv = JSON.parse(fs.readFileSync(apath('rotfeat.json'), 'utf8')) || {}; } catch (e) { sv = {}; }
   if (sv.wk !== wk || !sv.f || sv.v !== 2) sv = { v: 2, wk, f: {} };
   nowF.forEach((x) => { sv.f[x.k + '|' + x.n.toLowerCase()] = { k: x.k, n: x.n, img: x.img || (sv.f[x.k + '|' + x.n.toLowerCase()] || {}).img || '' }; });
-  try { fs.writeFileSync(path.join(app.getPath('userData'), 'rotfeat.json'), JSON.stringify(sv)); } catch (e) { /* disk full or locked */ }
+  try { fs.writeFileSync(apath('rotfeat.json'), JSON.stringify(sv)); } catch (e) { /* disk full or locked */ }
   const live = new Set(nowF.map((x) => x.k + '|' + x.n.toLowerCase()));
   const featAll = Object.keys(sv.f).map((k) => ({ ...sv.f[k], dn: 0 }));
+  // Pantheon: the week's featured Reprise and Encore bosses (the game lists them as "Featured Reprise: <boss>" / "Featured Encore: <boss>").
+  try {
+    const ad = await actsDefs(), seenP = new Set(), pan = {};
+    allAv.concat(av).forEach((a) => {
+      const h = String(a.activityHash || ''); if (!h || seenP.has(h)) return; seenP.add(h);
+      const d = ad.a[h], mt = d && /featured\s+(reprise|encore)\s*[:\-]\s*(.+)$/i.exec(d.n); if (!mt) return;
+      const nm = baseName(mt[2]), sub = mt[1].charAt(0).toUpperCase() + mt[1].slice(1).toLowerCase(), k = 'pan|' + nm.toLowerCase();
+      if (!pan[k]) pan[k] = { k: 'Pantheon', n: nm, s: sub, img: d.img || '', dn: 0 };
+    });
+    featAll.push(...Object.values(pan));
+  } catch (e) { /* Pantheon is optional: the raids and dungeons above still show */ }
   return { rot: out, feat: featAll };
 });
 
@@ -1621,7 +1819,7 @@ H('act:weapons', async () => {
 });
 // ---- Every weapon: legendary weapons are counted from each run's post game report (like act:feats) and kept on this computer ----
 let WSC = null, HIST2 = null;
-const wsFile = () => path.join(app.getPath('userData'), 'wstats.json');
+const wsFile = () => apath('wstats.json');
 function wsLoad() {
   if (!WSC) { try { WSC = JSON.parse(fs.readFileSync(wsFile(), 'utf8')) || {}; } catch (e) { WSC = {}; } }
   if (!WSC.done || !WSC.w || !WSC.bad) { WSC.done = {}; WSC.w = {}; WSC.bad = {}; }
@@ -1672,7 +1870,7 @@ H('act:totals', async () => {
 // Raid and dungeon clears. Activity names come from the manifest, downloaded once and kept.
 let ACTS = null;
 async function actsDefs() {
-  const mf = await api('/Destiny2/Manifest/', false), v = mf.version + '.a1';
+  const mf = await manifest(), v = mf.version + '.a1';
   if (ACTS && ACTS.v === v) return ACTS;
   const f = path.join(app.getPath('userData'), 'acts.json');
   try { const o = JSON.parse(fs.readFileSync(f, 'utf8')); if (o.v === v) return (ACTS = o); } catch (e) { /* download below */ }
@@ -1706,7 +1904,7 @@ H('act:clears', async () => {
 // ---- Solo, flawless and solo flawless runs, worked out from each run's post game report (like raid.report does) ----
 const clrBase = (n) => n.replace(/\s*[:(\-–]\s*(normal|master|prestige|legend|contest|standard|expert|hard|heroic|explorer|eternity|ultimatum|customi[sz]e)\b.*$/i, '').replace(/\s*\([^)]*\)\s*$/, '').trim();
 let FEATS = null, HIST = null;
-const featFile = () => path.join(app.getPath('userData'), 'feats.json');
+const featFile = () => apath('feats.json');
 function featLoad() { if (!FEATS) { try { FEATS = JSON.parse(fs.readFileSync(featFile(), 'utf8')) || {}; } catch (e) { FEATS = {}; } } return FEATS; }
 function featSave() { try { fs.writeFileSync(featFile(), JSON.stringify(FEATS)); } catch (e) { /* disk full or locked */ } }
 async function histAll(m, ch, mode, max) {
@@ -1780,7 +1978,7 @@ H('act:feats', async () => {
 // ---- Exotic collection: every exotic weapon and armor piece, whether you have unlocked it, and where it comes from ----
 let EXD = null;
 async function exoDefs() {
-  const m = await api('/Destiny2/Manifest/', false), v = m.version + '.e1';
+  const m = await manifest(), v = m.version + '.e1';
   if (EXD && EXD.v === v) return EXD;
   const f = path.join(app.getPath('userData'), 'exotics.json');
   try { const o = JSON.parse(fs.readFileSync(f, 'utf8')); if (o.v === v) return (EXD = o); } catch (e) { /* download below */ }
@@ -2117,7 +2315,7 @@ H('act:fireteam', async () => {
 
 // ---- Target farming ----
 // Targets are saved in targets.json (this computer only). Weapons are matched by name so every re-release of a weapon counts.
-const tfPath = () => path.join(app.getPath('userData'), 'targets.json');
+const tfPath = () => apath('targets.json');
 const TF_WB = new Set([1498876634, 2465295065, 953998645]);
 const TF_ARB = new Set([3448274439, 3551918588, 14239492, 20886954, 1585787867]);
 const tfRead = () => { try { const j = JSON.parse(fs.readFileSync(tfPath(), 'utf8')); return Array.isArray(j.t) ? j.t : []; } catch (e) { return []; } };
@@ -2207,7 +2405,7 @@ H('bk:import', async () => {
 let TFD = null;
 // Weapons (grouped by name) and armor groups (by raid/activity source and by armor set) for the pickers.
 async function tfdefs() {
-  const df = await defs(), m = await api('/Destiny2/Manifest/', false), v = m.version + '.f1';
+  const df = await defs(), m = await manifest(), v = m.version + '.f1';
   if (TFD && TFD.v === v) return TFD;
   const f = path.join(app.getPath('userData'), 'tfdefs.json');
   try { const o = JSON.parse(fs.readFileSync(f, 'utf8')); if (o.v === v) return (TFD = o); } catch (e) { /* build below */ }

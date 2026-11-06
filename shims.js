@@ -64,10 +64,12 @@
     clearTimeout(flushT); flushT = setTimeout(flush, 250);
   }
   function flush() {
-    if (!db || !dirty.size) return;
+    clearTimeout(flushT);
+    if (!db || !dirty.size) return Promise.resolve();
     const tx = db.transaction('files', 'readwrite'), st = tx.objectStore('files');
     dirty.forEach((v, k) => { if (v) st.put({ d: v.d, m: v.m }, k); else st.delete(k); });
     dirty.clear();
+    return new Promise((ok) => { tx.oncomplete = ok; tx.onerror = ok; tx.onabort = ok; });
   }
   window.addEventListener('pagehide', flush); document.addEventListener('visibilitychange', () => { if (document.hidden) flush(); });
   function openDb() {
@@ -199,7 +201,8 @@
 
   // ---------- sign-in by redirect ----------
   const BASE_URL = location.origin + location.pathname.replace(/[^/]*$/, '');
-  G.authRedirect = (url, state) => { try { sessionStorage.setItem('gt.oauth.state', state); } catch (e) { /* private mode */ } location.assign(url); };
+  G.flush = () => flush();
+  G.authRedirect = (url, state) => { try { sessionStorage.setItem('gt.oauth.state', state); } catch (e) { /* private mode */ } let gone = false; const go = () => { if (!gone) { gone = true; location.assign(url); } }; flush().then(go, go); setTimeout(go, 1500); }; // saved changes (like a stashed account) reach storage before the page leaves
 
   // ---------- start: load saved files and the site config, then run main.js ----------
   let readyRes; G.ready = new Promise((r) => { readyRes = r; });

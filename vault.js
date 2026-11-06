@@ -286,7 +286,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 .lpk .sw{height:30px}
 @media (max-width:900px){.ltab{flex-direction:column}.lsidec{width:100%;flex-direction:row}.lside{flex:1}}
 /* settings page */
-#settings .card{max-width:760px;margin-left:auto;margin-right:auto}
+#settings .card{max-width:760px;margin-left:auto;margin-right:auto}#settings .acl{display:flex;flex-direction:column;gap:6px;margin:10px 0}#settings .acr{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 10px;border:1px solid var(--g-line,#2b2e33);border-radius:6px;background:rgba(255,255,255,.03)}#settings .acr.on{border-color:var(--g-accent,#7ab8e8)}#settings .acr b{flex:1;min-width:140px;color:#fff}#settings .acr b span{color:#8b8f97;font-weight:400;margin-left:2px}#settings .acr em{font-style:normal;font-size:12px;color:var(--g-accent,#7ab8e8)}#settings .acr small{flex-basis:100%;color:#e0b64a;font-size:11.5px}.acswm{position:fixed;inset:0;z-index:100000;background:rgba(8,9,12,.85);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;letter-spacing:1px}#settings .navtg{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}#settings .navtg .chip{opacity:.55}#settings .navtg .chip.on{opacity:1}#settings .navtg .chip:disabled{cursor:default;opacity:.8}
 #settings h2{font-size:15px;letter-spacing:3px;text-transform:uppercase;color:#cfd2d8;margin:0 0 10px}
 .sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
 .th{border:2px solid var(--g-line);padding:8px;cursor:pointer;background:var(--g-btn);text-align:center;font-size:14px}
@@ -909,6 +909,18 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
     settingsSec.querySelectorAll('[data-th]').forEach((n) => n.classList.toggle('on', n.dataset.th === id));
     const ac = settingsSec.querySelector('input[data-sk="accent"]'); if (ac) ac.value = SET.accent;
   }
+  // ---- saved Bungie accounts ----
+  let ACL = null, aclBusy = false;
+  function aclHTML() {
+    if (!window.gt || !gt.acctList) return '';
+    if (!ACL) { if (!aclBusy) { aclBusy = true; gt.acctList().then((r) => { ACL = r; aclBusy = false; if (settingsSec.classList.contains('on')) drawSettings(); }).catch(() => { aclBusy = false; }); } return '<p class="mute">Loading accounts...</p>'; }
+    return ACL.list.map((a) => `<div class="acr${a.on ? ' on' : ''}"><b>${esc(a.n)}${a.code ? `<span>#${esc(a.code)}</span>` : ''}</b>${a.on ? '<em>Active</em>' : `<button class="g" data-acsw="${esc(a.mid)}">Switch</button>`}<button class="g" data-acrm="${esc(a.mid)}" title="Remove this account from ${GT_HERE}">Remove</button>${a.ok ? '' : '<small>Sign-in expired: switching asks you to sign in again</small>'}</div>`).join('');
+  }
+  const acctNs = (mid, prim) => (prim && mid && String(mid) !== String(prim) ? '@' + mid : '');
+  function afterAcct(r) {
+    if (r && r.reload) { location.reload(); return; }
+    if (r && r.restart) { sec.innerHTML = ''; document.body.insertAdjacentHTML('beforeend', '<div class="acswm"><div>Switching account...</div></div>'); }
+  }
   function drawSettings() {
     const sx = (title, desc, ctl, wide) => `<div class="sx${wide ? ' wide' : ''}"><div class="sxt"><b>${title}</b>${desc ? `<small>${desc}</small>` : ''}</div><div class="sxc">${ctl}</div></div>`;
     const tgl = (k) => `<label class="tgl"><input type="checkbox" data-sk="${k}"${SET[k] ? ' checked' : ''}><i></i></label>`;
@@ -935,7 +947,9 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
     const csort = [['recent', 'Most recent character'], ['rrecent', 'Most recent character (reversed)'], ['age', 'Character age'], ['custom', 'Custom sort']].map((o) => `<label class="rad"><input type="radio" name="csort" data-sk="charsort" value="${o[0]}"${SET.charsort === o[0] ? ' checked' : ''}> ${o[1]}</label>`).join('');
     const sortList = `<div class="sortl">${SET.sortkeys.map((q, i) => `<div class="sri${q.on ? ' on' : ''}" draggable="true" data-si="${i}"><span class="grip" title="Drag to reorder">&#8942;&#8942;</span><label><input type="checkbox" data-sc="${i}"${q.on ? ' checked' : ''}> ${esc((SORTK.find((z) => z[0] === q.k) || [0, q.k])[1])}</label><button class="g" data-sd="${i}" title="${q.d === 1 ? 'Default order. Click to flip it' : 'Flipped. Click to go back'}">${q.d === 1 ? '&#9650;' : '&#9660;'}</button></div>`).join('')}</div>`;
     const cst = [0, 1, 2].map((c) => `<div class="cstr"><b>${CL[c]}</b>${CSTN.map((n, i) => `<button class="chip${SET.cst[c][i] ? ' on' : ''}" data-cst="${c}:${i}">${n}</button>`).join('')}</div>`).join('');
-    const acct = `<div class="card sc"><h2>Account</h2><p class="mute">${D && D.name ? 'Signed in as <b>' + esc(D.name) + '</b>.' : 'Signed in with Bungie.'} Signing out removes this app's saved login. Your tags, notes, loadouts and settings stay on ${GT_HERE}.</p><button class="g" data-sa="out">Sign out</button></div>`;
+    const navL = window.__gtnav ? window.__gtnav.list() : [];
+    const tabsCard = navL.length ? `<div class="card sc"><h2>Tabs</h2><p class="mute">Turn off the tabs you don't use. The bar re-fits the rest. Inventory and Settings always stay.</p><div class="navtg">${navL.map(([id, n, h, lock]) => `<button class="chip${h ? '' : ' on'}" data-navt="${esc(id)}"${lock ? ' disabled title="Always shown"' : ''}>${esc(n)}</button>`).join('')}</div></div>` : '';
+    const acct = `<div class="card sc"><h2>Accounts</h2><p class="mute">${D && D.name ? 'Signed in as <b>' + esc(D.name) + '</b>.' : 'Signed in with Bungie.'} Add your alts, or a friend's account if they sign in here themselves, and switch between them. Switching ${window.__GT_WEB__ ? 'reloads the page' : 'restarts the app'}. Tags and notes are shared; loadouts are kept per account.</p><div class="acl">${aclHTML()}</div><p><button class="b" data-sa="addacct">Add another account</button> <button class="g" data-sa="out">Sign out of this account</button></p>${window.__GT_WEB__ ? '<p class="mute" style="font-size:12px">If Bungie signs you straight back in as the same account, sign out on bungie.net first, then press Add another account again.</p>' : ''}</div>`;
     settingsSec.innerHTML = `<div class="setgrid">
     <div class="card sc"><h2>Item display</h2>${pv}
       ${sx('Item size', 'An item size of 50px looks sharpest.', rng('tile', 32, 72, 'px'))}
@@ -968,7 +982,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
       ${sx('Show postmaster', '', tgl('postmaster'))}
       ${sx('Tighter row spacing', '', tgl('compact'))}
       <p><button class="g" data-sa="reset">Reset display settings</button></p>
-    </div>${wlc}${upd}${acct}</div>`;
+    </div>${tabsCard}${wlc}${upd}${acct}</div>`;
   }
   async function wlDo(arg) {
     try {
@@ -996,14 +1010,20 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
     if (cs) { const [c, i] = cs.dataset.cst.split(':').map(Number); SET.cst[c][i] = SET.cst[c][i] ? 0 : 1; saveSet(); drawSettings(); if (window.__gtRender) window.__gtRender(); return; }
     const uis = e.target.closest('[data-uis]'); if (uis) { SET.ui = uis.dataset.uis; applySet(); saveSet(); settingsSec.querySelectorAll('[data-uis]').forEach((n) => n.classList.toggle('on', n.dataset.uis === SET.ui)); return; }
     const th = e.target.closest('[data-th]'); if (th) { pickTheme(th.dataset.th); return; }
+    const nt = e.target.closest('[data-navt]'); if (nt && window.__gtnav && !nt.disabled) { const cur = window.__gtnav.list().find((x) => x[0] === nt.dataset.navt); if (cur) window.__gtnav.set(cur[0], !cur[2]); drawSettings(); return; }
+    const asw = e.target.closest('[data-acsw]');
+    if (asw) { try { localStorage.setItem('gt_acct_ns', acctNs(asw.dataset.acsw, ACL && ACL.prim)); } catch (er) { /* storage off */ } try { afterAcct(await gt.acctSwitch({ mid: asw.dataset.acsw })); } catch (er) { alert(clean(er)); } return; }
+    const arm = e.target.closest('[data-acrm]');
+    if (arm) { const a1 = ACL && ACL.list.find((x) => x.mid === arm.dataset.acrm); if (!confirm('Remove ' + ((a1 && a1.n) || 'this account') + ' from ' + GT_HERE + '? You can add it again any time.')) return; try { afterAcct(await gt.acctRemove({ mid: arm.dataset.acrm })); } catch (er) { alert(clean(er)); } return; }
     const b = e.target.closest('[data-sa]'); if (!b) return;
     const a = b.dataset.sa;
+    if (a === 'addacct') { try { afterAcct(await gt.acctAdd()); } catch (er) { const m1 = clean(er); if (!/closed/i.test(m1)) alert('Could not add the account: ' + m1); ACL = null; drawSettings(); } return; }
     if (a === 'wlpl' || a === 'wlpt') {
       try { const v = ((await window.gt.readClipboard()) || '').trim(); const id = a === 'wlpl' ? 'wlurl' : 'wltext'; WLD[id] = v; const el = document.getElementById(id); if (el) el.value = v; WLMSG = v ? 'Pasted ' + v.length + ' characters.' : 'The clipboard is empty. Copy the wish list first.'; }
       catch (er) { WLMSG = 'Could not read the clipboard.'; }
       drawSettings(); return;
     }
-    if (a === 'out') { if (!confirm('Sign out of Bungie? Your saved keys, tags, notes and loadouts stay on ' + GT_HERE + '.')) return; try { await gt.logout(); } catch (er) { /* sign-in screen shows next */ } sel = null; show('vault'); init(); return; }
+    if (a === 'out') { if (!confirm('Sign out of this Bungie account? Your tags, notes and loadouts stay on ' + GT_HERE + '.')) return; let r = null; try { r = await gt.logout(); } catch (er) { /* sign-in screen shows next */ } if (r && r.switched) { afterAcct(r); return; } sel = null; ACL = null; show('vault'); init(); return; }
     if (a === 'wlfile') { const f = document.getElementById('wlfile'); if (f) f.click(); return; }
     if (a === 'wlload') { const url = ((document.getElementById('wlurl') || {}).value || WLD.wlurl).trim(); if (!url) { WLMSG = 'Enter a link or pick one above.'; drawSettings(); return; } await wlDo({ url }); return; }
     if (a === 'wlpaste') { const text = (document.getElementById('wltext') || {}).value || WLD.wltext; if (!text.trim()) { WLMSG = 'Paste the wish list text first.'; drawSettings(); return; } await wlDo({ text }); return; }
@@ -1149,12 +1169,20 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
   const setNote = (t) => { const n = g('vnote'); if (!n) return; n.textContent = t || ''; clearTimeout(noteT); if (t && !/^Working/.test(t)) noteT = setTimeout(() => { if (n.textContent === t) n.textContent = ''; }, /^Failed/.test(t) ? 9000 : 3500); };
   gt.onProgress((m) => { if (sec.dataset.busy) msg(m); });
 
-  async function init() { const c = await gt.cfgGet(); c.signedIn ? load() : setup(c); }
+  async function init() { const c = await gt.cfgGet(); try { localStorage.setItem('gt_acct_ns', acctNs(c.mid, c.prim)); } catch (e) { /* storage off */ } ACL = null; c.signedIn ? load() : setup(c); }
   function setup(c, err) {
     noBar();
     const note = err ? `<p class="pmsg bad" style="margin:0 0 10px">Sign-in did not finish: ${esc(err)}</p>` : '';
     if (c.preset) {
       sec.innerHTML = `<div class="card" style="max-width:520px;margin:40px auto;text-align:center"><h2>Welcome to Pathfinder</h2>${note}<p class="mute">Sign in with your own Bungie account to see your characters, vault, loadouts and triumphs. Everything stays on ${GT_HERE}, and nothing is shared with anyone.</p><p><button class="b" data-act="presetlogin" style="padding:10px 22px;font-size:15px">Sign in with Bungie</button></p></div>`;
+      // Accounts saved here (for example after cancelling "Add another account"): one click to go back to one.
+      if (gt.acctList) gt.acctList().then((r) => {
+        const l = (r && r.list) || []; if (!l.length || !sec.querySelector('.card')) return;
+        const box = document.createElement('div'); box.className = 'card'; box.style.cssText = 'max-width:520px;margin:-24px auto 40px;text-align:center';
+        box.innerHTML = '<p class="mute">Or switch to an account saved on ' + GT_HERE + ':</p>' + l.map((a) => `<button class="g" data-acsw2="${esc(a.mid)}" style="margin:3px">${esc(a.n)}${a.code ? ' #' + esc(a.code) : ''}</button>`).join('');
+        box.onclick = async (e) => { const bt = e.target.closest('[data-acsw2]'); if (!bt) return; try { localStorage.setItem('gt_acct_ns', acctNs(bt.dataset.acsw2, r.prim)); } catch (er) { /* storage off */ } try { afterAcct(await gt.acctSwitch({ mid: bt.dataset.acsw2 })); } catch (er) { alert(clean(er)); } };
+        sec.appendChild(box);
+      }).catch(() => {});
       return;
     }
     sec.innerHTML = '<div class="card" style="max-width:560px;margin:40px auto"><h2>Bungie app not set up in this copy</h2><p class="mute">This copy of the toolkit was built without its Bungie app details, so it cannot offer a sign-in. Nothing is wrong with your account.</p><p class="mute">To fix it, run <b>set-bungie-app.bat</b> (in the toolkit folder), paste your Bungie app\u2019s API key and client ID, then run <b>update.bat</b> to build and install the new version. Use an app whose OAuth client type is <b>Public</b>, so no secret is ever needed.</p><p><button class="g" data-act="retry">Check again</button></p></div>';
@@ -1175,6 +1203,21 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
     if ((e.key === 'r' || e.key === 'R') && !e.ctrlKey && !e.metaKey && !e.altKey && sec.classList.contains('on') && !(e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) && !e.target.isContentEditable) { e.preventDefault(); quickLoad(); }
   });
   async function load() {
+    // Speed, like DIM: draw the vault saved last time straight away, then swap in Bungie's answer as soon as it arrives.
+    if (!D && gt.vaultCached) {
+      let c = null; try { c = await gt.vaultCached(); } catch (e) { c = null; }
+      if (c && Array.isArray(c.items) && c.items.length && !D) {
+        D = c; sel = null; shell(); setNote('Showing your vault from ' + new Date(c.cachedAt || Date.now()).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) + '. Updating...');
+        try {
+          D = await fetchD(true); Object.keys(DET).forEach((k) => delete DET[k]); // keeps any move you made in the meantime renderGrid(); renderLoTab(); if (window.__gtl) window.__gtl.reset();
+          setNote('Vault up to date.'); setTimeout(() => { const v = document.getElementById('vnote'); if (v && /up to date/.test(v.textContent)) setNote(''); }, 2500);
+        } catch (e) {
+          const t = clean(e);
+          if (/sign-?in|session expired|not signed|authoriz|token/i.test(t)) { D = null; msg(t, true); } else setNote('Could not update from Bungie (' + t + '). Showing your vault from last time.');
+        }
+        return;
+      }
+    }
     sec.dataset.busy = 1; msg('Loading your vault...');
     try { Object.keys(LEDGER).forEach((k) => { delete LEDGER[k]; }); D = await gt.loadVault(); sel = null; Object.keys(DET).forEach((k) => delete DET[k]); delete sec.dataset.busy; shell(); if (window.__gtl) window.__gtl.reset(); }
     catch (e) { delete sec.dataset.busy; msg(clean(e), true); }
@@ -1334,7 +1377,7 @@ ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="
   const PHONE = window.matchMedia ? window.matchMedia('(max-width:760px)') : { matches: false };
   let phChar = '';
   const visChars = () => { const a = sortedChars(); if (PHONE.matches) { const c = a.find((x) => x.id === phChar) || a[0]; return c ? [c] : []; } return SET.single ? a.slice(0, 1) : a; };
-  if (PHONE.addEventListener) PHONE.addEventListener('change', () => { if (D) renderGrid(); });
+  if (PHONE.addEventListener) PHONE.addEventListener('change', () => { if (D) { renderGrid(); requestAnimationFrame(fitTiles); } });
   // With single-character view, items held by the other characters show up with the vault if this character can use them.
   const hiddenUsable = (x) => {
     if (!SET.single || x.loc === 'vault' || x.e || x.pm) return false;
@@ -1380,7 +1423,8 @@ ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="
   function fitTiles() {
     const v = document.getElementById('vault'), g0 = v && v.querySelector('#vgrid'); if (!v || !g0 || !D || !v.classList.contains('on')) return;
     const avail = g0.clientWidth; if (!avail) return;
-    const n = visChars().length, iw = +SET.invw || 3, gap = 30, vmin = SET.vaultunder ? 0 : 240;
+    const ph = PHONE.matches; // phone: one character at a time, vault underneath, so nothing else needs room beside the character
+    const n = visChars().length, iw = +SET.invw || 3, gap = ph ? 0 : 30, vmin = SET.vaultunder || ph ? 0 : 240;
     const want = +SET.tile || 44, per = n * (iw + 1.9), fit = Math.floor((avail - n * (10 + gap) - vmin) / per);
     const t = Math.max(26, Math.min(want, fit));
     if (t !== fitT) { fitT = t; if (t < want) v.style.setProperty('--t', t + 'px'); else v.style.removeProperty('--t'); }
@@ -1628,6 +1672,7 @@ ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="
   const lightZones = (it) => { dzEls = [...sec.querySelectorAll('#vgrid .dc[data-b="' + it.b + '"]')].filter((z) => z.dataset.drop === 'vault' || dropInfo(z) || z.dataset.loc === it.loc); dzEls.forEach((z) => z.classList.add('dz')); };
   sec.addEventListener('pointerdown', (e) => {
     if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || !D) return;
+    if (e.pointerType === 'touch' && PHONE.matches) return; // on a phone a finger on an item scrolls the page; items move with the buttons in the item sheet
     const t = e.target.closest && e.target.closest('#vgrid .vt'); if (!t) return;
     const it = byId(t.dataset.id); if (!it || it.e || it.pm || it.ro) return;
     pd = { id: it.id, t, x: e.clientX, y: e.clientY, on: false, g: null, raf: 0, lx: e.clientX, ly: e.clientY };

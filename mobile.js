@@ -23,7 +23,7 @@
   function openMore() {
     const main = new Set(TABS.map((t) => t[0]));
     const cur = nav.querySelector('button.on[data-t]'), curId = cur && cur.dataset.t;
-    const items = [...nav.querySelectorAll('button[data-t]')].filter((b) => !main.has(b.dataset.t));
+    const items = [...nav.querySelectorAll('button[data-t]')].filter((b) => !b.classList.contains('gthide') && (!main.has(b.dataset.t) || (pageBtn(b.dataset.t) && pageBtn(b.dataset.t).classList.contains('gthide'))));
     sheet.querySelector('.ls').innerHTML = items.map((b) => `<button type="button" role="menuitem" data-wg="${b.dataset.t}" class="${b.dataset.t === curId ? 'on' : ''}"><b>${label(b).replace(/[<>&]/g, '')}</b>${b.title && b.dataset.t !== 'settings' ? `<small>${b.title.replace(/[<>&"]/g, '')}</small>` : ''}</button>`).join('');
     sheet.classList.add('open');
   }
@@ -34,6 +34,7 @@
     const cur = nav.querySelector('button.on[data-t]'), id = cur ? cur.dataset.t : '';
     const inMain = TABS.some((t) => t[0] === id);
     bar.querySelectorAll('[data-wt]').forEach((b) => b.classList.toggle('on', b.dataset.wt === id || (b.dataset.wt === 'more' && !!id && !inMain)));
+    bar.querySelectorAll('[data-wt]').forEach((b) => { const nb = b.dataset.wt !== 'more' && pageBtn(b.dataset.wt); b.style.display = nb && nb.classList.contains('gthide') ? 'none' : ''; });
   }
   new MutationObserver(sync).observe(nav, { attributes: true, subtree: true, attributeFilter: ['class'] });
   sync();
