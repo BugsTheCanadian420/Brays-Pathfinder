@@ -148,16 +148,16 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 .dc.dz .eq.over{outline:2px solid #fff}
 .eq{flex:none;width:var(--t);min-height:calc(var(--t)*1.27);background:rgba(255,255,255,.03);display:flex}
 .eq .vt{width:100%}
-.dc>.eq{align-self:stretch;flex-direction:column;align-items:center;gap:calc(var(--t)*.1);padding-bottom:4px;border-radius:3px;background:rgba(255,255,255,.035);box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)}
-.eq .eqp{width:var(--t);height:calc(var(--t)*.6);flex:none;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.3);font-size:calc(var(--t)*.42);font-style:normal;line-height:1;border:1px dashed rgba(255,255,255,.14);border-radius:3px;box-sizing:border-box;cursor:pointer}
-.eq .eqp:hover{color:#fff;border-color:rgba(255,255,255,.5)}
+.dc>.eq{align-self:stretch;flex-direction:column;align-items:center;gap:calc(var(--t)*.14);padding-bottom:4px;border-radius:3px;background:none!important;box-shadow:none}
+.eq .eqp{width:calc(var(--t)*.44);height:calc(var(--t)*.44);margin-top:calc(var(--t)*.08);flex:none;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.55);background:rgba(255,255,255,.12);font-size:calc(var(--t)*.34);font-weight:700;font-style:normal;line-height:1;border-radius:50%;box-sizing:border-box;cursor:pointer;opacity:.55}
+.eq .eqp:hover{color:#fff;background:rgba(255,255,255,.22);opacity:1}
 .dc.dz{background:none!important;box-shadow:none!important}
 .dc.dz>.inv{background:rgba(255,255,255,.09);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);border-radius:3px;align-self:stretch}
 .dc.dz.over{outline:0!important}.dc.dz.over>.inv{background:rgba(255,255,255,.18);outline:2px solid #fff;outline-offset:1px}
-.dc.dz>.eq.eqok{background:rgba(122,184,232,.16);box-shadow:inset 0 0 0 1px rgba(122,184,232,.55)}
-.dc.dz>.eq.eqok.over{background:rgba(122,184,232,.32);outline:2px solid #fff;outline-offset:1px}
-.dc.dz>.eq.eqok .eqp{color:#cfe6ff;border-color:rgba(122,184,232,.7)}
-.dc.dz>.eq.eqok .eqp::after{content:'Equip';font-size:calc(var(--t)*.2);letter-spacing:.5px;margin-left:2px}
+.dc.dz>.eq.eqok{background:rgba(122,184,232,.16)!important;box-shadow:inset 0 0 0 1px rgba(122,184,232,.55)}
+.dc.dz>.eq.eqok.over{background:rgba(122,184,232,.32)!important;outline:2px solid #fff;outline-offset:1px}
+.dc.dz>.eq.eqok .eqp{width:var(--t);height:calc(var(--t)*.5);border-radius:3px;opacity:1;color:#cfe6ff;background:rgba(122,184,232,.18);font-size:calc(var(--t)*.22);letter-spacing:.5px}
+.dc.dz>.eq.eqok .eqp::after{content:'Equip';margin-left:3px}
 #eqpick{position:fixed;z-index:9300;background:var(--g-solid,#17181b);border:1px solid #3a3d43;border-radius:6px;box-shadow:0 14px 34px rgba(0,0,0,.6);padding:8px;max-width:min(440px,94vw);max-height:60vh;overflow:auto}
 #eqpick h6{margin:0 0 6px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#9aa0a8}#eqpick .eqg{display:flex;flex-wrap:wrap;gap:4px}#eqpick .eqg .vt{cursor:pointer}#eqpick p{margin:4px 0 0;font-size:12px;color:#8b8f97}
 .inv{display:grid;grid-template-columns:repeat(3,var(--t));gap:calc(var(--t)*.12);min-height:calc(var(--t)*1.27);align-content:start}
@@ -750,6 +750,10 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 :root[data-gcompact="1"] .dc{padding:1px 0 3px!important;min-height:0!important}
 :root[data-gcompact="1"] .dsec{margin:4px 0 2px!important}
 :root[data-gcompact="1"] .dgrid{column-gap:8px!important;row-gap:0!important}
+/* Emblems: the name starts after the emblem's own picture (its left square), like DIM, so both stay readable */
+:root .ch.em .cht{padding-left:52px!important}
+:root[data-ui="dim"] .ch.em .cht{padding-left:46px!important}
+:root[data-ui="d2"] .ch.em .cht{padding-left:66px!important}
 `;
   document.head.appendChild(st4);
 
