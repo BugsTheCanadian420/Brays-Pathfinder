@@ -438,7 +438,11 @@
       const b = e.target.closest('[data-li]'); if (e.target === m || (b && b.dataset.li === 'x')) { m.remove(); return; }
       if (!b) return; const msg = g('limsg');
       try {
-        if (b.dataset.li === 'copy') { await gt.imgCopy({ d: data }); msg.textContent = 'Copied. Paste it into Discord or anywhere else.'; }
+        if (b.dataset.li === 'copy') {
+          try { await gt.imgCopy({ d: data }); }
+          catch (e1) { const bin = atob(data.split(',')[1] || ''), u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i); await navigator.clipboard.write([new ClipboardItem({ 'image/png': new Blob([u8], { type: 'image/png' }) })]); } // the browser's own clipboard
+          msg.textContent = 'Copied. Paste it into Discord or anywhere else.';
+        }
         else { const r = await gt.imgSave({ d: data, name: l.n || 'loadout' }); if (r && r.ok) msg.textContent = 'Saved ' + r.file + '.'; }
       } catch (er) { msg.textContent = V.clean(er); }
     };

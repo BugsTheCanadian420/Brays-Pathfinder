@@ -1,4 +1,4 @@
-/* Pathfinder 0.2.92: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.2.93: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -962,7 +962,7 @@ app.whenReady().then(async () => {
       bs.cookies.set({ url: 'https://' + host + (c.path || '/'), name: c.name, value: c.value, domain: c.domain, path: c.path || '/', secure: !!c.secure, httpOnly: !!c.httpOnly, sameSite: c.sameSite, expirationDate: Date.now() / 1000 + 60 * 86400 }).catch(() => { /* leave it as a session cookie */ });
     });
   } catch (e) { /* cookies stay session-only */ }
-  session.defaultSession.setPermissionRequestHandler((wc, p, cb) => cb(false)); session.defaultSession.setPermissionCheckHandler(() => false);
+  session.defaultSession.setPermissionRequestHandler((wc, p, cb) => cb(CLIPW(p))); session.defaultSession.setPermissionCheckHandler((wc, p) => CLIPW(p));
   session.fromPartition('persist:hub').setPermissionRequestHandler((wc, p, cb) => cb(CLIPW(p))); session.fromPartition('persist:hub').setPermissionCheckHandler((wc, p) => CLIPW(p));
   // Keep an Edit menu (never shown) so Ctrl+C/V/X/A/Z work in text fields.
   Menu.setApplicationMenu(Menu.buildFromTemplate([{ label: 'Edit', submenu: [
@@ -2361,7 +2361,14 @@ H('img:fetch', async (e, v) => {
   return out;
 });
 const pngOf = (d) => { const s = TXT(d, 20e6); if (!/^data:image\/png;base64,/.test(s)) throw bad(); return nativeImage.createFromDataURL(s); };
-H('img:copy', (e, v) => { OBJ(v); const im = pngOf(v.d); if (im.isEmpty()) throw new Error('The picture is empty.'); clipboard.writeImage(im); return true; });
+H('img:copy', (e, v) => {
+  OBJ(v); const im = pngOf(v.d); if (im.isEmpty()) throw new Error('The picture is empty.');
+  // Newer Electron versions dropped clipboard.writeImage on some builds; use whichever this one has. The page falls back to the browser clipboard if neither works.
+  if (typeof clipboard.writeImage === 'function') clipboard.writeImage(im);
+  else if (typeof clipboard.write === 'function') clipboard.write({ image: im });
+  else throw new Error('no-native-image-clipboard');
+  return true;
+});
 H('img:save', async (e, v) => {
   OBJ(v); const im = pngOf(v.d), name = String(v.name || 'loadout').replace(/[^\w \-]+/g, '').trim().slice(0, 60) || 'loadout';
   const r = await dialog.showSaveDialog(win, { title: 'Save picture', defaultPath: path.join(app.getPath('pictures'), name + '.png'), filters: [{ name: 'PNG picture', extensions: ['png'] }] });
