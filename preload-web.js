@@ -1,4 +1,4 @@
-/* Pathfinder 0.2.93: preload.js for the browser */
+/* Pathfinder 0.2.94: preload.js for the browser */
 (function (require) {
 const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('gt', {
@@ -78,6 +78,8 @@ contextBridge.exposeInMainWorld('gt', {
   trState: () => ipcRenderer.invoke('tr:state'),
   trWho: (v) => ipcRenderer.invoke('tr:who', v),
   vaultCached: () => ipcRenderer.invoke('vault:cached'),
+  syncGet: () => ipcRenderer.invoke('sync:get'),
+  syncPut: (v) => ipcRenderer.invoke('sync:put', v),
   acctList: () => ipcRenderer.invoke('acct:list'),
   acctAdd: () => ipcRenderer.invoke('acct:add'),
   acctSwitch: (v) => ipcRenderer.invoke('acct:switch', v),

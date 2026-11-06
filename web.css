@@ -7,7 +7,9 @@
 
 /* ---------- installed on the home screen (standalone): keep clear of the notch / Dynamic Island ---------- */
 html.gtweb:root{padding-top:0!important}
-html.gtweb header.gtbar{padding-top:env(safe-area-inset-top,0px)!important;height:calc(48px + env(safe-area-inset-top,0px))!important}
+html.gtweb{--gt-sat:env(safe-area-inset-top,0px)}
+/* (the bar's own rule is more specific, so this needs :root and [data-dark] too, or the bar's contents sit under the status bar) */
+:root.gtweb header.gtbar,:root.gtweb[data-dark] header.gtbar,:root.gtweb[data-dark="1"] header.gtbar{padding-top:var(--gt-sat)!important;height:calc(48px + var(--gt-sat))!important;box-sizing:border-box!important;align-items:center!important}
 
 /* ---------- bottom tab bar and More sheet (phones only) ---------- */
 #gtw-tabs,#gtw-more{display:none}

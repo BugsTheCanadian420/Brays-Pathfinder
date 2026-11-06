@@ -286,7 +286,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 .lpk .sw{height:30px}
 @media (max-width:900px){.ltab{flex-direction:column}.lsidec{width:100%;flex-direction:row}.lside{flex:1}}
 /* settings page */
-#settings .card{max-width:760px;margin-left:auto;margin-right:auto}#settings .acl{display:flex;flex-direction:column;gap:6px;margin:10px 0}#settings .acr{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 10px;border:1px solid var(--g-line,#2b2e33);border-radius:6px;background:rgba(255,255,255,.03)}#settings .acr.on{border-color:var(--g-accent,#7ab8e8)}#settings .acr b{flex:1;min-width:140px;color:#fff}#settings .acr b span{color:#8b8f97;font-weight:400;margin-left:2px}#settings .acr em{font-style:normal;font-size:12px;color:var(--g-accent,#7ab8e8)}#settings .acr small{flex-basis:100%;color:#e0b64a;font-size:11.5px}.acswm{position:fixed;inset:0;z-index:100000;background:rgba(8,9,12,.85);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;letter-spacing:1px}#settings .navtg{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}#settings .navtg .chip{opacity:.55}#settings .navtg .chip.on{opacity:1}#settings .navtg .chip:disabled{cursor:default;opacity:.8}
+#settings .card{max-width:760px;margin-left:auto;margin-right:auto}#settings .acl{display:flex;flex-direction:column;gap:6px;margin:10px 0}#settings .acr{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 10px;border:1px solid var(--g-line,#2b2e33);border-radius:6px;background:rgba(255,255,255,.03)}#settings .acr.on{border-color:var(--g-accent,#7ab8e8)}#settings .acr b{flex:1;min-width:140px;color:#fff}#settings .acr b span{color:#8b8f97;font-weight:400;margin-left:2px}#settings .acr em{font-style:normal;font-size:12px;color:var(--g-accent,#7ab8e8)}#settings .syst{color:#cfd2d8}#settings .acr small{flex-basis:100%;color:#e0b64a;font-size:11.5px}.acswm{position:fixed;inset:0;z-index:100000;background:rgba(8,9,12,.85);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;letter-spacing:1px}#settings .navtg{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}#settings .navtg .chip{opacity:.55}#settings .navtg .chip.on{opacity:1}#settings .navtg .chip:disabled{cursor:default;opacity:.8}
 #settings h2{font-size:15px;letter-spacing:3px;text-transform:uppercase;color:#cfd2d8;margin:0 0 10px}
 .sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
 .th{border:2px solid var(--g-line);padding:8px;cursor:pointer;background:var(--g-btn);text-align:center;font-size:14px}
@@ -921,6 +921,14 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
     if (r && r.reload) { location.reload(); return; }
     if (r && r.restart) { sec.innerHTML = ''; document.body.insertAdjacentHTML('beforeend', '<div class="acswm"><div>Switching account...</div></div>'); }
   }
+  function syncHTML(sx) {
+    const S = window.__gtsync; if (!S) return '';
+    const st = S.status(), onv = S.on();
+    const when = st.at ? new Date(st.at).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '';
+    const line = !onv ? 'Off. Everything stays on ' + GT_HERE + ' only.' : st.err ? 'Last try did not work: ' + esc(st.err) : when ? 'Last synced ' + esc(when) + '.' : 'Syncing...';
+    return sx('Sync across devices', 'Keeps loadouts, tags, notes, settings, tracked triumphs, Home pins and wish list links the same on every device where you turn this on, for this Bungie account. Stored in your own token service. <br><span class="syst">' + line + '</span>' + (onv ? ' <button class="g" data-sa="syncnow" style="margin-left:6px">Sync now</button>' : ''), `<label class="tgl"><input type="checkbox" data-syncon${onv ? ' checked' : ''}><i></i></label>`);
+  }
+  window.addEventListener('gtsync', () => { if (settingsSec.classList.contains('on')) drawSettings(); });
   function drawSettings() {
     const sx = (title, desc, ctl, wide) => `<div class="sx${wide ? ' wide' : ''}"><div class="sxt"><b>${title}</b>${desc ? `<small>${desc}</small>` : ''}</div><div class="sxc">${ctl}</div></div>`;
     const tgl = (k) => `<label class="tgl"><input type="checkbox" data-sk="${k}"${SET[k] ? ' checked' : ''}><i></i></label>`;
@@ -949,7 +957,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
     const cst = [0, 1, 2].map((c) => `<div class="cstr"><b>${CL[c]}</b>${CSTN.map((n, i) => `<button class="chip${SET.cst[c][i] ? ' on' : ''}" data-cst="${c}:${i}">${n}</button>`).join('')}</div>`).join('');
     const navL = window.__gtnav ? window.__gtnav.list() : [];
     const tabsCard = navL.length ? `<div class="card sc"><h2>Tabs</h2><p class="mute">Turn off the tabs you don't use. The bar re-fits the rest. Inventory and Settings always stay.</p><div class="navtg">${navL.map(([id, n, h, lock]) => `<button class="chip${h ? '' : ' on'}" data-navt="${esc(id)}"${lock ? ' disabled title="Always shown"' : ''}>${esc(n)}</button>`).join('')}</div></div>` : '';
-    const acct = `<div class="card sc"><h2>Accounts</h2><p class="mute">${D && D.name ? 'Signed in as <b>' + esc(D.name) + '</b>.' : 'Signed in with Bungie.'} Add your alts, or a friend's account if they sign in here themselves, and switch between them. Switching ${window.__GT_WEB__ ? 'reloads the page' : 'restarts the app'}. Tags and notes are shared; loadouts are kept per account.</p><div class="acl">${aclHTML()}</div><p><button class="b" data-sa="addacct">Add another account</button> <button class="g" data-sa="out">Sign out of this account</button></p>${window.__GT_WEB__ ? '<p class="mute" style="font-size:12px">If Bungie signs you straight back in as the same account, sign out on bungie.net first, then press Add another account again.</p>' : ''}</div>`;
+    const acct = `<div class="card sc"><h2>Accounts</h2><p class="mute">${D && D.name ? 'Signed in as <b>' + esc(D.name) + '</b>.' : 'Signed in with Bungie.'} Add your alts, or a friend's account if they sign in here themselves, and switch between them. Switching ${window.__GT_WEB__ ? 'reloads the page' : 'restarts the app'}. Tags and notes are shared; loadouts are kept per account.</p><div class="acl">${aclHTML()}</div>${syncHTML(sx)}<p><button class="b" data-sa="addacct">Add another account</button> <button class="g" data-sa="out">Sign out of this account</button></p>${window.__GT_WEB__ ? '<p class="mute" style="font-size:12px">If Bungie signs you straight back in as the same account, sign out on bungie.net first, then press Add another account again.</p>' : ''}</div>`;
     settingsSec.innerHTML = `<div class="setgrid">
     <div class="card sc"><h2>Item display</h2>${pv}
       ${sx('Item size', 'An item size of 50px looks sharpest.', rng('tile', 32, 72, 'px'))}
@@ -1017,6 +1025,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
     if (arm) { const a1 = ACL && ACL.list.find((x) => x.mid === arm.dataset.acrm); if (!confirm('Remove ' + ((a1 && a1.n) || 'this account') + ' from ' + GT_HERE + '? You can add it again any time.')) return; try { afterAcct(await gt.acctRemove({ mid: arm.dataset.acrm })); } catch (er) { alert(clean(er)); } return; }
     const b = e.target.closest('[data-sa]'); if (!b) return;
     const a = b.dataset.sa;
+    if (a === 'syncnow') { if (window.__gtsync) window.__gtsync.now().catch(() => {}); return; }
     if (a === 'addacct') { try { afterAcct(await gt.acctAdd()); } catch (er) { const m1 = clean(er); if (!/closed/i.test(m1)) alert('Could not add the account: ' + m1); ACL = null; drawSettings(); } return; }
     if (a === 'wlpl' || a === 'wlpt') {
       try { const v = ((await window.gt.readClipboard()) || '').trim(); const id = a === 'wlpl' ? 'wlurl' : 'wltext'; WLD[id] = v; const el = document.getElementById(id); if (el) el.value = v; WLMSG = v ? 'Pasted ' + v.length + ' characters.' : 'The clipboard is empty. Copy the wish list first.'; }
@@ -1040,6 +1049,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
     else if (a === 'inst') window.gt.updInstall();
   });
   settingsSec.addEventListener('change', (e) => {
+    if (e.target.matches && e.target.matches('[data-syncon]') && window.__gtsync) { window.__gtsync.set(e.target.checked); return; }
     const c = e.target.dataset && e.target.dataset.sc;
     if (c !== undefined) { SET.sortkeys[+c].on = e.target.checked; saveSet(); drawSettings(); if (window.__gtRender) window.__gtRender(); }
   });

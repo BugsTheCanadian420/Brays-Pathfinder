@@ -1,4 +1,4 @@
-/* Pathfinder 0.2.93: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.2.94: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -305,6 +305,18 @@ const loginWin = (part) => new Promise((res, rej) => {
   w.on('closed', () => { if (!done) rej(new Error('Sign-in window was closed.')); });
   w.loadURL(`${BASE}/en/OAuth/Authorize?client_id=${encodeURIComponent(c.clientId)}&response_type=code&state=${state}`);
 });
+// ---- sync across devices: a small JSON document kept by your own token service (needs a KV namespace bound as SYNC) ----
+const syncUrl = () => (preset && preset.tokenUrl && /^https:\/\//i.test(preset.tokenUrl) ? preset.tokenUrl.replace(/\/+$/, '') + '/sync' : '');
+async function syncReq(method, body) {
+  const u = syncUrl(); if (!u) throw new Error('sync_unavailable');
+  await fresh();
+  const r = await fetch(u, { method, headers: { Authorization: 'Bearer ' + rd().tok.access, Accept: 'application/json', ...(body ? { 'Content-Type': 'application/json' } : {}) }, ...(body ? { body } : {}) });
+  const j = await readJson(r).catch(() => ({}));
+  if (!r.ok) throw new Error((j && j.error) || 'HTTP ' + r.status);
+  return j;
+}
+H('sync:get', () => syncReq('GET'));
+H('sync:put', (e, v) => { OBJ(v); const body = JSON.stringify({ data: OBJ(v.data), wl: Array.isArray(v.wl) ? v.wl.filter((x) => typeof x === 'string').slice(0, 20) : [] }); if (body.length > 850000) throw new Error('too_big'); return syncReq('PUT', body); });
 H('auth:login', () => loginWin((rd().tok || {}).part || 'persist:bungie'));
 // ---- more than one Bungie account (your alts, or a friend who shares their login): each keeps its own sign-in, tags stay shared ----
 // The active account is c.tok; the others wait in c.accts. Switching restarts the app so nothing from one account leaks into another.
