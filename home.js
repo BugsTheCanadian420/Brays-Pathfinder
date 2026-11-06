@@ -9,7 +9,6 @@
   const lsGet = (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } };
   const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* storage off */ } };
   const num = (n) => Number(n || 0).toLocaleString('en-US');
-  const hrs = (s) => { const h = Math.floor(s / 3600), d = Math.floor(h / 24); return d >= 1 ? num(h) + 'h (' + d + 'd ' + (h % 24) + 'h)' : h + 'h ' + Math.floor((s % 3600) / 60) + 'm'; };
   const img = (p) => { p = String(p || ''); return /^\/[\w./%-]*$/.test(p) ? 'https://www.bungie.net' + p : ''; };
   const clean = (e) => String((e && e.message) || e).replace(/^Error invoking remote method '[^']*': (Error: )?/, '');
 
@@ -69,7 +68,9 @@
 #home .hm-big{font-size:30px;color:#fff;line-height:1.1;font-weight:600;font-variant-numeric:tabular-nums}
 #home .hm-big small{font-size:13px;color:#9aa0a8;font-weight:400;letter-spacing:.5px}
 #home .hm-sub{color:#9aa0a8;font-size:12.5px;margin-top:4px}
-#home .hm-tb{display:flex;height:8px;border-radius:4px;overflow:hidden;background:#2b2e33;margin-top:10px}#home .hm-tb i{display:block;height:100%}
+#home .hm-tb{display:flex;height:10px;border-radius:3px;overflow:hidden;background:#2b2e33;margin-top:10px;gap:2px}#home .hm-tb i{display:block;height:100%;min-width:2px}
+#home .hm-tl{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:8px;font-size:12px;color:#cfd2d8}#home .hm-tl i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+#home .hm-kv{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;color:#9aa0a8;margin-top:8px;border-top:1px solid #2b2e33;padding-top:6px}#home .hm-kv b{color:#fff;font-weight:600}
 #home .hm-bar{height:6px;background:#2b2e33;border-radius:3px;overflow:hidden;margin-top:8px}#home .hm-bar i{display:block;height:100%;background:var(--hc,#6aa6e0);border-radius:3px}
 #home .hm-row{display:flex;gap:10px;align-items:center;margin-top:8px;min-width:0}
 #home .hm-row>img{width:40px;height:40px;border:1px solid #3a3d43;flex:none;background:#0d0f12;border-radius:2px}
@@ -87,7 +88,7 @@
 #home .hm-ch b span{color:#e5c158;font-size:22px;margin-left:auto}
 #home .hm-ch small{display:block;color:#ddd;font-size:12px;margin-top:2px;text-shadow:0 1px 3px #000}
 #home .hm-ch .pm{height:4px;background:rgba(0,0,0,.5);border-radius:2px;margin-top:8px;overflow:hidden}#home .hm-ch .pm i{display:block;height:100%;background:#6aa6e0}
-#home .hm-ch .hm-pt{color:#9fd0ff;font-weight:600;letter-spacing:.3px}
+#home .hm-ch .hm-pt{color:#cfe3ff;font-weight:600;letter-spacing:.3px}
 #home .hm-ch.warn .pm i{background:#e8a53a}#home .hm-ch.warn small{color:#f3c27a}
 #home .hm-hd{display:flex;align-items:center;gap:12px;margin:0 0 12px}
 #home .hm-hd h2{margin:0;font-size:16px;letter-spacing:3px;text-transform:uppercase;color:#fff;font-weight:600}
@@ -132,7 +133,7 @@
     const CL = (V().CL && V().CL()) || [], cs = (V().chars && V().chars()) || D.chars || [], thr = lsGet('gt.pmwarn', 18);
     return card({ w: 'w12', i: 'user', h: 'Characters', go: 'vault', c: '#e5c158' }, `<div class="hm-chs">${cs.map((c) => {
       const pm = D.items.filter((x) => x.loc === c.id && x.pm).length, warn = thr > 0 && pm >= thr;
-      return `<div class="hm-ch${warn ? ' warn' : ''}" style="${c.em ? `background-image:linear-gradient(90deg,rgba(0,0,0,.72),rgba(0,0,0,.12)),url('${esc(img(c.em))}')` : ''}"><b>${esc(CL[c.cls] || 'Guardian')}<span>&#9670; ${num(c.light)}</span></b><small>${c.tt ? esc(c.tt) + ' &middot; ' : ''}Postmaster ${pm}/21${warn ? ' (almost full)' : ''}</small>${c.mp ? `<small class="hm-pt">${esc(hrs(c.mp * 60))} played</small>` : ''}<div class="pm"><i style="width:${Math.round(pm / 21 * 100)}%"></i></div></div>`;
+      return `<div class="hm-ch${warn ? ' warn' : ''}" style="${c.em ? `background-image:linear-gradient(90deg,rgba(0,0,0,.72),rgba(0,0,0,.12)),url('${esc(img(c.em))}')` : ''}"><b>${esc(CL[c.cls] || 'Guardian')}<span>&#9670; ${num(c.light)}</span></b><small>${c.tt ? esc(c.tt) + ' &middot; ' : ''}Postmaster ${pm}/21${warn ? ' (almost full)' : ''}</small>${ptRow(c.id) ? `<small class="hm-pt">${esc(hm(ptRow(c.id).act))} active</small>` : ''}<div class="pm"><i style="width:${Math.round(pm / 21 * 100)}%"></i></div></div>`;
     }).join('')}</div>`);
   }
   // Each reset with its countdown and the local day and time it happens. On Mondays the daily and weekly resets are the same moment
@@ -144,13 +145,15 @@
     return card({ w: 'w3', i: 'clock', h: 'Resets', go: 'activity:rot', c: '#7fb6e8' }, `<div class="hm-rs">${rows.map(([k, l, w]) => `<div class="rs"><b><em data-hrs="${k}" style="font-style:normal">${esc(rs(k))}</em><span>${l}</span></b><div class="hm-bar"><i data-rsp="${k === 'd' && same ? 'w' : k}" style="width:${Math.round(rsPct(k === 'd' && same ? 'w' : k) * 100)}%"></i></div><small class="hm-when">${esc(w)}</small></div>`).join('')}</div>`);
   };
   // Play time, as Time Wasted on Destiny counts it: active time is time inside activities; AFK and idle (orbit, menus, loading, AFK) is left out.
-  const PT_COL = ['#6aa6e0', '#7fd48a', '#e8a53a', '#c77dff', '#ff7b72', '#4dd0c8', '#9aa0a8', '#d6c26a'];
+  const PT_COL = ['#5b9bd5', '#6cc07a', '#e3a33b', '#b07fe0', '#e8706a', '#46c2b8', '#c9b458', '#8f96a0', '#7d8be0']; // the same colours, in the same order, as Activity > Play time
   const hm = (s) => num(Math.floor(s / 3600)) + 'h ' + String(Math.floor((s % 3600) / 60)).padStart(2, '0') + 'm';
+  const ptData = () => H.time || H.act.time || null;
+  const ptRow = (id) => { const r = ptData(); return r && r.rows ? r.rows.find((q) => q.id === id) : null; };
   function ptBody() {
-    const r = H.time || H.act.time;
+    const r = ptData();
     if (!r) return msgSub('time');
-    const types = (r.types || []).slice().sort((a, b) => b.s - a.s), den = Math.max(r.acts || 0, types.reduce((t, q) => t + q.s, 0)) || 1;
-    return `<div class="hm-big">${esc(hm(r.acts))} <small>active</small></div>${types.length ? `<div class="hm-tb" title="${esc(types.map((q) => q.n + ' ' + Math.round(q.s / den * 100) + '%').join(', '))}">${types.map((q, i) => `<i style="width:${(q.s / den * 100).toFixed(2)}%;background:${PT_COL[i % PT_COL.length]}"></i>`).join('')}</div>` : ''}<div class="hm-sub">${esc(hm(r.idle))} AFK and idle (not counted)</div><div class="hm-sub">${esc(hm(r.total))} on the platform, all characters</div>`;
+    const types = (r.types || []).slice().sort((a, b) => b.s - a.s), den = Math.max(r.acts || 0, types.reduce((t, q) => t + q.s, 0)) || 1, pc = (v) => Math.round(v / den * 100) + '%';
+    return `<div class="hm-big">${esc(hm(r.acts))} <small>active time</small></div>${types.length ? `<div class="hm-tb">${types.map((q, i) => `<i title="${esc(q.n + ' ' + pc(q.s))}" style="width:${(q.s / den * 100).toFixed(2)}%;background:${PT_COL[i % PT_COL.length]}"></i>`).join('')}</div><div class="hm-tl">${types.slice(0, 4).map((q, i) => `<span><i style="background:${PT_COL[i % PT_COL.length]}"></i>${esc(q.n)} ${pc(q.s)}</span>`).join('')}</div>` : ''}<div class="hm-kv"><span>AFK and idle (not counted)</span><b>${esc(hm(r.idle))}</b></div><div class="hm-kv"><span>Platform total</span><b>${esc(hm(r.total))}</b></div>`;
   }
   const timeCard = () => card({ w: 'w3', i: 'clock', h: 'Play time', go: 'activity:time', c: '#7fb6e8' }, ptBody());
   function invCard(D) {

@@ -90,15 +90,24 @@
 #activity .tbl .rb i{display:block;height:100%;background:#6aa6e0;border-radius:2px}
 #activity .stat{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--mute,#9aa0a8)}
 #activity .row3{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
-#activity .row3.ptrow{grid-template-columns:repeat(auto-fit,minmax(min(230px,46%),1fr))}#activity .ptc{padding:14px 16px}#activity .ptc h4{margin:0;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#cfd2d8;font-weight:600}
-#activity .ptpan{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(380px,100%),1fr));gap:10px;margin-top:10px}
-#activity .ptbar{display:flex;height:16px;border-radius:8px;overflow:hidden;background:#23262b;margin:12px 0 14px}#activity .ptbar i{display:block;height:100%}
-#activity .ptleg{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px 22px}
-#activity .ptleg div{display:flex;align-items:center;gap:8px;font-size:13px;color:#cfd2d8}#activity .ptleg div i{width:10px;height:10px;border-radius:2px;flex:none}
-#activity .ptleg b{margin-left:auto;color:#fff;font-weight:600}#activity .ptleg em{font-style:normal;color:#8b8f97;min-width:44px;text-align:right}
-#activity .ptdays{display:flex;align-items:flex-end;gap:3px;height:130px;margin-top:14px}#activity .ptdays i{flex:1;min-width:3px;background:var(--g-accent,#6aa6e0);border-radius:2px 2px 0 0;opacity:.9}#activity .ptdays i.z{background:#2b2e33;opacity:1}
-#activity .ptax{display:flex;justify-content:space-between;font-size:11px;color:#8b8f97;margin-top:6px}
-#activity .pmbar{height:4px;background:rgba(255,255,255,.12);border-radius:2px;margin-top:10px;overflow:hidden}#activity .pmbar i{display:block;height:100%;background:var(--g-accent,#6aa6e0);border-radius:2px}
+#activity .row3.ptrow{grid-template-columns:repeat(auto-fit,minmax(min(230px,46%),1fr))}
+#activity .ptc{padding:14px 16px}#activity .ptc h4{margin:0;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#cfd2d8;font-weight:600}
+#activity .ptcap{margin:4px 0 0;font-size:12px;color:#8b8f97;min-height:16px}#activity #ptread.on{color:#fff;font-weight:600}
+#activity .ptpan{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:10px;margin-top:10px}
+#activity .ptbar{display:flex;height:18px;border-radius:4px;overflow:hidden;background:#23262b;margin:12px 0 14px;gap:2px}#activity .ptbar i{display:block;height:100%;min-width:2px}
+#activity .ptleg{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px 22px}
+#activity .ptleg div{display:flex;align-items:center;gap:8px;font-size:13px;color:#cfd2d8;min-width:0}#activity .ptleg div i{width:10px;height:10px;border-radius:2px;flex:none}
+#activity .ptleg span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#activity .ptleg b{margin-left:auto;color:#fff;font-weight:600;white-space:nowrap}#activity .ptleg em{font-style:normal;color:#8b8f97;min-width:44px;text-align:right}
+#activity .ptch{display:flex;gap:8px;margin-top:12px}
+#activity .ptyax{display:flex;flex-direction:column;justify-content:space-between;height:140px;font-size:11px;color:#8b8f97;text-align:right;min-width:26px}#activity .ptyax span{transform:translateY(-50%)}#activity .ptyax span:last-child{transform:translateY(50%)}
+#activity .ptplot{position:relative;flex:1;min-width:0}
+#activity .ptgrid{position:absolute;left:0;right:0;top:0;height:140px;display:flex;flex-direction:column;justify-content:space-between;pointer-events:none}#activity .ptgrid i{display:block;height:1px;background:rgba(255,255,255,.08)}
+#activity .ptdays{position:relative;display:flex;align-items:flex-end;gap:3px;height:140px}
+#activity .ptdays i{flex:1;min-width:3px;border-radius:2px 2px 0 0;cursor:pointer}#activity .ptdays i:hover,#activity .ptdays i.on{filter:brightness(1.35);outline:1px solid rgba(255,255,255,.6)}
+#activity .ptdays i.z{height:100%!important;opacity:0}
+#activity .ptax{display:flex;gap:3px;margin-top:6px;font-size:11px;color:#8b8f97}#activity .ptax span{flex:1;min-width:3px;white-space:nowrap;overflow:visible}#activity .ptax span:last-child{direction:rtl}
+#activity .ptlab{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:12px;color:#cfd2d8;margin-top:10px}#activity .ptlab i{display:inline-block;width:9px;height:9px;border-radius:2px;margin:0 4px 0 8px;vertical-align:-1px}
+#activity .ptsplit{display:flex;height:6px;border-radius:3px;overflow:hidden;background:rgba(255,255,255,.1);margin-top:6px}#activity .ptsplit i{display:block;height:100%}
 #activity .pos{color:#7be08c}
 #activity .tg{border-color:#34506e;background:rgba(58,110,165,.14);color:#a9c8ea}
 #activity .bty .bimg{width:56px;height:56px;flex:none;border:1px solid #4a4d54;background:#0d0f12;box-shadow:inset 0 0 0 1px rgba(255,255,255,.04);display:block;overflow:hidden}
@@ -408,24 +417,29 @@
   };
 
   // ---- play time: counted like Time Wasted on Destiny. Active time is time inside activities; AFK and idle time (orbit, the Tower, menus, loading, AFK) is left out ----
-  const PT_COL = ['#6aa6e0', '#7fd48a', '#e8a53a', '#c77dff', '#ff7b72', '#4dd0c8', '#9aa0a8', '#d6c26a'];
+  // Chart colours are fixed (not the accent colour), so every accent colour reads the same.
+  const PT_COL = ['#5b9bd5', '#6cc07a', '#e3a33b', '#b07fe0', '#e8706a', '#46c2b8', '#c9b458', '#8f96a0', '#7d8be0'];
+  const PT_DAY = '#5b9bd5';
   RENDER.time = async (force) => {
     const r = await fetchCached('time', () => gt().actPlaytime(), force);
     const CL = (V().CL && V().CL()) || [];
     const hh = (s) => { const h = Math.floor(s / 3600), d = Math.floor(h / 24); return num(h) + 'h ' + String(Math.floor((s % 3600) / 60)).padStart(2, '0') + 'm' + (d >= 1 ? ' <small class="mute">(' + num(d) + ' days)</small>' : ''); };
+    const hhs = (s) => num(Math.floor(s / 3600)) + 'h ' + String(Math.floor((s % 3600) / 60)).padStart(2, '0') + 'm';
     const pc = (a, b) => (b > 0 ? (Math.round((a / b) * 1000) / 10) : 0) + '%';
     const tile = (l, v, sub, c) => `<div class="acard"><div class="stat">${l}</div><div class="big ${c || ''}">${v}</div>${sub ? `<div class="sub">${sub}</div>` : ''}</div>`;
     const days = r.days || [], dTot = days.reduce((t, q) => t + q.s, 0), dAct = days.filter((q) => q.s > 0), best = dAct.reduce((a, q) => (q.s > a.s ? q : a), { s: 0, d: '' });
-    const head = `<div class="row3 ptrow">${tile('Active time', hh(r.acts), 'Time inside activities, every character. This is the number Time Wasted on Destiny shows.')}${tile('AFK and idle (not counted)', hh(r.idle), pc(r.idle, r.total) + ' of the platform total: orbit, the Tower, menus, loading and AFK')}${tile('Platform total', hh(r.total), 'What your character screens add up to, deleted characters included')}${tile('Deleted characters', hh(r.del), 'Active time on characters you deleted')}</div>`;
-    const sub2 = `<div class="row3 ptrow" style="margin-top:10px">${tile('PvE', hh(r.pve), pc(r.pve, r.acts) + ' of active time')}${tile('Crucible', hh(r.pvp), pc(r.pvp, r.acts) + ' of active time')}${days.length ? tile('Last 30 days', hh(dTot), dAct.length + ' active days &middot; ' + (dAct.length ? esc(dur(dTot / dAct.length)) + ' a day' : '')) : ''}${best.s ? tile('Best day (30 days)', hh(best.s), esc(new Date(best.d + 'T12:00:00').toLocaleDateString([], { month: 'long', day: 'numeric' }))) : ''}</div>`;
+    const fmtD = (d, o) => new Date(d + 'T12:00:00').toLocaleDateString([], o || { month: 'short', day: 'numeric' });
+    const head = `<div class="row3 ptrow">${tile('Active time', hh(r.acts), 'Time inside activities, every character. The number Time Wasted on Destiny shows.')}${tile('AFK and idle (not counted)', hh(r.idle), pc(r.idle, r.total) + ' of the platform total: orbit, the Tower, menus, loading and AFK')}${tile('Platform total', hh(r.total), 'Active plus AFK and idle: what your character screens add up to')}${tile('Deleted characters', hh(r.del), 'Active time on characters you deleted')}</div>`;
+    const sub2 = `<div class="row3 ptrow" style="margin-top:10px">${tile('PvE', hh(r.pve), pc(r.pve, r.acts) + ' of active time')}${tile('Crucible', hh(r.pvp), r.pvp ? pc(r.pvp, r.acts) + ' of active time, private matches included' : 'No Crucible time recorded')}${days.length ? tile('Last 30 days', hh(dTot), dAct.length + ' of 30 days played' + (dAct.length ? ' &middot; ' + esc(dur(dTot / dAct.length)) + ' on a day you play' : '')) : ''}${best.s ? tile('Best day (30 days)', hh(best.s), esc(fmtD(best.d, { weekday: 'long', month: 'long', day: 'numeric' }))) : ''}</div>`;
     const types = (r.types || []).slice().sort((a, b) => b.s - a.s), den = Math.max(r.acts || 0, types.reduce((t, q) => t + q.s, 0)) || 1;
-    const typeCard = types.length ? `<div class="acard ptc"><h4>Time by activity</h4><div class="ptbar">${types.map((q, i) => `<i title="${esc(q.n)}" style="width:${(q.s / den * 100).toFixed(2)}%;background:${PT_COL[i % PT_COL.length]}"></i>`).join('')}</div><div class="ptleg">${types.map((q, i) => `<div><i style="background:${PT_COL[i % PT_COL.length]}"></i>${esc(q.n)}<b>${esc(dur(q.s))}</b><em>${pc(q.s, den)}</em></div>`).join('')}</div></div>` : '';
-    const mx = Math.max(1, ...days.map((q) => q.s)), fmtD = (d) => new Date(d + 'T12:00:00').toLocaleDateString([], { month: 'short', day: 'numeric' });
-    const dayCard = days.length ? `<div class="acard ptc"><h4>Last 30 days</h4><div class="ptdays">${days.map((q) => `<i class="${q.s ? '' : 'z'}" title="${esc(fmtD(q.d) + ': ' + (q.s ? dur(q.s) : 'no play'))}" style="height:${q.s ? Math.max(3, Math.round(q.s / mx * 100)) : 2}%"></i>`).join('')}</div><div class="ptax"><span>${esc(fmtD(days[0].d))}</span><span>Peak ${esc(dur(mx))}</span><span>${esc(fmtD(days[days.length - 1].d))}</span></div></div>` : '';
-    const top = Math.max(1, ...r.rows.map((c) => c.act || c.mp));
-    const cards = r.rows.map((c) => `<div class="acard bg">${c.em ? `<div class="abgi" style="background-image:url('${esc(img(c.em))}')"></div>` : ''}<div class="stat">${esc(CL[c.cls] || 'Guardian')} &middot; &#9670; ${num(c.light)}</div><div class="big">${hh(c.act || c.mp)}</div><div class="sub">PvE ${esc(dur(c.pve))} &middot; Crucible ${esc(dur(c.pvp))}</div><div class="sub">${esc(dur(c.mp))} on the platform &middot; last played ${esc(new Date(c.last).toLocaleDateString())}</div><div class="pmbar"><i style="width:${Math.round((c.act || c.mp) / top * 100)}%"></i></div></div>`).join('');
+    const typeCard = types.length ? `<div class="acard ptc"><h4>Where your active time goes</h4><p class="ptcap">Each colour is one kind of activity; its width is its share of your ${esc(dur(r.acts))} of active time.</p><div class="ptbar">${types.map((q, i) => `<i title="${esc(q.n + ': ' + dur(q.s) + ' (' + pc(q.s, den) + ')')}" style="width:${(q.s / den * 100).toFixed(2)}%;background:${PT_COL[i % PT_COL.length]}"></i>`).join('')}</div><div class="ptleg">${types.map((q, i) => `<div><i style="background:${PT_COL[i % PT_COL.length]}"></i><span>${esc(q.n)}</span><b>${esc(dur(q.s))}</b><em>${pc(q.s, den)}</em></div>`).join('')}</div></div>` : '';
+    // Last 30 days: one bar per day, hours on the side, a date under every week, and the day you point at (or tap) named above the chart.
+    const mx = Math.max(3600, ...days.map((q) => q.s)), top = Math.ceil(mx / 3600 / 2) * 2 * 3600 || 3600;
+    const dayCard = days.length ? `<div class="acard ptc"><h4>Hours played per day</h4><p class="ptcap" id="ptread">Active time each day for the last 30 days. Point at or tap a bar to see that day.</p><div class="ptch"><div class="ptyax"><span>${num(top / 3600)}h</span><span>${num(top / 7200)}h</span><span>0h</span></div><div class="ptplot"><div class="ptgrid"><i></i><i></i><i></i></div><div class="ptdays">${days.map((q) => `<i data-pd="${esc(fmtD(q.d, { weekday: 'short', month: 'short', day: 'numeric' }) + ': ' + (q.s ? dur(q.s) + ' played' : 'did not play'))}" class="${q.s ? '' : 'z'}" style="height:${q.s ? Math.max(2, (q.s / top * 100)).toFixed(1) : 0}%;background:${q.s ? PT_DAY : 'transparent'}"></i>`).join('')}</div><div class="ptax">${days.map((q, i) => `<span>${(i % 7 === 0 && i < days.length - 4) || i === days.length - 1 ? esc(fmtD(q.d)) : ''}</span>`).join('')}</div></div></div></div>` : '';
+    const sum = r.acts || 1;
+    const cards = r.rows.map((c) => { const a = c.act || 0, sh = Math.round(a / sum * 100), pv = (c.pve + c.pvp) || 1; return `<div class="acard bg ptch2">${c.em ? `<div class="abgi" style="background-image:url('${esc(img(c.em))}')"></div>` : ''}<div class="stat">${esc(CL[c.cls] || 'Guardian')} &middot; &#9670; ${num(c.light)}</div><div class="big">${hhs(a)} <small class="mute">active</small></div><div class="sub">${esc(dur(c.mp))} on the platform &middot; last played ${esc(new Date(c.last).toLocaleDateString([], { month: 'short', day: 'numeric' }))}</div><div class="ptlab"><span>${sh}% of your active time</span><span><i style="background:${PT_COL[0]}"></i>PvE ${esc(dur(c.pve))} <i style="background:${PT_COL[4]}"></i>Crucible ${esc(dur(c.pvp))}</span></div><div class="ptsplit" title="PvE ${esc(dur(c.pve))}, Crucible ${esc(dur(c.pvp))}"><i style="width:${(c.pve / pv * 100).toFixed(1)}%;background:${PT_COL[0]}"></i><i style="width:${(c.pvp / pv * 100).toFixed(1)}%;background:${PT_COL[4]}"></i></div></div>`; }).join('');
     return head + sub2 + (typeCard || dayCard ? `<div class="ptpan">${typeCard}${dayCard}</div>` : '') + `<h3 class="sec">Characters</h3><div class="agrid">${cards}${r.del ? `<div class="acard"><div class="stat">Deleted characters</div><div class="big">${hh(r.del)}</div><div class="sub">Still counted in your active time</div></div>` : ''}</div>`
-      + noteCard('Active time is counted from Bungie\'s activity stats, the way Time Wasted on Destiny does it. Bungie does not record AFK time on its own, so AFK and idle is the platform total minus active time. Activity types are Bungie\'s own groups; anything not in one of them is shown as Other.');
+      + noteCard('Active time comes from Bungie\'s activity stats, the way Time Wasted on Destiny counts it. Bungie does not record AFK time itself, so AFK and idle is the platform total minus active time. Activity groups are Bungie\'s own; anything outside them is shown as Other.' + (r.bad ? ' Bungie did not answer for ' + r.bad + ' of the activity groups, so the split may be missing a little.' : ''));
   };
 
   // ---- Crucible: totals, win rate, K/D, KDA, playlists, maps, recent matches and a trend of the last 40 matches ----
@@ -585,6 +599,14 @@
     try { PG[id] = PG[id] || await gt().actPgcr({ id }); box.innerHTML = pgHTML(PG[id]); }
     catch (er) { box.innerHTML = `<p class="mute">Could not load this activity: ${esc(clean(er))}</p>`; }
   }
+  // Play time chart: name the day under the pointer (or the tapped bar on a phone) above the chart.
+  const ptDay = (e) => {
+    const d = e.target.closest && e.target.closest('[data-pd]'), out = document.getElementById('ptread'); if (!d || !out) return;
+    s.querySelectorAll('.ptdays i.on').forEach((n) => n.classList.remove('on')); d.classList.add('on');
+    out.textContent = d.dataset.pd; out.classList.add('on');
+  };
+  s.addEventListener('mouseover', ptDay);
+  s.addEventListener('click', ptDay);
   s.addEventListener('click', (e) => {
     const pgr = e.target.closest('.ract[data-pg], .pbc[data-pg]'); if (pgr) { togglePg(pgr); return; }
     const gdc = e.target.closest('[data-gd]'); if (gdc) { openHelp(gdc.dataset.gd); return; }

@@ -1,4 +1,4 @@
-/* Pathfinder 0.2.96: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.2.97: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -1877,7 +1877,9 @@ H('act:wscan', async () => {
 // Play time, the way Time Wasted on Destiny counts it: ACTIVE time is the time spent inside activities (Bungie's own per-activity stats);
 // the platform total (what the character screen shows, minutesPlayedTotal) also holds orbit, the Tower, menus, loading and being AFK.
 // Bungie does not record AFK itself, so "AFK and idle" is the platform total minus the active time (it is the number that site shows as AFK).
-const PT_MODES = [['Story', 2], ['Strikes', 18], ['Patrol', 6], ['Raids', 4], ['Dungeons', 82], ['Gambit', 63], ['Crucible', 5], ['PvE', 7]];
+// Each mode is asked for on its own. Strikes (18) already holds Nightfalls; private matches (32) are not part of Crucible (5) at Bungie, so they are added to it here.
+const PT_MODES = [['Story', 2], ['Strikes', 18], ['Patrol', 6], ['Raids', 4], ['Dungeons', 82], ['Lost Sectors', 87], ['Gambit', 63], ['Crucible', 5], ['Private matches', 32], ['PvE', 7]];
+const PT_HIDE = new Set(['PvE', 'Private matches']);
 H('act:playtime', async () => {
   const m = await acct(), base = `/Destiny2/${m.membershipType}/Account/${m.membershipId}/`;
   const [pr, st] = await Promise.all([api(pbase(m) + '?components=200'), api(base + 'Stats/')]);
@@ -1891,14 +1893,15 @@ H('act:playtime', async () => {
   const got = await pool(jobs, 6, async ([c, n, md]) => { try { return first(await api(base + `Character/${c}/Stats/?modes=${md}&periodType=2`)); } catch (e) { return -1; } });
   const per = {}, tot = {}; let bad = 0;
   jobs.forEach(([c, n], i) => { const v = got[i]; if (v < 0) { bad++; return; } (per[c] = per[c] || {})[n] = v; tot[n] = (tot[n] || 0) + v; });
+  const pm = 'Private matches'; tot.Crucible = (tot.Crucible || 0) + (tot[pm] || 0); Object.values(per).forEach((p) => { p.Crucible = (p.Crucible || 0) + (p[pm] || 0); });
   const byId = {}; (st.characters || []).forEach((c) => { byId[c.characterId] = c; });
   const rows = Object.values(cd).map((x) => {
     const s = byId[x.characterId] || {}, p = per[x.characterId] || {};
     return { id: x.characterId, cls: x.classType, light: x.light, em: x.emblemBackgroundPath || '', mp: (Number(x.minutesPlayedTotal) || 0) * 60, act: sec(s.merged), pve: p.PvE || 0, pvp: p.Crucible || 0, last: Date.parse(x.dateLastPlayed) || 0 };
   }).sort((a, b) => b.act - a.act);
   const live = rows.reduce((t, r) => t + r.mp, 0), total = live + delSec, acts = sec(all.merged);
-  const typeSum = PT_MODES.filter(([n]) => n !== 'PvE').reduce((t, [n]) => t + (tot[n] || 0), 0);
-  const types = PT_MODES.filter(([n]) => n !== 'PvE').map(([n]) => ({ n, s: tot[n] || 0 })).filter((q) => q.s > 0);
+  const typeSum = PT_MODES.filter(([n]) => !PT_HIDE.has(n)).reduce((t, [n]) => t + (tot[n] || 0), 0);
+  const types = PT_MODES.filter(([n]) => !PT_HIDE.has(n)).map(([n]) => ({ n, s: tot[n] || 0 })).filter((q) => q.s > 0);
   if (acts > typeSum) types.push({ n: 'Other', s: acts - typeSum });
   // The last 30 days, one bar per day (best effort: the page simply leaves the chart out if Bungie does not answer).
   let days = [];

@@ -897,7 +897,7 @@ ${pn('dl-p-art', 'Artifact', `<div class="dl-artrow">${d.ai && d.ai.i ? `<span c
     const eqIds = new Set(eqOf(CH).map((x) => x.id)), byid = new Map(items().map((x) => [x.id, x]));
     const ig = slots.map((L) => {
       const its = L.items.map((id) => byid.get(id)).filter(Boolean), miss = L.items.length - its.length, on = its.length && !miss && its.every((x) => eqIds.has(x.id));
-      return `<button class="dl-sl${on ? ' cur' : ''}" data-dl="ig" data-i="${L.i}" title="${esc(L.n || 'Loadout')} (slot ${L.i + 1})${miss ? ' - ' + miss + ' missing' : ''}" style="${L.c ? `background-image:url(${esc(V.icon(L.c))})` : ''}">${L.ic ? `<img src="${esc(V.icon(L.ic))}" alt="">` : ''}<i>${L.i + 1}</i>${miss ? '<u class="wn">!</u>' : on ? '<u class="ok">&#10003;</u>' : ''}</button>`;
+      return `<button class="dl-sl${on ? ' cur' : ''}" data-dl="ig" data-i="${L.i}" title="${esc(L.n || 'Loadout')} (slot ${L.i + 1})${miss ? ' - ' + miss + ' missing' : ''}">${L.c ? `<span class="lc" style="background-image:url(${esc(V.icon(L.c))})"></span>` : ''}${L.ic ? `<img src="${esc(V.icon(L.ic))}" alt="">` : ''}<i>${L.i + 1}</i>${miss ? '<u class="wn">!</u>' : on ? '<u class="ok">&#10003;</u>' : ''}</button>`;
     }).join('');
     const eq = eqOf(CH), art = AR && !AR.none && AR.socks && AR.socks.length;
     sec.innerHTML = `<div class="dl-wrap"><aside class="dl-side"><div class="dl-chars">${side}</div>
@@ -989,8 +989,11 @@ ${art ? `<div class="dl-mrow"><span class="dl-gl">Artifact &middot; ${esc(AR.ite
 .dl-main{flex:1;min-width:0}
 .dl-h{font-size:13px!important;letter-spacing:3px;text-transform:uppercase;color:#aeb2b9!important;margin:2px 0 8px!important;border-bottom:1px solid var(--g-line);padding-bottom:4px}
 .dl-ig{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
-.dl-sl{position:relative;width:50px!important;height:50px;border:1px solid #4a4d54!important;background:var(--g-btn) center/cover no-repeat!important;display:flex;align-items:center;justify-content:center;padding:0!important}
-.dl-sl>img{width:40px;height:40px;display:block}.dl-sl i{position:absolute;right:3px;bottom:0;font-size:11px;font-style:normal;color:#fff;text-shadow:0 0 3px #000,0 0 3px #000}
+.dl-sl{position:relative;width:50px!important;height:50px!important;min-height:0!important;border:1px solid #4a4d54!important;border-radius:6px!important;overflow:hidden;background:#23262b!important;display:flex;align-items:center;justify-content:center;padding:0!important}
+:root #loadouts button.dl-sl{border-radius:6px!important;width:50px!important;height:50px!important;padding:0!important}
+/* the loadout's own colour from the game, as its background (a span, so no theme button style can paint over it) */
+.dl-sl .lc{position:absolute;inset:0;background-position:center;background-size:cover;background-repeat:no-repeat;z-index:0;pointer-events:none}.dl-sl>img,.dl-sl>i,.dl-sl>u{z-index:1}
+.dl-sl>img{position:relative;width:40px;height:40px;display:block}.dl-sl i{position:absolute;right:3px;bottom:0;font-size:11px;font-style:normal;color:#fff;text-shadow:0 0 3px #000,0 0 3px #000}
 .dl-sl u{position:absolute;left:2px;top:1px;font-size:12px;text-decoration:none;font-weight:700;text-shadow:0 0 3px #000}.dl-sl .ok{color:#6fd36f}.dl-sl .wn{color:#ffb74d}.dl-sl.cur{border-color:#6fd36f!important}
 .dl-warn{background:#3a2f12;border:1px solid #8a6d1d;color:#f0d98a;padding:6px 10px;margin-bottom:8px;border-radius:3px}.dl-warn summary{cursor:pointer;font-weight:700}.dl-wl{padding-top:6px;font-size:13px;display:flex;flex-direction:column;gap:4px;align-items:flex-start}
 .dl-tip{font-size:12px;color:#8c9098;margin:2px 0 8px}.dl-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}

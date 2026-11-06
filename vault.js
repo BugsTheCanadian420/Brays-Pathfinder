@@ -729,6 +729,11 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 .mpop h4{margin:0 0 8px;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:#fff;border-bottom:1px solid #3a3d44;padding-bottom:6px}
 .mpg{display:grid;grid-template-columns:1fr 1fr;gap:6px 18px}
 .mpg div{display:flex;align-items:center;gap:6px;font-size:12px;color:#e3e5e9;min-width:0}.mpg b{min-width:28px;text-align:right;font-weight:600}.mpg img{width:18px;height:18px}.mpg span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* Tighter spacing (Settings): clearly smaller gaps between items, buckets and sections, in every theme (kept last so it wins) */
+:root[data-gcompact="1"] .dc,:root[data-gcompact="1"] .dc.v,:root[data-gcompact="1"] .xg,:root[data-gcompact="1"] .ltiles{gap:2px!important}
+:root[data-gcompact="1"] .dc{padding:1px 0 3px!important;min-height:0!important}
+:root[data-gcompact="1"] .dsec{margin:4px 0 2px!important}
+:root[data-gcompact="1"] .dgrid{column-gap:8px!important;row-gap:0!important}
 `;
   document.head.appendChild(st4);
 
@@ -988,7 +993,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
       ${sx('Interface scale', '', rng('scale', 80, 140, '%'))}
       ${sx('Show emblems on characters', '', tgl('emblems'))}
       ${sx('Show postmaster', '', tgl('postmaster'))}
-      ${sx('Tighter row spacing', '', tgl('compact'))}
+      ${sx('Tighter spacing', 'Packs items, rows and sections closer together so more fits on screen.', tgl('compact'))}
       <p><button class="g" data-sa="reset">Reset display settings</button></p>
     </div>${tabsCard}${wlc}${upd}${acct}</div>`;
   }
