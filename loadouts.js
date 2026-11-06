@@ -427,9 +427,11 @@
       const im = imgs[ic(r)]; if (im) g2.drawImage(im, x, y1, sz, sz); g2.restore();
       rr(x + 1.5, y1 + 1.5, sz - 3, sz - 3, 7); g2.strokeStyle = rc === '#522f65' ? '#8a5fb0' : rc; g2.lineWidth = Math.max(2, sz / 30); g2.stroke();
     };
-    const tileIc = (src, x, y1, sz, round) => {
+    const tileIc = (src, x, y1, sz, round, tint) => {
       const rad = round ? sz / 2 : 7;
       rr(x, y1, sz, sz, rad); g2.fillStyle = '#14161b'; g2.fill();
+      // Subclass tiles: an element-coloured backing, so icons drawn on a see-through background (the Super) match the others.
+      if (tint) { const gr = g2.createLinearGradient(x, y1, x, y1 + sz); gr.addColorStop(0, tint + '33'); gr.addColorStop(1, tint + 'aa'); rr(x, y1, sz, sz, rad); g2.fillStyle = gr; g2.fill(); }
       const im = imgs[src]; if (im) { g2.save(); rr(x, y1, sz, sz, rad); g2.clip(); g2.drawImage(im, x, y1, sz, sz); g2.restore(); }
       rr(x + .5, y1 + .5, sz - 1, sz - 1, rad); g2.strokeStyle = 'rgba(255,255,255,.22)'; g2.lineWidth = 1.5; g2.stroke();
     };
@@ -470,7 +472,7 @@
       panel(M, L.sub, IW, 50 + subRows * SUBSTEP + 8);
       label('SUBCLASS' + (sub && (sub.x || sub.en).n ? '  ·  ' + String((sub.x || sub.en).n).toUpperCase() : ''), 48, L.sub + 26);
       const rowW = (k) => k * SUBSZ + (k - 1) * SUBGAP;
-      subPl.forEach((m, i) => { const row = Math.floor(i / subPer), inRow = Math.min(subPer, subPl.length - row * subPer), x0 = M + (IW - rowW(inRow)) / 2; tileIc(m.i, x0 + (i % subPer) * SUBSTEP, L.sub + 40 + row * SUBSTEP, SUBSZ, false); });
+      subPl.forEach((m, i) => { const row = Math.floor(i / subPer), inRow = Math.min(subPer, subPl.length - row * subPer), x0 = M + (IW - rowW(inRow)) / 2; tileIc(m.i, x0 + (i % subPer) * SUBSTEP, L.sub + 40 + row * SUBSTEP, SUBSZ, false, /^#[0-9a-f]{6}$/i.test(ACC[1]) ? ACC[1] : ''); });
     }
     // mods, under the armor piece they go on
     if (L.mods) {
