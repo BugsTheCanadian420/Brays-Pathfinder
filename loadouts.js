@@ -369,34 +369,51 @@
     const subPl = sub && sub.en.m ? sub.en.m.map(mk).filter(Boolean).slice(0, 16) : [];
     const ic = (r) => (r && (r.x ? rawIcon(r.x.i) : r.en.i)) || '';
     const artPk = (l.a || []).map((p) => p[2]).filter(Boolean).slice(0, 14), artIc = (l.ai && l.ai.i) || '', hasArt = !!(artIc || artPk.length);
-    const paths = [ic(sub), ...weps.map(ic), ...arms.map(ic), ...modsBy.flat().map((m) => m.i), ...anyMods.map((m) => m.i), ...subPl.map((m) => m.i), artIc, ...artPk].filter(Boolean);
+    // Details, looked up in parallel (the picture is still drawn if one fails): each weapon's equipped perks, and each armor
+    // piece's archetype and set, for the set bonuses you have on.
+    const X = window.__gtx, det = (x) => (x && X && X.detail ? Promise.race([X.detail(x), new Promise((_, no) => setTimeout(() => no(new Error('slow')), 8000))]).catch(() => null) : Promise.resolve(null));
+    const [WD, ADd] = await Promise.all([Promise.all(weps.map((r) => det(r && r.x))), Promise.all(arms.map((r) => det(r && r.x)))]);
+    const AD = ADd.map((d) => ({ a: (d && d.arche && d.arche.n) || '', s: (d && d.set && d.set.n) || '', set: (d && d.set) || null }));
+    const WP = WD.map((d) => {
+      if (!d) return [];
+      const out = []; if (d.frame && d.frame.i) out.push({ i: d.frame.i, n: d.frame.n });
+      (d.groups || []).filter((gr) => gr.label === 'Perks').forEach((gr) => gr.cols.forEach((col) => { const on = col.find((p) => p.on); if (on && on.i && !/tracker|memento|shader/i.test(on.c || '')) out.push({ i: on.i, n: on.n }); }));
+      return out.slice(0, 7);
+    });
+    // Set bonuses that are on: a set's 2- and 4-piece perks, once you wear that many pieces of it.
+    const sets = {}; AD.forEach((a) => { if (a.set && a.set.n) { const k = a.set.n; (sets[k] = sets[k] || { set: a.set, n: 0 }).n++; } });
+    const SB = []; Object.values(sets).forEach((o) => (o.set.perks || []).forEach((p) => { if (o.n >= (p.rc || 99)) SB.push({ n: p.n, i: p.i, rc: p.rc, s: o.set.n }); }));
+    const paths = [ic(sub), ...weps.map(ic), ...arms.map(ic), ...modsBy.flat().map((m) => m.i), ...anyMods.map((m) => m.i), ...subPl.map((m) => m.i), artIc, ...artPk, ...WP.flat().map((p) => p.i), ...SB.map((p) => p.i)].filter(Boolean);
     let D = {}; try { D = await gt.imgFetch({ p: [...new Set(paths)] }); } catch (e) { /* drawn without icons */ }
     const imgs = {}; await Promise.all(Object.entries(D).map(([k, v]) => new Promise((ok) => { const im = new Image(); im.onload = () => { imgs[k] = im; ok(); }; im.onerror = ok; im.src = v; })));
-    // What kind of armor each piece is: its archetype (Bulwark, Brawler...) and its set. Looked up in parallel; the picture is still drawn if it fails.
-    const AD = arms.map(() => ({})), X = window.__gtx;
-    await Promise.all(arms.map(async (r, i) => { if (!r || !r.x || !X || !X.detail) return; try { const d = await Promise.race([X.detail(r.x), new Promise((_, no) => setTimeout(() => no(new Error('slow')), 8000))]); AD[i] = { a: (d.arche && d.arche.n) || '', s: (d.set && d.set.n) || '' }; } catch (e) { /* no armor details */ } }));
     const st = [0, 0, 0, 0, 0, 0]; let hasSt = false; arms.forEach((r) => { if (r && r.x && r.x.st) { hasSt = true; r.x.st.forEach((v, i) => { st[i] += v || 0; }); } });
     // Layout first (the picture grows to fit the sections it has), then draw.
     const W = 1200, M = 32, IW = W - M * 2, GAP = 16;
-    const SUBSZ = 54, SUBSTEP = 62, subPer = Math.floor((IW - 32) / SUBSTEP), subRows = Math.ceil(subPl.length / subPer);
+    // Subclass icons fill the width of their box: one row when they fit at a good size, two otherwise.
+    const subRows = subPl.length > 14 ? 2 : 1, subPer = Math.max(1, Math.ceil(subPl.length / subRows)), SUBGAP = 10;
+    const SUBSZ = Math.max(44, Math.min(88, Math.floor((IW - 32 - (subPer - 1) * SUBGAP) / subPer))), SUBSTEP = SUBSZ + SUBGAP;
     const cols = anyMods.length ? 6 : 5, colW = IW / cols, MSZ = 46, MSTEP = 54, mPer = Math.max(1, Math.floor((colW - 24) / MSTEP));
     const mRows = Math.max(1, ...[...modsBy, anyMods].map((m) => Math.ceil(m.length / mPer)));
     let y = 196;
     const L = { top: y };
-    y += 400 + GAP;
-    if (subPl.length) { L.sub = y; y += 50 + subRows * SUBSTEP + 10 + GAP; }
+    const TOPH = 424; y += TOPH + GAP;
+    if (subPl.length) { L.sub = y; y += 50 + subRows * SUBSTEP + 8 + GAP; }
     if (hasMods) { L.mods = y; y += 108 + mRows * MSTEP + 8 + GAP; }
-    if (hasArt) { L.art = y; y += 104 + GAP; }
+    if (hasArt || SB.length) { L.art = y; y += 140 + GAP; }
     const H = y + 24, cv = document.createElement('canvas'); cv.width = W; cv.height = H; const g2 = cv.getContext('2d');
     // Background: dark base, a glow in the class colour, a faded subclass emblem, a fine pattern and a vignette.
-    const ACC = [['#5d8ae6', '#2c4a9a'], ['#45c48d', '#1d6f4d'], ['#e8c25a', '#8a6a1c']][l.c] || ['#a98bff', '#4b3a99'];
+    // Colours from the subclass (its element), falling back to the class.
+    const ELC = { solar: ['#f5862e', '#a3420f'], arc: ['#6fd3ff', '#1d6a96'], void: ['#b07bff', '#4a2a8a'], stasis: ['#7ab0ff', '#26447e'], strand: ['#4fd88a', '#1b6b45'], prismatic: ['#ff7fd0', '#6a3bd1'] };
+    const SUBEL = { gunslinger: 'solar', sunbreaker: 'solar', dawnblade: 'solar', arcstrider: 'arc', striker: 'arc', stormcaller: 'arc', nightstalker: 'void', sentinel: 'void', voidwalker: 'void', revenant: 'stasis', behemoth: 'stasis', shadebinder: 'stasis', threadrunner: 'strand', berserker: 'strand', broodweaver: 'strand' };
+    const subN = String((sub && (sub.x || sub.en).n) || '').toLowerCase(), elk = (subN.match(/prismatic|solar|arc|void|stasis|strand/) || [])[0] || SUBEL[subN.trim()] || '';
+    const ACC = ELC[elk] || [['#5d8ae6', '#2c4a9a'], ['#45c48d', '#1d6f4d'], ['#e8c25a', '#8a6a1c']][l.c] || ['#a98bff', '#4b3a99'];
     const bg = g2.createLinearGradient(0, 0, W, H); bg.addColorStop(0, '#171a22'); bg.addColorStop(.55, '#101218'); bg.addColorStop(1, '#0a0b0f'); g2.fillStyle = bg; g2.fillRect(0, 0, W, H);
     const glow = (x, y1, r, col, a) => { const q = g2.createRadialGradient(x, y1, 0, x, y1, r); q.addColorStop(0, col + a); q.addColorStop(1, col + '00'); g2.fillStyle = q; g2.fillRect(0, 0, W, H); };
-    glow(W * .88, -40, 760, ACC[0], '38'); glow(-60, H + 40, 640, ACC[1], '55'); glow(W * .5, H * .55, 520, ACC[1], '16');
+    glow(W * .88, -40, 820, ACC[0], '4a'); glow(-60, H + 40, 720, ACC[1], '66'); glow(W * .5, H * .55, 640, ACC[1], '22'); glow(W * .1, H * .25, 520, ACC[0], '14');
     if (sub && imgs[ic(sub)]) { g2.save(); g2.globalAlpha = .07; g2.drawImage(imgs[ic(sub)], W - 520, -70, 560, 560); g2.restore(); }
     g2.save(); g2.strokeStyle = 'rgba(255,255,255,.035)'; g2.lineWidth = 1; for (let x = -H; x < W; x += 26) { g2.beginPath(); g2.moveTo(x, H); g2.lineTo(x + H, 0); g2.stroke(); } g2.restore();
     const vg = g2.createRadialGradient(W / 2, H / 2, H * .45, W / 2, H / 2, W * .75); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.55)'); g2.fillStyle = vg; g2.fillRect(0, 0, W, H);
-    const bar = g2.createLinearGradient(0, 0, W, 0); bar.addColorStop(0, ACC[0]); bar.addColorStop(1, ACC[1] + '00'); g2.fillStyle = bar; g2.fillRect(0, 0, W, 5);
+    const bar = g2.createLinearGradient(0, 0, W, 0); bar.addColorStop(0, ACC[0]); bar.addColorStop(.6, ACC[1]); bar.addColorStop(1, ACC[1] + '00'); g2.fillStyle = bar; g2.fillRect(0, 0, W, 6);
     const rr = (x, y1, w, h, r) => { g2.beginPath(); if (g2.roundRect) g2.roundRect(x, y1, w, h, r); else g2.rect(x, y1, w, h); };
     const panel = (x, y1, w, h) => { rr(x, y1, w, h, 14); g2.fillStyle = 'rgba(255,255,255,.04)'; g2.fill(); g2.strokeStyle = 'rgba(255,255,255,.09)'; g2.lineWidth = 1; g2.stroke(); };
     const font = (sz, w) => { g2.font = `${w || 400} ${sz}px "Open Sans","Segoe UI",Arial,sans-serif`; };
@@ -422,9 +439,15 @@
     if (sub && imgs[ic(sub)]) g2.drawImage(imgs[ic(sub)], W - 150, 30, 110, 110);
     g2.fillStyle = '#2b2e33'; g2.fillRect(48, 172, W - 96, 1);
     // weapons and armor
-    panel(M, L.top, 520, 400); panel(584, L.top, W - M - 584, 400);
+    panel(M, L.top, 520, TOPH); panel(584, L.top, W - M - 584, TOPH);
     label('WEAPONS', 48, L.top + 26);
-    weps.forEach((r, i) => { const y1 = L.top + 44 + i * 112; box(r, 48, y1, 88); txt(r ? (r.x || r.en).n : 'Empty', 154, y1 + 40, 23, r ? '#fff' : '#555', 600, 370); txt(r && r.x ? (r.x.t || '') + (r.x.p ? '  ·  ' + r.x.p : '') : '', 154, y1 + 68, 15, '#9aa0a8', 400, 370); });
+    weps.forEach((r, i) => {
+      const y1 = L.top + 42 + i * 124; box(r, 48, y1, 96);
+      txt(r ? (r.x || r.en).n : 'Empty', 160, y1 + 26, 22, r ? '#fff' : '#555', 600, 360);
+      txt(r && r.x ? (r.x.t || '') + (r.x.p ? '  ·  ' + r.x.p : '') : '', 160, y1 + 48, 14, '#9aa0a8', 400, 360);
+      // the perks in it right now (its frame first)
+      (WP[i] || []).forEach((p, k) => tileIc(p.i, 160 + k * 46, y1 + 58, 38, true));
+    });
     label('ARMOR', 600, L.top + 26);
     arms.forEach((r, i) => { box(r, 600 + i * 108, L.top + 40, 92); });
     // under each piece: its archetype, then its set (or the exotic's name)
@@ -440,13 +463,14 @@
         g2.fillStyle = '#23262b'; g2.fillRect(700, y1 + 2, 360, 14); g2.fillStyle = IMSTC[i]; g2.fillRect(700, y1 + 2, Math.max(0, Math.min(360, v / 200 * 360)), 14);
         txt(String(v), 1072, y1 + 15, 16, '#fff', 700);
       });
-      txt('Total ' + tot, 600, L.top + 384, 16, '#e0b64a', 700);
+      txt('Total ' + tot, 600, L.top + 390, 16, '#e0b64a', 700);
     }
     // subclass: super, abilities, aspects and fragments
     if (L.sub) {
-      panel(M, L.sub, IW, 50 + subRows * SUBSTEP + 10);
+      panel(M, L.sub, IW, 50 + subRows * SUBSTEP + 8);
       label('SUBCLASS' + (sub && (sub.x || sub.en).n ? '  ·  ' + String((sub.x || sub.en).n).toUpperCase() : ''), 48, L.sub + 26);
-      subPl.forEach((m, i) => tileIc(m.i, 48 + (i % subPer) * SUBSTEP, L.sub + 42 + Math.floor(i / subPer) * SUBSTEP, SUBSZ, false));
+      const rowW = (k) => k * SUBSZ + (k - 1) * SUBGAP;
+      subPl.forEach((m, i) => { const row = Math.floor(i / subPer), inRow = Math.min(subPer, subPl.length - row * subPer), x0 = M + (IW - rowW(inRow)) / 2; tileIc(m.i, x0 + (i % subPer) * SUBSTEP, L.sub + 40 + row * SUBSTEP, SUBSZ, false); });
     }
     // mods, under the armor piece they go on
     if (L.mods) {
@@ -464,12 +488,26 @@
     }
     // artifact
     if (L.art) {
-      const y0 = L.art; panel(M, y0, IW, 104);
-      label('ARTIFACT', 48, y0 + 26);
-      if (artIc && imgs[artIc]) { rr(48, y0 + 38, 54, 54, 8); g2.fillStyle = '#1a1c22'; g2.fill(); g2.drawImage(imgs[artIc], 48, y0 + 38, 54, 54); rr(48.5, y0 + 38.5, 53, 53, 8); g2.strokeStyle = '#ceae33'; g2.lineWidth = 2; g2.stroke(); }
-      txt((l.ai && l.ai.n) || 'Artifact', 116, y0 + 62, 20, '#ffffff', 600, 280);
-      txt(artPk.length ? artPk.length + ' perks selected' : '', 116, y0 + 84, 14, '#9aa0a8', 400);
-      artPk.forEach((p, i) => tileIc(p, 420 + i * 60, y0 + 38, 54, true));
+      const y0 = L.art, hasSB = SB.length > 0, sbX = hasSB ? 832 : W - M; panel(M, y0, IW, 140);
+      if (hasArt) {
+        label('ARTIFACT', 48, y0 + 26);
+        const AS = 84;
+        if (artIc && imgs[artIc]) { rr(48, y0 + 40, AS, AS, 10); g2.fillStyle = '#1a1c22'; g2.fill(); g2.drawImage(imgs[artIc], 48, y0 + 40, AS, AS); rr(49, y0 + 41, AS - 2, AS - 2, 10); g2.strokeStyle = '#ceae33'; g2.lineWidth = 2.5; g2.stroke(); }
+        txt((l.ai && l.ai.n) || 'Artifact', 148, y0 + 74, 21, '#ffffff', 600, 200);
+        txt(artPk.length ? artPk.length + ' perks selected' : '', 148, y0 + 98, 14, '#9aa0a8', 400);
+        // the perks sit right after the name, leaving room for the set bonus on the right
+        const pk0 = 360, room = sbX - 24 - pk0, step = Math.min(64, Math.max(40, Math.floor(room / Math.max(1, artPk.length)))), psz = Math.min(56, step - 6);
+        artPk.forEach((p, i) => tileIc(p, pk0 + i * step, y0 + 40 + (84 - psz) / 2, psz, true));
+      }
+      if (hasSB) {
+        if (hasArt) { g2.fillStyle = 'rgba(255,255,255,.08)'; g2.fillRect(sbX - 14, y0 + 18, 1, 104); }
+        label('ARMOR SET BONUS', sbX, y0 + 26);
+        SB.slice(0, 2).forEach((p, k) => {
+          const yy = y0 + 42 + k * 46; tileIc(p.i, sbX, yy, 38, true);
+          txt(p.n, sbX + 48, yy + 17, 15, '#ffffff', 600, W - M - sbX - 64);
+          txt(p.rc + '-piece  ·  ' + p.s, sbX + 48, yy + 35, 12.5, '#9aa0a8', 400, W - M - sbX - 64);
+        });
+      }
     }
     txt('Made with Pathfinder', W - 220, H - 10, 14, '#6a6f77', 600);
     const data = cv.toDataURL('image/png');

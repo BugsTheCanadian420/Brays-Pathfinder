@@ -1,4 +1,4 @@
-/* Pathfinder 0.2.100: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.2.101: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -951,6 +951,10 @@ H('upd:install', () => { if (updater) updater.quitAndInstall(true, true); return
 
 // One copy of the app at a time (two copies would fight over the saved settings).
 try { app.setPath('userData', path.join(app.getPath('appData'), 'guardian-toolkit')); } catch (e) { /* keep default */ }
+// Windows: the app's own ID (the one the installer puts on its shortcuts), so the taskbar button, its right-click menu and
+// pins all belong to the installed Pathfinder and show its current icon, not an old icon Windows cached for the program file.
+const AUMID = 'local.guardian.toolkit';
+if (process.platform === 'win32' && !WEB) { try { app.setAppUserModelId(AUMID); } catch (e) { /* older Windows */ } }
 if (!app.requestSingleInstanceLock()) app.quit();
 else app.on('second-instance', () => { if (win) { if (win.isMinimized()) win.restore(); win.focus(); } });
 // No website or page inside the app may ask for the camera, microphone, location, notifications and so on.
@@ -996,6 +1000,16 @@ app.whenReady().then(async () => {
   win = new BrowserWindow({ width: 1200, height: 850, backgroundColor: '#07090e', title: 'Pathfinder', icon: winIcon(), autoHideMenuBar: false, webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false, sandbox: true, webSecurity: true, allowRunningInsecureContent: false, webviewTag: true, spellcheck: false } });
   // Alt used to pop the Edit menu up in the top-left corner. Keep the menu (so Ctrl+C/V/X/A/Z still work) but never show its bar.
   win.setMenuBarVisibility(false);
+  // The icon Windows shows for this window's right-click menu and for pins made from it. Windows cannot read a file inside
+  // the app package and keeps old icons by file path, so the icon is copied out under a name that changes with its contents.
+  if (process.platform === 'win32' && !WEB) {
+    try {
+      const buf = fs.readFileSync(path.join(__dirname, 'build', 'icon.ico'));
+      const dst = path.join(app.getPath('userData'), 'pathfinder-' + crypto.createHash('sha1').update(buf).digest('hex').slice(0, 10) + '.ico');
+      if (!fs.existsSync(dst)) fs.writeFileSync(dst, buf);
+      win.setAppDetails({ appId: AUMID, appIconPath: dst, appIconIndex: 0, relaunchCommand: '"' + process.execPath + '"', relaunchDisplayName: 'Pathfinder' });
+    } catch (e) { /* the window keeps its normal icon */ }
+  }
   // The app window never leaves its own page. Links open in your normal browser (web addresses only).
   const openExt = (u) => { try { const p = new URL(u); if (p.protocol === 'https:' || p.protocol === 'http:') shell.openExternal(p.href); } catch (er) { /* ignore */ } };
   win.webContents.on('will-navigate', (ev, u) => { ev.preventDefault(); openExt(u); });
