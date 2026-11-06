@@ -338,6 +338,9 @@
     const paths = [ic(sub), ...weps.map(ic), ...arms.map(ic), ...modsBy.flat().map((m) => m.i), ...anyMods.map((m) => m.i), ...subPl.map((m) => m.i), artIc, ...artPk].filter(Boolean);
     let D = {}; try { D = await gt.imgFetch({ p: [...new Set(paths)] }); } catch (e) { /* drawn without icons */ }
     const imgs = {}; await Promise.all(Object.entries(D).map(([k, v]) => new Promise((ok) => { const im = new Image(); im.onload = () => { imgs[k] = im; ok(); }; im.onerror = ok; im.src = v; })));
+    // What kind of armor each piece is: its archetype (Bulwark, Brawler...) and its set. Looked up in parallel; the picture is still drawn if it fails.
+    const AD = arms.map(() => ({})), X = window.__gtx;
+    await Promise.all(arms.map(async (r, i) => { if (!r || !r.x || !X || !X.detail) return; try { const d = await Promise.race([X.detail(r.x), new Promise((_, no) => setTimeout(() => no(new Error('slow')), 8000))]); AD[i] = { a: (d.arche && d.arche.n) || '', s: (d.set && d.set.n) || '' }; } catch (e) { /* no armor details */ } }));
     const st = [0, 0, 0, 0, 0, 0]; let hasSt = false; arms.forEach((r) => { if (r && r.x && r.x.st) { hasSt = true; r.x.st.forEach((v, i) => { st[i] += v || 0; }); } });
     // Layout first (the picture grows to fit the sections it has), then draw.
     const W = 1200, M = 32, IW = W - M * 2, GAP = 16;
@@ -390,7 +393,12 @@
     weps.forEach((r, i) => { const y1 = L.top + 44 + i * 112; box(r, 48, y1, 88); txt(r ? (r.x || r.en).n : 'Empty', 154, y1 + 40, 23, r ? '#fff' : '#555', 600, 370); txt(r && r.x ? (r.x.t || '') + (r.x.p ? '  ·  ' + r.x.p : '') : '', 154, y1 + 68, 15, '#9aa0a8', 400, 370); });
     label('ARMOR', 600, L.top + 26);
     arms.forEach((r, i) => { box(r, 600 + i * 108, L.top + 40, 92); });
-    arms.forEach((r) => { if (r && r.x && r.x.r === 'Exotic') txt(r.x.n, 600, L.top + 158, 17, '#ceae33', 600, 540); });
+    // under each piece: its archetype, then its set (or the exotic's name)
+    arms.forEach((r, i) => {
+      if (!r) return; const x0 = 600 + i * 108, ex = r.x && r.x.r === 'Exotic';
+      if (AD[i].a) txt(AD[i].a, x0, L.top + 148, 14, '#e6e7ea', 700, 100);
+      const sub2 = ex ? (r.x.n || '') : (AD[i].s || ''); if (sub2) txt(sub2, x0, L.top + 166, 12.5, ex ? '#ceae33' : '#8b8f97', ex ? 600 : 400, 100);
+    });
     if (hasSt) {
       const tot = st.reduce((a, b) => a + b, 0);
       st.forEach((v, i) => {
@@ -431,20 +439,30 @@
     }
     txt('Made with Pathfinder', W - 220, H - 10, 14, '#6a6f77', 600);
     const data = cv.toDataURL('image/png');
+    // The picture as a file, made now: phones only allow copying and sharing straight from a tap, with nothing awaited first.
+    const bin = atob(data.split(',')[1] || ''), u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+    const blob = new Blob([u8], { type: 'image/png' }), fname = (String(l.n || 'loadout').replace(/[^\w \-]+/g, '').trim().slice(0, 60) || 'loadout') + '.png';
+    let file = null; try { file = new File([blob], fname, { type: 'image/png' }); } catch (e) { /* no File constructor */ }
+    const canShare = !!(file && navigator.share && navigator.canShare && navigator.canShare({ files: [file] }));
+    const isWeb = document.documentElement.classList.contains('gtweb');
     let m = g('loimg'); if (m) m.remove();
     m = document.createElement('div'); m.id = 'loimg';
-    m.innerHTML = `<div class="li"><img src="${data}" alt=""><p><button class="b" data-li="copy">Copy picture</button> <button class="g" data-li="save">Save as PNG...</button> <button class="g" data-li="x">Close</button> <span class="mute" id="limsg">Paste it straight into Discord after copying.</span></p></div>`;
-    m.onclick = async (e) => {
+    m.innerHTML = `<div class="li"><img src="${data}" alt=""><p>${canShare ? '<button class="b" data-li="share">Share picture</button> ' : ''}<button class="${canShare ? 'g' : 'b'}" data-li="copy">Copy picture</button> <button class="g" data-li="save">${isWeb ? 'Download' : 'Save as PNG...'}</button> <button class="g" data-li="x">Close</button> <span class="mute" id="limsg">${canShare ? 'Share it straight to Discord, Messages and more.' : isWeb ? 'Copy it, or hold your finger on the picture and choose Copy.' : 'Paste it straight into Discord after copying.'}</span></p></div>`;
+    m.onclick = (e) => {
       const b = e.target.closest('[data-li]'); if (e.target === m || (b && b.dataset.li === 'x')) { m.remove(); return; }
-      if (!b) return; const msg = g('limsg');
-      try {
-        if (b.dataset.li === 'copy') {
-          try { await gt.imgCopy({ d: data }); }
-          catch (e1) { const bin = atob(data.split(',')[1] || ''), u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i); await navigator.clipboard.write([new ClipboardItem({ 'image/png': new Blob([u8], { type: 'image/png' }) })]); } // the browser's own clipboard
-          msg.textContent = 'Copied. Paste it into Discord or anywhere else.';
-        }
-        else { const r = await gt.imgSave({ d: data, name: l.n || 'loadout' }); if (r && r.ok) msg.textContent = 'Saved ' + r.file + '.'; }
-      } catch (er) { msg.textContent = V.clean(er); }
+      if (!b) return; const msg = g('limsg'), say = (t) => { msg.textContent = t; };
+      const k = b.dataset.li;
+      if (k === 'share') { navigator.share({ files: [file], title: l.n || 'Loadout' }).then(() => say('Shared.'), (er) => { if (!er || er.name !== 'AbortError') say('Could not share: ' + V.clean(er)); }); return; }
+      if (k === 'copy') {
+        // In a browser: copy right here, straight from the tap. On the PC app: the app's own clipboard.
+        if (isWeb && navigator.clipboard && window.ClipboardItem) { navigator.clipboard.write([new window.ClipboardItem({ 'image/png': blob })]).then(() => say('Copied. Paste it into Discord or anywhere else.'), () => say('This browser would not copy it. Hold your finger on the picture and choose Copy, or use Download.')); return; }
+        gt.imgCopy({ d: data }).then(() => say('Copied. Paste it into Discord or anywhere else.'), () => {
+          if (navigator.clipboard && window.ClipboardItem) navigator.clipboard.write([new window.ClipboardItem({ 'image/png': blob })]).then(() => say('Copied. Paste it into Discord or anywhere else.'), (er) => say(V.clean(er)));
+          else say('Could not copy. Use Save as PNG instead.');
+        });
+        return;
+      }
+      gt.imgSave({ d: data, name: l.n || 'loadout' }).then((r) => { if (r && r.ok) say((isWeb ? 'Downloaded ' : 'Saved ') + r.file + '.'); }, (er) => say(V.clean(er)));
     };
     document.body.appendChild(m);
   }
@@ -599,9 +617,12 @@ ${pn('dl-p-art', 'Artifact', `<div class="dl-artrow">${d.ai && d.ai.i ? `<span c
     else { d.id = newId(); d.k = Date.now(); a.push(norm(d)); }
     save(); const nm = d.n; closeEd(); render(); toast('Saved ' + nm);
   }
-  async function share(l) {
+  // Share: a picture (easiest to post anywhere) or a code the other person imports.
+  function share(l) { mod = { t: 'shmenu', l }; drawMod(); }
+  async function shareCode(l, send) {
     const c = codeOf(l);
-    try { await gt.writeClipboard(c); toast('Loadout code copied. Send it to a friend. They use Import Loadout.'); }
+    if (send && navigator.share) { try { await navigator.share({ title: l.n || 'Loadout', text: c }); mod = null; drawMod(); return; } catch (e) { if (e && e.name === 'AbortError') return; } }
+    try { await gt.writeClipboard(c); mod = null; drawMod(); toast('Loadout code copied. Send it to a friend. They use Import Loadout.'); }
     catch (e) { mod = { t: 'share', code: c }; drawMod(); }
   }
   async function edClick(e) {
@@ -674,6 +695,8 @@ ${pn('dl-p-art', 'Artifact', `<div class="dl-artrow">${d.ai && d.ai.i ? `<span c
     if (mod.t === 'sub') h = subHTML();
     else if (mod.t === 'imp') {
       h = `<div class="dl-mc"><h3>Import loadout</h3><p class="mute">Paste a DIM loadout link (dim.gg/...) or a loadout code from this app (GTL1:...). Items are matched to the closest ones you own.</p><textarea id="dlimp" placeholder="https://dim.gg/..."" spellcheck="false">${esc(mod.text || '')}</textarea>${mod.msg ? `<div class="dl-wr">${esc(mod.msg)}</div>` : ''}<div class="dl-bt"><button class="g" data-md="paste">Paste from clipboard</button><span class="dl-sp"></span><button class="b" data-md="doimp">Import</button><button class="g" data-md="x">Cancel</button></div></div>`;
+    } else if (mod.t === 'shmenu') {
+      h = `<div class="dl-mc dl-ig-pop"><h3>Share loadout</h3><p class="mute">A picture is the easiest to send. A code lets your friend import the loadout into their own app.</p><div class="dl-bt dl-col"><button class="b" data-md="shpic">Share as a picture</button><button class="g" data-md="shcode">Copy loadout code</button>${navigator.share ? '<button class="g" data-md="shsend">Send the code...</button>' : ''}<button class="g" data-md="x">Close</button></div></div>`;
     } else if (mod.t === 'share') {
       h = `<div class="dl-mc"><h3>Loadout code</h3><p class="mute">Copy this and send it to your friend.</p><textarea readonly spellcheck="false">${esc(mod.code)}</textarea><div class="dl-bt"><span class="dl-sp"></span><button class="g" data-md="x">Close</button></div></div>`;
     } else if (mod.t === 'igp' && D) {
@@ -738,6 +761,11 @@ ${pn('dl-p-art', 'Artifact', `<div class="dl-artrow">${d.ai && d.ai.i ? `<span c
     const b = e.target.closest('[data-md]'); if (!b) return;
     const a = b.dataset.md, D = D0();
     if (a === 'x') { mod = null; drawMod(); return; }
+    if (mod.t === 'shmenu') {
+      const l = mod.l;
+      if (a === 'shpic') { mod = null; drawMod(); toast('Drawing the picture...'); try { await loImage(l); } catch (er) { toast('Could not draw the picture: ' + V.clean(er), { bad: 1 }); } return; }
+      if (a === 'shcode' || a === 'shsend') { await shareCode(l, a === 'shsend'); return; }
+    }
     if (a === 'subcur' && mod.t === 'sub') {
       const en = ed && ed.d.it.find((q) => q.b === SUB), x = en && items().find((o) => o.id === en.id);
       if (!x) { mod.msg = 'That subclass is not in your inventory right now.'; drawMod(); return; }

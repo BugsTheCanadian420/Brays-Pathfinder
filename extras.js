@@ -541,6 +541,7 @@ ${quick.length ? `<div class="tcol" style="margin-top:14px">Quick wins: almost d
 .trd{position:fixed;inset:0;z-index:9600;background:rgba(5,6,9,.72);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:flex;align-items:flex-start;justify-content:center;padding:5vh 16px;overflow:auto}
 .trdp{position:relative;display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:0;width:min(1100px,100%);background:var(--g-panel,#1a1c20);border:1px solid var(--g-line,#2b2e33);border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,.6);color:#e6e7ea;overflow:hidden}
 .trdp .dx{position:absolute;top:8px;right:10px;background:none;border:0;color:#9aa0a8;font-size:26px;line-height:1;cursor:pointer;padding:2px 8px}.trdp .dx:hover{color:#fff}
+@media (max-width:760px){.trdp .dhd{padding-right:44px}.trd{padding:calc(env(safe-area-inset-top,0px) + 56px) 10px calc(env(safe-area-inset-bottom,0px) + 80px)}.trdp .dx{position:fixed;top:calc(env(safe-area-inset-top,0px) + 8px);right:12px;z-index:2;width:42px;height:42px;padding:0;border-radius:50%;background:rgba(20,22,28,.92);border:1px solid #3a3d43;color:#fff;display:flex;align-items:center;justify-content:center}}
 .trdp .dl{padding:20px 22px;border-right:1px solid var(--g-line,#2b2e33);background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,0))}
 .trdp .dr{padding:20px 22px;min-height:320px}
 .trdp .dhd{display:flex;gap:12px;align-items:center}.trdp .dhd img{width:56px;height:56px;flex:none;border-radius:6px;background:#111}

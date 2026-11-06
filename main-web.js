@@ -1,4 +1,4 @@
-/* Pathfinder 0.2.94: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.2.95: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -519,7 +519,7 @@ H('vault:load', async () => {
       } catch (er) { OVR[h] = { n: '', i: '' }; }
     });
   }
-  const chars = await Promise.all(Object.values(pr.characters.data).map(async (x) => ({ id: x.characterId, cls: x.classType, light: x.light, em: x.emblemBackgroundPath || '', dp: Date.parse(x.dateLastPlayed) || 0, tt: await titleOf(x), gl: await isGilded(x) })));
+  const chars = await Promise.all(Object.values(pr.characters.data).map(async (x) => ({ id: x.characterId, cls: x.classType, light: x.light, em: x.emblemBackgroundPath || '', dp: Date.parse(x.dateLastPlayed) || 0, mp: Number(x.minutesPlayedTotal) || 0, tt: await titleOf(x), gl: await isGilded(x) })));
   const items = [], gen = [], gst = {};
   const POSTMASTER = 215593132;
   const pm = {}, pmRaw = [];
@@ -1873,6 +1873,22 @@ H('act:wscan', async () => {
   });
   if (batch.length) wsSave();
   return { left: need.length - batch.length, total: seen.size, scanned: seen.size - (need.length - batch.length) };
+});
+// Play time: what Bungie keeps. Time per character comes from the profile; time spent inside activities comes from the account stats.
+// Bungie does not record being AFK, so "not in an activity" (orbit, the Tower, menus, loading, and AFK) is the total minus the time inside activities.
+H('act:playtime', async () => {
+  const m = await acct();
+  const [pr, st] = await Promise.all([api(pbase(m) + '?components=200'), api(`/Destiny2/${m.membershipType}/Account/${m.membershipId}/Stats/`)]);
+  const cd = (pr.characters && pr.characters.data) || {};
+  const sec = (o) => ((((o || {}).allTime || {}).secondsPlayed || {}).basic || {}).value || 0;
+  const byId = {}; (st.characters || []).forEach((c) => { byId[c.characterId] = c; });
+  const rows = Object.values(cd).map((x) => {
+    const s = byId[x.characterId] || {}, r = s.results || {};
+    return { id: x.characterId, cls: x.classType, light: x.light, em: x.emblemBackgroundPath || '', mp: (Number(x.minutesPlayedTotal) || 0) * 60, act: sec(s.merged), pve: sec(r.allPvE), pvp: sec(r.allPvP), last: Date.parse(x.dateLastPlayed) || 0 };
+  }).sort((a, b) => b.mp - a.mp);
+  const all = st.mergedAllCharacters || {}, del = sec((st.mergedDeletedCharacters || {}).merged);
+  const live = rows.reduce((t, r) => t + r.mp, 0), total = live + del, acts = sec(all.merged);
+  return { rows, del, live, total, acts, idle: Math.max(0, total - acts), pve: sec((all.results || {}).allPvE), pvp: sec((all.results || {}).allPvP), at: Date.now() };
 });
 H('act:totals', async () => {
   const m = await acct();

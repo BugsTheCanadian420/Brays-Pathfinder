@@ -9,6 +9,7 @@
   const lsGet = (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } };
   const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* storage off */ } };
   const num = (n) => Number(n || 0).toLocaleString('en-US');
+  const hrs = (s) => { const h = Math.floor(s / 3600), d = Math.floor(h / 24); return d >= 1 ? num(h) + 'h (' + d + 'd ' + (h % 24) + 'h)' : h + 'h ' + Math.floor((s % 3600) / 60) + 'm'; };
   const img = (p) => { p = String(p || ''); return /^\/[\w./%-]*$/.test(p) ? 'https://www.bungie.net' + p : ''; };
   const clean = (e) => String((e && e.message) || e).replace(/^Error invoking remote method '[^']*': (Error: )?/, '');
 
@@ -85,6 +86,7 @@
 #home .hm-ch b span{color:#e5c158;font-size:22px;margin-left:auto}
 #home .hm-ch small{display:block;color:#ddd;font-size:12px;margin-top:2px;text-shadow:0 1px 3px #000}
 #home .hm-ch .pm{height:4px;background:rgba(0,0,0,.5);border-radius:2px;margin-top:8px;overflow:hidden}#home .hm-ch .pm i{display:block;height:100%;background:#6aa6e0}
+#home .hm-ch .hm-pt{color:#9fd0ff;font-weight:600;letter-spacing:.3px}
 #home .hm-ch.warn .pm i{background:#e8a53a}#home .hm-ch.warn small{color:#f3c27a}
 #home .hm-hd{display:flex;align-items:center;gap:12px;margin:0 0 12px}
 #home .hm-hd h2{margin:0;font-size:16px;letter-spacing:3px;text-transform:uppercase;color:#fff;font-weight:600}
@@ -129,7 +131,7 @@
     const CL = (V().CL && V().CL()) || [], cs = (V().chars && V().chars()) || D.chars || [], thr = lsGet('gt.pmwarn', 18);
     return card({ w: 'w12', i: 'user', h: 'Characters', go: 'vault', c: '#e5c158' }, `<div class="hm-chs">${cs.map((c) => {
       const pm = D.items.filter((x) => x.loc === c.id && x.pm).length, warn = thr > 0 && pm >= thr;
-      return `<div class="hm-ch${warn ? ' warn' : ''}" style="${c.em ? `background-image:linear-gradient(90deg,rgba(0,0,0,.72),rgba(0,0,0,.12)),url('${esc(img(c.em))}')` : ''}"><b>${esc(CL[c.cls] || 'Guardian')}<span>&#9670; ${num(c.light)}</span></b><small>${c.tt ? esc(c.tt) + ' &middot; ' : ''}Postmaster ${pm}/21${warn ? ' (almost full)' : ''}</small><div class="pm"><i style="width:${Math.round(pm / 21 * 100)}%"></i></div></div>`;
+      return `<div class="hm-ch${warn ? ' warn' : ''}" style="${c.em ? `background-image:linear-gradient(90deg,rgba(0,0,0,.72),rgba(0,0,0,.12)),url('${esc(img(c.em))}')` : ''}"><b>${esc(CL[c.cls] || 'Guardian')}<span>&#9670; ${num(c.light)}</span></b><small>${c.tt ? esc(c.tt) + ' &middot; ' : ''}Postmaster ${pm}/21${warn ? ' (almost full)' : ''}</small>${c.mp ? `<small class="hm-pt">${esc(hrs(c.mp * 60))} played</small>` : ''}<div class="pm"><i style="width:${Math.round(pm / 21 * 100)}%"></i></div></div>`;
     }).join('')}</div>`);
   }
   // Each reset with its countdown and the local day and time it happens. On Mondays the daily and weekly resets are the same moment

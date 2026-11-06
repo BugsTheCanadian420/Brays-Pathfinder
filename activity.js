@@ -15,7 +15,7 @@
   const clock = (ms) => { const s = Math.round(ms / 1000), h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), r = s % 60; return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(r).padStart(2, '0'); };
   const cap = (t) => String(t).replace(/\b\w/g, (c) => c.toUpperCase());
 
-  const TABS = [['rot', 'Rotations'], ['week', 'This week'], ['xur', 'X&ucirc;r'], ['bnt', 'Bounties'], ['ven', 'Vendors'], ['wep', 'Weapon stats'], ['clr', 'Raids and dungeons'], ['cru', 'Crucible'], ['pb', 'Personal bests'], ['rec', 'Recap']];
+  const TABS = [['rot', 'Rotations'], ['week', 'This week'], ['xur', 'X&ucirc;r'], ['bnt', 'Bounties'], ['ven', 'Vendors'], ['wep', 'Weapon stats'], ['clr', 'Raids and dungeons'], ['cru', 'Crucible'], ['pb', 'Personal bests'], ['time', 'Play time'], ['rec', 'Recap']];
   const st = { vopen: new Set(), tab: 'rot', vh: 0, vq: '', char: '', cache: {}, wf: 'All', wq: '', sort: 'kills', busy: 0 };
 
   const s = document.createElement('section'); s.id = 'activity'; s.className = 'gdark'; vsec.parentNode.appendChild(s);
@@ -148,7 +148,7 @@
   const chars = () => { const d = V().D && V().D(); return (d && d.chars) || []; };
   const charArg = () => (st.char ? { char: st.char } : {});
 
-  const PINNABLE = { week: 'Left this week', cru: 'Crucible', rot: 'Rotations', bnt: 'Bounties', xur: 'Xûr', clr: 'Raids and dungeons', pb: 'Personal bests', rec: 'Recap', wep: 'Weapon stats' };
+  const PINNABLE = { week: 'Left this week', cru: 'Crucible', rot: 'Rotations', bnt: 'Bounties', xur: 'Xûr', clr: 'Raids and dungeons', pb: 'Personal bests', time: 'Play time', rec: 'Recap', wep: 'Weapon stats' };
   function frame() {
     const cs = chars(), CL = (V().CL && V().CL()) || {};
     const showChar = ['bnt', 'ven', 'xur'].includes(st.tab) && cs.length > 1;
@@ -396,6 +396,19 @@
     const groups = ['Overall', 'PvE', 'Crucible'].map((gname) => [gname, r.rows.filter((x) => (x.g || 'PvE') === gname)]).filter((q) => q[1].length);
     return (r.rows.length ? groups.map(([gname, l]) => `<h3 class="sec">${esc(gname)}</h3><div class="agrid fit">${l.map(card).join('')}</div>`).join('') : msg('No activity history yet.')) + fastH
       + noteCard(`From your last ${num(g.pve || 0)} PvE activities and ${num(g.pvp || 0)} Crucible matches${g.pvp ? ' (' + num(g.wins || 0) + ' wins)' : ''}. Click a record to see who was there.`);
+  };
+
+  // ---- play time: how long you have played, per character, and how much of it was spent outside activities ----
+  RENDER.time = async (force) => {
+    const r = await fetchCached('time', () => gt().actPlaytime(), force);
+    const CL = (V().CL && V().CL()) || [];
+    const hh = (s) => { const h = Math.floor(s / 3600), d = Math.floor(h / 24); return num(h) + 'h ' + Math.floor((s % 3600) / 60) + 'm' + (d >= 1 ? ' <small class="mute">(' + num(d) + ' days)</small>' : ''); };
+    const pc = (a, b) => (b > 0 ? Math.round((a / b) * 100) : 0) + '%';
+    const tile = (l, v, sub, c) => `<div class="acard"><div class="stat">${l}</div><div class="big ${c || ''}">${v}</div>${sub ? `<div class="sub">${sub}</div>` : ''}</div>`;
+    const head = `<div class="row3">${tile('Total play time', hh(r.total), 'Every character, deleted ones included')}${tile('In activities', hh(r.acts), pc(r.acts, r.total) + ' of your time')}${tile('Not in an activity', hh(r.idle), pc(r.idle, r.total) + ' &middot; orbit, the Tower, menus, loading and AFK', r.idle > r.acts ? 'neg' : '')}${tile('PvE', hh(r.pve), pc(r.pve, r.acts) + ' of activity time')}${tile('Crucible', hh(r.pvp), pc(r.pvp, r.acts) + ' of activity time')}${r.del ? tile('Deleted characters', hh(r.del), pc(r.del, r.total) + ' of your total') : ''}</div>`;
+    const top = Math.max(1, ...r.rows.map((c) => c.mp));
+    const cards = r.rows.map((c) => `<div class="acard bg">${c.em ? `<div class="abgi" style="background-image:url('${esc(img(c.em))}')"></div>` : ''}<div class="stat">${esc(CL[c.cls] || 'Guardian')} &middot; &#9670; ${num(c.light)}</div><div class="big">${hh(c.mp)}</div><div class="sub">${c.act ? hh(c.act) + ' in activities (' + pc(c.act, c.mp) + ')' : 'Active ' + esc(new Date(c.last).toLocaleDateString())}</div><div class="pmbar" style="height:4px;background:rgba(255,255,255,.12);border-radius:2px;margin-top:8px"><i style="display:block;height:100%;width:${Math.round(c.mp / top * 100)}%;background:var(--g-accent,#6aa6e0);border-radius:2px"></i></div></div>`).join('');
+    return head + `<h3 class="sec">Characters</h3><div class="agrid">${cards}</div>` + noteCard('Total time is what Bungie keeps for each character. Bungie does not record AFK time on its own, so "Not in an activity" is your total minus the time inside activities: orbit, the Tower, menus, loading and being AFK all land there.');
   };
 
   // ---- Crucible: totals, win rate, K/D, KDA, playlists, maps, recent matches and a trend of the last 40 matches ----

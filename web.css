@@ -33,6 +33,15 @@ html.gtweb{--gt-sat:env(safe-area-inset-top,0px)}
   /* a finger on an item scrolls the page (it used to be blocked, so the vault could not be scrolled by touching items) */
   html.gtweb #vgrid .vt{touch-action:pan-y!important}
 
+  /* the loadout editor is a full sheet over the tab bar (its Save buttons used to sit under the bar); its pop-ups and messages go above it */
+  html.gtweb #dled{top:calc(var(--gt-sat) + 6px)!important;height:auto!important;z-index:9100!important;border-radius:14px 14px 0 0}
+  html.gtweb #dled .dl-ef{padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}
+  html.gtweb #dled .dl-ef button{flex:1 1 auto}
+  html.gtweb #dlmod{z-index:9200!important}
+  html.gtweb #loimg{z-index:9200!important;padding:calc(var(--gt-sat) + 12px) 10px calc(12px + env(safe-area-inset-bottom,0px))}
+  html.gtweb #loimg .li{max-height:100%;overflow:auto;padding:10px}
+  html.gtweb #dlt{z-index:9300!important;left:12px!important;right:12px;max-width:none!important;bottom:calc(68px + env(safe-area-inset-bottom,0px))!important}
+
   /* floating Notes button and toasts sit above the tab bar */
   html.gtweb #gtnfab{bottom:calc(68px + env(safe-area-inset-bottom,0px))!important}
 
