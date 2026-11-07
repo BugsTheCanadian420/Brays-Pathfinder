@@ -296,12 +296,15 @@ ${mine ? `<div class="mute" style="margin-top:4px">You have ${mine} roll${mine =
 <div class="wr"><div class="nm"><b>Daily reset</b><small>A desktop alert at every daily reset (17:00 UTC).</small></div><label class="wr" style="border:0;padding:0"><input type="checkbox" data-fs="remd"${lsGet('gt.rem.d', false) ? ' checked' : ''}> On</label></div></div>
 <div class="card fxcard" id="gtfx4"><h2>Backup</h2><p class="mute">Save everything you set up in Pathfinder to a file: loadouts, tags, notes, saved searches, settings, farming targets and your own wish list rolls. Restore it after reinstalling or on another PC. Your Bungie sign-in is never saved in the file.</p>
 <p><button class="b" data-fs="bkexp">Save a backup...</button> <button class="g" data-fs="bkimp">Restore from a backup...</button> <span class="mute">${esc(st.bkMsg || '')}</span></p></div>
-<div class="card fxcard" id="gtfx2"><h2>My wish list</h2><p class="mute">Rolls you added with the Wish list maker. They work like any other list: thumbs up in the vault, perk badges in the popup.</p>${mineRows()}<p style="margin-top:8px"><button class="g" data-fs="copy">Copy as DIM wish list</button> <button class="g" data-fs="wipe">Remove all my rolls</button> <span class="mute">${esc(st.mineMsg)}</span></p></div>`;
+<div class="fxsub" id="gtfx2"><div class="thh">My wish list</div><p class="mute">Your own rolls, kept with your other lists. To add one, open a weapon in Inventory and press <b>Wish list maker</b> at the bottom of its pop-up, then pick the perks you want. They work like any other list: a thumbs up in the vault and on the perks.</p>${mineRows()}<p style="margin-top:8px"><button class="g" data-fs="copy">Copy as DIM wish list</button> <button class="g" data-fs="wipe">Remove all my rolls</button> <span class="mute">${esc(st.mineMsg)}</span></p></div>`;
   }
   function drawFx() {
     if (!setEl) return;
     setEl.querySelectorAll('#gtfx, #gtfx2, #gtfx3, #gtfx4').forEach((n) => n.remove());
     const tmp = document.createElement('div'); tmp.innerHTML = fxCard();
+    // My wish list goes inside the Wish lists card
+    const mine = tmp.querySelector('#gtfx2'), wlc = [...setEl.querySelectorAll('.card')].find((c) => /^Wish lists$/i.test(((c.querySelector('h2') || {}).textContent || '').trim()));
+    if (mine) { if (wlc) wlc.appendChild(mine); else { const c = document.createElement('div'); c.className = 'card fxcard'; c.innerHTML = '<h2>My wish list</h2>'; c.appendChild(mine); setEl.appendChild(c); } }
     while (tmp.firstChild) setEl.appendChild(tmp.firstChild);
   }
   if (setEl) {

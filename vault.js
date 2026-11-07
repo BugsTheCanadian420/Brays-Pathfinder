@@ -573,7 +573,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 .dpsb>i{display:block;width:14px;height:14px;font-style:normal}
 .dpsb .dpsi{width:12px;height:12px;margin:0;vertical-align:top;display:block;opacity:.9}
 .dpsb .dpbar{height:14px;background:#2c2e33}
-.dpsb .dpbar i{background:#fff}.dpsb .dpbar i.mb{background:#4aa3c9}.dpsb .dpbar i.mwb{background:#e8a53a}
+.dpsb .dpbar i{background:#fff}.dpsb .dpbar i.mb{background:#4aa3c9}.dpsb .dpbar i.mwb{background:#e8a53a}.dpsb .dpbar i.tnb{background:#c0392b}.dpsb.tneg b{color:#e05a4a!important}.dpsb.tneg span{color:#e05a4a}.dpsb .tni{font-style:normal;color:#9fd3ff;margin-right:3px;font-size:11px}.dpmr.dpall{padding:8px 10px;gap:6px;border-top:1px solid #2b2d31}.dpmr.dpall div{width:34px;height:34px}.dpmr.dpall div.cos1{border-color:#6a5a8a}
 .dpsb.tot{border-top:0;margin-top:4px;padding-top:0}
 .dpsb.tot>b{text-decoration:underline;text-underline-offset:3px}
 .dpsb.tot .tbd{font-size:12px;color:#fff;white-space:nowrap}.dpsb.tot .tbd u{text-decoration:none}.dpsb.tot .bl{color:#4aa3c9}.dpsb.tot .or{color:#e8a53a}
@@ -624,7 +624,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 /* settings page */
 #settings{--t:var(--gt-t,44px)}
 :root[data-gsec="settings"] main{max-width:none!important;padding:14px 16px 40px!important}
-#settings.on{max-width:1600px!important;width:100%;box-sizing:border-box;margin:0 auto}
+#settings.on{max-width:1240px!important;width:100%;box-sizing:border-box;margin:0 auto}#settings .card{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}#settings .sxtabs{margin-top:10px;border-top:1px solid var(--g-line,#2b2e33);padding-top:8px}#settings .fxsub{margin-top:14px;border-top:1px solid var(--g-line,#2b2e33);padding-top:10px}
 #settings .scols{display:flex;gap:16px;align-items:flex-start}#settings .scol{flex:1 1 0;min-width:0}
 #settings .sg{grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:6px}#settings .th{padding:6px 6px 7px;font-size:12.5px}#settings .th i{height:20px;margin-bottom:5px}
 #settings .uis{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
@@ -887,17 +887,26 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
     if (!h) return r;
     return { v: 1, notes: ['Target: ' + h.name].concat(r.v === 1 ? r.notes : []).slice(0, 3), tags: r.tags, perks: new Set([...r.perks, ...h.perks]) };
   }
+  // Like DIM: the weapon's wish list roll is the FIRST roll (in list order: this weapon's rolls, then rolls for any weapon) whose
+  // perks this copy can roll; that one roll decides the thumbs up (or down for a trash roll), the note and which perks get a thumb.
+  // Mixing perks from every roll that fits used to put thumbs on perks DIM does not mark.
+  function wishRoll(x) {
+    if (!WL || !x.pk) return null;
+    const P = new Set(x.pk);
+    for (const r of [...(WL.rolls[x.h] || []), ...(WL.rolls['*'] || [])]) {
+      if (typeof r[0] === 'string') r[0] = r[0] ? r[0].split(',').map(Number) : [];
+      if (r[0].length && r[0].every((h) => P.has(h))) return r;
+    }
+    return null;
+  }
   function wish0(x) {
     if (!WL || !x.pk) return { v: 0, notes: [], tags: [], perks: new Set() };
     const k = x.id + ':' + WLV; if (wcache[k]) return wcache[k];
-    const P = new Set(x.pk), good = [], bad = [], tg = [], perks = new Set();
-    for (const r of [...(WL.rolls[x.h] || []), ...(WL.rolls['*'] || [])]) {
-      if (typeof r[0] === 'string') r[0] = r[0] ? r[0].split(',').map(Number) : [];
-      if (r[0].every((h) => P.has(h))) { (r[2] ? bad : good).push(typeof r[1] === 'number' ? (WL.notes || [])[r[1]] || '' : r[1]); if (r[3]) tg.push(...r[3].split(',')); if (!r[2]) r[0].forEach((h) => { perks.add(h); const nm = D && D.pn && D.pn[h]; if (nm) perks.add(nm); }); }
-    }
-    const v = good.length ? 1 : bad.length ? -1 : 0;
-    const seenN = new Set(), short = (v === 1 ? good : bad).filter(Boolean).filter((n) => { const key = n.slice(0, 50); if (seenN.has(key)) return false; seenN.add(key); return true; }).map((n) => (n.length > 170 ? n.slice(0, 167) + '...' : n));
-    return (wcache[k] = { v, notes: short.slice(0, 2), tags: [...new Set(tg)], perks });
+    const r = wishRoll(x), perks = new Set();
+    if (!r) return (wcache[k] = { v: 0, notes: [], tags: [], perks });
+    const note = String(typeof r[1] === 'number' ? (WL.notes || [])[r[1]] || '' : r[1] || '');
+    if (!r[2]) r[0].forEach((h) => { perks.add(h); const nm = D && D.pn && D.pn[h]; if (nm) perks.add(nm); });
+    return (wcache[k] = { v: r[2] ? -1 : 1, notes: note ? [note.length > 170 ? note.slice(0, 167) + '...' : note] : [], tags: r[3] ? [...new Set(r[3].split(','))] : [], perks, roll: r });
   }
   const wlAgo = (t) => { if (!t) return 'never'; const m = Math.round((Date.now() - t) / 60000); return m < 2 ? 'just now' : m < 120 ? m + ' minutes ago' : m < 2880 ? Math.round(m / 60) + ' hours ago' : Math.round(m / 1440) + ' days ago'; };
   const WL_OK = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#4caf50" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>';
@@ -984,7 +993,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
     const sortList = `<div class="sortl">${SET.sortkeys.map((q, i) => `<div class="sri${q.on ? ' on' : ''}" draggable="true" data-si="${i}"><span class="grip" title="Drag to reorder">&#8942;&#8942;</span><label><input type="checkbox" data-sc="${i}"${q.on ? ' checked' : ''}> ${esc((SORTK.find((z) => z[0] === q.k) || [0, q.k])[1])}</label><button class="g" data-sd="${i}" title="${q.d === 1 ? 'Default order. Click to flip it' : 'Flipped. Click to go back'}">${q.d === 1 ? '&#9650;' : '&#9660;'}</button></div>`).join('')}</div>`;
     const cst = [0, 1, 2].map((c) => `<div class="cstr"><b>${CL[c]}</b>${CSTN.map((n, i) => `<button class="chip${SET.cst[c][i] ? ' on' : ''}" data-cst="${c}:${i}">${n}</button>`).join('')}</div>`).join('');
     const navL = window.__gtnav ? window.__gtnav.list() : [];
-    const tabsCard = navL.length ? `<div class="card sc"><h2>Tabs</h2><p class="mute">Turn off the tabs you don't use. The bar re-fits the rest. Inventory and Settings always stay.</p><div class="navtg">${navL.map(([id, n, h, lock]) => `<button class="chip${h ? '' : ' on'}" data-navt="${esc(id)}"${lock ? ' disabled title="Always shown"' : ''}>${esc(n)}</button>`).join('')}</div></div>` : '';
+    const tabsCard = navL.length ? `<div class="sxtabs"><div class="thh">Tabs</div><p class="mute">Turn off the tabs you don't use. The bar re-fits the rest. Inventory and Settings always stay.</p><div class="navtg">${navL.map(([id, n, h, lock]) => `<button class="chip${h ? '' : ' on'}" data-navt="${esc(id)}"${lock ? ' disabled title="Always shown"' : ''}>${esc(n)}</button>`).join('')}</div></div>` : '';
     const acct = `<div class="card sc"><h2>Accounts</h2><p class="mute">${D && D.name ? 'Signed in as <b>' + esc(D.name) + '</b>.' : 'Signed in with Bungie.'} Add your alts, or a friend's account if they sign in here themselves, and switch between them. Switching ${window.__GT_WEB__ ? 'reloads the page' : 'restarts the app'}. Tags and notes are shared; loadouts are kept per account.</p><div class="acl">${aclHTML()}</div>${syncHTML(sx)}<p><button class="b" data-sa="addacct">Add another account</button> <button class="g" data-sa="out">Sign out of this account</button></p>${window.__GT_WEB__ ? '<p class="mute" style="font-size:12px">If Bungie signs you straight back in as the same account, sign out on bungie.net first, then press Add another account again.</p>' : ''}</div>`;
     settingsSec.innerHTML = `<div class="setgrid">
     <div class="card sc"><h2>Item display</h2>${pv}
@@ -1019,18 +1028,19 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
       ${sx('Show emblems on characters', '', tgl('emblems'))}
       ${sx('Show postmaster', '', tgl('postmaster'))}
       ${sx('Tighter spacing', 'Packs items, rows and sections closer together so more fits on screen.', tgl('compact'))}
+      ${tabsCard}
       <p><button class="g" data-sa="reset">Reset display settings</button></p>
-    </div>${tabsCard}${wlc}${upd}${acct}</div>`;
+    </div>${wlc}${acct}</div>`; void upd; // Updates now live in About & help (news.js)
   }
   // Settings cards in even columns: each card, in a sensible order, goes into whichever column is shortest, so no side runs
   // far longer than the other. Re-done when cards are added (Farming, Reminders... come from another file) or the window resizes.
-  const SORD = ['Accounts', 'Item display', 'Inventory display', 'Appearance', 'Display', 'Tabs', 'Wish lists', 'My wish list', 'Farming', 'Reminders', 'Backup', 'Updates', 'About & help'];
+  const SORD = ['Accounts', 'Item display', 'Inventory display', 'Appearance', 'Display', 'Wish lists', 'Farming', 'Reminders', 'Backup', 'About & help'];
   let balT = 0, balN = 0;
   function balanceSettings(force) {
     const root = settingsSec; if (!root || !root.isConnected || !root.classList.contains('on')) return;
     const cards = [...root.querySelectorAll('.card')].filter((c) => c.parentElement && (c.parentElement === root || c.parentElement.classList.contains('setgrid') || c.parentElement.classList.contains('scol')));
     if (!cards.length) return;
-    const n = Math.max(1, Math.min(3, Math.floor((root.clientWidth + 16) / 436)));
+    const n = Math.max(1, Math.min(2, Math.floor((root.clientWidth + 16) / 520)));
     const loose = cards.some((c) => !c.parentElement.classList.contains('scol'));
     if (!force && !loose && n === balN) return;
     balN = n;
@@ -1132,7 +1142,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
       return;
     }
     applySet(); saveSet(); if (window.__gtRender) window.__gtRender();
-    if (e.target.type !== 'range' && e.target.type !== 'color') drawSettings();
+    if (e.target.type !== 'range' && e.target.type !== 'color' && e.target.type !== 'checkbox') drawSettings();
     if (k === 'farmspaces' && window.gt && gt.farmSet) gt.farmSet({ spaces: SET.farmspaces }).catch(() => {});
     if (k === 'clarity') clarLoad();
   });
@@ -1256,7 +1266,11 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
     if (!D) { load(); return; }
     if (qload) return; qload = true;
     sec.querySelectorAll('.vrf').forEach((b) => b.classList.add('spin')); setNote('Reloading your vault...');
-    try { D = await fetchD(true); Object.keys(DET).forEach((k) => delete DET[k]); renderGrid(); renderLoTab(); setNote('Vault reloaded ' + new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) + '.'); }
+    try {
+      D = await fetchD(true); Object.keys(DET).forEach((k) => delete DET[k]); renderGrid(); renderLoTab();
+      const age = D.ts ? Math.round((Date.now() - D.ts) / 60000) : 0;
+      setNote(age >= 2 ? 'Reloaded, but Bungie is still sending your inventory from about ' + age + ' minutes ago. Changes made in the game or another app show up once Bungie catches up.' : 'Vault reloaded ' + new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) + '.');
+    }
     catch (e) { setNote('Could not reload: ' + clean(e)); }
     qload = false; sec.querySelectorAll('.vrf').forEach((b) => b.classList.remove('spin'));
   }
@@ -1722,8 +1736,11 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
     if (a.length !== b.length) { el.replaceChildren(t.content); return; }
     for (let i = a.length - 1; i >= 0; i--) if (!a[i].isEqualNode(b[i])) a[i].replaceWith(b[i]);
   }
+  let gridDirty = false;
+  new MutationObserver(() => { if (gridDirty && sec.classList.contains('on')) { gridDirty = false; renderGrid(); } }).observe(sec, { attributes: true, attributeFilter: ['class'] });
   function renderGrid() {
     if (dragId) { dragPend = true; return; } // never rebuild the page under a drag in progress
+    if (!sec.classList.contains('on') && g('vgrid') && g('vgrid').firstChild) { gridDirty = true; return; } // hidden: rebuilt when shown
     const y = window.scrollY, el = g('vgrid'); if (!el || !D) return;
     const vc = D.items.filter((x) => x.loc === 'vault').length, vis = visChars(), under = SET.vaultunder || PHONE.matches;
     let h = `<div class="dgrid${under ? ' under' : ''}${PHONE.matches ? ' phone' : ''}" style="--n:${vis.length};--iw:${SET.invw}">`;
@@ -1816,7 +1833,9 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
   // (for up to 10 minutes); data made well after it is believed, so a change made in game afterwards still shows.
   function reconcile(n) {
     const now = Date.now(), ids = Object.keys(LEDGER); if (!ids.length) return n;
-    const by = new Map(n.items.map((x) => [x.id, x])), made = n.ts2 || n.ts || 0;
+    // Items are dated by responseMintedTimestamp (Bungie: the secondary timestamp is only for records, collectibles and the like,
+    // and using it kept moves made in the game or in DIM hidden for minutes).
+    const by = new Map(n.items.map((x) => [x.id, x])), made = n.ts || 0;
     ids.forEach((id) => {
       const l = LEDGER[id];
       const age = l.at ? now - l.at : 0;
@@ -2097,19 +2116,16 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
   const BRK = { 1: 'Barrier (shield-piercing)', 2: 'Overload (disruption)', 3: 'Unstoppable (stagger)' };
   const NOTES = () => { try { return JSON.parse(localStorage.getItem('gt_notes')) || {}; } catch (e) { return {}; } };
   const pimg = (p) => (p && p.i ? `<img src="${esc(icon(p.i))}" alt="">` : '');
-  // "Preview Wishlist Perks": the one wish list roll (or Farming target) that suits this weapon best, perk by perk, instead of
-  // mixing perks from different rolls. Best = names the most columns, then needs the fewest changes, then comes first in the list.
+  // "Preview Wishlist Perks": like DIM, the weapon's wish list roll (the first roll that fits, the one its thumbs come from) is put
+  // in the preview, perk by perk. A Farming target for this weapon comes first.
   function bestRoll(x, d) {
     const P = new Set(x.pk || []), name = (h) => (D && D.pn && D.pn[h]) || '';
     const cols = []; d.groups.forEach((gr, gi) => { if (gr.label !== 'Perks') return; gr.cols.forEach((col, ci) => cols.push({ k: gi + '-' + ci, col, on: col.find((p) => p.on) || col[0] })); });
     const cand = [];
     const T = window.__gtt, th = T && T.hit ? T.hit(x) : null;
     if (th && th.perks && th.perks.size) cand.push({ hs: [...th.perks].filter((v) => typeof v === 'number'), names: [...th.perks].filter((v) => typeof v === 'string'), note: 'Farming target: ' + th.name, pri: 1 });
-    if (WL && x.pk) for (const r of [...(WL.rolls[x.h] || []), ...(WL.rolls['*'] || [])]) {
-      if (typeof r[0] === 'string') r[0] = r[0] ? r[0].split(',').map(Number) : [];
-      if (r[2] || !r[0].length || !r[0].every((h) => P.has(h))) continue;
-      cand.push({ hs: r[0], names: [], note: typeof r[1] === 'number' ? (WL.notes || [])[r[1]] || '' : r[1] || '', pri: 0 });
-    }
+    const wr = wishRoll(x); void P;
+    if (wr && !wr[2]) cand.push({ hs: wr[0], names: [], note: typeof wr[1] === 'number' ? (WL.notes || [])[wr[1]] || '' : wr[1] || '', pri: 0 });
     let best = null;
     const allH = new Set(); cols.forEach(({ col }) => col.forEach((p) => { if (p.h) allH.add(p.h); }));
     cand.forEach((c, order) => {
@@ -2199,13 +2215,15 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
     const seg = (s, mx) => {
       const mb = s.mb || 0, mw = s.mw || 0, base = Math.max(0, Math.min(s.v, s.nv) - mb - mw), diff = Math.abs(s.nv - s.v);
       const w = (n) => (n / mx * 100) + '%', cls = s.nv > s.v ? 'up' : 'dn';
-      return `<div class="dpbar"><i style="width:${w(base)}"></i>${mb ? `<i class="mb" style="width:${w(mb)}"></i>` : ''}${mw ? `<i class="mwb" style="width:${w(mw)}"></i>` : ''}${diff ? `<u class="${cls}" style="width:${w(diff)}"></u>` : ''}</div>`;
+      const neg = s.tn < 0 ? -s.tn : 0;
+      return `<div class="dpbar"><i style="width:${w(base)}"></i>${mb ? `<i class="mb" style="width:${w(mb)}"></i>` : ''}${mw ? `<i class="mwb" style="width:${w(mw)}"></i>` : ''}${neg ? `<i class="tnb" style="width:${w(neg)}" title="Tuning: -${neg}"></i>` : ''}${diff ? `<u class="${cls}" style="width:${w(diff)}"></u>` : ''}</div>`;
     };
     const ord = isA ? stats.slice().sort((p, q) => DORD.indexOf(p.h) - DORD.indexOf(q.h)) : stats;
     const rows = ord.length ? '<div class="dpss' + (isA ? ' arm' : '') + '">' + ord.map((s) => {
       const cls = s.nv > s.v ? 'up' : s.nv < s.v ? 'dn' : '', si = SHI.indexOf(s.h), ic = isA && si >= 0 && sti[si] ? `<img class="dpsi" src="${esc(icon(sti[si]))}" alt="">` : '';
       if (s.num) return `<div class="dpsb"><span>${esc(SHORT[s.n] || s.n)}</span><b class="${cls}">${s.nv}</b><i></i><div></div></div>`;
-      return `<div class="dpsb${prim.has(s.n.toLowerCase()) ? ' pri' : ''}"><span title="${esc(s.n)}">${esc(SHORT[s.n] || s.n)}</span><b class="${cls}">${isA ? '+' : ''}${s.nv}</b><i>${ic}</i>${seg(s, isA ? 45 : (s.max || 100))}</div>`;
+      const tnT = s.tn ? ` title="Tuning ${s.tn > 0 ? '+' : ''}${s.tn}"` : '';
+      return `<div class="dpsb${prim.has(s.n.toLowerCase()) ? ' pri' : ''}${s.tn < 0 ? ' tneg' : s.tn > 0 ? ' tpos' : ''}"><span title="${esc(s.n)}">${s.tn > 0 ? '<em class="tni">&#8651;</em>' : ''}${esc(SHORT[s.n] || s.n)}</span><b class="${cls}"${tnT}>${isA && s.nv >= 0 ? '+' : ''}${s.nv}</b><i>${ic}</i>${seg(s, isA ? 45 : (s.max || 100))}</div>`;
     }).join('') + (isA && d.tot ? (() => { const tv = ord.reduce((t, z) => t + z.nv, 0), mbt = ord.reduce((t, z) => t + (z.mb || 0), 0), mwt = ord.reduce((t, z) => t + (z.mw || 0), 0); return `<div class="dpsb tot"><span>Total</span><b>${tv}</b><i></i><div class="tbd">${tv - mbt - mwt}${mbt ? ` <u class="bl">+${mbt}</u>` : ''}${mwt ? ` <u class="or">+${mwt}</u>` : ''}</div></div>`; })() : '') + customRow(x, stats) + '</div>' : '';
     const energy = d.energy ? `<div class="dpen"><b>${d.energy.cap} ENERGY</b><div>${Array.from({ length: Math.max(10, d.energy.cap) }, (_, i) => `<i class="${i < d.energy.used ? 'u' : ''}"></i>`).join('')}</div></div>` : '';
     const arche = d.arche ? `<div class="dpar"><div class="dpi0">${pimg(d.arche)}</div><div><b>${esc(d.arche.n)}</b>${esc(d.arche.d || '').split(/\n+/).filter((l) => /stat:/i.test(l)).map((l) => `<span>${l}</span>`).join('') || `<span>${esc(d.arche.d || '')}</span>`}</div></div>` : '';
@@ -2221,7 +2239,12 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
     const nm = (h) => { const q = d.stats.find((z) => z.h === h); return q ? q.n : ''; };
     const clr = (p) => (SET.clarity !== 'bungie' && CLAR && p && CLAR[p.h]) || '';
     const prow = [];
-    d.groups.forEach((gr, gi) => { if (gr.label !== 'Perks') return; gr.cols.forEach((col, ci) => {
+    // Weapons in DIM's order (traits and origin at the top, barrel at the bottom); subclasses in the game's order (super, class
+    // ability, jump, melee, grenade, aspects, fragments); anything else as Bungie lists it.
+    const SRK = [/super/i, /class_abilit|classabilit/i, /movement|jump/i, /melee/i, /grenade/i, /aspect/i, /fragment/i];
+    const srk = (col) => { const c = ((col.find((p) => p.on) || col[0] || {}).c) || ''; const i = SRK.findIndex((re) => re.test(c)); return i < 0 ? 9 : i; };
+    const order = (cols) => { const a = cols.map((col, ci) => [col, ci]); if (x && WEAPON.has(x.b)) return a.reverse(); if (x && x.b === 3284755031) return a.sort((p, q) => srk(p[0]) - srk(q[0]) || p[1] - q[1]); return a; };
+    d.groups.forEach((gr, gi) => { if (gr.label !== 'Perks') return; order(gr.cols).forEach(([col, ci]) => {
       const k = gi + '-' + ci, on = col.find((p) => p.on) || col[0];
       const si = psel[k] !== undefined && col[psel[k]] ? psel[k] : col.indexOf(on), cur = col[si] || on;
       const ico = (p, i) => `<div class="dpc${i === si ? ' sel' : ''}${p === on ? ' eqp' : ''}" data-pk="${k}" data-pi="${i}" title="${esc(p.n)}${wpHas(p) ? ' (in a wish list roll)' : ''}">${pimg(p)}${wpHas(p) ? `<i class="pwb">${SV_UP}</i>` : ''}</div>`;
@@ -2236,8 +2259,10 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
     const pbtn = (hasWp ? `<button class="g pbtn" data-a="wlp">${SV_UP} Preview Wishlist Perks</button>` : '') + (canApply ? `<button class="b pbtn" data-a="applyp">&#10003; Apply Perks</button>` : changed ? '<span class="mute pnoap">Preview only: Bungie does not let this item change perks in game.</span>' : '');
     const perks = prow.length ? `<div class="dpp">${prow.join('')}</div>` : '';
     const mrows = d.groups.filter((gr) => gr.label === 'Mods').map((gr) => gr.cols.map((col) => { const on = col.find((p) => p.on) || col[0]; return `<div${/tuning/i.test(on.c || '') ? ' class="tun"' : ''} title="${esc(on.n)}${on.d ? ' - ' + esc(on.d) : ''}">${pimg(on)}</div>`; }).join('')).join('');
-    const mods = mrows ? `<h5 class="dph5">${isA ? 'Armor' : 'Weapon'} Mods</h5><div class="dpmr">${mrows}</div>` : '';
-    return rows + energy + arche + setb + frame + objs + perks + mods + cosm + (changed ? '<div class="rst" data-a="rst">Reset perk preview</div>' : '') + (pbtn ? `<div class="dpbt">${pbtn}</div>` : '') || '<p class="dpmu">No stats or perks to show for this item.</p>';
+    // one row of icons at the bottom, like DIM: mods, then cosmetics
+    const crows = (d.cos || []).map((o) => `<div class="cos1" title="${esc(o.n)}${o.d ? ' - ' + esc(o.d) : ''}">${pimg(o)}</div>`).join('');
+    const mods = mrows || crows ? `<div class="dpmr dpall">${mrows}${crows}</div>` : ''; void cosm;
+    return rows + energy + arche + setb + frame + objs + perks + mods + (changed ? '<div class="rst" data-a="rst">Reset perk preview</div>' : '') + (pbtn ? `<div class="dpbt">${pbtn}</div>` : '') || '<p class="dpmu">No stats or perks to show for this item.</p>';
   }
   const ent = (id) => D.chars.find((c) => c.id === id);
   const whereOf = (o) => { const c = ent(o.loc); return o.loc === 'vault' ? 'Vault' : (CL[c && c.cls] || '') + (o.e ? ' (equipped)' : ''); };
@@ -2356,8 +2381,19 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
     }
     dp.style.left = Math.round(L) + 'px'; dp.style.top = Math.round(T) + 'px';
   }
+  // The pop-up can also open over another tab (Loadouts): then it lives in its own layer on the page, with the same handlers.
+  let POPX = false;
+  function popBox() {
+    if (!POPX) return g('vpop');
+    let b = g('vpopx');
+    if (!b) {
+      b = document.createElement('div'); b.id = 'vpopx'; document.body.appendChild(b);
+      b.addEventListener('click', (e) => sec.onclick(e)); b.addEventListener('change', (e) => { if (sec.onchange) sec.onchange(e); }); b.addEventListener('input', onSecInput);
+    }
+    return b;
+  }
   function renderPop() {
-    const box = g('vpop'); if (!box) return;
+    const box = popBox(); if (!box) return;
     const x = sel && byId(sel);
     if (x) {
       const old = box.querySelector('.dpm'), top = old ? old.scrollTop : 0;
@@ -2367,6 +2403,7 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
     }
     sel = null;
     box.innerHTML = '';
+    if (POPX) { POPX = false; const v = g('vpop'); if (v) v.innerHTML = ''; }
   }
   // Postmaster engrams and other things without an instance id: Bungie has no per-item details for them, only the description.
   const noInst = (x) => !!(x && (x.eg || !/^\d+$/.test(String(x.id))));
@@ -2445,7 +2482,7 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
       if (!b) { PMSG = 'None of your wish list rolls fits this weapon.'; renderPop(); return; }
       Object.assign(psel, b.pick);
       const nt = String(b.note || '').replace(/\s+/g, ' ').trim();
-      PMSG = (b.keep === b.spec ? 'This weapon already has the best wish list roll.' : 'Showing the best wish list roll' + (b.n > 1 ? ' (of ' + b.n + ' that fit)' : '') + '. Press Apply Perks to put it in.') + (nt ? ' ' + (nt.length > 110 ? nt.slice(0, 107) + '...' : nt) : '');
+      PMSG = (b.keep === b.spec ? 'This weapon already has its wish list perks in.' : 'Showing the wish list perks. Press Apply Perks to put them in.') + (nt ? ' ' + (nt.length > 110 ? nt.slice(0, 107) + '...' : nt) : '');
       renderPop(); return;
     }
     if (t.dataset.a === 'applyp' && x) {
@@ -2516,6 +2553,7 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
   window.__gtx = {
     D: () => D, esc, icon, CL, ent, TAGS, TG, tagSvg, wish, ELEM, STN, WEAPON, ARMOR,
     match: matchQ, open: (id) => { if (D) openPop(id); }, tile: (x) => tile(x),
+    openHere: (id, el) => { if (!D) return; const was = POPX; POPX = !sec.classList.contains('on'); if (was && !POPX) { const b = g('vpopx'); if (b) b.innerHTML = ''; } openPop(id, el); },
     detail: async (x) => { if (!DET[x.id]) DET[x.id] = await gt.itemDetail({ id: x.id, h: x.h }); return DET[x.id]; },
     equip: async (ids, ch) => { const its = ids.map(byId).filter(Boolean); if (!its.length) return; await act('apply armor set', () => {}, () => gt.applyLoadout({ items: its.map(slim), char: ch }), true); },
   };
@@ -2572,12 +2610,13 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
   }, true);
   window.addEventListener('scroll', (e) => { if (sel && !(e.target && e.target.closest && e.target.closest('#vsheet'))) placePop('scroll'); }, true); // scrolling inside the pop-up must not move it
   window.addEventListener('resize', () => { POS = null; if (sel) placePop(); });
-  sec.addEventListener('input', (e) => {
+  sec.addEventListener('input', (e) => onSecInput(e));
+  function onSecInput(e) {
     if (!e.target) return;
     if (e.target.id === 'vstq') stq = parseInt(e.target.value, 10) || 0;
     // Item notes save as you type or paste (they used to save only when the box lost focus).
     if (e.target.id === 'vnotebox' && sel) { const n = NOTES(), v = e.target.value.trim(); if (v) n[sel] = v; else delete n[sel]; try { localStorage.setItem('gt_notes', JSON.stringify(n)); } catch (er) { /* ignore */ } }
-  });
+  }
   const TAGKEYS = { '!': 'favorite', '@': 'keep', '#': 'infuse', '$': 'junk', '%': 'archive' };
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') { ctxClose(); if (sel) { sel = null; renderPop(); } return; }

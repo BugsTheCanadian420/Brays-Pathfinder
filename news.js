@@ -9,6 +9,14 @@
 
   // ---- what changed: newest first. Add an entry (next id) with every update. ----
   const CHANGES = [
+    { id: 12, date: 'Nov 2026', items: [
+      'Wish lists now pick the same roll as DIM (the first roll in your lists that fits), so the thumbs, the note and Preview Wishlist Perks match DIM.',
+      'Item pop-up: weapon perks in DIM\'s order (traits at the top, barrel at the bottom), only real perks in the list, and mods and cosmetics in one row at the bottom. Tier 5 armor shows its tuning (+5 / -5), including a stat that goes to -5.',
+      'Loadouts: click an item to open its pop-up, or an ability, mod or artifact perk to see what it does.',
+      'Loadout picture: all six stats for every armor piece in the game\'s order, with the tuning marked; the subclass in the game\'s order.',
+      'Settings: two columns, faster, Tabs inside Display, My wish list inside Wish lists, Updates and help@d2pathfinder.com in About & help.',
+      'Moves made in the game or in DIM show up as soon as Bungie has them (they could stay hidden for minutes). No more flash of the plain page when it loads.',
+    ] },
     { id: 11, date: 'Nov 2026', items: [
       'Sharing Equipped (link, picture or code) now includes your armor mods, subclass setup and artifact, like a saved loadout.',
       'Fragments in slots your aspects do not open (greyed out in game) no longer show up in loadouts, pictures or shares. Older saved loadouts are cleaned up automatically.',
@@ -56,9 +64,18 @@
   window.addEventListener('error', (e) => { if (e && (e.message || e.error)) log((e.error && e.error.message) || e.message, (e.filename || '').split('/').pop() + (e.lineno ? ':' + e.lineno : '')); });
   window.addEventListener('unhandledrejection', (e) => { const r = e && e.reason; log((r && r.message) || r || 'Unknown error', 'promise'); });
 
-  let VER = window.__GT_VER__ || '';
+  let VER = window.__GT_VER__ || '', UPD = {};
   const isWeb = () => !!window.__GT_WEB__ || document.documentElement.classList.contains('gtweb');
-  if (!VER && window.gt && window.gt.updInfo) window.gt.updInfo().then((u) => { VER = (u && u.current) || ''; drawCard(); }).catch(() => {});
+  const HELP = 'help@d2pathfinder.com';
+  if (window.gt && window.gt.updInfo) {
+    window.gt.updInfo().then((u) => { UPD = { ...UPD, ...(u || {}) }; if (!VER) VER = (u && u.current) || ''; drawCard(); }).catch(() => {});
+    if (window.gt.onUpdate && !isWeb()) window.gt.onUpdate((u) => { UPD = { ...UPD, ...(u || {}) }; const c = document.getElementById('gtab'); if (c) drawCard(); });
+  }
+  function updLine() {
+    if (isWeb()) return 'This is the website: it is always the newest version when you open or reload it.';
+    if (!UPD.canUpdate) return 'Updates work in the installed app.';
+    return { idle: 'Up to date.', current: 'You have the newest version.', checking: 'Checking for updates...', downloading: 'Downloading the update ' + (UPD.pct || 0) + '%...', ready: 'Update ready. Restart to install it.', error: 'Could not check: ' + (UPD.error || 'unknown error') }[UPD.state] || 'Up to date.';
+  }
   function report() {
     const L = lsGet(LOGK, []);
     const lines = ['Pathfinder ' + (VER || '?') + ' (' + (isWeb() ? 'website' : 'PC app') + ')', navigator.userAgent, 'Screen ' + innerWidth + 'x' + innerHeight + ' @' + (window.devicePixelRatio || 1), ''];
@@ -103,6 +120,8 @@ ${list.map((c) => `<div class="gtnv"><small>${esc(c.date)}</small><ul>${c.items.
     const L = lsGet(LOGK, []).slice(-6).reverse();
     const rows = L.length ? `<div class="gtl">${L.map((x) => `<div><small>${esc(new Date(x.t).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }))}${x.n > 1 ? ' &middot; ' + x.n + ' times' : ''}</small>${esc(x.m)}</div>`).join('')}</div>` : '<p class="mute">No problems logged.</p>';
     return `<div class="card sc" id="gtab"><h2>About &amp; help</h2><p class="mute">Pathfinder ${esc(VER || '')} &middot; ${isWeb() ? 'website' : 'PC app'}. Not made by or affiliated with Bungie.</p>
+<h3 class="gth">Updates</h3><p class="mute">${esc(updLine())}</p>${!isWeb() && UPD.canUpdate ? `<p>${UPD.state === 'ready' ? '<button class="b" data-ab="install">Restart to install</button>' : '<button class="g" data-ab="check">Check for updates</button>'}</p>` : ''}
+<h3 class="gth">Help</h3><p class="mute">Questions, bugs or ideas: <a href="mailto:${HELP}" data-ab="mail">${HELP}</a></p>
 <p><button class="g" data-ab="news">What's new</button> <button class="g" data-ab="privacy">Privacy</button>${isWeb() && window.__GT_DL__ ? ' <button class="g" data-ab="pcapp">Get the PC app</button>' : ''}</p>
 <h3 class="gth">Problems</h3><p class="mute">Errors the app ran into, newest first. If something breaks, copy the report and send it along with what you were doing.</p>${rows}
 <p><button class="b" data-ab="copy">Copy problem report</button> <button class="g" data-ab="clear"${L.length ? '' : ' disabled'}>Clear</button> <span class="mute" id="gtabm"></span></p></div>`;
@@ -121,7 +140,10 @@ ${list.map((c) => `<div class="gtnv"><small>${esc(c.date)}</small><ul>${c.items.
       if (a === 'privacy') { openLink(SITE + '/privacy'); return; }
       if (a === 'pcapp') { location.href = window.__GT_DL__; return; }
       if (a === 'clear') { lsSet(LOGK, []); drawCard(); return; }
-      if (a === 'copy') { msg((await copyText(report())) ? 'Copied.' : 'Could not copy.'); }
+      if (a === 'copy') { msg((await copyText(report())) ? 'Copied. Send it to ' + HELP + '.' : 'Could not copy.'); }
+      if (a === 'check' && window.gt && window.gt.updCheck) { UPD.state = 'checking'; drawCard(); window.gt.updCheck().catch(() => {}); }
+      if (a === 'install' && window.gt && window.gt.updInstall) window.gt.updInstall();
+      if (a === 'mail') { e.preventDefault(); openLink('mailto:' + HELP + '?subject=' + encodeURIComponent('Pathfinder ' + (VER || '') + ' (' + (isWeb() ? 'website' : 'PC app') + ')')); }
     });
   }
 
@@ -131,7 +153,7 @@ ${list.map((c) => `<div class="gtnv"><small>${esc(c.date)}</small><ul>${c.items.
     + '#gtnews .gtnh{display:flex;align-items:center;gap:12px}#gtnews .gtnh b{font-size:17px;color:#fff}#gtnews .gtnh button{margin-left:auto}'
     + '#gtnews .gtnv{margin-top:12px}#gtnews .gtnv small{color:var(--acc,#e8b84a);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase}#gtnews ul{margin:6px 0 0;padding-left:20px}#gtnews li{margin:5px 0;line-height:1.45;color:#d7dae0}'
     + '#gtnews .gtnb{margin:16px 0 0}'
-    + '#gtab .gth{font-size:13px;margin:14px 0 2px;color:#fff;letter-spacing:.04em}#gtab .gtl{display:flex;flex-direction:column;gap:6px;margin:8px 0;max-height:220px;overflow:auto}'
+    + '#gtab a{color:var(--acc,#e8b84a)}#gtab .gth{font-size:13px;margin:14px 0 2px;color:#fff;letter-spacing:.04em}#gtab .gtl{display:flex;flex-direction:column;gap:6px;margin:8px 0;max-height:220px;overflow:auto}'
     + '#gtab .gtl div{font-size:12.5px;color:#d7dae0;border-left:2px solid #d9534f;padding:2px 8px;word-break:break-word}#gtab .gtl small{display:block;color:#9aa0a8;font-size:11px}'
     + '#gtab button[disabled]{opacity:.4;pointer-events:none}'
     + '@media (max-width:640px){#gtnews{padding:12px 8px}#gtnews .gtn{max-height:calc(100dvh - 110px);padding:14px}}';

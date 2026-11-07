@@ -171,9 +171,9 @@
   const artSel = () => { if (ARC[CH]) { AR = ARC[CH].v; ARERR = ARC[CH].e; ARCH = CH; } else { AR = undefined; ARCH = null; ARERR = ''; artLoad(); } };
   const curPerks = () => (AR && AR.socks ? AR.socks.map((q) => q.cur) : []);
   const plugOf = (h) => PL[h] || (AR && AR.plugs && AR.plugs[h]) || null;
-  const aIcon = (p) => `<span class="ap" title="${esc((p.n || '') + (p.d ? '\n' + p.d : ''))}">${p.i ? `<img src="${esc(V.icon(p.i))}" alt="">` : ''}</span>`;
-  const aRow = (picks) => picks.map((q) => { const p = plugOf(q) || {}; return aIcon({ n: p.n || '', d: p.d || '', i: p.i || '' }); }).join('');
-  const aRowL = (a) => a.map((q) => { const p = plugOf(q[0]); return aIcon({ n: (p && p.n) || q[1], d: (p && p.d) || '', i: (p && p.i) || q[2] }); }).join('');
+  const aIcon = (p) => `<span class="ap" data-ph="${int(p.h)}" title="${esc((p.n || '') + (p.d ? '\n' + p.d : ''))}">${p.i ? `<img src="${esc(V.icon(p.i))}" alt="">` : ''}</span>`;
+  const aRow = (picks) => picks.map((q) => { const p = plugOf(q) || {}; return aIcon({ h: q, n: p.n || '', d: p.d || '', i: p.i || '' }); }).join('');
+  const aRowL = (a) => a.map((q) => { const p = plugOf(q[0]); return aIcon({ h: q[0], n: (p && p.n) || q[1], d: (p && p.d) || '', i: (p && p.i) || q[2] }); }).join('');
   const artOk = () => AR && !AR.none && AR.socks && AR.socks.length;
   const permk = (h) => { const p = plugOf(h) || {}; return [h, String(p.n || '').slice(0, 60), rawIcon(p.i)]; };
   const itemOf = (it) => ({ h: it.h, n: it.n || '', i: rawIcon(it.i) });
@@ -233,6 +233,15 @@
   }
 
   // ---------------- mods and subclass settings, read from and written to the game ----------------
+  // Subclass setups in the game's order: super, class ability, jump, melee, grenade, aspects, fragments. New captures are sorted by
+  // what each socket is; older saved ones are in Bungie's socket order, where the super is socket 2, so it is moved to the front.
+  const SUBRK = [[/super/i, 0], [/class_abilit|classabilit/i, 1], [/movement|jump/i, 2], [/melee/i, 3], [/grenade/i, 4], [/aspect/i, 5], [/fragment/i, 6]];
+  const subRank = (c) => { for (const [re, n] of SUBRK) if (re.test(c || '')) return n; return 7; };
+  function subOrd(m) {
+    if (!Array.isArray(m) || m.length < 3 || m[0][0] === 2) return m || [];
+    const i = m.findIndex((p) => p[0] === 2); if (i <= 0) return m;
+    return [m[i], ...m.slice(0, i), ...m.slice(i + 1)];
+  }
   async function capture(x) {
     if (!x || !(AB.includes(x.b) || x.b === SUB) || !/^\d+$/.test(String(x.id))) return [];
     let d; try { d = await gt.itemDetail({ id: x.id, h: x.h }); } catch (e) { return null; }
@@ -241,10 +250,11 @@
       if (x.b !== SUB && gr.label !== 'Mods') return;
       (gr.cols || []).forEach((col) => {
         const on = col.find((p) => p.on);
-        if (on && !CAPX.test(on.c || '') && int(on.si, -1) >= 0 && int(on.h) > 0) out.push([int(on.si), int(on.h), rawIcon(on.i), String(on.n || '').slice(0, 60)]);
+        if (on && !CAPX.test(on.c || '') && int(on.si, -1) >= 0 && int(on.h) > 0) out.push([int(on.si), int(on.h), rawIcon(on.i), String(on.n || '').slice(0, 60), subRank(on.c)]);
       });
     });
-    return out;
+    if (x.b === SUB) out.sort((p, q) => p[4] - q[4] || p[0] - q[0]);
+    return out.map((p) => p.slice(0, 4));
   }
   // Ornaments and shaders on a weapon or armor piece, saved with the loadout when you ask for its look.
   async function capCos(x) {
@@ -396,7 +406,7 @@
     const modsBy = AB.map((b) => [...l.it.filter((q) => q.b === b).flatMap((q) => (q.m || []).map(mk)), ...(l.fm || []).filter((p) => +p[4] === b).map(mk)].filter(Boolean).slice(0, 12));
     const anyMods = (l.fm || []).filter((p) => !p[4] || !AB.includes(+p[4])).map(mk).filter(Boolean).slice(0, 12);
     const subM = sub && sub.en.m ? ((await ghostFree(sub.en)) || sub.en.m) : [];
-    const subPl = subM.map(mk).filter(Boolean).slice(0, 16);
+    const subPl = subOrd(subM).map(mk).filter(Boolean).slice(0, 16);
     const ic = (r) => (r && (r.x ? rawIcon(r.x.i) : r.en.i)) || '';
     const artPk = (l.a || []).map((p) => p[2]).filter(Boolean).slice(0, 14), artIc = (l.ai && l.ai.i) || '', hasArt = !!(artIc || artPk.length);
     // Details, looked up in parallel (the picture is still drawn if one fails): each weapon's equipped perks, and each armor
@@ -419,7 +429,14 @@
     const paths = [ic(sub), ...weps.map(ic), ...arms.map(ic), ...modsBy.flat().map((m) => m.i), ...anyMods.map((m) => m.i), ...subPl.map((m) => m.i), artIc, ...artPk, ...WP.flat().map((p) => p.i), ...SB.map((p) => p.i)].filter(Boolean);
     let D = {}; try { D = await gt.imgFetch({ p: [...new Set(paths)] }); } catch (e) { /* drawn without icons */ }
     const imgs = {}; await Promise.all(Object.entries(D).map(([k, v]) => new Promise((ok) => { const im = new Image(); im.onload = () => { imgs[k] = im; ok(); }; im.onerror = ok; im.src = v; })));
-    const st = [0, 0, 0, 0, 0, 0]; let hasSt = false; arms.forEach((r) => { if (r && r.x && r.x.st) { hasSt = true; r.x.st.forEach((v, i) => { st[i] += v || 0; }); } });
+    // Each piece's six stats, in the game's order (Health, Melee, Grenade, Super, Class, Weapons), with the tuning (+5 / -5) if it has one.
+    const SHX = [2996146975, 392767087, 1943323491, 1735777505, 144602215, 4244567218], GORD = [1, 5, 3, 4, 2, 0];
+    const pst = arms.map((r, i) => {
+      if (!r || !r.x || !r.x.st) return [];
+      const ds = (ADd[i] && ADd[i].stats) || [];
+      return GORD.map((k) => { const q = ds.find((z) => z.h === SHX[k]); return q ? [q.v, k, q.tn || 0] : [r.x.st[k] || 0, k, 0]; });
+    });
+    const st = [0, 0, 0, 0, 0, 0]; let hasSt = false; pst.forEach((rows) => rows.forEach(([v, k]) => { hasSt = true; st[k] += v || 0; }));
     // Layout first (the picture grows to fit the sections it has), then draw.
     const W = 1200, M = 32, IW = W - M * 2, GAP = 16;
     // Subclass icons fill the width of their box: one row when they fit at a good size, two otherwise.
@@ -427,9 +444,8 @@
     const SUBSZ = Math.max(44, Math.min(88, Math.floor((IW - 32 - (subPer - 1) * SUBGAP) / subPer))), SUBSTEP = SUBSZ + SUBGAP;
     // armor cards: five across, each with its archetype, tier, set, its own stats and its mods
     const CG = 12, CW = Math.floor((IW - 32 - 4 * CG) / 5), MSZ = 44, MSTEP = 50, mPer = Math.max(1, Math.floor((CW - 20 + (MSTEP - MSZ)) / MSTEP));
-    const pst = arms.map((r) => (r && r.x && r.x.st ? r.x.st.map((v, i) => [v || 0, i]).filter((q) => q[0] > 0).sort((p, q) => q[0] - p[0]).slice(0, 4) : []));
     const stRows = Math.max(0, ...pst.map((q) => q.length)), mRows = Math.max(0, ...modsBy.map((m) => Math.ceil(m.length / mPer)));
-    const CH2 = 12 + 88 + 30 + stRows * 24 + (stRows ? 8 : 0) + (mRows ? 8 + mRows * MSTEP : 0) + 8;
+    const CH2 = 12 + 88 + 30 + stRows * 22 + (stRows ? 8 : 0) + (mRows ? 8 + mRows * MSTEP : 0) + 8;
     const anyRows = anyMods.length ? Math.ceil(anyMods.length / Math.floor((IW - 32) / MSTEP)) : 0;
     let y = 196;
     const L = { top: y };
@@ -522,15 +538,19 @@
         txt(ex ? (AD[i].f || r.x.n || '') : (AD[i].s || (r.x || r.en).n || ''), ix, iy + 88 + 20, 14, ex ? '#ceae33' : '#e6e7ea', 600, CW - 20);
         // this piece's stats, biggest first
         let yy = iy + 88 + 30;
-        pst[i].forEach(([v, k]) => {
-          txt(IMSTL[k], ix, yy + 13, 13, '#cfd2d8', 600, 70);
-          const bx = ix + 74, bw = CW - 20 - 74 - 30; rr(bx, yy + 3, bw, 11, 3); g2.fillStyle = '#23262b'; g2.fill();
-          const fw = Math.max(0, Math.min(bw, v / 45 * bw)); rr(bx, yy + 3, fw, 11, 3); g2.fillStyle = IMSTC[k]; g2.fill();
-          txt(String(v), bx + bw + 6, yy + 13, 13.5, '#fff', 700); yy += 24;
+        pst[i].forEach(([v, k, tn]) => {
+          const zero = !v;
+          txt(IMSTL[k], ix, yy + 13, 13, tn < 0 ? '#e88a7e' : zero ? '#7c818a' : '#cfd2d8', 600, 64);
+          // tuning: which stat got +5 and which gave 5 away
+          if (tn) { font(10.5, 800); const tt = (tn > 0 ? '+' : '−') + Math.abs(tn), tw3 = g2.measureText(tt).width + 8; rr(ix + 64, yy + 2, tw3, 14, 7); g2.fillStyle = tn > 0 ? 'rgba(90,200,250,.22)' : 'rgba(224,90,74,.25)'; g2.fill(); txt(tt, ix + 68, yy + 13, 10.5, tn > 0 ? '#8fdcff' : '#ff9b8f', 800); }
+          const bx = ix + 92, bw = CW - 20 - 92 - 30; rr(bx, yy + 3, bw, 11, 3); g2.fillStyle = '#23262b'; g2.fill();
+          const fw = Math.max(0, Math.min(bw, v / 45 * bw)); if (fw > 0) { rr(bx, yy + 3, fw, 11, 3); g2.fillStyle = IMSTC[k]; g2.fill(); }
+          if (tn < 0) { const nw = Math.min(bw - fw, -tn / 45 * bw); g2.fillStyle = '#c0392b'; g2.fillRect(bx + fw, yy + 3, nw, 11); }
+          txt(String(v), bx + bw + 6, yy + 13, 13.5, v < 0 ? '#ff8a7a' : zero ? '#7c818a' : '#fff', 700); yy += 22;
         });
         // and its mods
         if (mRows) {
-          const y2 = iy + 88 + 30 + stRows * 24 + (stRows ? 8 : 0);
+          const y2 = iy + 88 + 30 + stRows * 22 + (stRows ? 8 : 0);
           g2.fillStyle = 'rgba(255,255,255,.07)'; g2.fillRect(ix, y2 - 4, CW - 20, 1);
           (modsBy[i] || []).forEach((m, k) => tileIc(m.i, ix + (k % mPer) * MSTEP, y2 + 4 + Math.floor(k / mPer) * MSTEP, MSZ, false));
         }
@@ -696,7 +716,7 @@
     const d = ed.d, res = resolve(d), [xw, xa] = usedExotics(d);
     const row = (bs) => bs.map((b) => slotCell(d, b, res)).join('');
     const subEn = d.it.find((q) => q.b === SUB), anyc = d.c === 3;
-    const subPl = subEn ? subEn.m.slice().sort((p, q) => p[0] - q[0]) : [];
+    const subPl = subEn ? subOrd(subEn.m.slice().sort((p, q) => p[0] - q[0])) : [];
     const mods = [...(d.fm || []).map((p) => [0, p[0], p[2], p[1]]), ...d.it.flatMap((q) => (AB.includes(q.b) ? q.m : []))];
     const coss = d.it.filter((q) => (WB.includes(q.b) || AB.includes(q.b)) && q.cs && q.cs.length);
     const cosRow = coss.length ? coss.map((q) => `<span class="dl-cs" title="${esc(q.n)}"><img class="dl-csi" src="${esc(V.icon(q.i))}" alt="">${plugIcons(q.cs)}</span>`).join('') : '<span class="mute">Not saved. The loadout leaves your ornaments and shaders as they are.</span>';
@@ -1059,13 +1079,29 @@ ${pn('dl-p-art', 'Artifact', `<div class="dl-artrow">${d.ai && d.ai.i ? `<span c
     return `<div class="dl-stats" title="Armor stats of these pieces">${t.map((v, i) => `<span title="${STL[i][1]}">${STL[i][0]}<b>${v}</b></span>`).join('')}<span class="dl-tot">Total <b>${t.reduce((s, v) => s + v, 0)}</b></span></div>`;
   };
   const tileOf = (r) => (r.x ? V.tile(r.x).replace(/ fade(?=[" ])/, '') : `<div class="vt dl-miss" title="Missing: ${esc(r.en.n || 'item')}">${r.en.i ? `<img src="${esc(V.icon(r.en.i))}" alt="">` : '?'}</div>`);
-  const plugIcons = (m, big) => m.map((p) => `<span class="ap ${big ? 'md' : 'sm'}" title="${esc(p[3])}">${p[2] ? `<img src="${esc(V.icon(p[2]))}" alt="">` : ''}</span>`).join('');
+  const plugIcons = (m, big) => m.map((p) => `<span class="ap ${big ? 'md' : 'sm'}" data-ph="${int(p[1])}" title="${esc(p[3])}">${p[2] ? `<img src="${esc(V.icon(p[2]))}" alt="">` : ''}</span>`).join('');
+  // Clicking a subclass ability, aspect, fragment, mod or artifact perk on a loadout shows what it does (like DIM).
+  const PINFO = {};
+  async function plugPop(el) {
+    let m = g('dlpp'); if (m) { const same = m.dataset.ph === el.dataset.ph; m.remove(); if (same) return; }
+    const h = int(el.dataset.ph), img = el.querySelector('img'), name = String(el.getAttribute('title') || '').split('\n')[0];
+    m = document.createElement('div'); m.id = 'dlpp'; m.dataset.ph = String(h);
+    const body = (inf) => `<div class="pph">${img ? `<img src="${esc(img.getAttribute('src'))}" alt="">` : ''}<div><b>${esc((inf && inf.n) || name || 'Unknown')}</b>${inf && inf.ty ? `<small>${esc(inf.ty)}</small>` : ''}</div></div>${inf ? (inf.d ? `<p>${esc(inf.d)}</p>` : '<p class="mute">No description from Bungie.</p>') : '<p class="mute">Loading...</p>'}`;
+    m.innerHTML = body(PINFO[h]);
+    document.body.appendChild(m);
+    const r = el.getBoundingClientRect(), w = Math.min(320, innerWidth - 16);
+    m.style.width = w + 'px'; m.style.left = Math.max(8, Math.min(innerWidth - w - 8, r.left)) + 'px';
+    const below = r.bottom + 6, hh = m.offsetHeight + 120; m.style.top = (below + hh > innerHeight ? Math.max(8, r.top - 6 - m.offsetHeight) : below) + 'px';
+    const off = (e) => { if (!m.contains(e.target) && !e.target.closest('.ap[data-ph]')) { m.remove(); document.removeEventListener('pointerdown', off, true); } };
+    setTimeout(() => document.addEventListener('pointerdown', off, true), 0);
+    if (!PINFO[h] && h > 0 && gt.itemInfo) { try { PINFO[h] = await gt.itemInfo({ h }); } catch (e) { PINFO[h] = { n: name, d: '' }; } if (m.isConnected) m.innerHTML = body(PINFO[h]); }
+  }
   function cardHTML(l) {
     const res = resolve(l), miss = res.filter((r) => !r.x).length, c = V.ent(CH);
     const grp = (label, bs) => {
       const a = res.filter((r) => bs.includes(r.en.b)).sort((p, q) => bs.indexOf(p.en.b) - bs.indexOf(q.en.b)); if (!a.length) return '';
       const sub = bs[0] === SUB;
-      return `<div class="dl-g"><div class="dl-gl">${label}</div><div class="dl-tiles">${a.map((r) => `<div class="dl-tt${r.en.e === 0 ? ' dl-ne' : ''}">${tileOf(r)}${r.en.m.length && !sub && PLC[l.id] ? `<div class="dl-pm">${plugIcons(r.en.m)}</div>` : ''}</div>`).join('')}</div>${sub ? `<div class="dl-sp2">${a.map((r) => plugIcons(r.en.m)).join('')}</div>` : ''}${label === 'Armor' ? statsOf(a.map((r) => r.x).filter(Boolean)) : ''}</div>`;
+      return `<div class="dl-g"><div class="dl-gl">${label}</div><div class="dl-tiles">${a.map((r) => `<div class="dl-tt${r.en.e === 0 ? ' dl-ne' : ''}">${tileOf(r)}${r.en.m.length && !sub && PLC[l.id] ? `<div class="dl-pm">${plugIcons(r.en.m)}</div>` : ''}</div>`).join('')}</div>${sub ? `<div class="dl-sp2">${a.map((r) => plugIcons(subOrd(r.en.m))).join('')}</div>` : ''}${label === 'Armor' ? statsOf(a.map((r) => r.x).filter(Boolean)) : ''}</div>`;
     };
     const mods = l.it.flatMap((q) => (AB.includes(q.b) ? q.m : []));
     return `<div class="card dl-card" id="dlc-${esc(l.id)}" data-id="${esc(l.id)}"><div class="dl-ch"><b class="dl-nm">${esc(l.n || 'Untitled')}</b><span class="dl-cl">${l.c < 3 ? esc(CL[l.c]) : 'Any class'}</span>${miss ? `<span class="dl-mc2" title="Items that are no longer in your inventory">${miss} missing</span>` : ''}<span class="dl-sp"></span><div class="dl-bt"><button class="b" data-dl="apply" data-id="${esc(l.id)}" title="Equip this on ${esc(c ? CL[c.cls] : 'this character')}">Apply</button><button class="g" data-dl="edit" data-id="${esc(l.id)}">Edit</button><button class="g" data-dl="copy" data-id="${esc(l.id)}">Edit Copy</button><button class="g" data-dl="share" data-id="${esc(l.id)}">Share</button><button class="g" data-dl="img" data-id="${esc(l.id)}" title="Make a picture of this loadout to post on Discord">Image</button>${window.__gth ? window.__gth.btn('lo', l.id, l.n || 'Loadout') : ''}<button class="g dl-del" data-dl="del" data-id="${esc(l.id)}" title="Delete this loadout">&#128465;</button></div></div>${l.o ? `<div class="dl-notes-v">${noteHTML(l.o)}</div>` : ''}<div class="dl-body">${SECS.map(([label, bs]) => grp(label, bs)).join('')}</div>${mods.length ? `<div class="dl-mrow"><span class="dl-gl">Mods</span>${plugIcons(mods)}<button class="g" data-dl="plc" data-id="${esc(l.id)}">${PLC[l.id] ? 'Hide' : 'Show'} Mod Placement</button></div>` : ''}${l.a.length ? `<div class="dl-mrow"><span class="dl-gl">Artifact${l.ai && l.ai.n ? ' &middot; ' + esc(l.ai.n) : ''}</span>${aRowL(l.a)}</div>` : ''}${l.mv ? '<div class="dl-fl">Moves other weapons and armor away when applied.</div>' : ''}</div>`;
@@ -1121,7 +1157,7 @@ ${art ? `<div class="dl-mrow"><span class="dl-gl">Artifact &middot; ${esc(AR.ite
   async function eqLive(cid) {
     const sub = eqOf(cid).find((x) => x.b === SUB), arm = eqOf(cid).filter((x) => AB.includes(x.b));
     const key = cid + ':' + [sub, ...arm].filter(Boolean).map((x) => x.id).join(',');
-    const draw = (r) => { const el = g('dleqx'); if (!el || CH !== cid) return; el.innerHTML = (r.sub.length ? `<div class="dl-mrow"><span class="dl-gl">Subclass</span>${plugIcons(r.sub, 'big')}</div>` : '') + (r.mods.length ? `<div class="dl-mrow"><span class="dl-gl">Mods</span>${plugIcons(r.mods, 'big')}</div>` : ''); };
+    const draw = (r) => { const el = g('dleqx'); if (!el || CH !== cid) return; el.innerHTML = (r.sub.length ? `<div class="dl-mrow"><span class="dl-gl">Subclass</span>${plugIcons(subOrd(r.sub), 'big')}</div>` : '') + (r.mods.length ? `<div class="dl-mrow"><span class="dl-gl">Mods</span>${plugIcons(r.mods, 'big')}</div>` : ''); };
     if (EQC[key] && Date.now() - EQC[key].t < 30000) { draw(EQC[key]); return; }
     const g0 = g('dleqx'); if (g0 && EQC[key]) draw(EQC[key]);
     const r = { t: Date.now(), sub: [], mods: [] };
@@ -1133,6 +1169,11 @@ ${art ? `<div class="dl-mrow"><span class="dl-gl">Artifact &middot; ${esc(AR.ite
   }
   sec.onclick = (e) => {
     const D = D0(); if (!D) return;
+    // on a loadout card (or Equipped): items open their pop-up, abilities, mods and artifact perks show what they do
+    if (e.target.closest('.dl-card') && !e.target.closest('[data-dl]')) {
+      const ap = e.target.closest('.ap[data-ph]'); if (ap) { plugPop(ap); return; }
+      const vt = e.target.closest('.vt[data-id]'); if (vt && window.__gtx && window.__gtx.openHere) { window.__gtx.openHere(vt.dataset.id, vt); return; }
+    }
     const tg = e.target.closest('[data-tag]');
     if (tg) { FILT = FILT.trim().toLowerCase() === tg.dataset.tag ? '' : tg.dataset.tag; const f = g('dlf'); if (f) f.value = FILT; drawLists(); return; }
     const b = e.target.closest('[data-dl]'); if (!b) return;
@@ -1217,6 +1258,9 @@ ${art ? `<div class="dl-mrow"><span class="dl-gl">Artifact &middot; ${esc(AR.ite
 .dl-mrow{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-top:8px}.dl-mrow .dl-gl{margin-right:6px}
 .dl-fl{font-size:11px;color:#8c9098;margin-top:6px}
 .dl-eqc{border-color:#4a4d54!important}
+.dl-card .vt[data-id],.dl-card .ap[data-ph]{cursor:pointer}.dl-card .ap[data-ph]:hover{filter:brightness(1.25)}
+#dlpp{position:fixed;z-index:9400;background:var(--g-panel,#1a1c20);border:1px solid var(--g-line,#3a3d43);box-shadow:0 10px 30px rgba(0,0,0,.55);padding:12px 14px;color:#d7dae0;font-size:13px;line-height:1.45}
+#dlpp .pph{display:flex;gap:10px;align-items:center}#dlpp .pph img{width:44px;height:44px;border-radius:6px;background:#14161b}#dlpp b{color:#fff;font-size:14.5px;display:block}#dlpp small{color:#9aa0a8}#dlpp p{margin:8px 0 0;white-space:pre-line}
 .dl-none{padding:14px 4px}
 #dled{--t:var(--gt-t,44px);position:fixed;left:0;right:0;bottom:0;height:78vh;z-index:85;background:#14161a;border-top:1px solid #4a4d54;color:#e6e7ea;box-shadow:0 -8px 30px rgba(0,0,0,.65);display:flex;flex-direction:column}
 .dl-eb{display:flex;flex-direction:column;height:100%;min-height:0}

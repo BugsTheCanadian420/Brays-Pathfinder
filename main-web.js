@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.9: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.10: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -685,18 +685,22 @@ H('item:detail', async (e, v) => { await ensureM();
   const COS = /shader|skin|ornament|holofoil/i;
   const MODS = /mod|enhancement|masterwork|tuning|catalyst/i;
   // Stat bonuses that come from plugged mods and the masterwork (the coloured part of the stat bar in DIM).
-  const mbn = {}, mwn = {};
+  // Tier 5 armor's tuning moves 5 points from one stat to another (+5 / -5); it is kept apart, like DIM shows it.
+  const mbn = {}, mwn = {}, tun = {};
   socks.forEach((s) => {
     const act = s.plugHash && df.p[s.plugHash]; if (!act) return;
     if (/intrinsic|archetype/i.test(act.c || '')) return;
-    const isMw = /masterwork|tuning/i.test(act.c || '');
-    (act.s || []).forEach(([sh, val]) => { const t = isMw ? mwn : mbn; t[sh] = (t[sh] || 0) + val; });
+    const isTu = isArmor && /tuning/i.test(act.c || ''), isMw = !isTu && /masterwork|tuning/i.test(act.c || '');
+    (act.s || []).forEach(([sh, val]) => { const t = isTu ? tun : isMw ? mwn : mbn; t[sh] = (t[sh] || 0) + val; });
   });
   let grp = (df.d[h] && df.sg[df.d[h].g]) || [];
   if (!grp.length && isArmor) grp = ARSH.map((sh) => ({ h: sh, max: 42, num: false }));
   for (const q of grp) {
     const cur = sv[q.h], def = df.st[q.h];
-    if (cur && def) out.stats.push({ h: q.h, n: def.n, v: cur.value, max: q.max, num: q.num, o: def.o, mb: Math.max(0, Math.min(cur.value, mbn[q.h] || 0)), mw: Math.max(0, Math.min(cur.value, mwn[q.h] || 0)) });
+    if (!cur || !def) continue;
+    // Bungie never reports a stat below 0, so a stat the tuning takes 5 from (when it had nothing) shows as -5, like DIM.
+    const tn = tun[q.h] || 0, v = tn < 0 && cur.value === 0 ? tn : cur.value;
+    out.stats.push({ h: q.h, n: def.n, v, max: q.max, num: q.num, o: def.o, mb: Math.max(0, Math.min(v, mbn[q.h] || 0)), mw: Math.max(0, Math.min(v, mwn[q.h] || 0)), tn: tn || undefined });
   }
   out.stats.sort((a, b) => (isArmor ? ARSH.indexOf(a.h) - ARSH.indexOf(b.h) : a.o - b.o));
   if (isArmor) out.tot = out.stats.reduce((t, q) => t + q.v, 0);
@@ -706,6 +710,8 @@ H('item:detail', async (e, v) => { await ensureM();
   // Subclasses: a fragment slot your aspects do not open is greyed out in game (Bungie marks it not enabled). What sits in it does
   // nothing, so it is left out (it used to show up in loadouts and pictures as an extra "ghost" fragment). out.dis lists those slots.
   const isSub = !!(idf && idf.itemType === 16);
+  const perkIdx = new Set();
+  if (idf && idf.itemType === 3 && idf.sockets && Array.isArray(idf.sockets.socketCategories)) idf.sockets.socketCategories.forEach((c) => { if (c.socketCategoryHash === 4241085061) (c.socketIndexes || []).forEach((i) => perkIdx.add(i)); });
   if (isSub) out.dis = socks.map((s, idx) => (s.isEnabled === false ? idx : -1)).filter((i) => i >= 0);
   // Armor archetype (Paragon, Brawler...): found by its plug type, even when Bungie hides its socket.
   if (isArmor) socks.forEach((s) => { const a = s.plugHash && df.p[s.plugHash]; if (a && !out.arche && (/archetype/i.test(a.c || '') || ARCHN.has(String(a.n || '').toLowerCase()))) out.arche = { n: a.n, i: a.i, d: a.d }; });
@@ -720,7 +726,7 @@ H('item:detail', async (e, v) => { await ensureM();
     const opts = (rp[idx] || []).map((o) => ({ h: o.plugItemHash, ci: o.canInsert !== false && o.enabled !== false, ...df.p[o.plugItemHash] })).filter((o) => o.n);
     if (!opts.some((o) => o.h === s.plugHash)) opts.unshift({ h: s.plugHash, ci: false, ...act });
     const col = opts.map((o) => ({ h: o.h, si: idx, ci: !!o.ci, n: o.n, i: o.i, d: o.d, s: o.s || [], c: o.c || '', on: o.h === s.plugHash }));
-    (MODS.test(act.c || '') ? mods : perks).push(col);
+    (perkIdx.size ? (perkIdx.has(idx) ? perks : mods) : MODS.test(act.c || '') ? mods : perks).push(col);
   });
   if (perks.length) out.groups.push({ label: 'Perks', cols: perks });
   if (mods.length) out.groups.push({ label: 'Mods', cols: mods });
@@ -1094,7 +1100,8 @@ app.whenReady().then(async () => {
     } catch (e) { /* the window keeps its normal icon */ }
   }
   // The app window never leaves its own page. Links open in your normal browser (web addresses only).
-  const openExt = (u) => { try { const p = new URL(u); if (p.protocol === 'https:' || p.protocol === 'http:') shell.openExternal(p.href); } catch (er) { /* ignore */ } };
+  // Web pages, and the help email address (mailto:help@d2pathfinder.com only) open outside the app.
+  const openExt = (u) => { try { const p = new URL(u); if (p.protocol === 'https:' || p.protocol === 'http:' || (p.protocol === 'mailto:' && /^help@d2pathfinder\.com$/i.test(decodeURIComponent(p.pathname)))) shell.openExternal(p.href); } catch (er) { /* ignore */ } };
   win.webContents.on('will-navigate', (ev, u) => { ev.preventDefault(); openExt(u); });
   win.webContents.setWindowOpenHandler(({ url }) => { openExt(url); return { action: 'deny' }; });
   // The Hub tab shows a few Destiny websites in locked-down embedded pages: no Node access, only that site, links open in your browser.

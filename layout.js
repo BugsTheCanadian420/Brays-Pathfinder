@@ -173,3 +173,5 @@ html.gtnarrow header.gtbar nav button.gtp{display:none!important}html.gtnarrow h
   document.head.appendChild(st);
   sync(); fit(); setTimeout(fitSoon, 600);
 })();
+// The page stays hidden until the bar above is laid out, so the plain first draw never flashes on screen (index.html, #gtpre).
+requestAnimationFrame(() => document.documentElement.classList.add('gtready'));

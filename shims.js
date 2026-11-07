@@ -196,6 +196,8 @@
   const ofetch = window.fetch.bind(window);
   window.fetch = (u, o) => {
     if (o && o.headers && !(o.headers instanceof Headers)) { const h = { ...o.headers }; delete h['User-Agent']; delete h['user-agent']; o = { ...o, headers: h }; }
+    // Your inventory must never come from the browser's cache: always ask Bungie.
+    if (typeof u === 'string' && /bungie\.net\/Platform\/Destiny2\//.test(u) && (!o || !o.method || o.method === 'GET')) o = { ...(o || {}), cache: 'no-store' };
     return ofetch(u, o);
   };
 
