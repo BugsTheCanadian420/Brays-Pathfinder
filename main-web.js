@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.8: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.9: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -669,6 +669,7 @@ H('vault:load', async () => {
 // Stats and perks for one item (opened from the click menu).
 const entDef = async (tbl, h) => { const k = tbl + h; if (ENTC[k] !== undefined) return ENTC[k]; try { ENTC[k] = await api('/Destiny2/Manifest/' + tbl + '/' + h + '/', false); } catch (e) { ENTC[k] = null; } return ENTC[k]; };
 const ARSH = [2996146975, 392767087, 1943323491, 1735777505, 144602215, 4244567218]; // weapons, health, class, grenade, super, melee
+const ARCHN = new Set(['paragon', 'brawler', 'gunner', 'specialist', 'grenadier', 'bulwark']); // Armor 3.0 archetypes
 H('item:detail', async (e, v) => { await ensureM();
   OBJ(v); const id = ID(v.id), h = v.h !== undefined ? HASH(v.h) : 0;
   const df = await defs();
@@ -687,7 +688,7 @@ H('item:detail', async (e, v) => { await ensureM();
   const mbn = {}, mwn = {};
   socks.forEach((s) => {
     const act = s.plugHash && df.p[s.plugHash]; if (!act) return;
-    if (/intrinsic|armor_archetypes/i.test(act.c || '')) return;
+    if (/intrinsic|archetype/i.test(act.c || '')) return;
     const isMw = /masterwork|tuning/i.test(act.c || '');
     (act.s || []).forEach(([sh, val]) => { const t = isMw ? mwn : mbn; t[sh] = (t[sh] || 0) + val; });
   });
@@ -702,11 +703,18 @@ H('item:detail', async (e, v) => { await ensureM();
   if (inst.energy && inst.energy.energyCapacity) out.energy = { cap: inst.energy.energyCapacity, used: inst.energy.energyUsed || 0 };
   if (inst.primaryStat) out.pw = inst.primaryStat.value;
   const perks = [], mods = [];
+  // Subclasses: a fragment slot your aspects do not open is greyed out in game (Bungie marks it not enabled). What sits in it does
+  // nothing, so it is left out (it used to show up in loadouts and pictures as an extra "ghost" fragment). out.dis lists those slots.
+  const isSub = !!(idf && idf.itemType === 16);
+  if (isSub) out.dis = socks.map((s, idx) => (s.isEnabled === false ? idx : -1)).filter((i) => i >= 0);
+  // Armor archetype (Paragon, Brawler...): found by its plug type, even when Bungie hides its socket.
+  if (isArmor) socks.forEach((s) => { const a = s.plugHash && df.p[s.plugHash]; if (a && !out.arche && (/archetype/i.test(a.c || '') || ARCHN.has(String(a.n || '').toLowerCase()))) out.arche = { n: a.n, i: a.i, d: a.d }; });
   socks.forEach((s, idx) => {
     if (!s.isVisible || !s.plugHash) return;
+    if (isSub && s.isEnabled === false) return;
     const act = df.p[s.plugHash];
     if (act && /intrinsic/i.test(act.c || '') && !out.frame) out.frame = { n: act.n, i: act.i, d: act.d };
-    if (act && act.c === 'armor_archetypes' && !out.arche) { out.arche = { n: act.n, i: act.i, d: act.d }; return; }
+    if (act && (/archetype/i.test(act.c || '') || (isArmor && ARCHN.has(String(act.n || '').toLowerCase())))) { if (!out.arche) out.arche = { n: act.n, i: act.i, d: act.d }; return; }
     if (act && COS.test(act.c || '') && !/memento|tracker/i.test(act.c || '')) { out.cos.push({ h: s.plugHash, si: idx, n: act.n, i: act.i, d: act.d, c: act.c }); return; }
     if (!act || /intrinsic/i.test(act.c || '') || /^(empty|default)\b/i.test(act.n) || HIDE.test(act.c || '')) return;
     const opts = (rp[idx] || []).map((o) => ({ h: o.plugItemHash, ci: o.canInsert !== false && o.enabled !== false, ...df.p[o.plugItemHash] })).filter((o) => o.n);

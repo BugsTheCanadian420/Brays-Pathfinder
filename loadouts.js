@@ -395,15 +395,18 @@
     const mk = (p) => (p && p[2] ? { i: p[2], n: p[1] || '' } : null);
     const modsBy = AB.map((b) => [...l.it.filter((q) => q.b === b).flatMap((q) => (q.m || []).map(mk)), ...(l.fm || []).filter((p) => +p[4] === b).map(mk)].filter(Boolean).slice(0, 12));
     const anyMods = (l.fm || []).filter((p) => !p[4] || !AB.includes(+p[4])).map(mk).filter(Boolean).slice(0, 12);
-    const hasMods = modsBy.some((m) => m.length) || anyMods.length > 0;
-    const subPl = sub && sub.en.m ? sub.en.m.map(mk).filter(Boolean).slice(0, 16) : [];
+    const subM = sub && sub.en.m ? ((await ghostFree(sub.en)) || sub.en.m) : [];
+    const subPl = subM.map(mk).filter(Boolean).slice(0, 16);
     const ic = (r) => (r && (r.x ? rawIcon(r.x.i) : r.en.i)) || '';
     const artPk = (l.a || []).map((p) => p[2]).filter(Boolean).slice(0, 14), artIc = (l.ai && l.ai.i) || '', hasArt = !!(artIc || artPk.length);
     // Details, looked up in parallel (the picture is still drawn if one fails): each weapon's equipped perks, and each armor
     // piece's archetype and set, for the set bonuses you have on.
     const X = window.__gtx, det = (x) => (x && X && X.detail ? Promise.race([X.detail(x), new Promise((_, no) => setTimeout(() => no(new Error('slow')), 8000))]).catch(() => null) : Promise.resolve(null));
     const [WD, ADd] = await Promise.all([Promise.all(weps.map((r) => det(r && r.x))), Promise.all(arms.map((r) => det(r && r.x)))]);
-    const AD = ADd.map((d) => ({ a: (d && d.arche && d.arche.n) || '', s: (d && d.set && d.set.n) || '', set: (d && d.set) || null }));
+    // Armor 3.0: an archetype's primary and secondary stats are fixed, so when Bungie does not name it, the piece's two biggest stats do.
+    const ARCH = [['Gunner', 0, 3], ['Bulwark', 1, 2], ['Specialist', 2, 0], ['Grenadier', 3, 4], ['Paragon', 4, 5], ['Brawler', 5, 1]];
+    const archOf = (x) => { if (!x || !x.st || x.r === 'Exotic') return ''; const o = x.st.map((v, i) => [v || 0, i]).sort((p, q) => q[0] - p[0]); if (!o[1] || !o[1][0]) return ''; const f = ARCH.find((a) => a[1] === o[0][1] && a[2] === o[1][1]); return f ? f[0] : ''; };
+    const AD = ADd.map((d, i) => ({ a: (d && d.arche && d.arche.n) || archOf(arms[i] && arms[i].x), s: (d && d.set && d.set.n) || '', set: (d && d.set) || null, f: (d && d.frame && d.frame.n) || '' }));
     const WP = WD.map((d) => {
       if (!d) return [];
       const out = []; if (d.frame && d.frame.i) out.push({ i: d.frame.i, n: d.frame.n });
@@ -422,13 +425,18 @@
     // Subclass icons fill the width of their box: one row when they fit at a good size, two otherwise.
     const subRows = subPl.length > 14 ? 2 : 1, subPer = Math.max(1, Math.ceil(subPl.length / subRows)), SUBGAP = 10;
     const SUBSZ = Math.max(44, Math.min(88, Math.floor((IW - 32 - (subPer - 1) * SUBGAP) / subPer))), SUBSTEP = SUBSZ + SUBGAP;
-    const cols = anyMods.length ? 6 : 5, colW = IW / cols, MSZ = 46, MSTEP = 54, mPer = Math.max(1, Math.floor((colW - 24) / MSTEP));
-    const mRows = Math.max(1, ...[...modsBy, anyMods].map((m) => Math.ceil(m.length / mPer)));
+    // armor cards: five across, each with its archetype, tier, set, its own stats and its mods
+    const CG = 12, CW = Math.floor((IW - 32 - 4 * CG) / 5), MSZ = 44, MSTEP = 50, mPer = Math.max(1, Math.floor((CW - 20 + (MSTEP - MSZ)) / MSTEP));
+    const pst = arms.map((r) => (r && r.x && r.x.st ? r.x.st.map((v, i) => [v || 0, i]).filter((q) => q[0] > 0).sort((p, q) => q[0] - p[0]).slice(0, 4) : []));
+    const stRows = Math.max(0, ...pst.map((q) => q.length)), mRows = Math.max(0, ...modsBy.map((m) => Math.ceil(m.length / mPer)));
+    const CH2 = 12 + 88 + 30 + stRows * 24 + (stRows ? 8 : 0) + (mRows ? 8 + mRows * MSTEP : 0) + 8;
+    const anyRows = anyMods.length ? Math.ceil(anyMods.length / Math.floor((IW - 32) / MSTEP)) : 0;
     let y = 196;
     const L = { top: y };
-    const TOPH = 424; y += TOPH + GAP;
+    const TOPH = 414; y += TOPH + GAP;
+    if (arms.some(Boolean)) { L.arm = y; y += 44 + CH2 + 14 + GAP; }
     if (subPl.length) { L.sub = y; y += 50 + subRows * SUBSTEP + 8 + GAP; }
-    if (hasMods) { L.mods = y; y += 108 + mRows * MSTEP + 8 + GAP; }
+    if (anyRows) { L.mods = y; y += 52 + anyRows * MSTEP + 8 + GAP; }
     if (hasArt || SB.length) { L.art = y; y += 140 + GAP; }
     const H = y + 24, cv = document.createElement('canvas'); cv.width = W; cv.height = H; const g2 = cv.getContext('2d');
     // Background: dark base, a glow in the class colour, a faded subclass emblem, a fine pattern and a vignette.
@@ -470,32 +478,70 @@
     txt(c.toUpperCase() + (sub && (sub.x || sub.en).n ? '  ·  ' + (sub.x || sub.en).n : ''), 50, 112, 18, '#9aa0a8', 600, 900);
     if (sub && imgs[ic(sub)]) g2.drawImage(imgs[ic(sub)], W - 150, 30, 110, 110);
     g2.fillStyle = '#2b2e33'; g2.fillRect(48, 172, W - 96, 1);
-    // weapons and armor
-    panel(M, L.top, 520, TOPH); panel(584, L.top, W - M - 584, TOPH);
+    // weapons, with the perks in them right now (their frame first)
+    const WPW = 640; panel(M, L.top, WPW - M, TOPH); panel(WPW + GAP, L.top, W - M - WPW - GAP, TOPH);
     label('WEAPONS', 48, L.top + 26);
     weps.forEach((r, i) => {
-      const y1 = L.top + 42 + i * 124; box(r, 48, y1, 96);
-      txt(r ? (r.x || r.en).n : 'Empty', 160, y1 + 26, 22, r ? '#fff' : '#555', 600, 360);
-      txt(r && r.x ? (r.x.t || '') + (r.x.p ? '  ·  ' + r.x.p : '') : '', 160, y1 + 48, 14, '#9aa0a8', 400, 360);
-      // the perks in it right now (its frame first)
-      (WP[i] || []).forEach((p, k) => tileIc(p.i, 160 + k * 46, y1 + 58, 38, true));
+      const y1 = L.top + 42 + i * 122; box(r, 48, y1, 100);
+      txt(r ? (r.x || r.en).n : 'Empty', 166, y1 + 26, 23, r ? '#fff' : '#555', 700, WPW - 200);
+      txt(r && r.x ? (r.x.t || '') + (r.x.p ? '  ·  ' + r.x.p : '') : '', 166, y1 + 48, 14, '#9aa0a8', 400, WPW - 200);
+      (WP[i] || []).forEach((p, k) => tileIc(p.i, 166 + k * 54, y1 + 56, 46, true));
     });
-    label('ARMOR', 600, L.top + 26);
-    arms.forEach((r, i) => { box(r, 600 + i * 108, L.top + 40, 92); });
-    // under each piece: its archetype, then its set (or the exotic's name)
-    arms.forEach((r, i) => {
-      if (!r) return; const x0 = 600 + i * 108, ex = r.x && r.x.r === 'Exotic';
-      if (AD[i].a) txt(AD[i].a, x0, L.top + 148, 14, '#e6e7ea', 700, 100);
-      const sub2 = ex ? (r.x.n || '') : (AD[i].s || ''); if (sub2) txt(sub2, x0, L.top + 166, 12.5, ex ? '#ceae33' : '#8b8f97', ex ? 600 : 400, 100);
-    });
+    // total stats, with every piece's share
+    const sx = WPW + GAP + 16, sw = W - M - 16 - sx;
+    label('STATS', sx, L.top + 26);
     if (hasSt) {
-      const tot = st.reduce((a, b) => a + b, 0);
+      const tot = st.reduce((a, b) => a + b, 0), bx = sx + 108, bw = sw - 108 - 56;
       st.forEach((v, i) => {
-        const y1 = L.top + 186 + i * 30; txt(IMSTL[i], 600, y1 + 14, 15, '#cfd2d8', 600);
-        g2.fillStyle = '#23262b'; g2.fillRect(700, y1 + 2, 360, 14); g2.fillStyle = IMSTC[i]; g2.fillRect(700, y1 + 2, Math.max(0, Math.min(360, v / 200 * 360)), 14);
-        txt(String(v), 1072, y1 + 15, 16, '#fff', 700);
+        const y1 = L.top + 48 + i * 50; txt(IMSTL[i], sx, y1 + 18, 17, '#e6e7ea', 600);
+        rr(bx, y1 + 3, bw, 18, 4); g2.fillStyle = '#23262b'; g2.fill();
+        const fw = Math.max(0, Math.min(bw, v / 200 * bw)); if (fw > 0) { rr(bx, y1 + 3, fw, 18, 4); g2.fillStyle = IMSTC[i]; g2.fill(); }
+        for (let t = 1; t < 10; t++) { g2.fillStyle = 'rgba(0,0,0,.35)'; g2.fillRect(bx + bw * t / 10, y1 + 3, 1, 18); } // tens, like the game
+        txt(String(v), bx + bw + 12, y1 + 19, 19, '#fff', 700);
       });
-      txt('Total ' + tot, 600, L.top + 390, 16, '#e0b64a', 700);
+      txt('Total ' + tot, sx, L.top + 384, 18, '#e0b64a', 700);
+    } else txt('Stats show for your own armor.', sx, L.top + 70, 15, '#8b8f97', 400);
+    // armor: one card per piece
+    if (L.arm) {
+      panel(M, L.arm, IW, 44 + CH2 + 14);
+      label('ARMOR', 48, L.arm + 26);
+      const SLOTN = ['Helmet', 'Arms', 'Chest', 'Legs', 'Class item'];
+      arms.forEach((r, i) => {
+        const x0 = M + 16 + i * (CW + CG), y0 = L.arm + 40;
+        rr(x0, y0, CW, CH2, 10); g2.fillStyle = 'rgba(0,0,0,.22)'; g2.fill(); g2.strokeStyle = 'rgba(255,255,255,.07)'; g2.lineWidth = 1; g2.stroke();
+        const ix = x0 + 10, iy = y0 + 12; box(r, ix, iy, 88);
+        const tx = ix + 98, tw = CW - 108, ex = !!(r && r.x && r.x.r === 'Exotic');
+        txt(SLOTN[i].toUpperCase(), tx, iy + 14, 11.5, '#8b8f97', 700, tw);
+        if (!r) { txt('Empty', tx, iy + 40, 16, '#555', 600, tw); return; }
+        // archetype (Paragon, Brawler...) as a tag; an exotic says Exotic
+        const tag = AD[i].a || (ex ? 'Exotic' : '');
+        if (tag) { font(13.5, 700); const tw2 = Math.min(tw, g2.measureText(tag).width + 18); rr(tx, iy + 24, tw2, 24, 12); g2.fillStyle = ex ? 'rgba(206,174,51,.22)' : 'rgba(255,255,255,.12)'; g2.fill(); txt(tag, tx + 9, iy + 41, 13.5, ex ? '#f0d58a' : '#fff', 700, tw - 18); }
+        const tier = r.x && r.x.gt ? +r.x.gt : 0;
+        if (tier) { for (let k = 0; k < 5; k++) { g2.save(); g2.translate(tx + 6 + k * 14, iy + 66); g2.rotate(Math.PI / 4); g2.fillStyle = k < tier ? '#e0b64a' : 'rgba(255,255,255,.15)'; g2.fillRect(-4.5, -4.5, 9, 9); g2.restore(); } txt('T' + tier, tx + 76, iy + 71, 12.5, '#c9b06a', 700, tw - 76); }
+        // under the picture, the full width: its set (or the exotic's perk)
+        txt(ex ? (AD[i].f || r.x.n || '') : (AD[i].s || (r.x || r.en).n || ''), ix, iy + 88 + 20, 14, ex ? '#ceae33' : '#e6e7ea', 600, CW - 20);
+        // this piece's stats, biggest first
+        let yy = iy + 88 + 30;
+        pst[i].forEach(([v, k]) => {
+          txt(IMSTL[k], ix, yy + 13, 13, '#cfd2d8', 600, 70);
+          const bx = ix + 74, bw = CW - 20 - 74 - 30; rr(bx, yy + 3, bw, 11, 3); g2.fillStyle = '#23262b'; g2.fill();
+          const fw = Math.max(0, Math.min(bw, v / 45 * bw)); rr(bx, yy + 3, fw, 11, 3); g2.fillStyle = IMSTC[k]; g2.fill();
+          txt(String(v), bx + bw + 6, yy + 13, 13.5, '#fff', 700); yy += 24;
+        });
+        // and its mods
+        if (mRows) {
+          const y2 = iy + 88 + 30 + stRows * 24 + (stRows ? 8 : 0);
+          g2.fillStyle = 'rgba(255,255,255,.07)'; g2.fillRect(ix, y2 - 4, CW - 20, 1);
+          (modsBy[i] || []).forEach((m, k) => tileIc(m.i, ix + (k % mPer) * MSTEP, y2 + 4 + Math.floor(k / mPer) * MSTEP, MSZ, false));
+        }
+      });
+    }
+    // mods that go on any piece
+    if (L.mods) {
+      panel(M, L.mods, IW, 52 + anyRows * MSTEP + 8);
+      label('OTHER MODS', 48, L.mods + 26);
+      const per = Math.floor((IW - 32) / MSTEP);
+      anyMods.forEach((m, k) => tileIc(m.i, 48 + (k % per) * MSTEP, L.mods + 40 + Math.floor(k / per) * MSTEP, MSZ, false));
     }
     // subclass: super, abilities, aspects and fragments
     if (L.sub) {
@@ -503,20 +549,6 @@
       label('SUBCLASS' + (sub && (sub.x || sub.en).n ? '  ·  ' + String((sub.x || sub.en).n).toUpperCase() : ''), 48, L.sub + 26);
       const rowW = (k) => k * SUBSZ + (k - 1) * SUBGAP;
       subPl.forEach((m, i) => { const row = Math.floor(i / subPer), inRow = Math.min(subPer, subPl.length - row * subPer), x0 = M + (IW - rowW(inRow)) / 2; tileIc(m.i, x0 + (i % subPer) * SUBSTEP, L.sub + 40 + row * SUBSTEP, SUBSZ, false, /^#[0-9a-f]{6}$/i.test(ACC[1]) ? ACC[1] : ''); });
-    }
-    // mods, under the armor piece they go on
-    if (L.mods) {
-      panel(M, L.mods, IW, 108 + mRows * MSTEP + 8);
-      label('MODS', 48, L.mods + 26);
-      const SLOTN = ['Helmet', 'Arms', 'Chest', 'Legs', 'Class item'];
-      [...modsBy, ...(anyMods.length ? [anyMods] : [])].forEach((list, ci) => {
-        const x0 = M + 16 + ci * colW, yh = L.mods + 40;
-        if (ci < 5) box(arms[ci], x0, yh, 46); else { rr(x0, yh, 46, 46, 7); g2.fillStyle = '#1b1d22'; g2.fill(); txt('+', x0 + 15, yh + 32, 26, '#8b8f97', 600); }
-        txt(ci < 5 ? SLOTN[ci] : 'Any piece', x0 + 56, yh + 20, 15, '#e6e7ea', 600, colW - 70);
-        txt(list.length ? list.length + ' mod' + (list.length > 1 ? 's' : '') : 'No mods', x0 + 56, yh + 40, 13, '#8b8f97', 400, colW - 70);
-        if (ci) { g2.fillStyle = 'rgba(255,255,255,.07)'; g2.fillRect(x0 - 10, yh, 1, 52 + mRows * MSTEP); }
-        list.forEach((m, k) => tileIc(m.i, x0 + (k % mPer) * MSTEP, yh + 60 + Math.floor(k / mPer) * MSTEP, MSZ, false));
-      });
     }
     // artifact
     if (L.art) {
@@ -585,6 +617,38 @@
       if (m && ed && ed.d === d) { en.m = m; drawEd(); }
       else if (m) en.m = m;
     }
+  }
+  // Equipped, complete: like Save loadout, the armor mods, the subclass setup and the artifact with its perks are read from the game.
+  async function fullFromChar(cid, name) {
+    const d = fromChar(cid, name);
+    await Promise.all(d.it.filter((q) => AB.includes(q.b) || q.b === SUB).map(async (en) => { const x = items().find((o) => o.id === en.id); const m = await capture(x); if (m) en.m = m; }));
+    try {
+      for (let i = 0; i < 60 && ARLOAD; i++) await new Promise((ok) => setTimeout(ok, 150)); // another read of the artifact is under way
+      if (!ARC[cid] || !ARC[cid].v) await artLoad(false, cid);
+      const a = ARC[cid] && ARC[cid].v;
+      if (a && !a.none && a.item && a.socks && a.socks.length) { d.ai = itemOf(a.item); d.a = a.socks.map((q) => q.cur).filter(Boolean).map(permk); }
+    } catch (e) { /* shared without the artifact */ }
+    return d;
+  }
+  // Fragments in slots the aspects do not open ("ghosts", greyed out in game) were saved by older versions. When the subclass is
+  // in your inventory with the same aspects, its greyed-out slots are known, and fragments in them are dropped.
+  async function ghostFree(en) {
+    if (!en || en.b !== SUB || !en.m || !en.m.length) return null;
+    const X = window.__gtx, x = items().find((o) => o.id === en.id) || items().find((o) => o.h === en.h && o.b === SUB);
+    if (!x || !X || !X.detail) return null;
+    let d; try { d = await X.detail(x); } catch (e) { return null; }
+    if (!d || !Array.isArray(d.dis) || !d.dis.length) return null;
+    const asp = []; ((d.groups || [])).forEach((gr) => (gr.cols || []).forEach((col) => { const on = col.find((p) => p.on); if (on && /aspect/i.test(on.c || '')) asp.push([int(on.si), int(on.h)]); }));
+    if (!asp.length || !asp.every(([si, h]) => en.m.some((p) => p[0] === si && p[1] === h))) return null; // other aspects: other slots open
+    const dis = new Set(d.dis), keep = en.m.filter((p) => !dis.has(p[0]));
+    return keep.length < en.m.length ? keep : null;
+  }
+  let ghostRun = false;
+  async function fixGhosts() {
+    if (ghostRun || !D0()) return; ghostRun = true;
+    let n = 0;
+    for (const l of all()) { const en = (l.it || []).find((q) => q.b === SUB); const keep = await ghostFree(en); if (keep) { en.m = keep; n++; } }
+    if (n) { save(); render(); }
   }
   function fromChar(cid, name) {
     const c = V.ent(cid), its = eqOf(cid).map(entOf);
@@ -872,6 +936,11 @@ ${pn('dl-p-art', 'Artifact', `<div class="dl-artrow">${d.ai && d.ai.i ? `<span c
     if ((sw || ic) && mod.t === 'ident') { if (sw) mod.ch = +sw.dataset.sw; else mod.ih = +ic.dataset.ic; const nm = g('dlnm'), sl = g('dlslot'); if (nm) mod.nh = +nm.value; if (sl) mod.i = +sl.value; drawMod(); return; }
     const b = e.target.closest('[data-md]'); if (!b) return;
     const a = b.dataset.md, D = D0();
+    // Sharing Equipped: wait until its mods, subclass and artifact have been read.
+    if (mod && mod.t === 'shmenu' && mod.wait && ['shlink', 'shpic', 'shcode', 'shsend'].includes(a)) {
+      const w = mod.wait, m0 = mod; m0.msg = 'Reading your mods, subclass and artifact...'; drawMod(); await w;
+      if (mod !== m0) return; m0.msg = '';
+    }
     if (a === 'x') { if (mod.t === 'shin') { try { sessionStorage.removeItem('gt.share'); } catch (er) { /* storage off */ } } mod = null; drawMod(); return; }
     if (mod.t === 'shmenu' && a === 'shlink') {
       const l = mod.l; mod.msg = 'Making the link...'; drawMod();
@@ -1020,6 +1089,7 @@ ${pn('dl-p-art', 'Artifact', `<div class="dl-artrow">${d.ai && d.ai.i ? `<span c
   function render() {
     const D = D0();
     if (!D) { sec.innerHTML = '<div class="card"><p class="mute">Connect and load your vault first (Inventory tab), then your loadouts appear here.</p></div>'; return; }
+    if (!ghostRun) setTimeout(fixGhosts, 1500); // once per session, in the background
     const chars = V.chars();
     if (!CH || !V.ent(CH)) CH = chars[0].id;
     if (ARCH !== CH) artSel(); else if (AR === undefined) artLoad();
@@ -1073,7 +1143,7 @@ ${art ? `<div class="dl-mrow"><span class="dl-gl">Artifact &middot; ${esc(AR.ite
     else if (a === 'opt') { const ob = document.querySelector('nav button[data-t=optimizer]'); if (ob) ob.click(); else toast('The optimizer is not available.', { bad: 1 }); }
     else if (a === 'ig') { mod = { t: 'igp', c: CH, i: +b.dataset.i }; drawMod(); }
     else if (a === 'saveeq') { const d = fromChar(CH, ''); openEd(d, true); addMods(ed.d, ed.d.it.filter((q) => AB.includes(q.b) || q.b === SUB)); artEd('artcur'); } // like DIM: the equipped artifact and its perks come along
-    else if (a === 'shareeq') { const d = fromChar(CH, 'Equipped'); share(d); }
+    else if (a === 'shareeq') { const m0 = { t: 'shmenu', l: fromChar(CH, 'Equipped') }; m0.wait = fullFromChar(CH, 'Equipped').then((d) => { m0.l = d; m0.wait = null; }, () => { m0.wait = null; }); mod = m0; drawMod(); }
     else if (a === 'igsave') {
       const D2 = D0(), slots = (D2.lo && D2.lo[CH]) || [], free = slots.find((q) => !q.items.length) || slots[0];
       if (!free) { toast('This character has no in-game loadout slots.', { bad: 1 }); return; }

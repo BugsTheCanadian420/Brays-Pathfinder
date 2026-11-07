@@ -9,6 +9,11 @@
 
   // ---- what changed: newest first. Add an entry (next id) with every update. ----
   const CHANGES = [
+    { id: 11, date: 'Nov 2026', items: [
+      'Sharing Equipped (link, picture or code) now includes your armor mods, subclass setup and artifact, like a saved loadout.',
+      'Fragments in slots your aspects do not open (greyed out in game) no longer show up in loadouts, pictures or shares. Older saved loadouts are cleaned up automatically.',
+      'The loadout picture has a card for each armor piece: its archetype (Paragon, Brawler...), tier, set, its own stats and its mods, plus a bigger stats panel and larger perk icons.',
+    ] },
     { id: 10, date: 'Nov 2026', items: [
       'Website: on a phone, Pathfinder offers to install itself to your home screen so it opens full-screen like an app.',
       'Website on a Windows PC: a Get the app button downloads the newest PC app from d2pathfinder.com/download.',
