@@ -726,7 +726,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 #chpop button:hover{background:#2c2e34}
 #chpop.sqm{width:300px;max-height:70vh;overflow:auto}#chpop .sqh{font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:#8b8f97;padding:8px 10px 3px}#chpop .sqr{display:flex;align-items:center}#chpop .sqr button{flex:1;font-family:ui-monospace,Consolas,monospace;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#chpop .sqr b{cursor:pointer;color:#8b8f97;padding:4px 10px;font-weight:400}#chpop .sqr b:hover{color:#fff}
 .vbar .ib.on{background:var(--g-accent2,#2b4a6b);color:var(--g-on-accent,#fff);border-color:#8fb3d9}
-#junkm{position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.55);display:flex;align-items:flex-start;justify-content:center;padding:6vh 16px}#junkm .jk{background:var(--g-panel,#1a1c20);border:1px solid var(--g-line,#2b2e33);width:min(720px,100%);max-height:86vh;overflow:auto;padding:14px 18px;box-shadow:0 10px 40px rgba(0,0,0,.6)}#junkm .jkh{display:flex;align-items:baseline;gap:12px}#junkm .jkh b{font-size:16px;color:#fff}#junkm .jkh button{margin-left:auto}#junkm .jkl{display:flex;flex-direction:column;gap:4px;margin:8px 0}#junkm .jkr{display:grid;grid-template-columns:48px 1fr auto;gap:10px;align-items:center;padding:4px;border:1px solid transparent;cursor:pointer}#junkm .jkr:hover{border-color:var(--g-line,#3a3d43);background:rgba(255,255,255,.03)}#junkm .jkr .vt{--t:48px;width:48px;height:48px;pointer-events:none}#junkm .jkr small{display:block;color:#b9bec6;font-size:12px}#junkm .jkb{position:sticky;bottom:-14px;background:var(--g-panel,#1a1c20);padding:10px 0;margin:0}
+#junkm{position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.55);display:flex;align-items:flex-start;justify-content:center;padding:6vh 16px}#junkm .jk{background:var(--g-panel,#1a1c20);border:1px solid var(--g-line,#2b2e33);width:min(720px,100%);max-height:86vh;overflow:auto;padding:14px 18px;box-shadow:0 10px 40px rgba(0,0,0,.6)}#junkm .jkh{display:flex;align-items:baseline;gap:12px}#junkm .jkh b{font-size:16px;color:#fff}#junkm .jkh button{margin-left:auto}#junkm .jkl{display:flex;flex-direction:column;gap:4px;margin:8px 0}#junkm .jkr{display:grid;grid-template-columns:48px 1fr auto;gap:10px;align-items:center;padding:4px;border:1px solid transparent;cursor:pointer}#junkm .jkr:hover{border-color:var(--g-line,#3a3d43);background:rgba(255,255,255,.03)}#junkm .jkr .vt{--t:48px;width:48px;height:48px;pointer-events:none}#junkm .jkr small{display:block;color:#b9bec6;font-size:12px}#junkm .jkb{position:sticky;bottom:-14px;background:var(--g-panel,#1a1c20);padding:10px 0;margin:0}#junkm .jk{display:flex;flex-direction:column;overflow:hidden}#junkm .jkl{overflow:auto;min-height:0;flex:1}#junkm .jkb{position:static}#junkm .jkr{grid-template-columns:22px 48px 1fr auto}#junkm .jkr input{width:16px;height:16px;margin:0;cursor:pointer}#junkm .jkr.sel{background:rgba(255,255,255,.04);border-color:var(--g-line,#3a3d43)}#junkm .jkt{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}#junkm .jkt button{background:transparent;border:1px solid var(--g-line,#3a3d43);color:#cfd3da;padding:5px 10px;font:inherit;font-size:12.5px;cursor:pointer}#junkm .jkt button.on{border-color:var(--acc,#e8b84a);color:#fff;background:rgba(255,255,255,.06)}#junkm .jkt i{font-style:normal;opacity:.7;margin-left:4px}#junkm .jkd{margin:6px 0}#junkm .jks{display:flex;gap:12px;align-items:center;font-size:12.5px;margin:4px 0}#junkm .jks label{display:flex!important;gap:6px;align-items:center;cursor:pointer;white-space:nowrap;width:auto!important;margin:0!important;padding:0!important}#junkm .jkb button[disabled]{opacity:.4!important;cursor:default;pointer-events:none}#junkm .jke{margin:16px 0}@media (max-width:640px){#junkm{padding:8px}#junkm .jk{max-height:calc(100dvh - 90px);padding:12px}#junkm .jkr{grid-template-columns:22px 44px 1fr}#junkm .jkr>.mute{display:none}}
 .pmh{display:flex;align-items:baseline;gap:6px;margin:16px 0 0;min-height:18px}
 .pmh .dsec{display:inline-flex;grid-column:auto;margin:0;font-size:13px;letter-spacing:1.5px;color:#d9dce1}
 .pmh .pmn{font-size:13px;letter-spacing:.5px;color:#d9dce1}
@@ -1024,7 +1024,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
   }
   // Settings cards in even columns: each card, in a sensible order, goes into whichever column is shortest, so no side runs
   // far longer than the other. Re-done when cards are added (Farming, Reminders... come from another file) or the window resizes.
-  const SORD = ['Accounts', 'Item display', 'Inventory display', 'Appearance', 'Display', 'Tabs', 'Wish lists', 'My wish list', 'Farming', 'Reminders', 'Backup', 'Updates'];
+  const SORD = ['Accounts', 'Item display', 'Inventory display', 'Appearance', 'Display', 'Tabs', 'Wish lists', 'My wish list', 'Farming', 'Reminders', 'Backup', 'Updates', 'About & help'];
   let balT = 0, balN = 0;
   function balanceSettings(force) {
     const root = settingsSec; if (!root || !root.isConnected || !root.classList.contains('on')) return;
@@ -1228,7 +1228,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
   const noBar = () => { const sl = document.getElementById('gtsrch'); if (sl) sl.replaceChildren(); };
   const msg = (t, err) => { noBar(); sec.innerHTML = `<div class="card"><h2>Vault</h2><p class="${err ? '' : 'mute'}">${esc(t)}</p>${err ? (/sign-?in|session expired|not signed|authoriz|token/i.test(t) ? '<button class="b" data-act="out">Sign in again</button> ' : '') + '<button class="g" data-act="retry">Try again</button>' : ''}</div>`; };
   let noteT = 0;
-  const setNote = (t) => { const n = g('vnote'); if (!n) return; n.textContent = t || ''; clearTimeout(noteT); if (t && !/^Working/.test(t)) noteT = setTimeout(() => { if (n.textContent === t) n.textContent = ''; }, /^Failed/.test(t) ? 9000 : 3500); };
+  const setNote = (t) => { if (t && /^(Failed|Could not|Error)/i.test(t) && window.__gtLog) window.__gtLog(t, 'inventory'); const n = g('vnote'); if (!n) return; n.textContent = t || ''; clearTimeout(noteT); if (t && !/^Working/.test(t)) noteT = setTimeout(() => { if (n.textContent === t) n.textContent = ''; }, /^Failed/.test(t) ? 9000 : 3500); };
   gt.onProgress((m) => { if (sec.dataset.busy) msg(m); });
 
   async function init() { const c = await gt.cfgGet(); try { localStorage.setItem('gt_acct_ns', acctNs(c.mid, c.prim)); } catch (e) { /* storage off */ } ACL = null; c.signedIn ? load() : setup(c); }
@@ -1509,46 +1509,88 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
   let FARM = { on: false };
   if (gt && gt.farmGet) { gt.farmGet().then((m) => { FARM = m || FARM; const b = document.querySelector('.vbar [data-act=farm]'); if (b) b.classList.toggle('on', !!FARM.on); }).catch(() => {}); }
   if (gt && gt.onFarm) gt.onFarm((m) => { const was = FARM.on; FARM = m || FARM; if (was !== !!FARM.on) { const b = document.querySelector('.vbar [data-act=farm]'); if (b) b.classList.toggle('on', !!FARM.on); } });
-  // ---- junk finder: copies you could dismantle ----
+  // ---- vault cleanup: things you could dismantle, by reason, with bulk tag / move / keep ----
   const tot = (o) => (o.st ? o.st.reduce((a, b) => a + b, 0) : 0);
+  // Every suggestion has one reason (the first that applies): a trash roll on your wish lists, a copy of something better you own,
+  // legendary armor well below your best stats for that slot, or gear far below your power level. Never suggested: equipped,
+  // locked, Favorite/Keep tags, wish list rolls, postmaster items.
   function junkScan() {
-    const T = TAGS(), byH = {}, out = [];
-    D.items.forEach((o) => { if ((WEAPON.has(o.b) || ARMOR.has(o.b)) && !o.pm && !o.ro) (byH[o.h] = byH[o.h] || []).push(o); });
+    const T = TAGS(), byH = {}, out = [], gear = (o) => (WEAPON.has(o.b) || ARMOR.has(o.b)) && !o.pm && !o.ro;
+    D.items.forEach((o) => { if (gear(o)) (byH[o.h] = byH[o.h] || []).push(o); });
     const score = (o) => [wish(o).v === 1 ? 1 : 0, o.cr ? 1 : 0, o.lk ? 1 : 0, o.mw ? 1 : 0, ARMOR.has(o.b) ? tot(o) : 0, o.p || 0];
     const better = (a, b) => { const x = score(a), y = score(b); for (let i = 0; i < x.length; i++) if (x[i] !== y[i]) return x[i] > y[i]; return false; };
+    // best armor stat total for each slot and class
+    const bestArm = {}; D.items.forEach((o) => { if (ARMOR.has(o.b) && !o.pm && o.st) { const k = o.b + '|' + o.c; bestArm[k] = Math.max(bestArm[k] || 0, tot(o)); } });
+    const topPow = Math.max(0, ...D.items.filter(gear).map((o) => o.p || 0));
     for (const x of D.items) {
-      if (!(WEAPON.has(x.b) || ARMOR.has(x.b)) || x.pm || x.ro || x.e || x.lk || ['favorite', 'keep'].includes(T[x.id])) continue;
+      if (!gear(x) || x.e || x.lk || ['favorite', 'keep'].includes(T[x.id])) continue;
       const w = wish(x);
-      if (w.v === -1) { out.push({ x, why: 'Trash roll on your wish list' }); continue; }
+      if (w.v === -1) { out.push({ x, k: 'trash', why: 'Trash roll on your wish list' }); continue; }
       if (w.v === 1) continue;
       const grp = byH[x.h] || [];
-      if (grp.length < 2) continue;
-      const best = grp.reduce((a, b) => (better(b, a) ? b : a));
-      if (best === x) continue;
-      if (ARMOR.has(x.b)) { if (tot(x) < tot(best)) out.push({ x, why: `Duplicate with lower stats (total ${tot(x)}, your best copy has ${tot(best)})` }); }
-      else out.push({ x, why: best.lk || best.cr || wish(best).v === 1 ? 'Duplicate: you have a better copy' + (wish(best).v === 1 ? ' (a wish list roll)' : best.cr ? ' (crafted)' : ' (locked)') : 'Duplicate: you have a copy with higher power' });
+      if (grp.length > 1) {
+        const best = grp.reduce((a, b2) => (better(b2, a) ? b2 : a));
+        if (best !== x) {
+          if (ARMOR.has(x.b)) { if (tot(x) < tot(best)) { out.push({ x, k: 'dupe', why: `Duplicate with lower stats (total ${tot(x)}, your best copy has ${tot(best)})` }); continue; } }
+          else { out.push({ x, k: 'dupe', why: best.lk || best.cr || wish(best).v === 1 ? 'Duplicate: you have a better copy' + (wish(best).v === 1 ? ' (a wish list roll)' : best.cr ? ' (crafted)' : ' (locked)') : 'Duplicate: you have a copy with higher power' }); continue; }
+        }
+      }
+      if (ARMOR.has(x.b) && x.r !== 'Exotic' && x.st) { const bt = bestArm[x.b + '|' + x.c] || 0; if (bt && tot(x) <= bt - 20) { out.push({ x, k: 'lowst', why: `Stat total ${tot(x)}, your best ${String((SL.find((q) => q[0] === x.b) || [0, 'piece'])[1]).toLowerCase()} for this class has ${bt}` }); continue; } }
+      if (x.r !== 'Exotic' && !x.cr && topPow && (x.p || 0) && x.p <= topPow - 100) out.push({ x, k: 'lowpw', why: `Power ${x.p}, your best gear is ${topPow}` });
     }
-    return out.sort((a, b) => (a.x.n < b.x.n ? -1 : a.x.n > b.x.n ? 1 : 0));
+    return out.sort((a, b2) => (a.x.n < b2.x.n ? -1 : a.x.n > b2.x.n ? 1 : 0));
   }
-  function junkOpen() {
-    let m = g('junkm'); if (m) m.remove();
-    const list = junkScan(), T = TAGS(), tagged = list.filter((o) => T[o.x.id] === 'junk').length;
+  const JTABS = [['sug', 'Suggested', 'Trash rolls on your wish lists and duplicates of something better you own.'], ['lowst', 'Low armor stats', 'Legendary armor with a stat total at least 20 below your best piece for that slot and class.'], ['lowpw', 'Low power', 'Legendary weapons and armor 100 or more below your best gear. Some may still be worth keeping for perks or looks.'], ['tagged', 'Tagged junk', 'Everything you have tagged Junk, ready to dismantle in game.']];
+  let JTAB = 'sug'; const JSEL = new Set();
+  function junkOpen(keepSel) {
+    let m = g('junkm'); const st = m ? m.querySelector('.jkl') : null, scroll = st ? st.scrollTop : 0; if (m) m.remove();
+    const all = junkScan(), T = TAGS();
+    const tagged = D.items.filter((o) => T[o.id] === 'junk' && !o.pm).map((x) => ({ x, k: 'tagged', why: x.lk ? 'Tagged junk, but locked' : x.e ? 'Tagged junk, but equipped' : 'Tagged junk' }));
+    const lists = { sug: all.filter((o) => o.k === 'trash' || o.k === 'dupe'), lowst: all.filter((o) => o.k === 'lowst'), lowpw: all.filter((o) => o.k === 'lowpw'), tagged };
+    if (!keepSel) { JSEL.clear(); if (JTAB === 'sug') lists.sug.forEach((o) => JSEL.add(o.x.id)); }
+    const list = lists[JTAB] || [], ids = new Set(list.map((o) => o.x.id)); [...JSEL].forEach((id) => { if (!ids.has(id)) JSEL.delete(id); });
+    const nSel = JSEL.size, vc = D.items.filter((o) => o.loc === 'vault').length;
     m = document.createElement('div'); m.id = 'junkm';
     const whereTxt = (o) => { if (o.loc === 'vault') return 'Vault'; const c = D.chars.find((k) => k.id === o.loc); return c ? CL[c.cls] || 'Guardian' : ''; };
-    m.innerHTML = `<div class="jk"><div class="jkh"><b>Junk finder</b><span class="mute">${list.length} item${list.length === 1 ? '' : 's'} you could dismantle${tagged ? ' &middot; ' + tagged + ' already tagged junk' : ''}</span><button class="g" data-jk="x" title="Close">&#10005;</button></div>
-<p class="mute">Unlocked, unequipped copies that are a trash roll on your wish lists, or a duplicate of something better you already own. Locked items, wish list rolls and anything tagged Favorite or Keep are never listed. Nothing is dismantled here: tag them, then dismantle them in game.</p>
-${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="${esc(o.x.id)}">${tile(o.x)}<div><b>${esc(o.x.n)}</b><small>${esc(o.why)}</small></div><span class="mute">${esc(whereTxt(o.x))}</span></div>`).join('')}</div>
-<p class="jkb"><button class="b" data-jk="tag">Tag all ${list.length} as junk</button> <button class="g" data-jk="show">Show tagged junk in the vault</button></p>` : '<p><b>Nothing to clean up.</b> No duplicates or trash rolls found.</p>'}</div>`;
+    const tabInfo = JTABS.find((t) => t[0] === JTAB) || JTABS[0];
+    const acts = JTAB === 'tagged'
+      ? `<button class="b" data-jk="untag"${nSel ? '' : ' disabled'}>Remove junk tag</button> <button class="g" data-jk="vault"${nSel ? '' : ' disabled'}>Move to vault</button> <button class="g" data-jk="show">Show in the vault</button>`
+      : `<button class="b" data-jk="tag"${nSel ? '' : ' disabled'}>Tag ${nSel || ''} as junk</button> <button class="g" data-jk="vault"${nSel ? '' : ' disabled'} title="Frees space on your characters">Move to vault</button> <button class="g" data-jk="keep"${nSel ? '' : ' disabled'} title="Tags them Keep, so they are never suggested again">Keep (stop suggesting)</button>`;
+    m.innerHTML = `<div class="jk"><div class="jkh"><b>Vault cleanup</b><span class="mute">Vault ${vc} / ${VCAP} spaces &middot; ${all.length} suggestion${all.length === 1 ? '' : 's'}</span><button class="g" data-jk="x" title="Close">&#10005;</button></div>
+<div class="jkt">${JTABS.map(([k, lbl]) => `<button data-jt="${k}" class="${k === JTAB ? 'on' : ''}">${esc(lbl)} <i>${lists[k].length}</i></button>`).join('')}</div>
+<p class="mute jkd">${esc(tabInfo[2])} Nothing is dismantled here (Bungie does not allow it): tag them, then dismantle them in game.</p>
+${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${nSel && nSel === list.length ? ' checked' : ''}> Select all</label><span class="mute">${nSel} selected</span></div>
+<div class="jkl">${list.map((o) => `<div class="jkr${JSEL.has(o.x.id) ? ' sel' : ''}" data-jid="${esc(o.x.id)}"><input type="checkbox" data-jc="${esc(o.x.id)}"${JSEL.has(o.x.id) ? ' checked' : ''} aria-label="Select ${esc(o.x.n)}">${tile(o.x)}<div><b>${esc(o.x.n)}</b><small>${esc(o.why)}</small></div><span class="mute">${esc(whereTxt(o.x))}</span></div>`).join('')}</div>
+<p class="jkb">${acts}</p>` : `<p class="jke"><b>${JTAB === 'tagged' ? 'Nothing is tagged junk.' : 'Nothing to clean up here.'}</b></p>`}</div>`;
+    const after = (msg) => { renderGrid(); junkOpen(true); if (msg) setNote(msg); };
+    const sel = () => list.filter((o) => JSEL.has(o.x.id)).map((o) => o.x);
+    const plural = (n, w) => n + ' ' + w + (n === 1 ? '' : 's');
     m.onclick = (e) => {
       if (e.target === m) { m.remove(); return; }
+      const tb = e.target.closest('[data-jt]'); if (tb) { JTAB = tb.dataset.jt; junkOpen(); return; }
+      const cb = e.target.closest('[data-jc]'); if (cb) { if (cb.checked) JSEL.add(cb.dataset.jc); else JSEL.delete(cb.dataset.jc); junkOpen(true); return; }
       const b = e.target.closest('[data-jk]'), r = e.target.closest('[data-jid]');
       if (r && !b) { m.remove(); openPop(r.dataset.jid); return; }
-      if (!b) return;
-      if (b.dataset.jk === 'x') { m.remove(); return; }
-      if (b.dataset.jk === 'tag') { const o = TAGS(); list.forEach((j) => { o[j.x.id] = 'junk'; }); saveTAGS(o); renderGrid(); junkOpen(); setNote(list.length + ' item' + (list.length === 1 ? '' : 's') + ' tagged junk.'); return; }
-      if (b.dataset.jk === 'show') { m.remove(); const i = g('vq'); if (i) i.value = 'tag:junk'; q = 'tag:junk'; renderGrid(); }
+      if (!b || b.disabled) return;
+      const k = b.dataset.jk;
+      if (k === 'x') { m.remove(); return; }
+      if (k === 'all') { if (b.checked) list.forEach((o) => JSEL.add(o.x.id)); else JSEL.clear(); junkOpen(true); return; }
+      if (k === 'show') { m.remove(); const i = g('vq'); if (i) i.value = 'tag:junk'; q = 'tag:junk'; renderGrid(); return; }
+      const its = sel(); if (!its.length) return;
+      if (k === 'tag' || k === 'keep' || k === 'untag') {
+        const o = TAGS(); its.forEach((x) => { if (k === 'untag') delete o[x.id]; else o[x.id] = k === 'tag' ? 'junk' : 'keep'; }); saveTAGS(o); JSEL.clear();
+        after(k === 'tag' ? plural(its.length, 'item') + ' tagged junk.' : k === 'keep' ? plural(its.length, 'item') + ' tagged Keep: they will not be suggested again.' : 'Junk tag removed from ' + plural(its.length, 'item') + '.');
+        return;
+      }
+      if (k === 'vault') {
+        const mv = its.filter((x) => x.loc !== 'vault' && !x.e);
+        if (!mv.length) { setNote('Those are already in the vault (equipped items stay where they are).'); return; }
+        if (vc + mv.length > VCAP) { setNote('Not enough vault space for ' + plural(mv.length, 'item') + ' (' + (VCAP - vc) + ' free).'); return; }
+        mv.forEach((x) => doMove(x, 'vault')); JSEL.clear(); after('Moving ' + plural(mv.length, 'item') + ' to the vault...');
+      }
     };
     document.body.appendChild(m);
+    const nl = m.querySelector('.jkl'); if (nl && keepSel) nl.scrollTop = scroll;
   }
 
   const SV_UP = '<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.3l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>';
@@ -1753,7 +1795,7 @@ ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="
     const hp = '<b>Search</b> works like DIM. Plain words match names, types and every perk (weapon perks and their options, armor perks and mods, subclass aspects and fragments). Words are all required; <code>or</code> between words means either; a leading <code>-</code> excludes; use quotes for phrases. Suggestions appear as you type (Tab or Enter to use one).<br>'
       + '<b>is:</b> <code>is:exotic</code> <code>is:handcannon</code> <code>is:smg</code> <code>is:sword</code> <code>is:solar</code> <code>is:strand</code> <code>is:prismatic</code> <code>is:primary</code> <code>is:heavy</code> <code>is:barrier</code> <code>is:crafted</code> <code>is:deepsight</code> <code>is:adept</code> <code>is:masterwork</code> <code>is:locked</code> <code>is:equipped</code> <code>is:inloadout</code> <code>is:duplicate</code> <code>is:wishlist</code> <code>is:trashlist</code> <code>is:tagged</code> <code>is:hasnotes</code> <code>is:subclass</code> <code>is:titan</code> <code>not:locked</code><br>'
       + '<b>Filters:</b> <code>perk:rampage</code> <code>perk:\"kill clip\"</code> <code>exactperk:\"firefly\"</code> <code>name:ace</code> <code>notes:pvp</code> <code>tag:junk</code> <code>element:void</code> <code>slot:kinetic</code> <code>ammo:special</code> <code>breaker:overload</code> <code>power:&gt;=550</code> <code>stat:health:&gt;=30</code> <code>total:&gt;=65</code> <code>customtotal:&gt;=60</code> <code>energy:&gt;=10</code> <code>tier:5</code> <code>class:titan</code> <code>is:shotgun or is:sniper</code><br><b>Mouse:</b> click an item for details and perks, right-click for the item menu, drag to move or equip. <b>Keys:</b> <code>/</code> search, <code>Esc</code> close, <code>L</code> lock (item open), <code>Shift+1..5</code> tags (item open).';
-    const bar = `<div class="vbar"><span class="vnm" title="Signed in as ${esc(D.name || '')}">${esc(D.name || '')}</span><input id="vq" placeholder="Search names, perks, subclasses, is:handcannon, perk:rampage, is:solar..." value="${esc(q)}" autocomplete="off" spellcheck="false"><span class="vtg"><button class="g ib" data-act="savq" title="Saved searches"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z"/></svg></button></span><span class="vtg"><button class="g ib${FARM.on ? ' on' : ''}" data-act="farm" title="${FARM.on ? 'Farming mode is on: unequipped weapons and armor go to the vault so your inventory never fills. Click to stop.' : 'Farming mode: keep moving unequipped weapons and armor to the vault while you play'}"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v10M8 10.5l4 4 4-4M4.5 15.5V19a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1v-3.5"/></svg></button><button class="g ib" data-act="junk" title="Junk finder: duplicates and trash rolls you could dismantle"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7h15M9.5 7V4.8a.8.8 0 0 1 .8-.8h3.4a.8.8 0 0 1 .8.8V7M6.5 7l.8 12a1 1 0 0 0 1 .9h7.4a1 1 0 0 0 1-.9l.8-12M10 11v5.5M14 11v5.5"/></svg></button><button class="g ib" data-f="bulk" title="Select several items at once (Ctrl+click works any time)"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2.5"/><path d="M8.5 12.2l2.4 2.4 4.6-5"/></svg></button></span><span class="vtg"><button class="g ib" data-act="sets" title="Loadouts"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 7h11M8 12h11M8 17h11"/><circle cx="4.6" cy="7" r=".6" fill="currentColor"/><circle cx="4.6" cy="12" r=".6" fill="currentColor"/><circle cx="4.6" cy="17" r=".6" fill="currentColor"/></svg></button><button class="g ib" data-act="help" title="Search and shortcut help"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.4a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2.2-2.4 3.7M12 16.9v.2"/></svg></button><button class="g ib" data-act="refresh" title="Reload from Bungie"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3M19.5 4.5v4h-4"/></svg></button></span></div>`;
+    const bar = `<div class="vbar"><span class="vnm" title="Signed in as ${esc(D.name || '')}">${esc(D.name || '')}</span><input id="vq" placeholder="Search names, perks, subclasses, is:handcannon, perk:rampage, is:solar..." value="${esc(q)}" autocomplete="off" spellcheck="false"><span class="vtg"><button class="g ib" data-act="savq" title="Saved searches"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z"/></svg></button></span><span class="vtg"><button class="g ib${FARM.on ? ' on' : ''}" data-act="farm" title="${FARM.on ? 'Farming mode is on: unequipped weapons and armor go to the vault so your inventory never fills. Click to stop.' : 'Farming mode: keep moving unequipped weapons and armor to the vault while you play'}"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v10M8 10.5l4 4 4-4M4.5 15.5V19a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1v-3.5"/></svg></button><button class="g ib" data-act="junk" title="Vault cleanup: trash rolls, duplicates and low-stat gear you could dismantle"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7h15M9.5 7V4.8a.8.8 0 0 1 .8-.8h3.4a.8.8 0 0 1 .8.8V7M6.5 7l.8 12a1 1 0 0 0 1 .9h7.4a1 1 0 0 0 1-.9l.8-12M10 11v5.5M14 11v5.5"/></svg></button><button class="g ib" data-f="bulk" title="Select several items at once (Ctrl+click works any time)"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2.5"/><path d="M8.5 12.2l2.4 2.4 4.6-5"/></svg></button></span><span class="vtg"><button class="g ib" data-act="sets" title="Loadouts"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 7h11M8 12h11M8 17h11"/><circle cx="4.6" cy="7" r=".6" fill="currentColor"/><circle cx="4.6" cy="12" r=".6" fill="currentColor"/><circle cx="4.6" cy="17" r=".6" fill="currentColor"/></svg></button><button class="g ib" data-act="help" title="Search and shortcut help"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.4a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2.2-2.4 3.7M12 16.9v.2"/></svg></button><button class="g ib" data-act="refresh" title="Reload from Bungie"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3M19.5 4.5v4h-4"/></svg></button></span></div>`;
     const slot = document.getElementById('gtsrch');
     sec.innerHTML = `${slot ? '' : '<div class="card vcard">' + bar + '</div>'}<div id="vfx"></div><div id="vhelp" class="card">${hp}</div><p id="vnote" class="mute"></p><div id="vgrid"></div><div id="vpop"></div>`;
     if (slot) { slot.replaceChildren(); slot.insertAdjacentHTML('beforeend', bar); slot.querySelector('.vbar').onclick = (e) => sec.onclick(e); }

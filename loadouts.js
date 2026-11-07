@@ -123,6 +123,7 @@
   // ---------------- toast ----------------
   function toast(msg, o) {
     o = o || {};
+    if (o.bad && window.__gtLog) window.__gtLog(msg, 'loadouts');
     let el = g('dlt'); if (!el) { el = document.createElement('div'); el.id = 'dlt'; document.body.appendChild(el); el.onclick = (e) => { const u = e.target.closest('[data-undo]'); el.style.display = 'none'; if (u) undoLo(u.dataset.undo); }; }
     const ic = (o.icons || []).map((i) => V.icon(i)).filter(Boolean);
     el.className = o.bad ? 'bad' : '';
@@ -358,7 +359,36 @@
   // ---------------- loadout as a picture (to post on Discord and so on) ----------------
   const IMSTL = ['Weapons', 'Health', 'Class', 'Grenade', 'Super', 'Melee'], IMSTC = ['#9aa0a8', '#6fbf73', '#e0b64a', '#e8a53a', '#c77dff', '#5d9ce0'];
   const IMRC = { Exotic: '#ceae33', Legendary: '#522f65', Rare: '#5076a3', Uncommon: '#366f42', Common: '#c3bcb4' };
+  // Title and one-line summary for a share link's preview card: class and subclass, the weapons, and the exotic armor.
+  function shareMeta(l) {
+    try {
+      const res = resolve(l), by = (b) => res.find((r) => r.en.b === b) || null, nm = (r) => (r ? String((r.x || r.en).n || '') : '');
+      const sub = nm(by(SUB)), cls = l.c < 3 ? CL[l.c] : '';
+      const weps = WB.map(by).map(nm).filter(Boolean);
+      const exo = AB.map(by).filter((r) => r && r.x && r.x.r === 'Exotic').map(nm).filter(Boolean);
+      const subHas = !!(sub && cls && sub.toLowerCase().includes(cls.toLowerCase())); // "Prismatic Titan" already says Titan
+      const head = subHas ? sub : [cls, sub].filter(Boolean).join(' · ');
+      const d = [head, [weps.join(', '), exo.length ? 'Exotic: ' + exo.join(', ') : ''].filter(Boolean).join(' · ')].filter(Boolean).join(' — ');
+      const n = String(l.n || 'Loadout'), t = /^equipped$/i.test(n.trim()) && cls ? 'Equipped ' + (subHas ? sub : cls + (sub ? ' (' + sub + ')' : '')) : n;
+      return { t: t.slice(0, 100), d: d.slice(0, 300) };
+    } catch (e) { return { t: String(l.n || 'Loadout').slice(0, 100), d: '' }; }
+  }
+  // Draws the preview picture for a share link and sends it (a smaller JPEG). Never in the way: failures are ignored.
+  async function sharePreview(l, code) {
+    if (!gt.loShareImg) return false;
+    const cv = await drawPic(l);
+    let w = cv.width, h = cv.height; const sc = Math.min(1, 1200 / w); w = Math.round(w * sc); h = Math.round(h * sc);
+    const c2 = document.createElement('canvas'); c2.width = w; c2.height = h; const x2 = c2.getContext('2d'); x2.fillStyle = '#0e0f11'; x2.fillRect(0, 0, w, h); x2.drawImage(cv, 0, 0, w, h);
+    let q = 0.86, d = c2.toDataURL('image/jpeg', q);
+    while (d.length > 1900000 && q > 0.5) { q -= 0.12; d = c2.toDataURL('image/jpeg', q); }
+    await gt.loShareImg({ code, d });
+    return true;
+  }
   async function loImage(l) {
+    const cv = await drawPic(l);
+    showPic(l, cv);
+  }
+  async function drawPic(l) {
     const res = resolve(l), by = (b) => res.find((r) => r.en.b === b) || null, c = l.c < 3 ? CL[l.c] : 'Any class';
     const sub = by(SUB), weps = WB.map(by), arms = AB.map(by);
     // Mods by where they go: each armor piece's own mods, plus loadout mods that name a piece; the rest go in "Any piece".
@@ -512,6 +542,9 @@
       }
     }
     txt('Made with Pathfinder', W - 220, H - 10, 14, '#6a6f77', 600);
+    return cv;
+  }
+  function showPic(l, cv) {
     const data = cv.toDataURL('image/png');
     // The picture as a file, made now: phones only allow copying and sharing straight from a tap, with nothing awaited first.
     const bin = atob(data.split(',')[1] || ''), u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
@@ -773,7 +806,7 @@ ${pn('dl-p-art', 'Artifact', `<div class="dl-artrow">${d.ai && d.ai.i ? `<span c
     } else if (mod.t === 'shmenu') {
       h = `<div class="dl-mc dl-ig-pop"><h3>Share loadout</h3><p class="mute">A link opens the loadout for anyone, in Pathfinder or in a browser, like a dim.gg link. A picture is easy to post anywhere.</p>${mod.msg ? `<div class="dl-wr">${esc(mod.msg)}</div>` : ''}<div class="dl-bt dl-col"><button class="b" data-md="shlink">Copy share link</button><button class="g" data-md="shpic">Share as a picture</button><button class="g" data-md="shcode">Copy loadout code</button>${navigator.share ? '<button class="g" data-md="shsend">Send the code...</button>' : ''}<button class="g" data-md="x">Close</button></div></div>`;
     } else if (mod.t === 'shlink') {
-      h = `<div class="dl-mc dl-ig-pop"><h3>Share link</h3><p class="mute">${esc(mod.copied ? 'Copied. Paste it anywhere: Discord, a message, a forum post.' : 'Copy it and paste it anywhere: Discord, a message, a forum post.')}</p><input id="dlurl" class="dl-url" readonly value="${esc(mod.url)}"><div class="dl-bt"><button class="b" data-md="lcopy">Copy link</button>${navigator.share ? '<button class="g" data-md="lsend">Share...</button>' : ''}<span class="dl-sp"></span><button class="g" data-md="x">Close</button></div></div>`;
+      h = `<div class="dl-mc dl-ig-pop"><h3>Share link</h3><p class="mute">${esc(mod.copied ? 'Copied. Paste it anywhere: Discord, a message, a forum post. It shows a preview card with the loadout picture.' : 'Copy it and paste it anywhere: Discord, a message, a forum post. It shows a preview card with the loadout picture.')}</p><input id="dlurl" class="dl-url" readonly value="${esc(mod.url)}"><div class="dl-bt"><button class="b" data-md="lcopy">Copy link</button>${navigator.share ? '<button class="g" data-md="lsend">Share...</button>' : ''}<span class="dl-sp"></span><button class="g" data-md="x">Close</button></div></div>`;
     } else if (mod.t === 'shin') {
       h = shinHTML();
     } else if (mod.t === 'share') {
@@ -843,7 +876,12 @@ ${pn('dl-p-art', 'Artifact', `<div class="dl-artrow">${d.ai && d.ai.i ? `<span c
     if (mod.t === 'shmenu' && a === 'shlink') {
       const l = mod.l; mod.msg = 'Making the link...'; drawMod();
       try {
-        const r = await gt.loShare({ c: codeOf(l), n: l.n || 'Loadout' });
+        const meta = shareMeta(l);
+        const r = await gt.loShare({ c: codeOf(l), n: l.n || 'Loadout', t: meta.t, d: meta.d });
+        // The preview picture is sent before the link is shown (up to 8 seconds), so the card is ready when it is pasted.
+        if (mod && mod.t === 'shmenu') { mod.msg = 'Making the preview picture...'; drawMod(); }
+        const pv = sharePreview(l, r.code).catch(() => false);
+        await Promise.race([pv, new Promise((ok) => setTimeout(ok, 8000))]);
         mod = { t: 'shlink', url: r.url, copied: false }; drawMod();
         try { await gt.writeClipboard(r.url); if (!document.documentElement.classList.contains('gtweb')) { mod.copied = true; drawMod(); } } catch (er) { /* the Copy button is there */ }
       } catch (er) { if (mod && mod.t === 'shmenu') { mod.msg = V.clean(er); drawMod(); } }

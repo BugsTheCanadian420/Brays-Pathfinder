@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.7: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.8: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -362,13 +362,27 @@ const slugOf = (n) => String(n || 'Loadout').replace(/[^\w\- ]+/g, '').trim().re
 const SHERR = { share_not_configured: 'Share links are not switched on in your token service yet (see SHARE-SETUP.txt).', share_unavailable: 'This copy of the app has no token service, so it cannot make share links.', too_many_today: 'You have made a lot of share links today. Try again tomorrow.', unauthorized: 'Sign in again to share.' };
 H('lo:share', async (e, v) => {
   OBJ(v); const c = TXT(v.c, 65000), n = TXT(v.n || 'Loadout', 80);
+  // Title and summary shown on the link's preview card (Discord and similar apps).
+  const t = typeof v.t === 'string' ? v.t.slice(0, 100) : '', d = typeof v.d === 'string' ? v.d.slice(0, 300) : '';
   if (!/^GTL1:[A-Za-z0-9+/=]+$/.test(c)) throw bad();
   const u = shareUrl(); if (!u) throw new Error(SHERR.share_unavailable);
   await fresh();
-  const r = await fetch(u, { method: 'POST', headers: { Authorization: 'Bearer ' + rd().tok.access, 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ c, n }) });
+  const r = await fetch(u, { method: 'POST', headers: { Authorization: 'Bearer ' + rd().tok.access, 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ c, n, t, d }) });
   const j = await readJson(r).catch(() => ({}));
   if (!r.ok || !j || !/^[A-Za-z0-9]{5,12}$/.test(String(j.code || ''))) throw new Error(SHERR[j && j.error] || (j && j.error) || 'HTTP ' + r.status);
   return { url: siteBase() + '/' + j.code + '/' + encodeURIComponent(slugOf(n)), code: j.code };
+});
+// The picture shown on a share link's preview card: a JPEG made in the app window, sent to the token service.
+H('lo:shareimg', async (e, v) => {
+  OBJ(v); const code = TXT(v.code, 20); if (!/^[A-Za-z0-9]{5,12}$/.test(code)) throw bad();
+  const m = /^data:image\/jpeg;base64,([A-Za-z0-9+/=]+)$/.exec(TXT(v.d, 2100000)); if (!m) throw bad();
+  const buf = Buffer.from(m[1], 'base64'); if (!buf.length || buf.length > 1500000) throw bad();
+  const u = shareUrl(); if (!u) throw new Error(SHERR.share_unavailable);
+  await fresh();
+  const r = await fetch(u + '/' + code + '/img', { method: 'POST', headers: { Authorization: 'Bearer ' + rd().tok.access, 'Content-Type': 'image/jpeg', Accept: 'application/json' }, body: new Uint8Array(buf) });
+  const j = await readJson(r).catch(() => ({}));
+  if (!r.ok) throw new Error(SHERR[j && j.error] || (j && j.error) || 'HTTP ' + r.status);
+  return { ok: true, same: !!j.same };
 });
 H('lo:shareget', async (e, v) => {
   OBJ(v); const code = TXT(v.code, 20); if (!/^[A-Za-z0-9]{5,12}$/.test(code)) throw bad();
@@ -1013,6 +1027,30 @@ function tidyDisk() {
   } catch (e) { /* no updater folder */ }
 }
 // The .ico carries simplified small sizes (the dotted ring is dropped at 16-32 px), so the title bar and taskbar stay crisp.
+// The taskbar's right-click menu takes its icon from the Start menu shortcut, which points at Pathfinder.exe. Windows keeps an
+// old icon for that file path forever (restarts and re-pinning do not clear it), so the shortcuts are pointed at the icon file
+// copied out above, whose name changes with its contents; Windows has nothing stored for a new name and reads the new picture.
+// The installer rewrites the shortcuts on every update, so this is checked at each start.
+function fixWinShortcuts(ico) {
+  const ad = app.getPath('appData'), changed = [];
+  const lnks = [
+    path.join(ad, 'Microsoft', 'Windows', 'Start Menu', 'Programs', 'Pathfinder.lnk'),
+    path.join(app.getPath('desktop'), 'Pathfinder.lnk'),
+    path.join(ad, 'Microsoft', 'Internet Explorer', 'Quick Launch', 'User Pinned', 'TaskBar', 'Pathfinder.lnk'),
+  ];
+  for (const l of lnks) {
+    try {
+      if (!fs.existsSync(l)) continue;
+      const cur = shell.readShortcutLink(l);
+      if (!cur || !cur.target || path.resolve(cur.target).toLowerCase() !== path.resolve(process.execPath).toLowerCase()) continue; // not ours
+      if (String(cur.icon || '').toLowerCase() === ico.toLowerCase()) continue;
+      if (shell.writeShortcutLink(l, 'update', { icon: ico, iconIndex: 0 })) changed.push(l);
+    } catch (e) { /* that shortcut stays as it is */ }
+  }
+  // Ask Windows to refresh its icon pictures (built into Windows 10 and 11).
+  if (changed.length) { try { require('child_process').execFile(path.join(process.env.SystemRoot || 'C:\\Windows', 'System32', 'ie4uinit.exe'), ['-show'], { windowsHide: true, timeout: 15000 }, () => {}); } catch (e) { /* the new icon shows after the next sign-in */ } }
+  return changed;
+}
 function winIcon() { const ico = path.join(__dirname, 'build', 'icon.ico'); return process.platform === 'win32' && fs.existsSync(ico) ? ico : path.join(__dirname, 'build', 'icon.png'); }
 app.whenReady().then(async () => {
   if (app.isPackaged) setTimeout(tidyDisk, 15000);
@@ -1044,6 +1082,7 @@ app.whenReady().then(async () => {
       const dst = path.join(app.getPath('userData'), 'pathfinder-' + crypto.createHash('sha1').update(buf).digest('hex').slice(0, 10) + '.ico');
       if (!fs.existsSync(dst)) fs.writeFileSync(dst, buf);
       win.setAppDetails({ appId: AUMID, appIconPath: dst, appIconIndex: 0, relaunchCommand: '"' + process.execPath + '"', relaunchDisplayName: 'Pathfinder' });
+      if (app.isPackaged) setTimeout(() => fixWinShortcuts(dst), 3000);
     } catch (e) { /* the window keeps its normal icon */ }
   }
   // The app window never leaves its own page. Links open in your normal browser (web addresses only).
