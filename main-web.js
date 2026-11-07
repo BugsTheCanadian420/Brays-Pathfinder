@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.5: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.6: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -646,7 +646,7 @@ H('vault:load', async () => {
   art = null; // the old artifact list is stale; see art:get
   const pn = {};
   [...items, ...gen].forEach((x) => [...(x.pk || []), ...(x.ap || [])].forEach((h) => { if (!pn[h] && df.p[h]) pn[h] = df.p[h].n; }));
-  const res = { ts: Date.parse(pr.responseMintedTimestamp) || 0, chars, sti, items, gen, cur, ic: { el: df.dm || {}, bk: df.bk || {} }, pm, lo, art, pn, name: m.bungieGlobalDisplayName || m.displayName };
+  const res = { ts: Date.parse(pr.responseMintedTimestamp) || 0, ts2: Date.parse(pr.secondaryComponentsMintedTimestamp) || 0, chars, sti, items, gen, cur, ic: { el: df.dm || {}, bk: df.bk || {} }, pm, lo, art, pn, name: m.bungieGlobalDisplayName || m.displayName };
   xdSave(df);
   { const mid = (rd().tok || {}).mid, f = apath('vcache.json'); setTimeout(() => { fs.promises.writeFile(f, JSON.stringify({ v: 1, at: Date.now(), mid, d: res })).catch(() => {}); }, 50); }
   return res;

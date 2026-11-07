@@ -1188,6 +1188,9 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
   // Runs fn over a list, 3 at a time; every item gets its turn, then the first error (if any) is reported.
   async function pmap(list, fn) { let i = 0, err = null; await Promise.all([0, 1, 2].map(async () => { while (i < list.length) { const x = list[i++]; try { await fn(x); } catch (e) { if (!err) err = e; } } })); if (err) throw err; }
   const LEDGER = {}, LED_MS = 90000;
+  // Finished moves are remembered across a restart too (Bungie can still be showing the old place for a few minutes).
+  const saveLed = () => { try { const o = {}; Object.keys(LEDGER).forEach((k) => { if (LEDGER[k].at) o[k] = LEDGER[k]; }); localStorage.setItem('gt_ledger', JSON.stringify(o)); } catch (e) { /* screen only */ } };
+  try { const o = JSON.parse(localStorage.getItem('gt_ledger') || '{}'), now = Date.now(); Object.keys(o).forEach((k) => { const l = o[k]; if (l && l.at && now - l.at < 600000 && typeof l.k === 'string') LEDGER[k] = l; }); } catch (e) { /* none */ }
   const DET = {};
   const allI = () => D.items.concat(D.gen || []);
   const byId = (id) => D && (D.items.find((x) => x.id === id) || (D.gen || []).find((x) => x.id === id) || aggOf(id));
@@ -1278,7 +1281,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
       }
     }
     sec.dataset.busy = 1; msg('Loading your vault...');
-    try { Object.keys(LEDGER).forEach((k) => { delete LEDGER[k]; }); D = await gt.loadVault(); sel = null; Object.keys(DET).forEach((k) => delete DET[k]); delete sec.dataset.busy; shell(); if (window.__gtl) window.__gtl.reset(); }
+    try { D = reconcile(await gt.loadVault()); sel = null; Object.keys(DET).forEach((k) => delete DET[k]); delete sec.dataset.busy; shell(); if (window.__gtl) window.__gtl.reset(); }
     catch (e) { delete sec.dataset.busy; msg(clean(e), true); }
   }
 
@@ -1767,18 +1770,26 @@ ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="
   // dragging while earlier moves are still going. A short "ledger" remembers where Bungie has been told things went, because
   // Bungie's profile lags behind for a while; without it a reload brought back items that had already been moved (ghosts).
   const stamp = (x) => (x.loc || '') + '|' + (x.e ? 1 : 0) + '|' + (x.pm ? 1 : 0);
+  // Bungie says when the item data it sent was made: data made before a move finished is stale and the move is kept on screen
+  // (for up to 10 minutes); data made well after it is believed, so a change made in game afterwards still shows.
   function reconcile(n) {
     const now = Date.now(), ids = Object.keys(LEDGER); if (!ids.length) return n;
-    const by = new Map(n.items.map((x) => [x.id, x]));
+    const by = new Map(n.items.map((x) => [x.id, x])), made = n.ts2 || n.ts || 0;
     ids.forEach((id) => {
       const l = LEDGER[id];
-      // An item taken out of the postmaster can never go back into it, so that one is remembered longer (Bungie can lag for minutes).
-      if (l.at && now - l.at > (l.pmx ? 600000 : LED_MS)) { delete LEDGER[id]; return; }
+      const age = l.at ? now - l.at : 0;
+      const stale = !l.at || (made ? made < l.at + 20000 : age < LED_MS);
+      if (l.at && (age > 600000 || (!stale && !l.pmx) || (l.pmx && age > 600000))) { delete LEDGER[id]; return; }
       const s = by.get(id);
       if (!s) return; // gone from Bungie's list (dismantled or deleted): leave it gone
       if (stamp(s) === l.k) { if (l.at) delete LEDGER[id]; return; } // Bungie has caught up
       s.loc = l.loc; s.e = l.e; s.pm = l.pm; // Bungie is still showing the old place
     });
+    // Only one item can be equipped per slot: if the screen now shows two (a kept move plus Bungie's stale one), the kept one wins.
+    const eqd = new Map();
+    n.items.forEach((x) => { if (!x.e || x.loc === 'vault') return; const k = x.loc + '|' + x.b; (eqd.get(k) || eqd.set(k, []).get(k)).push(x); });
+    eqd.forEach((arr) => { if (arr.length > 1) { const keep = arr.find((x) => LEDGER[x.id] && LEDGER[x.id].e) || arr[0]; arr.forEach((x) => { if (x !== keep) x.e = 0; }); } });
+    saveLed();
     return n;
   }
   // Loads the vault from Bungie. An older copy than the one on screen is ignored, so a lagging reply cannot undo what you just did.
@@ -1804,12 +1815,13 @@ ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="
       // A call may report that only some of its items worked: those (and the items they pushed aside) go back to what Bungie says.
       if (good && part && Array.isArray(part.revert) && part.revert.length) {
         const bad = new Set(part.revert), slots = new Set();
+        bad.forEach((id) => { delete LEDGER[id]; }); saveLed();
         bad.forEach((id) => { const o = byId(id); if (o) slots.add(o.b + '|' + o.loc); });
         led.forEach((l) => { const o = byId(l.id); if (bad.has(l.id) || (o && l.b.e && slots.has(o.b + '|' + o.loc))) delete LEDGER[l.id]; });
         try { D = await fetchD(true); } catch (e) { part.revert.forEach((id) => { const l = led.find((q) => q.id === id), o = byId(id); if (l && o) { o.loc = l.b.loc; o.e = l.b.e; o.pm = l.b.pm; } }); }
       }
       qn--;
-      if (good) { const t = Date.now(); led.forEach((l) => { if (LEDGER[l.id]) LEDGER[l.id].at = t; }); }
+      if (good) { const t = Date.now(); led.forEach((l) => { if (LEDGER[l.id]) LEDGER[l.id].at = t; }); saveLed(); }
       else {
         led.forEach((l) => { delete LEDGER[l.id]; });
         // Put those items back where Bungie says they are; if Bungie cannot be reached, put them back where they were.
@@ -2226,8 +2238,7 @@ ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="
       const eq = chars.filter((c) => (x.c === 3 || x.c === undefined || x.c === c.cls) && !(x.e && x.loc === c.id));
       if (eq.length) { s.push('<h6>Equip on</h6>' + (scol ? '<hr>' : '')); eq.forEach((c) => s.push(sbtn('eq', c.id, esc(CL[c.cls] || 'Character'), scol ? '&#9650;' + esc((CL[c.cls] || '?')[0]) : '&#9650;', false, 'Equip on ' + (CL[c.cls] || '')))); }
     }
-    if (x.e) s.push('<p class="dpe">Equipped. Equip something else in this slot to move it.</p>');
-    else { s.push('<h6>Store in</h6>' + (scol ? '<hr>' : '')); ['vault', ...chars.map((c) => c.id)].filter((t) => t !== x.loc).forEach((t) => s.push(sbtn('mv', t, t === 'vault' ? 'Vault' : esc(CL[ent(t).cls] || ''), scol ? (t === 'vault' ? 'V' : '&#9656;' + esc((CL[ent(t).cls] || '?')[0])) : (t === 'vault' ? '&#9644;' : '&#9656;'), false, 'Store in ' + (t === 'vault' ? 'the vault' : CL[ent(t).cls] || '')))); }
+    { s.push('<h6>Store in</h6>' + (scol ? '<hr>' : '')); ['vault', ...chars.map((c) => c.id)].filter((t) => t !== x.loc).forEach((t) => s.push(sbtn('mv', t, t === 'vault' ? 'Vault' : esc(CL[ent(t).cls] || ''), scol ? (t === 'vault' ? 'V' : '&#9656;' + esc((CL[ent(t).cls] || '?')[0])) : (t === 'vault' ? '&#9644;' : '&#9656;'), false, 'Store in ' + (t === 'vault' ? 'the vault' : CL[ent(t).cls] || '')))); }
     return s.join('');
   }
   function roBody(x) {
