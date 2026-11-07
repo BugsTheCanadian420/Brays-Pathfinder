@@ -1571,7 +1571,7 @@ ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="
     const foot = left || bkI || elH || num !== '' ? `<div class="ft"><span class="lf">${left}</span>${bkI ? `<img class="bkf" src="${esc(icon(bkI))}" alt="" title="${esc(BRK[x.bt] || 'Champion')}" draggable="false">` : ''}${elH}${num !== '' ? `<span class="pn">${num}</span>` : ''}</div>` : '';
     const lockH = x.lk && !(SET.locksync && tgv) ? `<b class="lk">${SV_LK}</b>` : '', tagH = tgd ? `<em class="tg" style="background:${tgd[2]}" title="${tgd[3]}">${tagSvg(tgd[0], 9)}</em>` : '';
     const badge = lockH || tagH ? `<div class="br">${lockH}${tagH}</div>` : '';
-    return `<div class="vt ${esc(x.r)}${x.of && SET.ornaments !== false ? ' of' : ''}${x.b === ENGR || x.eg ? ' eng' : ''}${x.mx && x.q >= x.mx ? ' full' : ''}${foot ? ' hf' : ''}${x.mw ? ' mw' : ''}${window.__gtf && window.__gtf.isSel(x.id) ? ' bsel' : ''}${q && !match(x) ? ' fade' : ''}"${(x.e || x.pm || x.ro) ? '' : ' draggable="true"'} data-id="${esc(x.id)}" title="${esc(x.n)} - ${esc(x.r)} ${esc(x.t)}${w.v ? (w.v > 0 ? ' - WISH LIST ROLL' : ' - trash roll') : ''}${w.notes.length ? ' - ' + esc(w.notes.join(' / ')) : ''}${x.orn ? ' (ornament: ' + esc(x.orn) + ')' : ''}"><img src="${esc(icon(SET.ornaments === false && x.bi ? x.bi : x.i))}" alt="" draggable="false">${x.wm ? `<img class="wm" src="${esc(icon(x.wm))}" alt="" draggable="false">` : ''}${x.fr && x.r !== 'Exotic' ? `<span class="fr"><img src="${esc(icon(x.fr))}" alt="" draggable="false"></span>` : ''}${ARMOR.has(x.b) && x.c >= 0 && x.c < 3 ? `<span class="cl" title="${CL[x.c] || ''}">${CLSV[x.c]}</span>` : ''}${x.gt > 0 || x.cr ? `<u class="tp${x.cr ? ' cr' : ''}">${x.gt > 0 ? '<i></i>'.repeat(Math.min(5, x.gt)) : ''}${x.cr ? CRSVG : ''}</u>` : ''}${badge}${foot}</div>`;
+    return `<div class="vt ${esc(x.r)}${x.of && SET.ornaments !== false ? ' of' : ''}${x.b === ENGR || x.eg ? ' eng' : ''}${x.mx && x.q >= x.mx ? ' full' : ''}${foot ? ' hf' : ''}${x.mw ? ' mw' : ''}${window.__gtf && window.__gtf.isSel(x.id) ? ' bsel' : ''}${q && !match(x) ? ' fade' : ''}"${(x.pm || x.ro) ? '' : ' draggable="true"'} data-id="${esc(x.id)}" title="${esc(x.n)} - ${esc(x.r)} ${esc(x.t)}${w.v ? (w.v > 0 ? ' - WISH LIST ROLL' : ' - trash roll') : ''}${w.notes.length ? ' - ' + esc(w.notes.join(' / ')) : ''}${x.orn ? ' (ornament: ' + esc(x.orn) + ')' : ''}"><img src="${esc(icon(SET.ornaments === false && x.bi ? x.bi : x.i))}" alt="" draggable="false">${x.wm ? `<img class="wm" src="${esc(icon(x.wm))}" alt="" draggable="false">` : ''}${x.fr && x.r !== 'Exotic' ? `<span class="fr"><img src="${esc(icon(x.fr))}" alt="" draggable="false"></span>` : ''}${ARMOR.has(x.b) && x.c >= 0 && x.c < 3 ? `<span class="cl" title="${CL[x.c] || ''}">${CLSV[x.c]}</span>` : ''}${x.gt > 0 || x.cr ? `<u class="tp${x.cr ? ' cr' : ''}">${x.gt > 0 ? '<i></i>'.repeat(Math.min(5, x.gt)) : ''}${x.cr ? CRSVG : ''}</u>` : ''}${badge}${foot}</div>`;
   };
   let plast = null, pmOpen = true;
 
@@ -1871,7 +1871,29 @@ ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="
       if (dst) { dst.appendChild(t); t.classList.remove('dragging'); lastGridHTML = ''; lazyNext = true; }
     } catch (e) { /* the full redraw puts it right */ }
   }
+  // An equipped item cannot be moved, so (like DIM) something else is equipped in its place first: from the same character,
+  // then the vault, then another character; a non-exotic with the most power is preferred.
+  function standIn(it) {
+    const c = D.chars.find((x) => x.id === it.loc); if (!c) return null;
+    const fits = (o) => o !== it && o.b === it.b && !o.e && !o.pm && !o.ro && (o.c === 3 || o.c === undefined || o.c === c.cls);
+    const rank = (o) => (o.loc === it.loc ? 0 : o.loc === 'vault' ? 1 : 2) * 10 + (o.r === 'Exotic' ? 1 : 0);
+    return D.items.filter(fits).sort((p, q) => rank(p) - rank(q) || (q.p || 0) - (p.p || 0))[0] || null;
+  }
+  function moveEquipped(it, to, equipThere) {
+    const r = standIn(it);
+    if (!r) { setNote('Nothing else can be equipped in that slot on this character, so ' + it.n + ' has to stay equipped.'); return; }
+    const src = it.loc, si = slim(it), sr = slim(r);
+    act((equipThere ? 'equip ' : 'move ') + it.n, () => {
+      r.loc = src; r.e = 1; it.e = 0; it.loc = to;
+      if (equipThere) { D.items.forEach((o) => { if (o !== it && o.loc === to && o.b === it.b && o.e) o.e = 0; }); it.e = 1; }
+    }, async () => {
+      await gt.equip({ item: sr, to: src });
+      const s2 = { ...si, e: 0 };
+      return equipThere ? gt.equip({ item: s2, to }) : gt.move({ item: s2, from: src, to });
+    });
+  }
   function doMove(it, to) {
+    if (it.e && it.loc !== 'vault' && it.loc !== to) return moveEquipped(it, to, false);
     quickPlace(it, to, false);
     const s = slim(it), from = it.loc;
     act('move ' + it.n, () => { it.loc = to; }, () => gt.move({ item: s, from, to }), false, String(it.id));
@@ -1890,6 +1912,8 @@ ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="
     setTimeout(() => { const off = (e) => { if (!m.contains(e.target) && !e.target.closest('[data-act=eqpick]')) { m.remove(); document.removeEventListener('pointerdown', off, true); } }; document.addEventListener('pointerdown', off, true); }, 0);
   }
   function doEquip(it, to) {
+    if (it.e && it.loc === to) return;
+    if (it.e && it.loc !== 'vault') return moveEquipped(it, to, true);
     quickPlace(it, to, true);
     const s = slim(it);
     act('equip ' + it.n, () => {
@@ -1905,12 +1929,13 @@ ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="
   const clearDz = () => { dzEls.forEach((z) => z.classList.remove('dz', 'eqok')); dzEls = []; };
   const clearOver = () => { if (overEl) overEl.classList.remove('over'); overEl = null; };
   function dropInfo(zone) {
-    const it = byId(dragId); if (!it || it.e || it.pm || it.ro) return null;
+    const it = byId(dragId); if (!it || it.pm || it.ro) return null;
     const kind = zone.dataset.drop, loc = zone.dataset.loc;
     if (kind === 'eq') {
       const c = D.chars.find((x) => x.id === loc);
       if (!c || +zone.dataset.b !== it.b) return null;
       if (!(it.c === 3 || it.c === undefined || it.c === c.cls)) return null;
+      if (it.e && it.loc === loc) return null;
       return { kind: 'equip', loc };
     }
     return it.loc === loc ? null : { kind: 'move', loc };
@@ -1928,7 +1953,7 @@ ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="
     if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || !D) return;
     if (e.pointerType === 'touch' && PHONE.matches) return; // on a phone a finger on an item scrolls the page; items move with the buttons in the item sheet
     const t = e.target.closest && e.target.closest('#vgrid .vt'); if (!t) return;
-    const it = byId(t.dataset.id); if (!it || it.e || it.pm || it.ro) return;
+    const it = byId(t.dataset.id); if (!it || it.pm || it.ro) return;
     pd = { id: it.id, t, x: e.clientX, y: e.clientY, on: false, g: null, raf: 0, lx: e.clientX, ly: e.clientY };
   });
   function pdMove(e) {
@@ -1971,7 +1996,7 @@ ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="
     if (e.isTrusted && e.target.closest && e.target.closest('#vgrid .vt')) { e.preventDefault(); return; } // real drags use the mouse code above
     const t = e.target.closest && e.target.closest('.vt'); if (!t || !D) return;
     const it = byId(t.dataset.id);
-    if (!it || it.e || it.pm || it.ro) { e.preventDefault(); return; }
+    if (!it || it.pm || it.ro) { e.preventDefault(); return; }
     dragId = it.id; t.classList.add('dragging');
     // light up every column this item can be dropped in, right away
     dzEls = [...sec.querySelectorAll('#vgrid .dc[data-b="' + it.b + '"]')].filter((z) => { return z.dataset.drop === 'vault' || dropInfo(z) || z.dataset.loc === it.loc; });

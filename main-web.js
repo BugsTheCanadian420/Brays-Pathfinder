@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.4: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.5: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
