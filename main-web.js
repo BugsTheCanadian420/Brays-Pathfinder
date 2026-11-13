@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.11: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.12: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -1768,7 +1768,7 @@ H('act:rot', async (e, v) => {
   try { const pm = await api('/Destiny2/Milestones/'); Object.values(pm || {}).forEach((ms) => (ms.activities || []).forEach((a) => { if (a.activityHash && (a.challengeObjectiveHashes || []).length) pubCh.push({ activityHash: a.activityHash, challenges: a.challengeObjectiveHashes.map((h) => ({ objective: { objectiveHash: h } })) }); })); } catch (e) { pubCh = []; }
   withCh.push(...pubCh.slice(0, 80));
   const seenA = new Set(); const withCh2 = withCh.filter((a) => (seenA.has(a.activityHash) ? false : seenA.add(a.activityHash)));
-  const feat = {};
+  const feat = {}, pubSet = new Set(pubCh.map((a) => a.activityHash));
   await pool(withCh2, 6, async (a) => {
     let kind = '';
     for (const q of a.challenges.slice(0, 4)) {
@@ -1781,13 +1781,21 @@ H('act:rot', async (e, v) => {
     const b = baseName(f.n), k = kind + '|' + b.toLowerCase();
     if (!feat[k]) feat[k] = { k: kind, n: b, img: f.img || '' };
     else if (!feat[k].img && f.img) feat[k].img = f.img;
+    if (pubSet.has(a.activityHash)) feat[k].pub = 1;
   });
+  // The public list can miss the image-carrying version of an activity that a character lists under another hash: same name = same activity.
+  const pubNames = new Set(Object.values(feat).filter((x) => x.pub).map((x) => x.k + '|' + x.n.toLowerCase()));
   // Once a featured raid or dungeon is finished Bungie stops listing its weekly challenge, so it used to vanish from the page.
   // Remember this week's featured ones (they change at weekly reset, Tuesday 17:00 UTC) and show the finished ones as completed.
   const nowF = Object.values(feat);
   let sv = {}; try { sv = JSON.parse(fs.readFileSync(apath('rotfeat.json'), 'utf8')) || {}; } catch (e) { sv = {}; }
   if (sv.wk !== wk || !sv.f || sv.v !== 2) sv = { v: 2, wk, f: {} };
-  nowF.forEach((x) => { sv.f[x.k + '|' + x.n.toLowerCase()] = { k: x.k, n: x.n, img: x.img || (sv.f[x.k + '|' + x.n.toLowerCase()] || {}).img || '' }; });
+  // Bungie's public list never hides a featured activity when you finish it, so for each kind it covers (raids, dungeons) it is
+  // the whole truth: anything remembered for this week that it no longer lists is left over (for example a list read in the
+  // minutes around the reset, while Bungie was still handing out last week's) and is dropped, so the page rotates when the game does.
+  const pubKinds = new Set(nowF.filter((x) => x.pub).map((x) => x.k));
+  Object.keys(sv.f).forEach((key) => { if (pubKinds.has(sv.f[key].k) && !pubNames.has(key)) delete sv.f[key]; });
+  nowF.forEach((x) => { const key = x.k + '|' + x.n.toLowerCase(); if (pubKinds.has(x.k) && !x.pub) return; sv.f[key] = { k: x.k, n: x.n, img: x.img || (sv.f[key] || {}).img || '' }; });
   try { fs.writeFileSync(apath('rotfeat.json'), JSON.stringify(sv)); } catch (e) { /* disk full or locked */ }
   const featAll = Object.keys(sv.f).map((k) => ({ ...sv.f[k], dn: 0 }));
   // Pantheon: the week's featured Reprise and Encore bosses (the game lists them as "Featured Reprise: <boss>" / "Featured Encore: <boss>").

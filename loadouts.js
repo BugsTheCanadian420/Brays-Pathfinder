@@ -1154,10 +1154,11 @@ ${art ? `<div class="dl-mrow"><span class="dl-gl">Artifact &middot; ${esc(AR.ite
   }
   // Subclass abilities and armor mods of what this character has equipped right now.
   const EQC = {};
+  window.addEventListener('gtsub', () => { Object.keys(EQC).forEach((k) => delete EQC[k]); if (sec.classList.contains('on')) setTimeout(() => eqLive(CH), 400); });
   async function eqLive(cid) {
     const sub = eqOf(cid).find((x) => x.b === SUB), arm = eqOf(cid).filter((x) => AB.includes(x.b));
     const key = cid + ':' + [sub, ...arm].filter(Boolean).map((x) => x.id).join(',');
-    const draw = (r) => { const el = g('dleqx'); if (!el || CH !== cid) return; el.innerHTML = (r.sub.length ? `<div class="dl-mrow"><span class="dl-gl">Subclass</span>${plugIcons(subOrd(r.sub), 'big')}</div>` : '') + (r.mods.length ? `<div class="dl-mrow"><span class="dl-gl">Mods</span>${plugIcons(r.mods, 'big')}</div>` : ''); };
+    const draw = (r) => { const el = g('dleqx'); if (!el || CH !== cid) return; el.innerHTML = (r.sub.length ? `<div class="dl-mrow dl-subrow" title="Click an ability, aspect or fragment to change it"><span class="dl-gl">Subclass</span>${plugIcons(subOrd(r.sub), 'big')}</div>` : '') + (r.mods.length ? `<div class="dl-mrow"><span class="dl-gl">Mods</span>${plugIcons(r.mods, 'big')}</div>` : ''); };
     if (EQC[key] && Date.now() - EQC[key].t < 30000) { draw(EQC[key]); return; }
     const g0 = g('dleqx'); if (g0 && EQC[key]) draw(EQC[key]);
     const r = { t: Date.now(), sub: [], mods: [] };
@@ -1171,7 +1172,10 @@ ${art ? `<div class="dl-mrow"><span class="dl-gl">Artifact &middot; ${esc(AR.ite
     const D = D0(); if (!D) return;
     // on a loadout card (or Equipped): items open their pop-up, abilities, mods and artifact perks show what they do
     if (e.target.closest('.dl-card') && !e.target.closest('[data-dl]')) {
-      const ap = e.target.closest('.ap[data-ph]'); if (ap) { plugPop(ap); return; }
+      const ap = e.target.closest('.ap[data-ph]');
+      // Equipped card: a subclass icon opens the subclass pop-up on that socket, where a click equips another option (like DIM)
+      if (ap && ap.closest('.dl-subrow') && window.__gtx && window.__gtx.openHere) { const sb = eqOf(CH).find((x) => x.b === SUB); if (sb) { window.__gtx.openHere(sb.id, ap, int(ap.dataset.ph)); return; } }
+      if (ap) { plugPop(ap); return; }
       const vt = e.target.closest('.vt[data-id]'); if (vt && window.__gtx && window.__gtx.openHere) { window.__gtx.openHere(vt.dataset.id, vt); return; }
     }
     const tg = e.target.closest('[data-tag]');
@@ -1257,7 +1261,7 @@ ${art ? `<div class="dl-mrow"><span class="dl-gl">Artifact &middot; ${esc(AR.ite
 .dl-stats{display:flex;gap:6px;font-size:11px;color:#9aa0a8;flex-wrap:wrap}.dl-stats b{color:#fff;margin-left:2px}.dl-tot{margin-left:4px;color:#f5dc7a}
 .dl-mrow{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-top:8px}.dl-mrow .dl-gl{margin-right:6px}
 .dl-fl{font-size:11px;color:#8c9098;margin-top:6px}
-.dl-eqc{border-color:#4a4d54!important}
+.dl-eqc{border-color:#4a4d54!important}.dl-subrow .ap{cursor:pointer}.dl-subrow .ap:hover{outline:1px solid var(--g-accent,#7ab8e8);outline-offset:1px}
 .dl-card .vt[data-id],.dl-card .ap[data-ph]{cursor:pointer}.dl-card .ap[data-ph]:hover{filter:brightness(1.25)}
 #dlpp{position:fixed;z-index:9400;background:var(--g-panel,#1a1c20);border:1px solid var(--g-line,#3a3d43);box-shadow:0 10px 30px rgba(0,0,0,.55);padding:12px 14px;color:#d7dae0;font-size:13px;line-height:1.45}
 #dlpp .pph{display:flex;gap:10px;align-items:center}#dlpp .pph img{width:44px;height:44px;border-radius:6px;background:#14161b}#dlpp b{color:#fff;font-size:14.5px;display:block}#dlpp small{color:#9aa0a8}#dlpp p{margin:8px 0 0;white-space:pre-line}

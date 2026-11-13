@@ -9,6 +9,13 @@
 
   // ---- what changed: newest first. Add an entry (next id) with every update. ----
   const CHANGES = [
+    { id: 14, date: 'Nov 2026', items: [
+      'Beta interface style is now Pathfinder\'s own look, "Trail map": a contour-map background, a route line with a diamond waypoint on the tab you are on and on every section heading, and road-sign lettering. Settings, Appearance, Interface style, Beta.',
+      'Loadouts: on the Equipped card, click a subclass ability, aspect or fragment to see the options and equip another one right there.',
+      'Keyboard shortcuts you can change (Settings, Keyboard shortcuts). New ones: H, I, O and A switch tabs, G opens the god roll finder.',
+      'Rotations: the page reloads by itself when a reset happens, and last week\'s featured raid or dungeon can no longer linger after the weekly reset.',
+      'Fixed: an armor stat that tuning takes to -5 showed as 0 in the item pop-up, which made the total 5 too high.',
+    ] },
     { id: 13, date: 'Nov 2026', items: [
       'God roll finder (thumbs-up button above the vault): every legendary weapon graded with your wish lists. S = god roll, A = keeper, C/D = safe to dismantle, ? = not rated yet.',
       'Weapons that no wish list mentions get a small ? instead of nothing, so a blank tile always means "not a keeper". Search is:unrated, is:godroll, is:keeper or is:notkeeper.',

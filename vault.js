@@ -805,6 +805,23 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
   fixSort();
   const saveSet = () => { try { localStorage.setItem('gt_settings', JSON.stringify(SET)); } catch (e) { /* storage unavailable */ } };
   window.__gtset = (k, v) => { SET[k] = v; saveSet(); }; window.__gtget = (k) => SET[k];
+  // ---- keyboard shortcuts: one table, editable in Settings > Keyboard shortcuts (SET.keys holds only the ones you changed) ----
+  const KEYS = [
+    ['refresh', 'Reload the vault', 'r'], ['search', 'Jump to the search box', '/'], ['finder', 'Open the god roll finder', 'g'],
+    ['lock', 'Lock or unlock the open item', 'l'], ['favorite', 'Tag the open item favorite', '!'], ['keep', 'Tag the open item keep', '@'],
+    ['infuse', 'Tag the open item infuse', '#'], ['junk', 'Tag the open item junk', '$'], ['archive', 'Tag the open item archive', '%'],
+    ['home', 'Go to Home', 'h'], ['vault', 'Go to Inventory', 'i'], ['loadouts', 'Go to Loadouts', 'o'], ['activity', 'Go to Activity', 'a'],
+  ];
+  const keyOf = (a) => { const u = SET.keys && SET.keys[a]; return u !== undefined ? u : (KEYS.find((k) => k[0] === a) || [])[2] || ''; };
+  const keyNorm = (e) => (e.key && e.key.length === 1 ? e.key.toLowerCase() : e.key || '');
+  const keyAct = (e) => { const k = keyNorm(e); if (!k) return ''; const hit = KEYS.find((q) => keyOf(q[0]) && keyOf(q[0]) === k); return hit ? hit[0] : ''; };
+  const keyLabel = (k) => (!k ? 'None' : k === ' ' ? 'Space' : k.length === 1 ? k.toUpperCase() : k);
+  let keyEdit = '';
+  const keysCard = () => `<div class="card sc" id="gtkeys"><h2>Keyboard shortcuts</h2>
+      <p class="mute" style="margin:0 0 6px">Click a key to change it, then press the new key. Backspace clears it, Escape cancels. Shortcuts do nothing while you are typing in a box.</p>
+      <div class="kyl">${KEYS.map(([a, lbl]) => `<div class="kyr"><span>${esc(lbl)}</span><button type="button" class="kyb${keyEdit === a ? ' ed' : ''}${keyOf(a) ? '' : ' none'}" data-ky="${a}">${keyEdit === a ? 'Press a key' : esc(keyLabel(keyOf(a)))}</button></div>`).join('')}
+      <div class="kyr fx"><span>Open quick notes</span><kbd>Ctrl + Shift + N</kbd></div><div class="kyr fx"><span>Close a pop-up</span><kbd>Esc</kbd></div></div>
+      <p><button class="g" data-sa="keyreset">Reset shortcuts</button></p></div>`;
   // ---- themes ----
   // Each theme is a colour family (hue h, saturation s) that fills the panel, button and line colours. Some also paint a background:
   // glow = coloured light behind the page, img = a Destiny 2 picture bundled in app/themes, an = slow drift.
@@ -812,8 +829,8 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
   const TGRP = { b: 'Beta', c: 'Classic', e: 'Gradient', s: 'Shader inspired', d: 'Destiny 2 art' };
   const TL = [
     // id, name, group, hue, sat, accent, glow layers, extras
-    // Beta: the experimental theme (more of it is in app/beta.css). Expect it to change a lot.
-    ['beta', 'Beta', 'b', 245, 32, '#5eead4', [rg('12% -12%', 250, 90, 62, .30, 1200, 620), rg('100% 110%', 170, 85, 52, .22), 'linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px) 0 0/44px 44px', 'linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px) 0 0/44px 44px']],
+    // Beta: the contour-map theme that goes with the Beta interface style (more of it is in app/beta.css).
+    ['beta', 'Beta', 'b', 200, 30, '#f2b441', ['url(topo.svg)', rg('100% 0%', 195, 45, 40, .10, 1100, 600)]],
     ['solar', 'Solar', 'e', 22, 35, '#ff8a3d', [rg('85% 105%', 24, 95, 50, .38), rg('8% -8%', 42, 95, 55, .16)]],
     ['arc', 'Arc', 'e', 207, 45, '#6fc7ff', [rg('50% -10%', 205, 100, 60, .30, 1100, 560), rg('100% 100%', 215, 90, 55, .14)]],
     ['stasis', 'Stasis', 'e', 212, 40, '#7fe0ff', [rg('80% -5%', 190, 90, 70, .25), rg('0% 100%', 225, 80, 60, .18)]],
@@ -865,6 +882,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 @media (prefers-reduced-motion:reduce){:root[data-gx="1"][data-gan="1"] body::before{animation:none;inset:0}}
 :root[data-gx="1"][data-dark="1"] header,:root[data-gx="1"][data-dark="1"] nav{background:var(--g-panel)!important;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 :root[data-gx="1"] #vault .card,:root[data-gx="1"] #loadouts .card,:root[data-gx="1"] #triumphs .card,:root[data-gx="1"] #organizer .card,:root[data-gx="1"] #optimizer .card,:root[data-gx="1"] #settings .card,:root[data-gx="1"] section.gdark .card{-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.kyl{display:grid;grid-template-columns:1fr 1fr;gap:2px 22px}.kyr{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px solid var(--g-line,#2b2e33);font-size:13.5px;color:#d7dae0}.kyb,.kyr kbd{min-width:38px;padding:4px 9px!important;border:1px solid #4a4d54!important;border-bottom-width:2px!important;border-radius:5px!important;background:#15171b!important;color:#fff!important;font:600 12.5px/1.2 ui-monospace,Consolas,monospace!important;letter-spacing:0!important;text-transform:none!important;text-align:center;cursor:pointer}.kyr kbd{cursor:default;color:#aeb3bb!important}.kyb.none{color:#7c7f86!important;border-style:dashed!important}.kyb.ed{border-color:var(--g-accent,#7ab8e8)!important;color:var(--g-accent,#7ab8e8)!important}@media (max-width:1100px){.kyl{grid-template-columns:1fr}}
 .thh{grid-column:1/-1;margin:10px 0 0;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--mute)}.thh:first-child{margin-top:0}`;
     document.head.appendChild(el);
   })();
@@ -1061,7 +1079,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
     </div>
     <div class="card sc"><h2>Appearance</h2>
       <div class="thh">Interface style</div>
-      <div class="uis">${[['pf', 'Pathfinder', 'The current look.'], ['d2', 'In-game', 'Looks like the Destiny 2 menus.'], ['dim', 'DIM', 'Looks like Destiny Item Manager.'], ['beta', 'Beta', 'Experimental. Changes often.']].map(([k, n, d]) => `<div class="uic u-${k}${(SET.ui || 'pf') === k ? ' on' : ''}" data-uis="${k}"><i></i><b>${n}</b><small>${d}</small></div>`).join('')}</div>
+      <div class="uis">${[['pf', 'Pathfinder', 'The current look.'], ['d2', 'In-game', 'Looks like the Destiny 2 menus.'], ['dim', 'DIM', 'Looks like Destiny Item Manager.'], ['beta', 'Beta', 'Trail map: Pathfinder\'s own look. Still changing.']].map(([k, n, d]) => `<div class="uic u-${k}${(SET.ui || 'pf') === k ? ' on' : ''}" data-uis="${k}"><i></i><b>${n}</b><small>${d}</small></div>`).join('')}</div>
       <div class="sg">${themeGrid()}</div>
       ${sx('Background picture dimming', 'For themes with a picture or glow. Higher is darker and easier to read.', rng('bgdim', 25, 90, '%'))}
       ${sx('Accent color', '', `<input type="color" data-sk="accent" value="${esc(SET.accent)}">`)}
@@ -1078,11 +1096,11 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
       ${sx('Tighter spacing', 'Packs items, rows and sections closer together so more fits on screen.', tgl('compact'))}
       ${tabsCard}
       <p><button class="g" data-sa="reset">Reset display settings</button></p>
-    </div>${wlc}${acct}</div>`; void upd; // Updates now live in About & help (news.js)
+    </div>${window.matchMedia && matchMedia('(pointer:coarse)').matches && innerWidth < 900 ? '' : keysCard()}${wlc}${acct}</div>`; void upd; // Updates now live in About & help (news.js)
   }
   // Settings cards in even columns: each card, in a sensible order, goes into whichever column is shortest, so no side runs
   // far longer than the other. Re-done when cards are added (Farming, Reminders... come from another file) or the window resizes.
-  const SORD = ['Accounts', 'Item display', 'Inventory display', 'Appearance', 'Display', 'Wish lists', 'Farming', 'Reminders', 'Backup', 'About & help'];
+  const SORD = ['Accounts', 'Item display', 'Inventory display', 'Appearance', 'Display', 'Wish lists', 'Farming', 'Reminders', 'Keyboard shortcuts', 'Backup', 'About & help'];
   let balT = 0, balN = 0;
   function balanceSettings(force) {
     const root = settingsSec; if (!root || !root.isConnected || !root.classList.contains('on')) return;
@@ -1117,7 +1135,22 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
     if (f.size > 150e6) { WLMSG = 'That file is too big to be a wish list.'; drawSettings(); return; }
     const rd = new FileReader(); rd.onload = () => wlDo({ text: String(rd.result || ''), name: f.name.replace(/\.[^.]+$/, '') }); rd.onerror = () => { WLMSG = 'Could not read that file.'; drawSettings(); }; rd.readAsText(f);
   });
+  // Changing a shortcut: the next key pressed becomes it. A key already used elsewhere moves here (the other one is cleared).
+  document.addEventListener('keydown', (e) => {
+    if (!keyEdit) return;
+    e.preventDefault(); e.stopPropagation();
+    const a = keyEdit; keyEdit = '';
+    if (e.key !== 'Escape' && !['Shift', 'Control', 'Alt', 'Meta', 'Tab', 'Enter'].includes(e.key)) {
+      const k = e.key === 'Backspace' || e.key === 'Delete' ? '' : keyNorm(e);
+      SET.keys = SET.keys || {};
+      if (k) KEYS.forEach(([o]) => { if (o !== a && keyOf(o) === k) SET.keys[o] = ''; });
+      SET.keys[a] = k; saveSet();
+    } else if (['Shift', 'Control', 'Alt', 'Meta'].includes(e.key)) { keyEdit = a; return; }
+    drawSettings();
+  }, true);
   settingsSec.addEventListener('click', async (e) => {
+    const ky = e.target.closest('[data-ky]'); if (ky) { keyEdit = keyEdit === ky.dataset.ky ? '' : ky.dataset.ky; drawSettings(); return; }
+    if (keyEdit) { keyEdit = ''; drawSettings(); }
     const wp = e.target.closest('[data-wp]');
     if (wp) { const u = WLPRE[+wp.dataset.wp][1]; if ((WL && WL.lists || []).some((l) => l.url === u)) return; await wlDo({ url: u }); return; }
     const co = e.target.closest('[data-co]');
@@ -1136,6 +1169,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
     const b = e.target.closest('[data-sa]'); if (!b) return;
     const a = b.dataset.sa;
     if (a === 'grf') { if (window.__gtgrf) { show('vault'); setTimeout(window.__gtgrf, 50); } return; }
+    if (a === 'keyreset') { delete SET.keys; saveSet(); drawSettings(); return; }
     if (a === 'syncnow') { if (window.__gtsync) window.__gtsync.now().catch(() => {}); return; }
     if (a === 'addacct') { try { afterAcct(await gt.acctAdd()); } catch (er) { const m1 = clean(er); if (!/closed/i.test(m1)) alert('Could not add the account: ' + m1); ACL = null; drawSettings(); } return; }
     if (a === 'wlpl' || a === 'wlpt') {
@@ -1326,7 +1360,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
   }
   window.__gtVaultReload = quickLoad;
   document.addEventListener('keydown', (e) => {
-    if ((e.key === 'r' || e.key === 'R') && !e.ctrlKey && !e.metaKey && !e.altKey && sec.classList.contains('on') && !(e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) && !e.target.isContentEditable) { e.preventDefault(); quickLoad(); }
+    if (keyAct(e) === 'refresh' && !keyEdit && !e.ctrlKey && !e.metaKey && !e.altKey && sec.classList.contains('on') && !(e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) && !e.target.isContentEditable) { e.preventDefault(); quickLoad(); }
   });
   async function load() {
     // Speed, like DIM: draw the vault saved last time straight away, then swap in Bungie's answer as soon as it arrives.
@@ -2312,7 +2346,8 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
       (pick.s || []).forEach(([h, v]) => { delta[h] = (delta[h] || 0) + v; });
       ((on && on.s) || []).forEach(([h, v]) => { delta[h] = (delta[h] || 0) - v; });
     }));
-    return d.stats.map((s) => { const dv = delta[s.h] || 0; return { ...s, nv: Math.max(0, s.num ? s.v + dv : Math.min(s.max || 100, s.v + dv)), dv }; });
+    // a stat that tuning took below zero (-5) stays negative here; it used to be shown as 0, which also made the total 5 too high
+    return d.stats.map((s) => { const dv = delta[s.h] || 0; return { ...s, nv: Math.max(Math.min(0, s.v), s.num ? s.v + dv : Math.min(s.max || 100, s.v + dv)), dv }; });
   }
   // After a perk change, Bungie keeps sending the old perk for a few seconds. Show the new perk right away, then check with Bungie
   // a little later and take its answer once it agrees (or once enough time has passed that it must be right).
@@ -2408,6 +2443,8 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
     if (x && x.b === 3284755031) {
       const socks = []; d.groups.forEach((gr, gi) => { if (gr.label !== 'Perks') return; gr.cols.forEach((col, ci) => socks.push({ k: gi + '-' + ci, col, r: srk(col) })); });
       socks.sort((a, b2) => a.r - b2.r);
+      // opened from a subclass icon on the Loadouts tab: start with that socket's options showing
+      if (sbWant) { const w = socks.find((q) => q.col.some((p) => p.on && p.h === sbWant)); if (w) pex = 'sb' + w.k; sbWant = 0; }
       const cur = (sk) => { const on = sk.col.find((p) => p.on) || sk.col[0]; return { on, cur: on }; };
       const used = new Set(socks.filter((sk) => sk.r === 6).map((sk) => cur(sk).on.h));
       const ic1 = (sk, big) => { const c = cur(sk); return `<button type="button" class="sbs${big ? ' big' : ''}${pex === 'sb' + sk.k ? ' open' : ''}" data-sbk="${sk.k}" title="${esc(c.on.n)}${c.on.d ? ' - ' + esc(c.on.d.slice(0, 160)) : ''}">${pimg(c.on)}</button>`; };
@@ -2588,6 +2625,7 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
   }
   // Postmaster engrams and other things without an instance id: Bungie has no per-item details for them, only the description.
   const noInst = (x) => !!(x && (x.eg || !/^\d+$/.test(String(x.id))));
+  let sbWant = 0;
   async function openPop(id, el) {
     const x = byId(id); if (!x) return;
     sel = id; psel = {}; plast = null; pex = ''; noteEdit = false; PMSG = ''; ptab = 'ov'; stq = 0; popEl = el || null;
@@ -2638,7 +2676,7 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
       const x0 = byId(sel), d = DET[sel]; if (!x0 || !d) return;
       const [gi, ci] = sbp.dataset.sbp.split('-').map(Number), p = d.groups[gi] && d.groups[gi].cols[ci] && d.groups[gi].cols[ci][+sbp.dataset.pi]; if (!p) return;
       const id = x0.id; PMSG = 'Equipping ' + p.n + '...'; pex = ''; renderPop();
-      try { await gt.itemPlug({ id, char: charFor(x0), socket: p.si, plug: p.h }); PMSG = p.n + ' equipped.'; markPlug(id, p.si, p.h); renderPop(); renderGrid(); confirmPlugs(id, x0.h, [[p.si, p.h]]); }
+      try { await gt.itemPlug({ id, char: charFor(x0), socket: p.si, plug: p.h }); PMSG = p.n + ' equipped.'; markPlug(id, p.si, p.h); renderPop(); renderGrid(); confirmPlugs(id, x0.h, [[p.si, p.h]]); window.dispatchEvent(new Event('gtsub')); }
       catch (er) { PMSG = 'Failed: ' + clean(er); renderPop(); }
       return;
     }
@@ -2744,7 +2782,7 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
   window.__gtx = {
     D: () => D, esc, icon, CL, ent, TAGS, TG, tagSvg, wish, ELEM, STN, WEAPON, ARMOR,
     match: matchQ, open: (id) => { if (D) openPop(id); }, tile: (x) => tile(x),
-    openHere: (id, el) => { if (!D) return; const was = POPX; POPX = !sec.classList.contains('on'); if (was && !POPX) { const b = g('vpopx'); if (b) b.innerHTML = ''; } openPop(id, el); },
+    openHere: (id, el, plug) => { if (!D) return; sbWant = plug || 0; const was = POPX; POPX = !sec.classList.contains('on'); if (was && !POPX) { const b = g('vpopx'); if (b) b.innerHTML = ''; } openPop(id, el); },
     detail: async (x) => { if (!DET[x.id]) DET[x.id] = await gt.itemDetail({ id: x.id, h: x.h }); return DET[x.id]; },
     equip: async (ids, ch) => { const its = ids.map(byId).filter(Boolean); if (!its.length) return; await act('apply armor set', () => {}, () => gt.applyLoadout({ items: its.map(slim), char: ch }), true); },
   };
@@ -2808,14 +2846,18 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
     // Item notes save as you type or paste (they used to save only when the box lost focus).
     if (e.target.id === 'vnotebox' && sel) { const n = NOTES(), v = e.target.value.trim(); if (v) n[sel] = v; else delete n[sel]; try { localStorage.setItem('gt_notes', JSON.stringify(n)); } catch (er) { /* ignore */ } }
   }
-  const TAGKEYS = { '!': 'favorite', '@': 'keep', '#': 'infuse', '$': 'junk', '%': 'archive' };
+  const TAGKEYS = ['favorite', 'keep', 'infuse', 'junk', 'archive'];
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') { ctxClose(); if (sel) { sel = null; renderPop(); } return; }
     const t = e.target; if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT') || e.ctrlKey || e.metaKey || e.altKey || !D) return;
-    if (e.key === '/' && sec.classList.contains('on')) { const q1 = g('vq'); if (q1) { e.preventDefault(); q1.focus(); q1.select(); } return; }
+    if (keyEdit || (t && t.isContentEditable)) return;
+    const ka = keyAct(e); if (!ka) return;
+    if (ka === 'search' && sec.classList.contains('on')) { const q1 = g('vq'); if (q1) { e.preventDefault(); q1.focus(); q1.select(); } return; }
+    if (['home', 'vault', 'loadouts', 'activity'].includes(ka) && !sel && !document.querySelector('#junkm, #dlmod, #dled, #apm, #gtnews')) { const nb = document.querySelector('#nav button[data-t="' + ka + '"]'); if (nb) { e.preventDefault(); nb.click(); } return; }
+    if (ka === 'finder' && !sel) { e.preventDefault(); if (!sec.classList.contains('on')) show('vault'); grfOpen(); return; }
     const x = sel && byId(sel); if (!x) return;
-    if (e.key.toLowerCase() === 'l' && !x.pm && !x.ro) { e.preventDefault(); toggleLock(x); }
-    else if (TAGKEYS[e.key] && !x.pm && !x.ro) { e.preventDefault(); setTag(x, TAGKEYS[e.key]); }
+    if (ka === 'lock' && !x.pm && !x.ro) { e.preventDefault(); toggleLock(x); }
+    else if (TAGKEYS.includes(ka) && !x.pm && !x.ro) { e.preventDefault(); setTag(x, ka); }
   });
   drawSettings(); wlLoad();
   if (window.gt && gt.farmSet && SET.farmspaces !== 3) gt.farmSet({ spaces: SET.farmspaces }).catch(() => {});

@@ -201,7 +201,17 @@
     const c = (k, t, sub) => `<div class="acard plan" data-ak="reset"><b>${t}</b><div class="big" data-rs="${k}">${esc(rsText(k))}</div><div class="sub">${sub}</div></div>`;
     return `<h3 class="sec">Resets</h3><div class="agrid fit">${c('d', 'Daily reset', 'Every day at 17:00 UTC (' + esc(dl) + ' your time)' + (L(false) + 864e5 === L(true) + 6048e5 ? '. The next one is also the weekly reset.' : ''))}${c('w', 'Weekly reset', 'Tuesdays at 17:00 UTC. New Nightfall, raid and dungeon rotators.')}${c('x', 'X&ucirc;r', 'Arrives Friday reset and leaves at the next weekly reset. Click to see what he is selling.').replace('class="acard plan" data-ak="reset"', 'class="acard plan xurc" data-ak="xur" data-a="xur" title="See what Xûr is selling" style="cursor:pointer"')}</div>`;
   };
-  setInterval(() => { if (!s.classList.contains('on')) return; s.querySelectorAll('[data-rs]').forEach((n) => { n.textContent = rsText(n.dataset.rs); }); }, 1000); // only this page's timers (Home has its own)
+  // When a countdown hits zero (daily reset, weekly reset, Xûr arriving) what was fetched before it is out of date: forget it,
+  // and reload the page you are looking at, now and again two minutes later (Bungie takes a moment to switch over).
+  let rsMark = '';
+  const rsNow = () => { const L = typeof lastReset === 'function' ? lastReset : null; if (!L) return ''; const w = L(true); return L(false) + '|' + w + '|' + (Date.now() >= w + 3 * 864e5 ? 1 : 0); };
+  const rsCross = () => {
+    const m = rsNow(), was = rsMark; rsMark = m; if (!was || was === m) return;
+    Object.keys(st.cache).forEach((k) => { if (/^(rot|xur|bnt|ven)/.test(k)) delete st.cache[k]; });
+    const again = () => { Object.keys(st.cache).forEach((k) => { if (/^(rot|xur)/.test(k)) delete st.cache[k]; }); if (s.classList.contains('on') && ['rot', 'xur', 'bnt', 'ven'].includes(st.tab)) load(true); window.dispatchEvent(new Event('gtreset')); };
+    setTimeout(again, 5000); setTimeout(again, 125000);
+  };
+  setInterval(() => { rsCross(); if (!s.classList.contains('on')) return; s.querySelectorAll('[data-rs]').forEach((n) => { n.textContent = rsText(n.dataset.rs); }); }, 1000); // only this page's timers (Home has its own)
   // A rotation card opens that activity's page in Helpful. Pantheon bosses open the raid they come from; anything without a guide opens Helpful searched for its name.
   const GALIAS = { 'consecrated mind': 'Garden of Salvation', 'sanctified mind': 'Garden of Salvation', 'atraks': 'Deep Stone Crypt', 'taniks': 'Deep Stone Crypt', 'kalli': 'Last Wish', 'shuro chi': 'Last Wish', 'morgeth': 'Last Wish', 'riven': 'Last Wish', 'nezarec': 'Root of Nightmares', 'akelous': 'Vow of the Disciple', 'caretaker': 'Vow of the Disciple', 'rhulk': 'Vow of the Disciple', 'oryx': 'King\u2019s Fall', 'golgoroth': 'King\u2019s Fall', 'warpriest': 'King\u2019s Fall', 'ir yut': 'Crota\u2019s End', 'crota': 'Crota\u2019s End', 'atheon': 'Vault of Glass', 'templar': 'Vault of Glass', 'gorgons': 'Vault of Glass', 'the witness': 'Salvation\u2019s Edge', 'verity': 'Salvation\u2019s Edge', 'epoptes': 'Desert Perpetual', 'iatros': 'Desert Perpetual', 'agraios': 'Desert Perpetual', 'koregos': 'Desert Perpetual' };
   const gnorm = (t) => String(t || '').toLowerCase().replace(/^the\s+/, '').replace(/[^a-z0-9]+/g, ' ').trim();

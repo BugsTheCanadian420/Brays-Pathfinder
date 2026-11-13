@@ -281,5 +281,6 @@
 `; document.head.appendChild(hs); }
   b.onclick = () => { show('home'); load(false); };
   // Opening on Home is done by polish.js ("Open the app on" in Settings, or the checkbox above).
+  window.addEventListener('gtreset', () => { if (s.classList.contains('on')) load(true); }); // a reset just happened: show the new rotations
   window.__gthome = { open: () => { let n = 0; const t = setInterval(() => { const D = V().D && V().D(); if (D || ++n > 60) { clearInterval(t); if (D) { show('home'); load(false); } } }, 300); } };
 })();

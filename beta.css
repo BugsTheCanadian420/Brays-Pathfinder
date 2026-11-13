@@ -1,55 +1,109 @@
 /* =====================================================================================================
-   BETA — the experimental interface style (Settings > Interface style > Beta) and theme (Settings > Theme > Beta).
-   Everything for both lives in this one file so it can change a lot without touching the other styles.
+   BETA — Pathfinder's own look: "Trail map" (Settings > Interface style > Beta, and Settings > Theme > Beta).
+   The idea comes from the name. A pathfinder reads a map and marks a route, so:
+     - the background is a contour map (app/topo.svg), drawn faintly;
+     - the one loud thing is the trail: a thin route line with a diamond waypoint. It marks the tab you are on and
+       starts every section heading. Nothing else glows, floats or blurs;
+     - headings, tabs, buttons and numbers use road-sign lettering (Bahnschrift on Windows, DIN on Apple, a condensed
+       sans on Android), written in normal sentence case instead of spaced-out capitals;
+     - panels are flat map-paper sheets with a hairline edge and square-ish corners.
    Interface style rules start with  :root[data-ui="beta"]   Theme rules start with  :root[data-gt="beta"]
    ===================================================================================================== */
 
-/* ---------- BETA INTERFACE STYLE: rounded "floating glass" panels, soft depth, accent glow ---------- */
+/* ---------- BETA INTERFACE STYLE ---------- */
 :root[data-ui="beta"]{
-  --g-panel:rgba(22,24,34,.62)!important;--g-solid:#171a24!important;--g-col:rgba(255,255,255,.025)!important;
-  --g-line:rgba(255,255,255,.09)!important;--g-btn:rgba(255,255,255,.06)!important;--g-deep:rgba(0,0,0,.35)!important;
-  --b-radius:12px;--b-radius-s:8px;--b-shadow:0 10px 30px rgba(0,0,0,.35),0 1px 0 rgba(255,255,255,.04) inset;
+  --b-font:'Bahnschrift','DIN Alternate','DIN Condensed','Roboto Condensed','Arial Narrow',sans-serif-condensed,'Segoe UI',sans-serif;
+  --b-ink:#0b141a;--b-paper:#e9eef0;--b-mute:#8fa0a8;--b-route:var(--g-accent,#f2b441);
+  --g-panel:rgba(15,25,32,.9)!important;--g-solid:#101a21!important;--g-col:rgba(255,255,255,.018)!important;
+  --g-line:#23333d!important;--g-btn:#16242d!important;--g-deep:rgba(4,9,12,.55)!important;
+  --b-radius:3px;
 }
-:root[data-ui="beta"] body{font-family:'Open Sans','Segoe UI',Arial,sans-serif!important;letter-spacing:.005em}
-:root[data-ui="beta"]:not([data-gx="1"]) body{background:radial-gradient(1200px 700px at 15% -10%,rgba(120,110,255,.14),transparent 60%),radial-gradient(1000px 600px at 100% 110%,var(--g-accent-soft,rgba(94,234,212,.12)),transparent 60%),#0c0e14 fixed!important}
+:root[data-ui="beta"] body{font-family:'Open Sans','Segoe UI',Arial,sans-serif!important;letter-spacing:0;color:var(--b-paper)}
+:root[data-ui="beta"]:not([data-gx="1"]) body{background:var(--b-ink) url(topo.svg) center/cover fixed no-repeat!important}
 
-/* top bar */
-:root[data-ui="beta"] header.gtbar{background:rgba(12,14,20,.72)!important;border-bottom:1px solid rgba(255,255,255,.06)!important;-webkit-backdrop-filter:blur(18px) saturate(1.3);backdrop-filter:blur(18px) saturate(1.3)}
-:root[data-ui="beta"] header.gtbar nav button{border-radius:999px!important;text-transform:none!important;letter-spacing:.01em!important;font-weight:600!important;font-size:13.5px!important;color:rgba(255,255,255,.62)!important;padding:0 14px!important;margin:0 1px!important;height:32px!important;line-height:1!important;align-self:center!important;transition:color .15s,background .15s}
-:root[data-ui="beta"] header.gtbar nav button:hover{color:#fff!important;background:rgba(255,255,255,.06)!important}
-:root[data-ui="beta"] header.gtbar nav button.on{color:var(--g-on-accent,#fff)!important;background:var(--g-accent2)!important;box-shadow:0 0 0 1px rgba(255,255,255,.06),0 6px 18px var(--g-accent-soft,rgba(0,0,0,.3))!important}
-:root[data-ui="beta"] #gtsrch .vbar input{border-radius:999px!important;background:rgba(255,255,255,.05)!important;border:1px solid rgba(255,255,255,.08)!important}
-:root[data-ui="beta"] #gtsrch .vbar .vtg{border-radius:999px!important;background:rgba(255,255,255,.04)!important;border-color:rgba(255,255,255,.07)!important}
-:root[data-ui="beta"] #gtsrch .vbar button.g{border-radius:999px!important}
+/* the diamond waypoint, reused below */
+:root[data-ui="beta"] .dsec::before,:root[data-ui="beta"] #activity h3.sec::before,:root[data-ui="beta"] #home .hm-sec::before,:root[data-ui="beta"] #hub .hsec h4::before,:root[data-ui="beta"] .card h2::before{
+  content:''!important;display:inline-block!important;flex:none;width:7px;height:7px;margin:0 2px 0 3px;border:1.5px solid var(--b-route);background:none!important;border-radius:0!important;transform:rotate(45deg);box-shadow:none!important}
 
-/* panels and cards */
-:root[data-ui="beta"] .card,:root[data-ui="beta"] section.gdark .card,:root[data-ui="beta"] #home .hm-c,:root[data-ui="beta"] #activity .acard{border-radius:var(--b-radius)!important;background:var(--g-panel)!important;border:1px solid rgba(255,255,255,.07)!important;box-shadow:var(--b-shadow)!important;-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+/* top bar: quiet strip, the route line runs along its bottom edge and the current tab is the waypoint on it */
+:root[data-ui="beta"] header.gtbar{background:rgba(9,17,22,.94)!important;border-bottom:1px solid var(--g-line)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;box-shadow:none!important}
+:root[data-ui="beta"] header.gtbar nav button{font-family:var(--b-font)!important;text-transform:none!important;letter-spacing:.02em!important;font-weight:500!important;font-size:clamp(13.5px,.95vw,15.5px)!important;color:var(--b-mute)!important;border-radius:0!important;background:none!important;box-shadow:none!important;transition:color .12s}
+:root[data-ui="beta"] header.gtbar nav button:hover{color:var(--b-paper)!important;background:none!important}
+:root[data-ui="beta"] header.gtbar nav button.on,:root[data-ui="beta"] header.gtbar nav #gtmore.has{color:#fff!important;font-weight:600!important;background:none!important;box-shadow:inset 0 -2px 0 var(--b-route)!important}
+:root[data-ui="beta"] header.gtbar nav button.on::after,:root[data-ui="beta"] header.gtbar nav #gtmore.has::after{content:''!important;display:block!important;position:absolute;left:50%;bottom:-4px;width:7px;height:7px;margin-left:-4px;background:var(--b-route);transform:rotate(45deg);box-shadow:0 0 0 2px rgba(9,17,22,.94)}
+:root[data-ui="beta"] header.gtbar nav button.gtset.on::after{display:none!important}
+:root[data-ui="beta"] #gtsrch .vbar input{border-radius:var(--b-radius)!important;background-color:rgba(255,255,255,.04)!important;border:1px solid var(--g-line)!important}
+:root[data-ui="beta"] #gtsrch .vbar .vtg,:root[data-ui="beta"] #gtsrch .vbar button.g{border-radius:var(--b-radius)!important;background:rgba(255,255,255,.03)!important;border-color:var(--g-line)!important}
+:root[data-ui="beta"] #gtdl{border-radius:var(--b-radius)!important;font-family:var(--b-font)!important;font-size:13.5px!important;letter-spacing:.02em!important}
+
+/* section headings: waypoint, name in sentence case, then the dashed trail to the edge */
+:root[data-ui="beta"] .dsec,:root[data-ui="beta"] #activity h3.sec,:root[data-ui="beta"] #home .hm-sec,:root[data-ui="beta"] #hub .hsec h4{
+  display:flex!important;align-items:center;gap:9px;font-family:var(--b-font)!important;font-size:16px!important;font-weight:600!important;letter-spacing:.015em!important;text-transform:none!important;color:var(--b-paper)!important}
+:root[data-ui="beta"] .dsec::after,:root[data-ui="beta"] #activity h3.sec::after,:root[data-ui="beta"] #home .hm-sec::after{content:''!important;display:block!important;flex:1;height:0!important;background:none!important;border-top:1px dashed #33474f}
+:root[data-ui="beta"] .pmh .dsec::after{display:none!important}
+:root[data-ui="beta"] .dsec small{font-family:'Open Sans','Segoe UI',sans-serif;letter-spacing:0;color:var(--b-mute)}
+:root[data-ui="beta"] #hub .hsec span{color:var(--b-mute)}
+
+/* panels: flat sheets, hairline edge, no glass */
+:root[data-ui="beta"] .card,:root[data-ui="beta"] section.gdark .card,:root[data-ui="beta"] #home .hm-c,:root[data-ui="beta"] #activity .acard,:root[data-ui="beta"] #hub .hcard,:root[data-ui="beta"] #hub .hhero{
+  border-radius:var(--b-radius)!important;border:1px solid var(--g-line)!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+:root[data-ui="beta"] .card,:root[data-ui="beta"] section.gdark .card,:root[data-ui="beta"] #home .hm-c{background:var(--g-panel)!important}
 :root[data-ui="beta"] #home .hm-c::before{height:0!important}
-:root[data-ui="beta"] #home .hm-c:hover,:root[data-ui="beta"] #activity .acard:hover{border-color:var(--g-accent)!important;box-shadow:var(--b-shadow),0 0 0 1px var(--g-accent-soft) !important}
-:root[data-ui="beta"] section.gdark h2,:root[data-ui="beta"] .card h2{letter-spacing:.04em!important;text-transform:none!important;font-weight:700}
-:root[data-ui="beta"] .dsec,:root[data-ui="beta"] #activity h3.sec,:root[data-ui="beta"] #home .hm-sec{letter-spacing:.12em!important;color:rgba(255,255,255,.7)!important}
+:root[data-ui="beta"] #home .hm-c:hover,:root[data-ui="beta"] #activity .acard.clk:hover,:root[data-ui="beta"] #hub .hcard:hover{border-color:var(--b-route)!important;box-shadow:none!important;transform:none!important}
+:root[data-ui="beta"] #activity .acard[data-ak]{border-color:color-mix(in srgb,var(--akc) 45%,var(--g-line))!important}
+:root[data-ui="beta"] section.gdark h2,:root[data-ui="beta"] .card h2{display:flex;align-items:center;gap:9px;font-family:var(--b-font)!important;font-size:18px!important;font-weight:600!important;letter-spacing:.015em!important;text-transform:none!important;color:#fff!important}
+:root[data-ui="beta"] #hub .hcard h3,:root[data-ui="beta"] #hub .hhero h2,:root[data-ui="beta"] #home .hm-c h3,:root[data-ui="beta"] #activity .acard>b{font-family:var(--b-font)!important;text-transform:none!important;letter-spacing:.015em!important}
+:root[data-ui="beta"] #hub .hcard h3{font-size:17px!important}
+:root[data-ui="beta"] #hub .hhero small{display:none}
+:root[data-ui="beta"] #hub .hmono{border-radius:0!important;transform:rotate(45deg) scale(.78);box-shadow:none!important}
+:root[data-ui="beta"] #hub .hmono{font-size:0!important}
+:root[data-ui="beta"] #hub .hcard .go{text-transform:none!important;letter-spacing:.02em!important;font-family:var(--b-font)!important;font-size:14px!important}
 
-/* buttons, chips, inputs */
-:root[data-ui="beta"] section.gdark button,:root[data-ui="beta"] #vault button.g,:root[data-ui="beta"] #vault button.b,:root[data-ui="beta"] button.g,:root[data-ui="beta"] button.b{border-radius:999px!important;border:1px solid rgba(255,255,255,.1)!important;letter-spacing:.01em!important;text-transform:none!important;transition:background .15s,border-color .15s}
-:root[data-ui="beta"] section.gdark button:hover,:root[data-ui="beta"] button.g:hover{background:rgba(255,255,255,.1)!important;border-color:rgba(255,255,255,.2)!important}
-:root[data-ui="beta"] button.b,:root[data-ui="beta"] section.gdark button.on,:root[data-ui="beta"] #activity .abar button.on,:root[data-ui="beta"] .chip.on{background:var(--g-accent2)!important;color:var(--g-on-accent,#fff)!important;border-color:transparent!important}
-:root[data-ui="beta"] #activity .abar button{letter-spacing:.03em!important;text-transform:none!important;font-size:13px!important}
-:root[data-ui="beta"] section.gdark input:not([type=checkbox]):not([type=range]):not([type=color]),:root[data-ui="beta"] section.gdark select,:root[data-ui="beta"] section.gdark textarea{border-radius:var(--b-radius-s)!important;background:rgba(255,255,255,.05)!important;border:1px solid rgba(255,255,255,.09)!important}
-:root[data-ui="beta"] input[type=range]{accent-color:var(--g-accent)}
+/* buttons, chips, inputs: sign plates */
+:root[data-ui="beta"] section.gdark button,:root[data-ui="beta"] #vault button.g,:root[data-ui="beta"] #vault button.b,:root[data-ui="beta"] button.g,:root[data-ui="beta"] button.b{
+  border-radius:var(--b-radius)!important;border:1px solid var(--g-line)!important;font-family:var(--b-font)!important;font-size:14px;letter-spacing:.02em!important;text-transform:none!important;transition:background .12s,border-color .12s,color .12s}
+:root[data-ui="beta"] section.gdark button:hover,:root[data-ui="beta"] button.g:hover{background:rgba(255,255,255,.07)!important;border-color:#46606b!important}
+:root[data-ui="beta"] button.b,:root[data-ui="beta"] section.gdark button.on,:root[data-ui="beta"] #activity .abar button.on,:root[data-ui="beta"] #hub .hbar button.on,:root[data-ui="beta"] .chip.on{background:var(--b-route)!important;color:var(--g-on-accent,#10161a)!important;border-color:transparent!important;font-weight:600!important}
+:root[data-ui="beta"] #activity .abar button,:root[data-ui="beta"] #hub .hbar button{letter-spacing:.02em!important;text-transform:none!important;font-size:14px!important;border-radius:var(--b-radius)!important}
+:root[data-ui="beta"] section.gdark input:not([type=checkbox]):not([type=range]):not([type=color]),:root[data-ui="beta"] section.gdark select,:root[data-ui="beta"] section.gdark textarea{border-radius:var(--b-radius)!important;background:rgba(255,255,255,.04)!important;border:1px solid var(--g-line)!important}
+:root[data-ui="beta"] input[type=range]{accent-color:var(--b-route)}
+:root[data-ui="beta"] :focus-visible{outline:2px solid var(--b-route)!important;outline-offset:2px}
 
-/* item tiles and characters */
-:root[data-ui="beta"] .vt{border-radius:9px!important;box-shadow:0 2px 6px rgba(0,0,0,.35)}
-:root[data-ui="beta"] .vt>img:first-child{border-radius:8px}
-:root[data-ui="beta"] .vt:hover{box-shadow:0 0 0 2px var(--g-accent),0 6px 16px rgba(0,0,0,.45)}
+/* item tiles: square with a survey outline on hover; power numbers in the sign lettering */
+:root[data-ui="beta"] .vt{border-radius:2px!important;box-shadow:none!important}
+:root[data-ui="beta"] .vt>img:first-child{border-radius:1px}
+:root[data-ui="beta"] .vt:hover{box-shadow:none!important;outline:1.5px solid var(--b-route);outline-offset:2px;transform:none!important}
+:root[data-ui="beta"] .vt .ft{font-family:var(--b-font)!important;letter-spacing:.01em}
 :root[data-ui="beta"] .cht{border-radius:var(--b-radius)!important;overflow:hidden}
+:root[data-ui="beta"] .cht b,:root[data-ui="beta"] .cht .pw{font-family:var(--b-font)!important;letter-spacing:.01em}
 :root[data-ui="beta"] #home .hm-ch{border-radius:var(--b-radius)!important}
 
-/* item popup */
-:root[data-ui="beta"] .dpm,:root[data-ui="beta"] .dps{border-radius:var(--b-radius)!important;background:rgba(16,18,26,.9)!important;border:1px solid rgba(255,255,255,.1)!important;-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);box-shadow:0 20px 50px rgba(0,0,0,.55)!important}
-:root[data-ui="beta"] .dps button{border-radius:999px!important}
+/* item pop-up and other floating sheets */
+:root[data-ui="beta"] .dpm,:root[data-ui="beta"] .dps,:root[data-ui="beta"] #junkm .jk,:root[data-ui="beta"] .gtdrop,:root[data-ui="beta"] #vnote{border-radius:var(--b-radius)!important;background:#0e181f!important;border:1px solid #2c404b!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;box-shadow:0 14px 34px rgba(0,0,0,.5)!important}
+:root[data-ui="beta"] .gtdrop{border-left:3px solid var(--dc)!important}
+:root[data-ui="beta"] .dps button{border-radius:var(--b-radius)!important}
+:root[data-ui="beta"] .dph b,:root[data-ui="beta"] .dph h3{font-family:var(--b-font)!important;letter-spacing:.015em!important}
 
-/* settings picker preview for this style */
-.uic.u-beta i{background:radial-gradient(circle at 25% 20%,rgba(120,110,255,.55),transparent 55%),radial-gradient(circle at 85% 90%,rgba(94,234,212,.5),transparent 55%),#141722;border-radius:10px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
+/* phones: the tab you are on gets the route line and waypoint on the bottom bar */
+:root[data-ui="beta"] #gtw-tabs{background:rgba(9,17,22,.96)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;border-top:1px solid var(--g-line)!important}
+:root[data-ui="beta"] #gtw-tabs button{position:relative;font-family:var(--b-font)!important;font-size:12px!important;font-weight:500!important}
+:root[data-ui="beta"] #gtw-tabs button.on{color:#fff!important;box-shadow:inset 0 2px 0 var(--b-route)!important}
+:root[data-ui="beta"] #gtw-tabs button.on::before{content:'';position:absolute;left:50%;top:-4px;width:7px;height:7px;margin-left:-4px;background:var(--b-route);transform:rotate(45deg)}
+
+/* settings picker preview for this style: a scrap of map with the trail on it */
+.uic.u-beta i{position:relative;overflow:hidden;border-radius:3px;background:repeating-radial-gradient(circle at 78% 30%,transparent 0 9px,rgba(127,179,189,.28) 9px 10px),#0b141a;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
+.uic.u-beta i::before{content:'';position:absolute;left:12%;right:12%;bottom:30%;border-top:1.5px dashed #f2b441}
+.uic.u-beta i::after{content:'';position:absolute;left:50%;bottom:30%;width:8px;height:8px;margin:0 0 -4px -4px;background:#f2b441;transform:rotate(45deg)}
 
 /* ---------- BETA THEME (colours and background; the base colours come from the theme list in vault.js) ---------- */
-:root[data-gt="beta"]{--g-bg:#0b0d16;--g-panel:rgba(20,22,36,.7);--g-col:rgba(18,20,32,.6);--g-line:#262a40;--g-deep:rgba(8,9,16,.8);--g-btn:#1c1f33;--g-solid:#141627}
+:root[data-gt="beta"]{--g-bg:#0b141a;--g-panel:rgba(15,25,32,.88);--g-col:rgba(14,23,30,.6);--g-line:#23333d;--g-deep:rgba(4,9,12,.8);--g-btn:#16242d;--g-solid:#101a21}
+
+/* small labels follow the same lettering, in sentence case */
+:root[data-ui="beta"] #home .hm-h,:root[data-ui="beta"] .thh,:root[data-ui="beta"] #home .hm-c .go,:root[data-ui="beta"] #home .hm-row .r{font-family:var(--b-font)!important;text-transform:none!important;letter-spacing:.02em!important}
+:root[data-ui="beta"] #home .hm-h{font-size:15px!important;color:var(--b-paper)!important}
+:root[data-ui="beta"] .thh{font-size:14px!important;color:var(--b-mute)!important}
+:root[data-ui="beta"] #home .hm-c .go{font-size:13px!important;color:var(--b-mute)!important}
+
+/* phones: the character switcher follows the same square plates */
+:root[data-ui="beta"] .phsw button{border-radius:var(--b-radius)!important;font-family:var(--b-font)!important}
+:root[data-ui="beta"] .phsw button.on{box-shadow:inset 0 -2px 0 var(--b-route)!important;border-color:var(--g-line)!important}
