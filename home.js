@@ -166,10 +166,10 @@
   function actBody(k) {
     const r = H.act[k]; if (!r) return `<div class="hm-sub">${H.err['a' + k] ? esc(H.err['a' + k]) : 'Loading...'}</div>`;
     const row = (i, t, sub, right) => `<div class="hm-row">${i ? `<img src="${esc(img(i))}" alt="" loading="lazy">` : ''}<div style="flex:1"><b>${esc(t)}</b>${sub ? `<span>${sub}</span>` : ''}</div>${right ? `<span class="r">${right}</span>` : ''}</div>`;
-    if (k === 'rot') { const l = r.feat || []; return l.length ? l.slice(0, 4).map((x) => row(x.img, x.n, esc(x.k || '') + ' this week')).join('') : '<div class="hm-sub">No featured activities listed yet.</div>'; }
+    if (k === 'rot') { const l = r.feat || []; return l.length ? l.slice(0, 4).map((x) => row(x.img, x.n, esc(x.k || '') + ' this week').replace('<div class="hm-row">', `<div class="hm-row" data-ak="${esc(String(x.k || '').toLowerCase())}">`)).join('') : '<div class="hm-sub">No featured activities listed yet.</div>'; }
     if (k === 'bnt') { const l = r.bounties || [], done = l.filter((a) => a.obj.length && a.obj.every((o) => o.c)).length; return `<div class="hm-big">${done}/${l.length} <small>bounties complete</small></div>` + l.filter((a) => !(a.obj.length && a.obj.every((o) => o.c))).slice(0, 3).map((a) => row(a.i, a.n, '')).join(''); }
     if (k === 'xur') { const v = r.vendors || []; return v.length ? v.map((x) => row('', x.n, x.where === 'dares' ? 'Dares of Eternity' : 'Tower')).join('') : '<div class="hm-sub">X&ucirc;r is not around right now.</div>'; }
-    if (k === 'clr') { const l = (r.rows || []).slice().sort((a, b) => b.c - a.c).slice(0, 4); return l.map((x) => row(x.img, x.n, x.t === 'raid' ? 'Raid' : 'Dungeon', num(x.c) + ' clears').replace('<div class="hm-row">', `<div class="hm-row lnk" data-go="${esc('activity:clr:' + x.t + '|' + x.n)}" title="See every run">`)).join('') || '<div class="hm-sub">No clears yet.</div>'; }
+    if (k === 'clr') { const l = (r.rows || []).slice().sort((a, b) => b.c - a.c).slice(0, 4); return l.map((x) => row(x.img, x.n, x.t === 'raid' ? 'Raid' : 'Dungeon', num(x.c) + ' clears').replace('<div class="hm-row">', `<div class="hm-row lnk" data-ak="${x.t}" data-go="${esc('activity:clr:' + x.t + '|' + x.n)}" title="See every run">`)).join('') || '<div class="hm-sub">No clears yet.</div>'; }
     if (k === 'pb') { return (r.rows || []).slice(0, 4).map((x) => row(x.img, x.label, esc(x.n), esc(x.txt))).join('') || '<div class="hm-sub">No records yet.</div>'; }
     if (k === 'rec') { const day = (r.acts || []).filter((a) => Date.now() - a.at < 864e5), kills = day.reduce((t, a) => t + (a.k || 0), 0); return `<div class="hm-big">${day.length} <small>activities in 24h</small></div><div class="hm-sub">${num(kills)} kills</div>` + (r.acts || []).slice(0, 2).map((a) => row(a.img, a.n, a.ok ? 'Completed' : '')).join(''); }
     if (k === 'cru') { const T = r.total || {}; return `<div class="hm-big">${T.m ? (Math.round(T.kd * 100) / 100).toFixed(2) : '-'} <small>K/D</small></div><div class="hm-sub">${num(T.m || 0)} matches &middot; ${T.m ? Math.round(T.wr * 100) : 0}% wins &middot; KDA ${T.m ? (Math.round(T.kda * 100) / 100).toFixed(2) : '-'}</div>` + (r.recent || []).slice(0, 3).map((a) => row(a.img, a.n, (a.w === 1 ? 'Victory' : a.w === 0 ? 'Defeat' : '') + ' &middot; ' + esc(a.mode), a.k + '/' + a.d + '/' + a.a)).join(''); }
@@ -237,7 +237,7 @@
     if (t === 'guide') { const nb = nav.querySelector('button[data-t=guides]'); if (nb) nb.click(); setTimeout(() => { if (typeof openGuide === 'function') openGuide(sub); }, 60); return; }
     const nb = nav.querySelector('button[data-t="' + t + '"]'); if (nb) nb.click(); else show(t);
   });
-  s.addEventListener('change', (e) => { if (e.target.id === 'hstart') lsSet('gt.home.start', e.target.checked); });
+  s.addEventListener('change', (e) => { if (e.target.id === 'hstart') { lsSet('gt.home.start', e.target.checked); if (window.__gtset) window.__gtset('starttab', e.target.checked ? 'home' : 'vault'); } });
   // Helpful: this week's featured raid and dungeon, with your guide for each, on top of the guide list.
   // Every guide at a glance under the categories, grouped by category.
   function allGuides(gd, hub) {
@@ -257,7 +257,7 @@
     allGuides(gd, hub);
     if (!feat.length) { if (box) box.remove(); return; }
     if (!box) { box = document.createElement('div'); box.id = 'gfeat'; hub.insertBefore(box, list); }
-    box.innerHTML = `<h3>Featured this week</h3><div class="gfl">${feat.map((o) => `<div class="gfc" data-gf="${esc(o.g[1])}" style="${o.x.img ? `background-image:url('${esc(img(o.x.img))}')` : ''}"><small>${esc(o.x.k || '')} &middot; featured</small><b>${esc(o.g[1])}</b></div>`).join('')}</div>`;
+    box.innerHTML = `<h3>Featured this week</h3><div class="gfl">${feat.map((o) => `<div class="gfc" data-ak="${esc(String(o.x.k || '').toLowerCase())}" data-gf="${esc(o.g[1])}" style="${o.x.img ? `background-image:url('${esc(img(o.x.img))}')` : ''}"><small>${esc(o.x.k || '')} &middot; featured</small><b>${esc(o.g[1])}</b></div>`).join('')}</div>`;
     box.onclick = (e) => { const c = e.target.closest('[data-gf]'); if (c && typeof openGuide === 'function') openGuide(c.dataset.gf); };
   }
   { const gb = () => nav.querySelector('button[data-t=guides]'); const t = setInterval(() => { const g = gb(); if (g) { clearInterval(t); g.addEventListener('click', () => setTimeout(guideFeat, 0)); } }, 300); setTimeout(() => clearInterval(t), 20000); }
@@ -280,7 +280,6 @@
 :root #guides #glist:not(.hubgrid)~#gall{display:none}
 `; document.head.appendChild(hs); }
   b.onclick = () => { show('home'); load(false); };
-  if (lsGet('gt.home.start', false)) {
-    let n = 0; const t = setInterval(() => { const D = V().D && V().D(); if (D || ++n > 60) { clearInterval(t); if (D) { show('home'); load(false); } } }, 500);
-  }
+  // Opening on Home is done by polish.js ("Open the app on" in Settings, or the checkbox above).
+  window.__gthome = { open: () => { let n = 0; const t = setInterval(() => { const D = V().D && V().D(); if (D || ++n > 60) { clearInterval(t); if (D) { show('home'); load(false); } } }, 300); } };
 })();

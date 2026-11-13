@@ -7,7 +7,7 @@
 <style id="gtpre">html:not(.gtready) body>*{visibility:hidden!important}html:not(.gtready) body{background:#0b0d12}</style>
 <script>setTimeout(function(){document.documentElement.classList.add('gtready')},4000);</script>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Open+Sans:wght@400;600;700&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="beta.css?v=0.3.10">
+<link rel="stylesheet" href="beta.css?v=0.3.11">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
 --bg:#eef0f3;--panel:#fff;--line:#d3d8e0;--text:#1b2230;--mute:#667085;--gold:#9a7416;--arc:#1b6aa5;--ok:#2e7d4f;--inp:#f5f7fa}
@@ -145,13 +145,13 @@ main{position:relative;z-index:2}
 <meta property="og:image" content="https://d2pathfinder.com/icon-512.png">
 <meta name="twitter:card" content="summary">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="web.css?v=0.3.10">
-<script>window.__GT_VER__="0.3.10";</script>
-<script src="shims.js?v=0.3.10"></script><script src="pako.min.js?v=0.3.10"></script><script src="preload-web.js?v=0.3.10"></script><script src="main-web.js?v=0.3.10"></script>
+<link rel="stylesheet" href="web.css?v=0.3.11">
+<script>window.__GT_VER__="0.3.11";</script>
+<script src="shims.js?v=0.3.11"></script><script src="pako.min.js?v=0.3.11"></script><script src="preload-web.js?v=0.3.11"></script><script src="main-web.js?v=0.3.11"></script>
 <script>window.__GT_WEB__.start();document.documentElement.classList.add('gtweb');</script>
-<script src="mobile.js?v=0.3.10" defer></script>
+<script src="mobile.js?v=0.3.11" defer></script>
 <script>window.__GT_DL__="/download";</script>
-<script src="install.js?v=0.3.10" defer></script>
+<script src="install.js?v=0.3.11" defer></script>
 </head><body>
 <header><img class="plogo" src="logo.png" alt="" aria-hidden="true"><h1>Pathfinder<small>Works without a Bungie API key. Your data stays in this browser.</small></h1></header>
 <nav id="nav"></nav>
@@ -413,8 +413,8 @@ L.innerHTML=list.length?list.map(tileHTML).join(''):'<div class="card mute">No g
 $('glist').addEventListener('click',e=>{const c=e.target.closest('.cat');if(c){gcat=c.dataset.c;drawG();window.scrollTo(0,0)}});
 function rerender(){const y=window.scrollY;openGuide($('gpage').dataset.cur);window.scrollTo(0,y)}
 $('gchips').onclick=e=>{if(e.target.dataset.c){gcat=e.target.dataset.c;drawG()}};$('gsearch').oninput=drawG;drawG();
-{const t=ST.get('tab','guides');show(tabs.some(x=>x[0]===t)?t:'guides')}
+{const t=ST.get('tab','guides');window.__gtLastTab=t;show(tabs.some(x=>x[0]===t)?t:'guides')}
 </script>
-<script src="sync.js?v=0.3.10"></script><script src="vault.js?v=0.3.10"></script><script src="features.js?v=0.3.10"></script><script src="news.js?v=0.3.10"></script><script src="extras.js?v=0.3.10"></script><script src="activity.js?v=0.3.10"></script><script src="notes.js?v=0.3.10"></script><script src="targets.js?v=0.3.10"></script><script src="loadouts.js?v=0.3.10"></script>
-<script src="home.js?v=0.3.10"></script>
-<script src="layout.js?v=0.3.10"></script><script src="lists.js?v=0.3.10"></script></body></html>
+<script src="sync.js?v=0.3.11"></script><script src="vault.js?v=0.3.11"></script><script src="features.js?v=0.3.11"></script><script src="news.js?v=0.3.11"></script><script src="extras.js?v=0.3.11"></script><script src="activity.js?v=0.3.11"></script><script src="notes.js?v=0.3.11"></script><script src="targets.js?v=0.3.11"></script><script src="loadouts.js?v=0.3.11"></script>
+<script src="home.js?v=0.3.11"></script>
+<script src="layout.js?v=0.3.11"></script><script src="lists.js?v=0.3.11"></script><script src="polish.js?v=0.3.11"></script></body></html>

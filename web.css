@@ -43,6 +43,8 @@ html.gtweb{--gt-sat:env(safe-area-inset-top,0px)}
   html.gtweb #loimg .li{max-height:100%;overflow:auto;padding:10px}
   html.gtweb #dlt{z-index:9300!important;left:12px!important;right:12px;max-width:none!important;bottom:calc(68px + env(safe-area-inset-bottom,0px))!important}
 
+  /* the Inventory's status line ("Working...", "Failed: ...", "Done, except ...") sat under the tab bar, so phones never saw it */
+  html.gtweb #vnote{left:12px!important;right:12px!important;max-width:none!important;bottom:calc(66px + env(safe-area-inset-bottom,0px))!important;z-index:9050!important;border-radius:10px!important;padding:8px 12px!important}
   /* floating Notes button and toasts sit above the tab bar */
   html.gtweb #gtnfab{bottom:calc(68px + env(safe-area-inset-bottom,0px))!important}
 
@@ -57,6 +59,11 @@ html.gtweb{--gt-sat:env(safe-area-inset-top,0px)}
   html.gtweb #activity .abar::-webkit-scrollbar{display:none}
   html.gtweb #activity .abar>button{flex:none;scroll-snap-align:start}
   html.gtweb #activity .abar .sp{flex:none;margin-left:6px}
+  html.gtweb #hub .hbar{flex-wrap:nowrap!important;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin:0 -12px;padding:8px 12px!important}
+  html.gtweb #hub .hbar::-webkit-scrollbar{display:none}
+  html.gtweb #hub .hbar>button{flex:none}
+  html.gtweb #hub .hhero{padding:16px}html.gtweb #hub .hhero h2{font-size:20px}
+  html.gtweb #hub .hsec{flex-direction:column;gap:2px}
   html.gtweb #triumphs .tseg{display:flex!important;flex-wrap:nowrap!important;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;max-width:100%}
   html.gtweb #triumphs .tseg::-webkit-scrollbar{display:none}
   html.gtweb #triumphs .tseg>button{flex:none;white-space:nowrap}

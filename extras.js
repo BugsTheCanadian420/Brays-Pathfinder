@@ -638,16 +638,16 @@ ${quick.length ? `<div class="tcol" style="margin-top:14px">Quick wins: almost d
   const nav = document.getElementById('nav'), vsec = document.getElementById('vault');
   if (!nav || !vsec) return;
   const SITES = [
-    { id: 'cp', name: 'Checkpoints', url: 'https://d2checkpoint.com/', desc: 'Find checkpoint bots for raids, dungeons and Pantheon encounters. Copy the bot name and add it in game.' },
-    { id: 'rr', name: 'Raid Report', url: 'https://raid.report/', desc: 'Look up any guardian for raid clears, fastest times and leaderboards.' },
-    { id: 'dg', name: 'Dungeon Report', url: 'https://dungeon.report/', desc: 'Look up any guardian for dungeon clears, fastest times and leaderboards.' },
-    { id: 'dr', name: 'Destiny Report', url: 'https://destiny.report/', desc: 'Guardian stats and activity history for any player.' },
-    { id: 'ls', name: 'Lost Sector Report', url: 'https://d2lostsector.report/', desc: 'Today\'s legend and master lost sectors, rewards, modifiers and the rotation ahead.' },
-    { id: 'cal', name: 'Caldera Report', url: 'https://caldera.report/', desc: 'Caldera clears and stats for any guardian.' },
-    { id: 'mob', name: 'Mobalytics', url: 'https://mobalytics.gg/destiny-2/builds', desc: 'Meta builds for every class and subclass, with the exotics, aspects, fragments and mods to run.' },
-    { id: 'blue', name: 'Blueberries', url: 'https://www.blueberries.gg/', desc: 'Destiny 2 guides, best builds for the current meta, and weapon and armor breakdowns.' },
-    { id: 'para', name: 'Paracausality', url: 'https://paracausality.com/', desc: 'A Destiny 2 clan with raid and dungeon guides, community bots and sherpa help.' },
-    { id: 'bldr', name: 'Builders', url: 'https://builders.gg/destiny/builds', desc: 'Browse and filter Destiny 2 builds by class, subclass, season, exotics, aspects and fragments.' },
+    { id: 'cp', g: 'look', c: '#4fb6c9', name: 'Checkpoints', url: 'https://d2checkpoint.com/', desc: 'Find checkpoint bots for raids, dungeons and Pantheon encounters. Copy the bot name and add it in game.' },
+    { id: 'rr', g: 'look', c: 'var(--ak-raid)', name: 'Raid Report', url: 'https://raid.report/', desc: 'Look up any guardian for raid clears, fastest times and leaderboards.' },
+    { id: 'dg', g: 'look', c: 'var(--ak-dungeon)', name: 'Dungeon Report', url: 'https://dungeon.report/', desc: 'Look up any guardian for dungeon clears, fastest times and leaderboards.' },
+    { id: 'dr', g: 'look', c: '#6aa6e0', name: 'Destiny Report', url: 'https://destiny.report/', desc: 'Guardian stats and activity history for any player.' },
+    { id: 'ls', g: 'look', c: 'var(--ak-lost)', name: 'Lost Sector Report', url: 'https://d2lostsector.report/', desc: 'Today\'s legend and master lost sectors, rewards, modifiers and the rotation ahead.' },
+    { id: 'cal', g: 'look', c: '#d36b8f', name: 'Caldera Report', url: 'https://caldera.report/', desc: 'Caldera clears and stats for any guardian.' },
+    { id: 'mob', g: 'build', c: '#e0a35a', name: 'Mobalytics', url: 'https://mobalytics.gg/destiny-2/builds', desc: 'Meta builds for every class and subclass, with the exotics, aspects, fragments and mods to run.' },
+    { id: 'blue', g: 'build', c: '#7d8cf0', name: 'Blueberries', url: 'https://www.blueberries.gg/', desc: 'Destiny 2 guides, best builds for the current meta, and weapon and armor breakdowns.' },
+    { id: 'para', g: 'build', c: '#5fc59a', name: 'Paracausality', url: 'https://paracausality.com/', desc: 'A Destiny 2 clan with raid and dungeon guides, community bots and sherpa help.' },
+    { id: 'bldr', g: 'build', c: '#e2675c', name: 'Builders', url: 'https://builders.gg/destiny/builds', desc: 'Browse and filter Destiny 2 builds by class, subclass, season, exotics, aspects and fragments.' },
   ];
   const s = document.createElement('section'); s.id = 'hub'; s.className = 'gdark'; vsec.parentNode.appendChild(s);
   const b = document.createElement('button'); b.textContent = 'Hub'; b.dataset.t = 'hub';
@@ -660,19 +660,24 @@ ${quick.length ? `<div class="tcol" style="margin-top:14px">Quick wins: almost d
 #hub .hbar button.on{background:var(--g-accent2,#2b4a6b);color:var(--g-on-accent,#fff);border-color:#8fb3d9}
 #hub .hbar .sp{margin-left:auto;display:flex;gap:6px}
 #hub .hbar .sp button{letter-spacing:0;text-transform:none;font-size:12px;padding:4px 10px}
-#hub .hgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px;margin-top:10px}#hub .hcard{min-height:150px}
-#hub .hcard{background:var(--g-panel);border:1px solid var(--g-line);border-radius:3px;padding:18px;cursor:pointer;display:flex;flex-direction:column;gap:8px;border-top:3px solid var(--g-accent,#6aa6e0)}
-#hub .hcard:hover{border-color:#cfd2d8;background:rgba(255,255,255,.04)}
-#hub .hcard h3 .hmpin{float:right;margin-top:-2px}#hub .hcard h3{margin:0;font-size:16px;letter-spacing:3px;text-transform:uppercase;color:#fff;font-weight:600}
+#hub .hhero{position:relative;overflow:hidden;margin:6px 0 4px;padding:22px 24px;border:1px solid var(--g-line);border-radius:8px;background:radial-gradient(120% 140% at 100% 0,var(--g-accent-soft,rgba(122,184,232,.16)),transparent 60%),linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,0)),var(--g-panel)}
+#hub .hhero small{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--g-accent,#7ab8e8);font-weight:700}#hub .hhero h2{border:0!important;padding:0!important;margin:4px 0 6px;font-size:24px;color:#fff;font-weight:600;letter-spacing:.5px}#hub .hhero p{margin:0;color:#aeb3bb;font-size:13.5px;max-width:560px}
+#hub .hsec{display:flex;align-items:baseline;gap:10px;margin:20px 0 0}#hub .hsec h4{margin:0;font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:#d9dce1;font-weight:700}#hub .hsec span{color:#8b8f97;font-size:12.5px}
+#hub .hgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;margin-top:10px}#hub .hcard{min-height:140px}
+#hub .hcard{position:relative;overflow:hidden;background:linear-gradient(160deg,color-mix(in srgb,var(--hc) 10%,transparent),transparent 55%),var(--g-panel);border:1px solid color-mix(in srgb,var(--hc) 28%,var(--g-line,#2b2e33));border-radius:8px;padding:16px 18px;cursor:pointer;display:flex;flex-direction:column;gap:8px;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+#hub .hcard::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--hc)}
+#hub .hcard:hover{border-color:color-mix(in srgb,var(--hc) 60%,transparent);box-shadow:0 10px 26px rgba(0,0,0,.35),0 0 calc(26px * var(--gt-glow,.55)) calc(-8px) var(--hc);transform:translateY(-2px)}
+#hub .hct{display:flex;align-items:center;gap:10px;min-width:0}#hub .hct h3{flex:1;min-width:0;overflow-wrap:anywhere}#hub .hct .hmpin{margin-left:auto;flex:none}
+#hub .hmono{flex:none;width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font:800 13px/1 'Open Sans',system-ui,sans-serif;letter-spacing:.5px;color:#fff;background:linear-gradient(145deg,color-mix(in srgb,var(--hc) 75%,#fff 0%),color-mix(in srgb,var(--hc) 55%,#000));box-shadow:inset 0 1px 0 rgba(255,255,255,.18)}
+#hub .hcard h3{margin:0;font-size:14px;letter-spacing:1.5px;line-height:1.25;text-transform:uppercase;color:#fff;font-weight:600}
 #hub .hcard p{margin:0;color:var(--mute);font-size:13px;line-height:1.45}
-#hub .hcard .go{margin-top:auto;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#9fc4ee}
+#hub .hcard .go{margin-top:auto;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--hc);transition:letter-spacing .18s}#hub .hcard:hover .go{letter-spacing:2.6px}
 #hub .hnote{color:var(--mute);font-size:12px;margin-top:14px}
 #hub .cpbox{height:calc(100vh - 190px);min-height:360px;border:1px solid var(--g-line);background:#0b0c0f}
 #hub webview{width:100%;height:100%;display:flex}
 #hub .cpmsg{padding:30px;text-align:center;color:var(--mute)}
 #hub .hcard .go .nt{display:inline-block;margin-left:4px;font-size:13px}
 #hub.webm .hbar .sp{display:none!important}
-#hub.webm .hcard{border-top-color:var(--g-accent,#6aa6e0)}
 #hub.webm .hcard:hover .go{color:#fff}`;
   document.head.appendChild(st);
   let cur = 'home';
@@ -685,7 +690,10 @@ ${quick.length ? `<div class="tcol" style="margin-top:14px">Quick wins: almost d
     s.classList.toggle('webm', WEBM());
     s.innerHTML = '<div class="hbar"><button data-h="home">Hub</button>' + SITES.map((x) => `<button data-h="${x.id}">${x.name}</button>`).join('') + '<span class="sp"><button data-hx="back">&lsaquo; Back</button><button data-hx="fwd">Forward &rsaquo;</button><button data-hx="site">Site home</button><button data-hx="reload">Reload</button><button data-hx="ext">Open in browser</button></span></div><div id="hhome"></div>' + SITES.map((x) => `<div class="cpbox" id="hbox-${x.id}" style="display:none"></div>`).join('');
     SITES.forEach((x) => { boxes[x.id] = s.querySelector('#hbox-' + x.id); delete wvs[x.id]; });
-    s.querySelector('#hhome').innerHTML = '<div class="hgrid">' + SITES.map((x) => `<div class="hcard" data-h="${x.id}"><h3>${x.name}${window.__gth ? window.__gth.btn('hub', x.id, x.name) : ''}</h3><p>${x.desc}</p><span class="go">${WEBM() ? 'Open in a new tab <span class="nt">&#8599;</span>' : 'Open &rsaquo;'}</span></div>`).join('') + '</div><p class="hnote">' + (WEBM() ? 'These are the real websites. On the Pathfinder website they open in a new tab, because they do not allow being shown inside another site. In the desktop app they open right here.' : 'These are the real websites, shown inside the app. They are not part of Pathfinder and have nothing to do with your vault. Links to other sites open in your normal browser.') + '</p>';
+    const mono = (n) => n.split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase();
+    const card = (x) => `<div class="hcard" data-h="${x.id}" style="--hc:${x.c}"><div class="hct"><span class="hmono">${mono(x.name)}</span><h3>${x.name}</h3>${window.__gth ? window.__gth.btn('hub', x.id, x.name) : ''}</div><p>${x.desc}</p><span class="go">${WEBM() ? 'Open in a new tab <span class="nt">&#8599;</span>' : 'Open &rsaquo;'}</span></div>`;
+    const grp = (g, t, sub) => `<div class="hsec"><h4>${t}</h4><span>${sub}</span></div><div class="hgrid">${SITES.filter((x) => x.g === g).map(card).join('')}</div>`;
+    s.querySelector('#hhome').innerHTML = '<div class="hhero"><div><small>Hub</small><h2>Community tools</h2><p>Look up clears, find checkpoints and grab builds without leaving Pathfinder.</p></div></div>' + grp('look', 'Lookups and checkpoints', 'Clears, records and bots for any guardian') + grp('build', 'Builds and guides', 'Meta builds, breakdowns and help') + '<p class="hnote">' + (WEBM() ? 'These are the real websites. On the Pathfinder website they open in a new tab, because they do not allow being shown inside another site. In the desktop app they open right here.' : 'These are the real websites, shown inside the app. They are not part of Pathfinder and have nothing to do with your vault. Links to other sites open in your normal browser.') + '</p>';
     go(cur);
   };
   const open = (x) => {

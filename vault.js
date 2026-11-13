@@ -167,7 +167,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 .vt>img:first-child{height:auto;aspect-ratio:1/1}.vt.hf{height:calc(var(--t)*1.27)}
 .vt .ft{position:absolute;bottom:0;left:0;right:0;height:calc(var(--t)*.27);display:flex;align-items:center;justify-content:flex-end;gap:calc(var(--t)*.05);padding:0 calc(var(--t)*.06) 0 calc(var(--t)*.05);background:#455565;color:#f0f2f4;font:500 calc(var(--t)*.24)/1 'Open Sans','Segoe UI',system-ui,sans-serif;letter-spacing:-.01em}.vt .ft .pn{position:relative;top:1px}.vt .ft svg{display:block;width:calc(var(--t)*.22);height:calc(var(--t)*.22)}
 .vt .ft .lf{margin-right:auto;display:flex;align-items:center;gap:3px}
-.vt .ft .wl{display:inline-flex;font-style:normal;color:#fff;background:none;padding:0;position:static}.vt .ft .wl.dn{color:#e05b5b;background:none}.vt .ft .wl.dn svg{transform:rotate(180deg)}
+.vt .ft .wl{display:inline-flex;font-style:normal;color:#fff;background:none;padding:0;position:static}.vt .ft .wl.dn{color:#e05b5b;background:none}.vt .ft .wl.nr{font:700 calc(var(--t)*.2)/1 'Open Sans',system-ui,sans-serif;color:#ffd27a;opacity:.9}.vt .ft .wl.dn svg{transform:rotate(180deg)}
 .vt .ft .tg{position:static;background:none;font-style:normal;padding:0;font-size:12px;line-height:15px}
 .vt .ft img.el{width:calc(var(--t)*.22);height:calc(var(--t)*.22);display:block}
 .vt img.wm{position:absolute;top:0;left:0;width:100%;height:auto;aspect-ratio:1/1;pointer-events:none}
@@ -390,6 +390,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 .vt .tp.cr{background:linear-gradient(90deg,rgba(214,64,56,.5),rgba(214,64,56,.18))}.vt .tp .crf{display:block;flex:none;width:calc(var(--t)*.17);height:calc(var(--t)*.17);color:#ff8a80;filter:drop-shadow(0 0 1px #000)}.vt .tp .crf svg{display:block;width:100%;height:100%}
 .vt .fr{position:absolute;top:calc(var(--t)*.03);right:calc(var(--t)*.03);width:calc(var(--t)*.26);height:calc(var(--t)*.26);box-sizing:border-box;padding:calc(var(--t)*.02);background:#fff;border-radius:calc(var(--t)*.045);pointer-events:none;z-index:1}.vt .fr img{display:block;width:100%;height:100%;object-fit:contain;filter:url(#gtfr)}
 .vt .ft .elv{display:block;flex:none;width:calc(var(--t)*.16);height:calc(var(--t)*.16)}.vt .ft .elv svg{display:block;width:100%;height:100%;color:inherit}
+.vt.mw .ft .elv[style],.vt.Exotic .ft .elv[style]{filter:drop-shadow(0 0 1px rgba(0,0,0,.85))}
 .vt .ft img.bkf,.vt .ft img.el{width:calc(var(--t)*.16);height:calc(var(--t)*.16);flex:none;object-fit:contain}
 .vt .ft .pn{flex:none;white-space:nowrap}
 .vt .ft .lf{flex:none}
@@ -726,6 +727,27 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 #chpop button:hover{background:#2c2e34}
 #chpop.sqm{width:300px;max-height:70vh;overflow:auto}#chpop .sqh{font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:#8b8f97;padding:8px 10px 3px}#chpop .sqr{display:flex;align-items:center}#chpop .sqr button{flex:1;font-family:ui-monospace,Consolas,monospace;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#chpop .sqr b{cursor:pointer;color:#8b8f97;padding:4px 10px;font-weight:400}#chpop .sqr b:hover{color:#fff}
 .vbar .ib.on{background:var(--g-accent2,#2b4a6b);color:var(--g-on-accent,#fff);border-color:#8fb3d9}
+.sbc{display:flex;flex-direction:column;gap:10px;margin:8px 0 4px;padding:0 10px}
+.sbsup{display:flex;align-items:center;gap:12px}.sbsup small{display:block;font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:#8b8f97}.sbsup b{color:#fff;font-size:15px}
+.sbsec h6{margin:0 0 5px;font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:#8b8f97;font-weight:600}
+.sbrow{display:flex;flex-wrap:wrap;gap:6px}
+.sbs{width:46px;height:46px;padding:0!important;border:1px solid #3a3d43!important;background:#0f1114!important;border-radius:4px!important;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:border-color .12s,box-shadow .12s}
+.sbs img{width:100%;height:100%;display:block;border-radius:3px}.sbs:hover{border-color:#cfd2d8!important}.sbs.open{border-color:var(--g-accent,#7ab8e8)!important;box-shadow:0 0 0 1px var(--g-accent,#7ab8e8)}
+.sbs.big{width:64px;height:64px;transform:rotate(45deg);border-radius:6px!important;overflow:hidden;margin:6px}.sbs.big img{transform:rotate(-45deg) scale(1.42)}
+.sbpk{margin-top:8px;border:1px solid var(--g-line,#2b2e33);background:rgba(0,0,0,.25);border-radius:6px;padding:8px}
+.sbph{display:flex;align-items:baseline;gap:8px;margin-bottom:6px}.sbph b{color:#fff;font-size:13px}.sbph .mute{font-size:11.5px}
+.sbol{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:4px;max-height:300px;overflow:auto}
+.sbo{display:flex;gap:8px;align-items:flex-start;padding:5px;border:1px solid transparent;border-radius:4px;cursor:pointer}.sbo:hover{border-color:#3a3d43;background:rgba(255,255,255,.04)}
+.sbo.on{border-color:var(--g-accent,#7ab8e8);background:var(--g-accent-soft,rgba(122,184,232,.12));cursor:default}.sbo.off{opacity:.45;cursor:default}.sbo.off:hover{background:none;border-color:transparent}
+.sboi{flex:none;width:34px;height:34px;background:#0f1114;border:1px solid #3a3d43;border-radius:3px;overflow:hidden}.sboi img{width:100%;height:100%;display:block}
+.sbo b{display:block;color:#fff;font-size:12.5px;font-weight:600}.sbo b em{font-style:normal;font-weight:600;font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:var(--g-accent,#7ab8e8);margin-left:4px}.sbo small{display:block;color:#9aa0a8;font-size:11.5px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+#gtdrops{position:fixed;right:14px;bottom:14px;z-index:9400;display:flex;flex-direction:column;gap:8px;width:min(330px,calc(100vw - 24px));pointer-events:none}
+.gtdrop{pointer-events:auto;display:flex;gap:10px;align-items:center;padding:8px 10px;background:var(--g-panel,#1a1c20);border:1px solid var(--g-line,#2b2e33);border-left:3px solid var(--dc);box-shadow:0 8px 26px rgba(0,0,0,.55),0 0 18px -6px var(--dc);cursor:pointer;animation:gtdin .28s cubic-bezier(.2,.8,.2,1);transition:opacity .35s,transform .35s}
+.gtdrop.out{opacity:0;transform:translateX(16px)}@keyframes gtdin{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+.gtdrop .vt{--t:44px;width:44px;height:44px;flex:none;pointer-events:none}.gtdrop .dt{flex:1;min-width:0}.gtdrop small{display:block;font-size:10.5px;letter-spacing:1.2px;text-transform:uppercase;color:#8b8f97}.gtdrop b{display:block;color:#fff;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.gtdrop span{display:block;color:var(--dc);font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gtdrop .dx{flex:none;align-self:flex-start;background:none;border:0;color:#8b8f97;font-size:18px;line-height:1;padding:0 2px;cursor:pointer}
+@media (max-width:760px){#gtdrops{left:12px;right:12px;width:auto;top:calc(env(safe-area-inset-top,0px) + 56px);bottom:auto}}
+#junkm.grf .jkr{grid-template-columns:26px 48px 1fr auto}#junkm .grb{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:20px;padding:0 4px;border-radius:4px;font:800 12px/1 'Open Sans',system-ui,sans-serif;font-style:normal;color:#111;background:var(--gc)}#junkm .jkt .grb{min-width:18px;height:16px;font-size:10.5px;margin-right:2px}@media (max-width:640px){#junkm.grf .jkr{grid-template-columns:26px 44px 1fr}}
 #junkm{position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.55);display:flex;align-items:flex-start;justify-content:center;padding:6vh 16px}#junkm .jk{background:var(--g-panel,#1a1c20);border:1px solid var(--g-line,#2b2e33);width:min(720px,100%);max-height:86vh;overflow:auto;padding:14px 18px;box-shadow:0 10px 40px rgba(0,0,0,.6)}#junkm .jkh{display:flex;align-items:baseline;gap:12px}#junkm .jkh b{font-size:16px;color:#fff}#junkm .jkh button{margin-left:auto}#junkm .jkl{display:flex;flex-direction:column;gap:4px;margin:8px 0}#junkm .jkr{display:grid;grid-template-columns:48px 1fr auto;gap:10px;align-items:center;padding:4px;border:1px solid transparent;cursor:pointer}#junkm .jkr:hover{border-color:var(--g-line,#3a3d43);background:rgba(255,255,255,.03)}#junkm .jkr .vt{--t:48px;width:48px;height:48px;pointer-events:none}#junkm .jkr small{display:block;color:#b9bec6;font-size:12px}#junkm .jkb{position:sticky;bottom:-14px;background:var(--g-panel,#1a1c20);padding:10px 0;margin:0}#junkm .jk{display:flex;flex-direction:column;overflow:hidden}#junkm .jkl{overflow:auto;min-height:0;flex:1}#junkm .jkb{position:static}#junkm .jkr{grid-template-columns:22px 48px 1fr auto}#junkm .jkr input{width:16px;height:16px;margin:0;cursor:pointer}#junkm .jkr.sel{background:rgba(255,255,255,.04);border-color:var(--g-line,#3a3d43)}#junkm .jkt{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}#junkm .jkt button{background:transparent;border:1px solid var(--g-line,#3a3d43);color:#cfd3da;padding:5px 10px;font:inherit;font-size:12.5px;cursor:pointer}#junkm .jkt button.on{border-color:var(--acc,#e8b84a);color:#fff;background:rgba(255,255,255,.06)}#junkm .jkt i{font-style:normal;opacity:.7;margin-left:4px}#junkm .jkd{margin:6px 0}#junkm .jks{display:flex;gap:12px;align-items:center;font-size:12.5px;margin:4px 0}#junkm .jks label{display:flex!important;gap:6px;align-items:center;cursor:pointer;white-space:nowrap;width:auto!important;margin:0!important;padding:0!important}#junkm .jkb button[disabled]{opacity:.4!important;cursor:default;pointer-events:none}#junkm .jke{margin:16px 0}@media (max-width:640px){#junkm{padding:8px}#junkm .jk{max-height:calc(100dvh - 90px);padding:12px}#junkm .jkr{grid-template-columns:22px 44px 1fr}#junkm .jkr>.mute{display:none}}
 .pmh{display:flex;align-items:baseline;gap:6px;margin:16px 0 0;min-height:18px}
 .pmh .dsec{display:inline-flex;grid-column:auto;margin:0;font-size:13px;letter-spacing:1.5px;color:#d9dce1}
@@ -763,7 +785,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 
   // ---------------- settings, update toast ----------------
   const DEFSET = { theme: 'dim', accent: '#7ab8e8', accentUser: '', bgdim: 45, tile: 44, scale: 100, power: true, emblems: true, postmaster: true, compact: false, sort: 'rarity',
-    ui: 'pf', ornaments: true, locksync: false, clarity: 'both', single: false, charsort: 'recent', charorder: [], vgroup: 'none', armorsep: false, vaultunder: false, invw: 3, hidecollect: false, pmbadge: true, farmspaces: 3, sortkeys: null, cst: { 0: [0, 0, 0, 0, 0, 0], 1: [0, 0, 0, 0, 0, 0], 2: [0, 0, 0, 0, 0, 0] } };
+    ui: 'pf', ornaments: true, locksync: false, clarity: 'both', single: false, charsort: 'recent', charorder: [], vgroup: 'none', armorsep: false, vaultunder: false, invw: 3, hidecollect: false, pmbadge: true, nrmark: true, dropalert: true, anim: 'subtle', cardart: true, glow: 55, starttab: 'vault', farmspaces: 3, sortkeys: null, cst: { 0: [0, 0, 0, 0, 0, 0], 1: [0, 0, 0, 0, 0, 0], 2: [0, 0, 0, 0, 0, 0] } };
   // Item sort rules, like DIM: a checked list in order. d = 1 normal, -1 flipped.
   const SORTK = [['power', 'Power level'], ['name', 'Name'], ['type', 'Type'], ['rarity', 'Rarity'], ['stack', 'Stack size'], ['class', 'Required class'], ['tag', 'Tag (favorite, keep, junk, infuse, archive)'], ['season', 'Season'], ['dmg', 'Damage type'], ['champ', 'Anti-champion type'], ['mw', 'Masterworked'], ['crafted', 'Crafted'], ['tier', 'Tier']];
   const sortFromOld = (m) => { const on = m === 'power' ? ['power', 'rarity', 'name'] : m === 'name' ? ['name', 'power'] : m === 'tag' ? ['tag', 'power', 'rarity', 'name'] : ['rarity', 'power', 'name']; return [...on.map((k) => ({ k, d: 1, on: true })), ...SORTK.filter((q) => !on.includes(q[0])).map((q) => ({ k: q[0], d: 1, on: false }))]; };
@@ -782,6 +804,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
   };
   fixSort();
   const saveSet = () => { try { localStorage.setItem('gt_settings', JSON.stringify(SET)); } catch (e) { /* storage unavailable */ } };
+  window.__gtset = (k, v) => { SET[k] = v; saveSet(); }; window.__gtget = (k) => SET[k];
   // ---- themes ----
   // Each theme is a colour family (hue h, saturation s) that fills the panel, button and line colours. Some also paint a background:
   // glow = coloured light behind the page, img = a Destiny 2 picture bundled in app/themes, an = slow drift.
@@ -852,6 +875,8 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
     r.setAttribute('data-gx', t && hasBg(t) ? '1' : '0'); r.setAttribute('data-gan', t && t.an ? '1' : '0');
     r.style.setProperty('--g-dim', String(Math.max(.25, Math.min(.9, (+SET.bgdim || 45) / 100))));
     r.setAttribute('data-ui', ['pf', 'd2', 'dim', 'beta'].includes(SET.ui) ? SET.ui : 'pf');
+    r.setAttribute('data-anim', ['off', 'subtle', 'full'].includes(SET.anim) ? SET.anim : 'subtle'); r.setAttribute('data-cardart', SET.cardart === false ? '0' : '1');
+    r.style.setProperty('--gt-glow', String(Math.max(0, Math.min(100, SET.glow === undefined ? 55 : +SET.glow)) / 100));
     r.setAttribute('data-gcompact', SET.compact ? '1' : '0'); r.setAttribute('data-gpower', SET.power ? '1' : '0');
     r.style.setProperty('--gt-t', SET.tile + 'px'); r.style.setProperty('--gt-z', SET.scale / 100);
     // The accent's dark partner (selected tabs, switches, chips). Mixing a light colour like yellow with black turns it olive,
@@ -882,6 +907,21 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
   const wcache = {};
   // 1 = wish list roll (thumbs up), -1 = trash roll (thumbs down), 0 = no opinion.
   // Also keeps the notes, tags and the perks that appear in a wish list roll for this weapon.
+  // A legendary weapon that no wish list mentions at all: it gets a small "?" (not yet rated) instead of nothing, so a blank
+  // always means "your lists rated it and it is not a keeper" and nothing good gets dismantled by accident.
+  function unrated(x) {
+    if (!WL || !x || !x.pk || x.r !== 'Legendary' || !WEAPON.has(x.b) || x.pm) return false;
+    const a = WL.rolls[x.h]; return !(a && a.length) && !wish(x).v;
+  }
+  // The roll grade used by the god roll finder: S (a roll your lists call a god roll), A (any wish list roll),
+  // C (rated, not a match), D (a trash roll), ? (not yet rated).
+  function grade(x) {
+    const w = wish(x);
+    if (w.v > 0) { const t = (w.tags || []).join(',') + ' ' + (w.notes || []).join(' '); return /god/i.test(t) ? 'S' : 'A'; }
+    if (w.v < 0) return 'D';
+    return unrated(x) ? '?' : 'C';
+  }
+  window.__gtgrade = (id) => { const x = byId(id); return x ? grade(x) : ''; };
   function wish(x) {
     const r = wish0(x), T = window.__gtt, h = T && T.hit ? T.hit(x) : null;
     if (!h) return r;
@@ -921,6 +961,9 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
     <div class="sg">${WLPRE.map((p, i) => `<div class="th${have.has(p[1]) ? ' on' : ''}" data-wp="${i}">${have.has(p[1]) ? '&#10003; ' : '+ '}${esc(p[0])}</div>`).join('')}</div>
     <div class="sr"><label>Link</label><input id="wlurl" placeholder="https://.../wishlist.txt (one or several links)" value="${esc(WLD.wlurl)}" style="flex:1"><button class="g" data-sa="wlpl">Paste</button><button class="b" data-sa="wlload">Add list</button></div>
     <p><button class="g" data-sa="wlfile">Upload a file...</button> <button class="g" data-sa="wlrefresh">Refresh all</button> ${lists.length ? '<button class="g" data-sa="wlclear">Remove all</button>' : ''}<input type="file" id="wlfile" accept=".txt,text/plain" hidden></p>
+    <div class="sx"><div class="sxt"><b>Mark weapons no list has rated yet</b><small>A small <b style="color:#ffd27a">?</b> on legendary weapons that none of your lists mention, so a blank tile always means "not a keeper". Search <code>is:unrated</code>.</small></div><div class="sxc"><label class="tgl"><input type="checkbox" data-sk="nrmark"${SET.nrmark !== false ? ' checked' : ''}><i></i></label></div></div>
+    <div class="sx"><div class="sxt"><b>New drop alerts</b><small>While you are in the game, Pathfinder checks Bungie every 10 seconds and pops up each new weapon as God roll, Keeper, Not a keeper or Not yet rated (plus a Windows notification when the game is in front). Bungie's API only; nothing touches the game.</small></div><div class="sxc"><label class="tgl"><input type="checkbox" data-sk="dropalert"${SET.dropalert !== false ? ' checked' : ''}><i></i></label></div></div>
+    <p><button class="b" data-sa="grf">&#128269; Open the god roll finder</button></p>
     <textarea id="wltext" placeholder="Or paste wish list text here (lines starting with dimwishlist:)" style="width:100%;height:56px">${esc(WLD.wltext)}</textarea><p><button class="g" data-sa="wlpt">Paste from clipboard</button> <button class="g" data-sa="wlpaste">Add pasted text</button></p></div>`;
   }
   const CSTN = ['Weapons', 'Health', 'Class', 'Grenade', 'Super', 'Melee'];
@@ -1022,9 +1065,14 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
       <div class="sg">${themeGrid()}</div>
       ${sx('Background picture dimming', 'For themes with a picture or glow. Higher is darker and easier to read.', rng('bgdim', 25, 90, '%'))}
       ${sx('Accent color', '', `<input type="color" data-sk="accent" value="${esc(SET.accent)}">`)}
+      <div class="thh">Motion and cards</div>
+      ${sx('Animations', 'Page fades, cards easing in and hover lifts. Off turns every animation off.', opt('anim', [['off', 'Off'], ['subtle', 'Subtle'], ['full', 'Full']]))}
+      ${sx('Activity pictures on cards', 'The raid, dungeon and activity art behind cards on Home, Activity and Rotations.', tgl('cardart'))}
+      ${sx('Glow strength', 'The soft colored glow around activity cards: purple for raids, bronze for dungeons, and so on.', rng('glow', 0, 100, '%'))}
     </div>
     <div class="card sc"><h2>Display</h2>
       ${sx('Interface scale', 'Makes everything bigger or smaller.', rng('scale', 80, 140, '%'))}
+      ${sx('Open the app on', '', opt('starttab', [['vault', 'Inventory'], ['home', 'Home'], ['loadouts', 'Loadouts'], ['activity', 'Activity'], ['last', 'The last tab I used']]))}
       ${sx('Show emblems on characters', '', tgl('emblems'))}
       ${sx('Show postmaster', '', tgl('postmaster'))}
       ${sx('Tighter spacing', 'Packs items, rows and sections closer together so more fits on screen.', tgl('compact'))}
@@ -1087,6 +1135,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
     if (arm) { const a1 = ACL && ACL.list.find((x) => x.mid === arm.dataset.acrm); if (!confirm('Remove ' + ((a1 && a1.n) || 'this account') + ' from ' + GT_HERE + '? You can add it again any time.')) return; try { afterAcct(await gt.acctRemove({ mid: arm.dataset.acrm })); } catch (er) { alert(clean(er)); } return; }
     const b = e.target.closest('[data-sa]'); if (!b) return;
     const a = b.dataset.sa;
+    if (a === 'grf') { if (window.__gtgrf) { show('vault'); setTimeout(window.__gtgrf, 50); } return; }
     if (a === 'syncnow') { if (window.__gtsync) window.__gtsync.now().catch(() => {}); return; }
     if (a === 'addacct') { try { afterAcct(await gt.acctAdd()); } catch (er) { const m1 = clean(er); if (!/closed/i.test(m1)) alert('Could not add the account: ' + m1); ACL = null; drawSettings(); } return; }
     if (a === 'wlpl' || a === 'wlpt') {
@@ -1125,7 +1174,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
     if (to !== from) { const [m] = SET.sortkeys.splice(from, 1); SET.sortkeys.splice(to, 0, m); saveSet(); drawSettings(); if (window.__gtRender) window.__gtRender(); }
   });
   settingsSec.addEventListener('dragend', () => { sdrag = -1; });
-  const CSSONLY = new Set(['accent', 'bgdim', 'tile', 'scale']);
+  const CSSONLY = new Set(['accent', 'bgdim', 'tile', 'scale', 'glow']);
   let cssRaf = 0, cssSave = 0;
   settingsSec.addEventListener('input', (e) => {
     if (e.target.id === 'wlurl' || e.target.id === 'wltext') { WLD[e.target.id] = e.target.value; return; }
@@ -1145,6 +1194,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
     if (e.target.type !== 'range' && e.target.type !== 'color' && e.target.type !== 'checkbox') drawSettings();
     if (k === 'farmspaces' && window.gt && gt.farmSet) gt.farmSet({ spaces: SET.farmspaces }).catch(() => {});
     if (k === 'clarity') clarLoad();
+    if (k === 'starttab') { try { localStorage.setItem('gt.home.start', JSON.stringify(SET.starttab === 'home')); } catch (er) { /* storage off */ } }
   });
   settingsSec.addEventListener('change', (e) => {
     if (e.target.dataset.sk !== 'scale') return;
@@ -1350,6 +1400,10 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
     if (v === 'target') return !!(window.__gtt && window.__gtt.hit(x));
     if (v === 'wishlist') return wish(x).v === 1;
     if (v === 'trashlist') return wish(x).v === -1;
+    if (v === 'unrated') return unrated(x);
+    if (v === 'godroll') return grade(x) === 'S';
+    if (v === 'keeper') return wish(x).v === 1;
+    if (v === 'notkeeper') return WEAPON.has(x.b) && x.r === 'Legendary' && !!x.pk && !!WL && (grade(x) === 'C' || grade(x) === 'D');
     if (v === 'inloadout') { if (!LOSET || LOSETq !== q) { LOSET = inLo(); LOSETq = q; } return LOSET.has(x.id); }
     if (v === 'prismatic') return /prismatic/i.test(x.n);
     if (ELN[v]) return x.el === ELN[v] || (x.b === 3284755031 && x.n.toLowerCase().includes(v));
@@ -1407,7 +1461,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
   const SKEYS = ['is:', 'not:', 'perk:', 'exactperk:', 'name:', 'exactname:', 'notes:', 'tag:', 'element:', 'slot:', 'class:', 'ammo:', 'breaker:', 'power:>=', 'stat:', 'total:>=', 'customtotal:>=', 'energy:>=', 'tier:>=', 'target:', 'wishlistnotes:'];
   const ISV = () => {
     const ty = [...new Set(D.items.filter((x) => (WEAPON.has(x.b) || ARMOR.has(x.b)) && x.t).map((x) => nz(x.t)))];
-    return [...new Set(['exotic', 'legendary', 'rare', 'weapon', 'armor', 'equipped', 'unequipped', 'locked', 'unlocked', 'crafted', 'masterwork', 'deepsight', 'adept', 'duplicate', 'wishlist', 'trashlist', 'tagged', 'untagged', 'hasnotes', 'inloadout', 'vault', 'postmaster', 'target', 'kinetic', 'arc', 'solar', 'void', 'stasis', 'strand', 'prismatic', 'primary', 'special', 'heavy', 'barrier', 'overload', 'unstoppable', 'titan', 'hunter', 'warlock', 'kineticslot', 'energyslot', 'powerslot', 'helmet', 'gauntlets', 'chest', 'legs', 'classitem', 'ghost', 'sparrow', 'ship', 'subclass', ...ty])];
+    return [...new Set(['exotic', 'legendary', 'rare', 'weapon', 'armor', 'equipped', 'unequipped', 'locked', 'unlocked', 'crafted', 'masterwork', 'deepsight', 'adept', 'duplicate', 'wishlist', 'trashlist', 'unrated', 'godroll', 'keeper', 'notkeeper', 'tagged', 'untagged', 'hasnotes', 'inloadout', 'vault', 'postmaster', 'target', 'kinetic', 'arc', 'solar', 'void', 'stasis', 'strand', 'prismatic', 'primary', 'special', 'heavy', 'barrier', 'overload', 'unstoppable', 'titan', 'hunter', 'warlock', 'kineticslot', 'energyslot', 'powerslot', 'helmet', 'gauntlets', 'chest', 'legs', 'classitem', 'ghost', 'sparrow', 'ship', 'subclass', ...ty])];
   };
   const SVALS = { tag: () => ['favorite', 'keep', 'infuse', 'junk', 'archive', 'none'], element: () => Object.keys(ELN), slot: () => ['kinetic', 'energy', 'power', 'helmet', 'gauntlets', 'chest', 'legs', 'classitem', 'ghost', 'sparrow', 'ship', 'subclass'], class: () => ['titan', 'hunter', 'warlock'], ammo: () => Object.keys(AMMO), breaker: () => ['barrier', 'overload', 'unstoppable'], stat: () => STN.map((n) => n + ':>='), target: () => [] };
   let SUG = { list: [], i: -1 };
@@ -1607,6 +1661,45 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
     const nl = m.querySelector('.jkl'); if (nl && keepSel) nl.scrollTop = scroll;
   }
 
+  // ---- God roll finder: every legendary weapon you own, graded against your wish lists ----
+  // S = a roll your lists call a god roll, A = any wish list roll (both get the thumbs up: keep), C = rated but not a match,
+  // D = a trash roll (both safe to dismantle), ? = no list has this weapon yet (keep it until you check).
+  let GTAB = 'S';
+  const GTABS = [['S', 'God rolls', 'Rolls your wish lists call a god roll. Keep these.'], ['A', 'Keepers', 'Rolls on your wish lists (thumbs up). Keep these.'], ['CD', 'Not keepers', 'Your lists rate these weapons and this copy is not one of their rolls (or is a trash roll). Safe to dismantle unless you use it.'], ['?', 'Not yet rated', 'No wish list mentions these weapons yet, so keep them until you check them.']];
+  const GCOL = { S: '#e8b84a', A: '#4caf50', C: '#8b8f97', D: '#d9534f', '?': '#ffd27a' };
+  function grfOpen() {
+    let m = g('junkm'); if (m) m.remove();
+    if (!WL) { setNote('Add a wish list first (Settings, Wish lists): the god roll finder grades your weapons with it.'); return; }
+    const ws = D.items.filter((x) => WEAPON.has(x.b) && x.r === 'Legendary' && x.pk && !x.pm);
+    const by = { S: [], A: [], CD: [], '?': [] };
+    ws.forEach((x) => { const gr = grade(x); (by[gr === 'C' || gr === 'D' ? 'CD' : gr]).push({ x, gr }); });
+    Object.values(by).forEach((a) => a.sort((p, q2) => String(p.x.n).localeCompare(q2.x.n) || (q2.x.p || 0) - (p.x.p || 0)));
+    const list = by[GTAB] || [], T = TAGS(), info = GTABS.find((t) => t[0] === GTAB);
+    const whereTxt = (o) => { if (o.loc === 'vault') return 'Vault'; const c = D.chars.find((k) => k.id === o.loc); return c ? CL[c.cls] || 'Guardian' : ''; };
+    const why = (o) => {
+      const w = wish(o.x);
+      if (w.v && w.perks && w.perks.size) { const nm = [...w.perks].filter((p) => typeof p === 'string'); if (nm.length) return 'Roll: ' + nm.slice(0, 4).join(', ') + (w.notes[0] ? ' \u00b7 ' + w.notes[0] : ''); }
+      if (w.notes && w.notes[0]) return w.notes[0];
+      return o.gr === 'D' ? 'Trash roll on your wish list' : o.gr === '?' ? 'No wish list has this weapon yet' : 'Not one of the wish list rolls for this weapon';
+    };
+    const junkable = list.filter((o) => !['favorite', 'keep', 'junk'].includes(T[o.x.id]) && !o.x.e);
+    m = document.createElement('div'); m.id = 'junkm'; m.className = 'grf';
+    m.innerHTML = `<div class="jk"><div class="jkh"><b>God roll finder</b><span class="mute">${ws.length} legendary weapons graded with your wish lists</span><button class="g" data-gk="x" title="Close">&#10005;</button></div>
+<div class="jkt">${GTABS.map(([k, lbl]) => `<button data-gt="${k}" class="${k === GTAB ? 'on' : ''}"><em class="grb" style="--gc:${GCOL[k[0]]}">${k === 'CD' ? 'C/D' : k}</em> ${esc(lbl)} <i>${by[k].length}</i></button>`).join('')}</div>
+<p class="mute jkd">${esc(info[2])} Click a weapon to see its perks; <b>Apply Perks</b> in its pop-up puts the wish list perks in.</p>
+${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="${esc(o.x.id)}"><em class="grb" style="--gc:${GCOL[o.gr]}">${o.gr}</em>${tile(o.x)}<div><b>${esc(o.x.n)}</b><small>${esc(why(o))}</small></div><span class="mute">${esc(whereTxt(o.x))}</span></div>`).join('')}</div>
+${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="junk">Tag ${junkable.length} as junk</button> <span class="mute">Skips equipped items and anything tagged favorite or keep.</span></p>` : ''}` : `<p class="jke"><b>${GTAB === '?' ? 'Every weapon you own is rated.' : 'Nothing here.'}</b></p>`}</div>`;
+    m.onclick = (e) => {
+      if (e.target === m) { m.remove(); return; }
+      const tb = e.target.closest('[data-gt]'); if (tb) { GTAB = tb.dataset.gt; grfOpen(); return; }
+      const b = e.target.closest('[data-gk]');
+      if (b && b.dataset.gk === 'x') { m.remove(); return; }
+      if (b && b.dataset.gk === 'junk') { const o = TAGS(); junkable.forEach((q2) => { o[q2.x.id] = 'junk'; }); saveTAGS(o); renderGrid(); setNote(junkable.length + ' weapons tagged junk.'); grfOpen(); return; }
+      const r = e.target.closest('[data-jid]'); if (r) { m.remove(); openPop(r.dataset.jid); }
+    };
+    document.body.appendChild(m);
+  }
+  window.__gtgrf = () => { if (D) grfOpen(); };
   const SV_UP = '<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.3l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>';
   const SV_LK = '<svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>';
   // Our own Arc / Solar / Void marks (drawn in the footer's text colour), so they never depend on the Bungie icon files.
@@ -1625,8 +1718,8 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
     const w = wish(x), tgv = TAGS()[x.id], tgd = tgv && TG.find((t) => t[0] === tgv), ic = (D && D.ic) || {};
     const bkI = x.bt && ic.bk && ic.bk[x.bt], elI = x.el && x.el !== 1 && ic.el && ic.el[x.el];
     const num = x.q > 1 ? x.q : x.p ? x.p : '';
-    const left = w.v ? `<i class="wl${w.v < 0 ? ' dn' : ''}">${SV_UP}</i>` : '';
-    const elS = ELSVG[x.el], elH = elS ? `<span class="elv" title="${esc((ELEM[x.el] || [''])[0])}">${elS}</span>` : (elI ? `<img class="el" src="${esc(icon(elI))}" alt="">` : '');
+    const left = w.v ? `<i class="wl${w.v < 0 ? ' dn' : ''}">${SV_UP}</i>` : SET.nrmark !== false && unrated(x) ? '<i class="wl nr" title="Not yet rated: none of your wish lists has this weapon. Keep it until you check it.">?</i>' : '';
+    const elS = ELSVG[x.el], elH = elS ? `<span class="elv"${x.el !== 1 && ELEM[x.el] ? ` style="color:${ELEM[x.el][1]}"` : ''} title="${esc((ELEM[x.el] || [''])[0])}">${elS}</span>` : (elI ? `<img class="el" src="${esc(icon(elI))}" alt="">` : '');
     const foot = left || bkI || elH || num !== '' ? `<div class="ft"><span class="lf">${left}</span>${bkI ? `<img class="bkf" src="${esc(icon(bkI))}" alt="" title="${esc(BRK[x.bt] || 'Champion')}" draggable="false">` : ''}${elH}${num !== '' ? `<span class="pn">${num}</span>` : ''}</div>` : '';
     const lockH = x.lk && !(SET.locksync && tgv) ? `<b class="lk">${SV_LK}</b>` : '', tagH = tgd ? `<em class="tg" style="background:${tgd[2]}" title="${tgd[3]}">${tagSvg(tgd[0], 9)}</em>` : '';
     const badge = lockH || tagH ? `<div class="br">${lockH}${tagH}</div>` : '';
@@ -1698,10 +1791,34 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
   }
   function pmCell(c) {
     const its = D.items.filter((x) => x.loc === c.id && x.pm);
-    const can = its.filter((x) => !x.eg);
+    const can = its;
     const eg = (D.gen || []).filter((x) => x.loc === c.id && x.b === ENGR).sort(sortI).slice(0, 10);
     const slots = eg.map(tile).join('') + '<i class="pms"></i>'.repeat(Math.max(0, 10 - eg.length));
-    return `<div class="pmc"><div class="pml">${slots}</div><div class="row1">${its.map((x) => x.eg ? tile(x).replace(/<\/div>$/, '<b class="pmw" title="Engrams can only be opened at the Tower in game">&#9888;</b></div>') : tile(x)).join('')}</div>${can.length && !SET.hidecollect ? `<button class="g pmb" data-act="collect" data-c="${esc(c.id)}">&#9993; <b>${can.length}</b> Collect Postmaster</button>` : ''}</div>`;
+    return `<div class="pmc"><div class="pml">${slots}</div><div class="row1">${its.map((x) => x.eg ? tile(x).replace(/<\/div>$/, '<b class="pmw" title="Collect Postmaster moves engrams to your engram slots when there is room; open them at the Tower">&#9888;</b></div>') : tile(x)).join('')}</div>${can.length && !SET.hidecollect ? `<button class="g pmb" data-act="collect" data-c="${esc(c.id)}">&#9993; <b>${can.length}</b> Collect Postmaster</button>` : ''}</div>`;
+  }
+  // Collect Postmaster, like DIM: if a weapon or armor slot is full, the least wanted unequipped items in that slot go to the
+  // vault first so everything fits; engrams come out too while there is room in the engram slots.
+  function collectPm(ch) {
+    const all = D.items.filter((o) => o.loc === ch && o.pm);
+    const engFree = Math.max(0, 10 - (D.gen || []).filter((x) => x.loc === ch && x.b === ENGR).length);
+    const its = all.filter((o) => !o.eg).concat(all.filter((o) => o.eg).slice(0, engFree));
+    if (!its.length) { setNote(all.length ? 'Your engram slots are full: open some engrams at the Tower first.' : 'Nothing in the postmaster.'); return; }
+    const tags = TAGS(), keepRank = (x) => { const t = tags[x.id]; return t === 'junk' ? 0 : !t ? 1 : t === 'infuse' ? 2 : t === 'archive' ? 3 : 9; };
+    const room = [];
+    const need = {}; its.forEach((o) => { if (WEAPON.has(o.b) || ARMOR.has(o.b)) need[o.b] = (need[o.b] || 0) + 1; });
+    Object.keys(need).forEach((b) => {
+      b = +b;
+      const here = D.items.filter((o) => o.loc === ch && o.b === b && !o.e && !o.pm);
+      let over = here.length + need[b] - 9; if (over <= 0) return;
+      const cand = here.filter((o) => keepRank(o) < 9).sort((a, c) => keepRank(a) - keepRank(c) || (a.p || 0) - (c.p || 0));
+      cand.slice(0, over).forEach((o) => room.push(o));
+    });
+    const roomS = room.map(slim), snaps = its.map(slim);
+    const label = 'collect postmaster' + (room.length ? ' (moving ' + room.length + ' to the vault to make room)' : '');
+    act(label, () => { room.forEach((o) => { o.loc = 'vault'; }); its.forEach((o) => { o.pm = 0; }); }, async () => {
+      for (const s of roomS) { try { await gt.move({ item: s, from: ch, to: 'vault' }); } catch (e) { /* the pull below reports what did not fit */ } }
+      return gt.pmPull({ items: snaps, char: ch });
+    }, true);
   }
   function mkRoom(ch) {
     const its = D.items.filter((o) => o.loc === ch && !o.e && !o.pm && (WEAPON.has(o.b) || ARMOR.has(o.b))), snaps = its.map(slim);
@@ -1812,7 +1929,7 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
     const hp = '<b>Search</b> works like DIM. Plain words match names, types and every perk (weapon perks and their options, armor perks and mods, subclass aspects and fragments). Words are all required; <code>or</code> between words means either; a leading <code>-</code> excludes; use quotes for phrases. Suggestions appear as you type (Tab or Enter to use one).<br>'
       + '<b>is:</b> <code>is:exotic</code> <code>is:handcannon</code> <code>is:smg</code> <code>is:sword</code> <code>is:solar</code> <code>is:strand</code> <code>is:prismatic</code> <code>is:primary</code> <code>is:heavy</code> <code>is:barrier</code> <code>is:crafted</code> <code>is:deepsight</code> <code>is:adept</code> <code>is:masterwork</code> <code>is:locked</code> <code>is:equipped</code> <code>is:inloadout</code> <code>is:duplicate</code> <code>is:wishlist</code> <code>is:trashlist</code> <code>is:tagged</code> <code>is:hasnotes</code> <code>is:subclass</code> <code>is:titan</code> <code>not:locked</code><br>'
       + '<b>Filters:</b> <code>perk:rampage</code> <code>perk:\"kill clip\"</code> <code>exactperk:\"firefly\"</code> <code>name:ace</code> <code>notes:pvp</code> <code>tag:junk</code> <code>element:void</code> <code>slot:kinetic</code> <code>ammo:special</code> <code>breaker:overload</code> <code>power:&gt;=550</code> <code>stat:health:&gt;=30</code> <code>total:&gt;=65</code> <code>customtotal:&gt;=60</code> <code>energy:&gt;=10</code> <code>tier:5</code> <code>class:titan</code> <code>is:shotgun or is:sniper</code><br><b>Mouse:</b> click an item for details and perks, right-click for the item menu, drag to move or equip. <b>Keys:</b> <code>/</code> search, <code>Esc</code> close, <code>L</code> lock (item open), <code>Shift+1..5</code> tags (item open).';
-    const bar = `<div class="vbar"><span class="vnm" title="Signed in as ${esc(D.name || '')}">${esc(D.name || '')}</span><input id="vq" placeholder="Search names, perks, subclasses, is:handcannon, perk:rampage, is:solar..." value="${esc(q)}" autocomplete="off" spellcheck="false"><span class="vtg"><button class="g ib" data-act="savq" title="Saved searches"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z"/></svg></button></span><span class="vtg"><button class="g ib${FARM.on ? ' on' : ''}" data-act="farm" title="${FARM.on ? 'Farming mode is on: unequipped weapons and armor go to the vault so your inventory never fills. Click to stop.' : 'Farming mode: keep moving unequipped weapons and armor to the vault while you play'}"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v10M8 10.5l4 4 4-4M4.5 15.5V19a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1v-3.5"/></svg></button><button class="g ib" data-act="junk" title="Vault cleanup: trash rolls, duplicates and low-stat gear you could dismantle"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7h15M9.5 7V4.8a.8.8 0 0 1 .8-.8h3.4a.8.8 0 0 1 .8.8V7M6.5 7l.8 12a1 1 0 0 0 1 .9h7.4a1 1 0 0 0 1-.9l.8-12M10 11v5.5M14 11v5.5"/></svg></button><button class="g ib" data-f="bulk" title="Select several items at once (Ctrl+click works any time)"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2.5"/><path d="M8.5 12.2l2.4 2.4 4.6-5"/></svg></button></span><span class="vtg"><button class="g ib" data-act="sets" title="Loadouts"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 7h11M8 12h11M8 17h11"/><circle cx="4.6" cy="7" r=".6" fill="currentColor"/><circle cx="4.6" cy="12" r=".6" fill="currentColor"/><circle cx="4.6" cy="17" r=".6" fill="currentColor"/></svg></button><button class="g ib" data-act="help" title="Search and shortcut help"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.4a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2.2-2.4 3.7M12 16.9v.2"/></svg></button><button class="g ib" data-act="refresh" title="Reload from Bungie"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3M19.5 4.5v4h-4"/></svg></button></span></div>`;
+    const bar = `<div class="vbar"><span class="vnm" title="Signed in as ${esc(D.name || '')}">${esc(D.name || '')}</span><input id="vq" placeholder="Search names, perks, subclasses, is:handcannon, perk:rampage, is:solar..." value="${esc(q)}" autocomplete="off" spellcheck="false"><span class="vtg"><button class="g ib" data-act="savq" title="Saved searches"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z"/></svg></button></span><span class="vtg"><button class="g ib${FARM.on ? ' on' : ''}" data-act="farm" title="${FARM.on ? 'Farming mode is on: unequipped weapons and armor go to the vault so your inventory never fills. Click to stop.' : 'Farming mode: keep moving unequipped weapons and armor to the vault while you play'}"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v10M8 10.5l4 4 4-4M4.5 15.5V19a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1v-3.5"/></svg></button><button class="g ib" data-act="grf" title="God roll finder: every weapon graded with your wish lists"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.3l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg></button><button class="g ib" data-act="junk" title="Vault cleanup: trash rolls, duplicates and low-stat gear you could dismantle"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7h15M9.5 7V4.8a.8.8 0 0 1 .8-.8h3.4a.8.8 0 0 1 .8.8V7M6.5 7l.8 12a1 1 0 0 0 1 .9h7.4a1 1 0 0 0 1-.9l.8-12M10 11v5.5M14 11v5.5"/></svg></button><button class="g ib" data-f="bulk" title="Select several items at once (Ctrl+click works any time)"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2.5"/><path d="M8.5 12.2l2.4 2.4 4.6-5"/></svg></button></span><span class="vtg"><button class="g ib" data-act="sets" title="Loadouts"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 7h11M8 12h11M8 17h11"/><circle cx="4.6" cy="7" r=".6" fill="currentColor"/><circle cx="4.6" cy="12" r=".6" fill="currentColor"/><circle cx="4.6" cy="17" r=".6" fill="currentColor"/></svg></button><button class="g ib" data-act="help" title="Search and shortcut help"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.4a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2.2-2.4 3.7M12 16.9v.2"/></svg></button><button class="g ib" data-act="refresh" title="Reload from Bungie"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3M19.5 4.5v4h-4"/></svg></button></span></div>`;
     const slot = document.getElementById('gtsrch');
     sec.innerHTML = `${slot ? '' : '<div class="card vcard">' + bar + '</div>'}<div id="vfx"></div><div id="vhelp" class="card">${hp}</div><p id="vnote" class="mute"></p><div id="vgrid"></div><div id="vpop"></div>`;
     if (slot) { slot.replaceChildren(); slot.insertAdjacentHTML('beforeend', bar); slot.querySelector('.vbar').onclick = (e) => sec.onclick(e); }
@@ -1832,6 +1949,7 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
   // Bungie says when the item data it sent was made: data made before a move finished is stale and the move is kept on screen
   // (for up to 10 minutes); data made well after it is believed, so a change made in game afterwards still shows.
   function reconcile(n) {
+    try { dropCheck(n); } catch (e) { /* alerts are extra */ }
     const now = Date.now(), ids = Object.keys(LEDGER); if (!ids.length) return n;
     // Items are dated by responseMintedTimestamp (Bungie: the secondary timestamp is only for records, collectibles and the like,
     // and using it kept moves made in the game or in DIM hidden for minutes).
@@ -1867,7 +1985,8 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
     const led = [];
     D.items.forEach((x) => { const b = before.get(x.id); if (b && b.k !== stamp(x)) { led.push({ id: x.id, b }); LEDGER[x.id] = { loc: x.loc, e: x.e ? 1 : 0, pm: x.pm ? 1 : 0, k: stamp(x), at: 0, pmx: b.pm && !x.pm ? 1 : 0 }; } });
     qn++; busy = label; qNote(label);
-    if (lazyNext) { lazyNext = false; requestAnimationFrame(() => setTimeout(() => { renderGrid(); renderLoTab(); }, 0)); } else { renderGrid(); renderLoTab(); }
+    // Phones: the item sheet closes in this frame and the grid redraws right after, so the tap feels instant.
+    if (lazyNext || PHONE.matches) { lazyNext = false; requestAnimationFrame(() => setTimeout(() => { renderGrid(); renderLoTab(); }, 0)); } else { renderGrid(); renderLoTab(); }
     const run = async () => {
       qNote(label);
       let good = true, why = '';
@@ -1919,6 +2038,45 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
     lastSync = Date.now();
     try { D = await fetchD(); renderGrid(); renderLoTab(); } catch (e) { /* try again next time */ }
   }
+  // ---- New drops: while you are in the game (Bungie only sends "transitory" data then), Pathfinder checks every 10 seconds and
+  // says whether each new weapon is a god roll, a keeper, not a keeper, or not yet rated. Only Bungie's API is used, like DIM:
+  // nothing reads the screen or touches the game. Bungie itself can take a few seconds to a minute to report a drop.
+  let SEEN = null;
+  const DROPW = { S: ['God roll', '#e8b84a'], A: ['Keeper', '#4caf50'], C: ['Not a keeper', '#8b8f97'], D: ['Trash roll', '#d9534f'], '?': ['Not yet rated', '#ffd27a'] };
+  function dropCheck(n) {
+    if (!n || !n.items) return;
+    const ids = n.items.filter((x) => WEAPON.has(x.b) || (x.pm && x.pk)).map((x) => x.id);
+    if (!SEEN) { SEEN = new Set(ids); return; }
+    const fresh = n.items.filter((x) => !SEEN.has(x.id) && x.pk && (WEAPON.has(x.b) || x.pm) && (x.r === 'Legendary' || x.r === 'Exotic'));
+    ids.forEach((id) => SEEN.add(id));
+    if (!fresh.length || SET.dropalert === false || fresh.length > 6) return; // a big jump is an account switch or a first sync, not drops
+    setTimeout(() => fresh.forEach(dropToast), 0);
+  }
+  function dropToast(x) {
+    const gr = x.r === 'Exotic' ? 'A' : WL ? grade(x) : '?', w = DROPW[gr], ws = wish(x);
+    const nm = ws.v && ws.perks ? [...ws.perks].filter((p) => typeof p === 'string').slice(0, 3).join(', ') : '';
+    let box = document.getElementById('gtdrops'); if (!box) { box = document.createElement('div'); box.id = 'gtdrops'; document.body.appendChild(box); }
+    const t = document.createElement('div'); t.className = 'gtdrop'; t.style.setProperty('--dc', w[1]); t.dataset.id = x.id;
+    t.innerHTML = `${tile(x).replace(' draggable="true"', '')}<div class="dt"><small>New drop</small><b>${esc(x.n)}</b><span>${esc(x.r === 'Exotic' ? 'Exotic' : w[0])}${nm ? ' &middot; ' + esc(nm) : ''}</span></div><button class="dx" aria-label="Dismiss">&times;</button>`;
+    t.onclick = (e) => { if (!e.target.closest('.dx')) { show('vault'); setTimeout(() => openPop(x.id), 60); } t.remove(); };
+    box.appendChild(t); while (box.children.length > 4) box.firstElementChild.remove();
+    setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 400); }, 15000);
+    // The game is in front: a Windows notification too (the window may be behind the game).
+    if ((document.hidden || !document.hasFocus()) && gt.notify) gt.notify({ title: 'New drop: ' + x.n, body: (x.r === 'Exotic' ? 'Exotic' : w[0]) + (nm ? ' - ' + nm : '') }).catch(() => {});
+  }
+  let dropT = 0, dropBusy = false;
+  async function dropTick() {
+    clearTimeout(dropT);
+    const playing = D && D.play && SET.dropalert !== false;
+    dropT = setTimeout(dropTick, playing ? 10000 : 60000);
+    if (!playing || dropBusy || qn > 0 || sel || !gt.loadVault) return;
+    if (document.getElementById('dlmod') || document.getElementById('apm') || document.getElementById('dled')) return;
+    dropBusy = true;
+    try { const n = await fetchD(); if (n !== D) { D = n; lastSync = Date.now(); if (!sel) { renderGrid(); renderLoTab(); } } } catch (e) { /* next time */ }
+    dropBusy = false;
+  }
+  setTimeout(dropTick, 15000);
+  window.__gtdrop = { check: dropCheck, toast: (id) => { const x = byId(id); if (x) dropToast(x); }, seen: () => SEEN && SEEN.size };
   window.addEventListener('focus', () => autoSync('focus'));
   document.addEventListener('visibilitychange', () => { if (!document.hidden) autoSync('focus'); });
   setInterval(() => autoSync('timer'), 60000);
@@ -2244,7 +2402,30 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
     const SRK = [/super/i, /class_abilit|classabilit/i, /movement|jump/i, /melee/i, /grenade/i, /aspect/i, /fragment/i];
     const srk = (col) => { const c = ((col.find((p) => p.on) || col[0] || {}).c) || ''; const i = SRK.findIndex((re) => re.test(c)); return i < 0 ? 9 : i; };
     const order = (cols) => { const a = cols.map((col, ci) => [col, ci]); if (x && WEAPON.has(x.b)) return a.reverse(); if (x && x.b === 3284755031) return a.sort((p, q) => srk(p[0]) - srk(q[0]) || p[1] - q[1]); return a; };
-    d.groups.forEach((gr, gi) => { if (gr.label !== 'Perks') return; order(gr.cols).forEach(([col, ci]) => {
+    // Subclasses, like DIM: the super big on the left, then a row each for abilities, aspects and fragments. Click a socket to
+    // see everything that fits it; click one to put it in right away (no separate Apply step).
+    let subH = '';
+    if (x && x.b === 3284755031) {
+      const socks = []; d.groups.forEach((gr, gi) => { if (gr.label !== 'Perks') return; gr.cols.forEach((col, ci) => socks.push({ k: gi + '-' + ci, col, r: srk(col) })); });
+      socks.sort((a, b2) => a.r - b2.r);
+      const cur = (sk) => { const on = sk.col.find((p) => p.on) || sk.col[0]; return { on, cur: on }; };
+      const used = new Set(socks.filter((sk) => sk.r === 6).map((sk) => cur(sk).on.h));
+      const ic1 = (sk, big) => { const c = cur(sk); return `<button type="button" class="sbs${big ? ' big' : ''}${pex === 'sb' + sk.k ? ' open' : ''}" data-sbk="${sk.k}" title="${esc(c.on.n)}${c.on.d ? ' - ' + esc(c.on.d.slice(0, 160)) : ''}">${pimg(c.on)}</button>`; };
+      const pick = (list) => {
+        const sk = list.find((q) => pex === 'sb' + q.k); if (!sk) return '';
+        const c = cur(sk), isFrag = sk.r === 6;
+        const opts = sk.col.map((p, i) => ({ p, i })).filter((o) => o.p.n && !/^(empty|default)\b/i.test(o.p.n) || o.p === c.on);
+        return `<div class="sbpk"><div class="sbph"><b>${esc((SRK[sk.r] ? ['Super', 'Class ability', 'Jump', 'Melee', 'Grenade', 'Aspect', 'Fragment'][sk.r] : 'Option'))}</b><span class="mute">${opts.length} option${opts.length === 1 ? '' : 's'} &middot; click one to equip it</span></div><div class="sbol">${opts.map(({ p, i }) => {
+          const isOn = p === c.on, lock = !p.ci && !isOn, dup = isFrag && !isOn && used.has(p.h);
+          return `<div class="sbo${isOn ? ' on' : ''}${lock || dup ? ' off' : ''}"${lock || dup || isOn ? '' : ` data-sbp="${sk.k}" data-pi="${i}"`} title="${esc(p.n)}${lock ? ' (not unlocked)' : dup ? ' (already in another fragment slot)' : ''}"><span class="sboi">${pimg(p)}</span><div><b>${esc(p.n)}${isOn ? ' <em>Equipped</em>' : lock ? ' <em>Locked</em>' : dup ? ' <em>In use</em>' : ''}</b><small>${esc(clr(p) && SET.clarity === 'clarity' ? clr(p) : p.d || '').slice(0, 220)}</small></div></div>`;
+        }).join('')}</div></div>`;
+      };
+      const sup = socks.filter((q) => q.r === 0), ab = socks.filter((q) => q.r >= 1 && q.r <= 4), asp = socks.filter((q) => q.r === 5), fr = socks.filter((q) => q.r === 6), oth = socks.filter((q) => q.r > 6);
+      const row = (t, list) => (list.length ? `<div class="sbsec"><h6>${t}</h6><div class="sbrow">${list.map((q) => ic1(q)).join('')}</div>${pick(list)}</div>` : '');
+      const s0 = sup[0] && cur(sup[0]).on;
+      subH = `<div class="sbc">${s0 ? `<div class="sbsup">${ic1(sup[0], true)}<div><small>Super</small><b>${esc(s0.n)}</b></div></div>${pick(sup)}` : ''}${row('Abilities', ab)}${row('Aspects', asp)}${row('Fragments', fr)}${row('Other', oth)}</div>`;
+    }
+    if (!subH) d.groups.forEach((gr, gi) => { if (gr.label !== 'Perks') return; order(gr.cols).forEach(([col, ci]) => {
       const k = gi + '-' + ci, on = col.find((p) => p.on) || col[0];
       const si = psel[k] !== undefined && col[psel[k]] ? psel[k] : col.indexOf(on), cur = col[si] || on;
       const ico = (p, i) => `<div class="dpc${i === si ? ' sel' : ''}${p === on ? ' eqp' : ''}" data-pk="${k}" data-pi="${i}" title="${esc(p.n)}${wpHas(p) ? ' (in a wish list roll)' : ''}">${pimg(p)}${wpHas(p) ? `<i class="pwb">${SV_UP}</i>` : ''}</div>`;
@@ -2257,7 +2438,7 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
     }); });
     const hasWp = x && wp.size && prow.length;
     const pbtn = (hasWp ? `<button class="g pbtn" data-a="wlp">${SV_UP} Preview Wishlist Perks</button>` : '') + (canApply ? `<button class="b pbtn" data-a="applyp">&#10003; Apply Perks</button>` : changed ? '<span class="mute pnoap">Preview only: Bungie does not let this item change perks in game.</span>' : '');
-    const perks = prow.length ? `<div class="dpp">${prow.join('')}</div>` : '';
+    const perks = subH || (prow.length ? `<div class="dpp">${prow.join('')}</div>` : '');
     const mrows = d.groups.filter((gr) => gr.label === 'Mods').map((gr) => gr.cols.map((col) => { const on = col.find((p) => p.on) || col[0]; return `<div${/tuning/i.test(on.c || '') ? ' class="tun"' : ''} title="${esc(on.n)}${on.d ? ' - ' + esc(on.d) : ''}">${pimg(on)}</div>`; }).join('')).join('');
     // one row of icons at the bottom, like DIM: mods, then cosmetics
     const crows = (d.cos || []).map((o) => `<div class="cos1" title="${esc(o.n)}${o.d ? ' - ' + esc(o.d) : ''}">${pimg(o)}</div>`).join('');
@@ -2281,7 +2462,7 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
     const chars = sortedChars();
     if (x.pm) {
       s.push('<h6>Postmaster</h6>');
-      if (x.eg) { s.push('<p class="dpe">Engrams cannot be collected from here. Open them at the Tower in game, then they leave the postmaster.</p>'); return s.join(''); }
+      if (x.eg) s.push('<p class="dpe">Pulls into your engram slots if there is room. Open engrams at the Tower in game.</p>');
       D.chars.filter((c) => c.id === x.loc).forEach((c) => s.push(sbtn('pull', c.id, 'Pull to ' + esc(CL[c.cls]), '&#8681;', false, 'Pull to ' + (CL[c.cls] || ''))));
       return s.join('');
     }
@@ -2305,7 +2486,7 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
       const eq = chars.filter((c) => (x.c === 3 || x.c === undefined || x.c === c.cls) && !(x.e && x.loc === c.id));
       if (eq.length) { s.push('<h6>Equip on</h6>' + (scol ? '<hr>' : '')); eq.forEach((c) => s.push(sbtn('eq', c.id, esc(CL[c.cls] || 'Character'), scol ? '&#9650;' + esc((CL[c.cls] || '?')[0]) : '&#9650;', false, 'Equip on ' + (CL[c.cls] || '')))); }
     }
-    { s.push('<h6>Store in</h6>' + (scol ? '<hr>' : '')); ['vault', ...chars.map((c) => c.id)].filter((t) => t !== x.loc).forEach((t) => s.push(sbtn('mv', t, t === 'vault' ? 'Vault' : esc(CL[ent(t).cls] || ''), scol ? (t === 'vault' ? 'V' : '&#9656;' + esc((CL[ent(t).cls] || '?')[0])) : (t === 'vault' ? '&#9644;' : '&#9656;'), false, 'Store in ' + (t === 'vault' ? 'the vault' : CL[ent(t).cls] || '')))); }
+    if (x.b !== 3284755031) { s.push('<h6>Store in</h6>' + (scol ? '<hr>' : '')); ['vault', ...chars.map((c) => c.id)].filter((t) => t !== x.loc).forEach((t) => s.push(sbtn('mv', t, t === 'vault' ? 'Vault' : esc(CL[ent(t).cls] || ''), scol ? (t === 'vault' ? 'V' : '&#9656;' + esc((CL[ent(t).cls] || '?')[0])) : (t === 'vault' ? '&#9644;' : '&#9656;'), false, 'Store in ' + (t === 'vault' ? 'the vault' : CL[ent(t).cls] || '')))); }
     return s.join('');
   }
   function roBody(x) {
@@ -2450,6 +2631,17 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
     if (ptb && sel) { ptab = ptb.dataset.v; renderPop(); return; }
     const tg = e.target.closest('[data-tg]');
     if (tg && D) { pmOpen = !pmOpen; renderGrid(); return; }
+    const sbk = e.target.closest('[data-sbk]');
+    if (sbk && sel) { pex = pex === 'sb' + sbk.dataset.sbk ? '' : 'sb' + sbk.dataset.sbk; renderPop(); return; }
+    const sbp = e.target.closest('[data-sbp]');
+    if (sbp && sel) {
+      const x0 = byId(sel), d = DET[sel]; if (!x0 || !d) return;
+      const [gi, ci] = sbp.dataset.sbp.split('-').map(Number), p = d.groups[gi] && d.groups[gi].cols[ci] && d.groups[gi].cols[ci][+sbp.dataset.pi]; if (!p) return;
+      const id = x0.id; PMSG = 'Equipping ' + p.n + '...'; pex = ''; renderPop();
+      try { await gt.itemPlug({ id, char: charFor(x0), socket: p.si, plug: p.h }); PMSG = p.n + ' equipped.'; markPlug(id, p.si, p.h); renderPop(); renderGrid(); confirmPlugs(id, x0.h, [[p.si, p.h]]); }
+      catch (er) { PMSG = 'Failed: ' + clean(er); renderPop(); }
+      return;
+    }
     const pk = e.target.closest('[data-pk]');
     if (pk && sel) { psel[pk.dataset.pk] = +pk.dataset.pi; plast = pk.dataset.pk + '|' + pk.dataset.pi; pex = pk.dataset.pk; renderPop(); return; }
     const px = e.target.closest('[data-px]');
@@ -2522,6 +2714,7 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
     if (a === 'sets') { show('loadouts'); renderLoTab(); return; }
     if (a === 'savq') { savqMenu(t); return; }
     if (a === 'junk') { junkOpen(); return; }
+    if (a === 'grf') { grfOpen(); return; }
     if (a === 'farm') { if (!gt.farmSet) return; gt.farmSet({ on: !FARM.on }).then((m) => { FARM = m || FARM; t.classList.toggle('on', !!FARM.on); setNote(FARM.on ? 'Farming mode on: unequipped weapons and armor will go to the vault every 20 seconds.' : 'Farming mode off.'); renderGrid(); }).catch((e) => setNote(clean(e))); return; }
     if (a === 'chmenu') {
       const old = document.getElementById('chpop'); if (old) { const same = old.dataset.c === t.dataset.c; old.remove(); if (same) return; }
@@ -2536,9 +2729,7 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
     if (a === 'mkroom') {
       mkRoom(t.dataset.c);
     } else if (a === 'collect') {
-      const ch = t.dataset.c, its = D.items.filter((o) => o.loc === ch && o.pm && !o.eg), snaps = its.map(slim);
-      if (!its.length) return;
-      act('collect postmaster', () => its.forEach((o) => { o.pm = 0; }), () => gt.pmPull({ items: snaps, char: ch }), true);
+      collectPm(t.dataset.c);
     } else if (a === 'presetlogin') {
       try { sec.dataset.busy = 1; msg('Waiting for Bungie sign-in...'); await gt.login(); load(); } catch (er) { delete sec.dataset.busy; let c = { preset: true }; try { c = await gt.cfgGet(); } catch (e2) { /* welcome anyway */ } setup(c, clean(er)); }
     }

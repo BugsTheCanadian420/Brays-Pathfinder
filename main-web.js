@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.10: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.11: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -515,7 +515,7 @@ H('vault:cached', () => {
 H('vault:load', async () => {
   const m = await memb();
   const ldP = lodefs().catch(() => ({ names: {}, colors: {}, icons: {} })); // in parallel with the profile, not after it
-  const [df, pr] = await Promise.all([defs(), api(`/Destiny2/${m.membershipType}/Profile/${m.membershipId}/?components=102,103,200,201,205,206,300,304,305,310`)]);
+  const [df, pr] = await Promise.all([defs(), api(`/Destiny2/${m.membershipType}/Profile/${m.membershipId}/?components=102,103,200,201,205,206,300,304,305,310,1000`)]);
   xdLoad(df);
   const d = df.d;
   const ld = await ldP; // names fall back to numbers
@@ -610,9 +610,13 @@ H('vault:load', async () => {
     try { const o = await api('/Destiny2/Manifest/DestinyInventoryItemDefinition/' + h + '/', false); PMDEF[h] = { n: (o.displayProperties && o.displayProperties.name) || 'Item', i: (o.displayProperties && o.displayProperties.icon) || '', r: (o.inventory && o.inventory.tierTypeName) || 'Common', t: o.itemTypeDisplayName || '', eg: o.itemType === 8 || (o.inventory && o.inventory.bucketTypeHash === 375726501) || /engram/i.test(o.itemTypeDisplayName || '') ? 1 : 0 }; }
     catch (e) { PMDEF[h] = { n: 'Item', i: '', r: 'Common', t: '' }; }
   }));
-  pmRaw.forEach(({ it, loc }, k) => {
+  // Ids stay the same from one load to the next (they used to be the item's position in the list, so after a pull a remembered
+  // "pulled" mark could land on a different postmaster item and hide it).
+  const pmSeen = {};
+  pmRaw.forEach(({ it, loc }) => {
     const f = PMDEF[it.itemHash]; if (!f) return;
-    items.push({ id: 'pm' + k + ':' + it.itemHash, inst: it.itemInstanceId || '0', q: it.quantity || 1, h: it.itemHash, n: f.n, i: f.i, r: f.r, t: f.t, b: 0, c: 3, p: 0, el: 0, loc, e: 0, pm: 1, eg: f.eg ? 1 : undefined });
+    const sk = loc + ':' + it.itemHash; pmSeen[sk] = (pmSeen[sk] || 0) + 1;
+    items.push({ id: 'pm:' + sk + ':' + pmSeen[sk], inst: it.itemInstanceId || '0', q: it.quantity || 1, h: it.itemHash, n: f.n, i: f.i, r: f.r, t: f.t, b: 0, c: 3, p: 0, el: 0, loc, e: 0, pm: 1, eg: f.eg ? 1 : undefined });
   });
   const cl = (pr.characterLoadouts && pr.characterLoadouts.data) || {};
   const lo = {};
@@ -660,7 +664,10 @@ H('vault:load', async () => {
   art = null; // the old artifact list is stale; see art:get
   const pn = {};
   [...items, ...gen].forEach((x) => [...(x.pk || []), ...(x.ap || [])].forEach((h) => { if (!pn[h] && df.p[h]) pn[h] = df.p[h].n; }));
-  const res = { ts: Date.parse(pr.responseMintedTimestamp) || 0, ts2: Date.parse(pr.secondaryComponentsMintedTimestamp) || 0, chars, sti, items, gen, cur, ic: { el: df.dm || {}, bk: df.bk || {} }, pm, lo, art, pn, name: m.bungieGlobalDisplayName || m.displayName };
+  // In an activity right now (Bungie's "transitory" data only exists while you are playing): the page checks for new drops more often then.
+  const trn = (pr.profileTransitoryData && pr.profileTransitoryData.data) || null;
+  const play = trn ? 1 : 0;
+  const res = { play, ts: Date.parse(pr.responseMintedTimestamp) || 0, ts2: Date.parse(pr.secondaryComponentsMintedTimestamp) || 0, chars, sti, items, gen, cur, ic: { el: df.dm || {}, bk: df.bk || {} }, pm, lo, art, pn, name: m.bungieGlobalDisplayName || m.displayName };
   xdSave(df);
   { const mid = (rd().tok || {}).mid, f = apath('vcache.json'); setTimeout(() => { fs.promises.writeFile(f, JSON.stringify({ v: 1, at: Date.now(), mid, d: res })).catch(() => {}); }, 50); }
   return res;
@@ -982,7 +989,6 @@ H('pm:pull', async (e, v) => {
   // exactly which ones stayed, so only those go back into the postmaster on screen.
   let n = 0; const failed = [];
   for (const it of items) {
-    if (it.eg) continue;
     try { await step('pulling ' + it.n + ' from the postmaster', () => post('/Destiny2/Actions/Items/PullFromPostmaster/', { itemReferenceHash: it.h, stackSize: it.q || 1, itemId: it.inst || it.id, characterId: char })); n++; }
     catch (e) { failed.push({ id: it.id, n: it.n, why: String((e && e.message) || e).slice(0, 160) }); }
   }
@@ -1085,7 +1091,7 @@ app.whenReady().then(async () => {
     { role: 'undo' }, { role: 'redo' }, { type: 'separator' },
     { role: 'cut' }, { role: 'copy' }, { role: 'paste' }, { role: 'selectAll' },
   ] }]));
-  win = new BrowserWindow({ width: 1200, height: 850, backgroundColor: '#07090e', title: 'Pathfinder', icon: winIcon(), autoHideMenuBar: false, webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false, sandbox: true, webSecurity: true, allowRunningInsecureContent: false, webviewTag: true, spellcheck: false } });
+  win = new BrowserWindow({ width: 1200, height: 850, backgroundColor: '#07090e', title: 'Pathfinder', icon: winIcon(), autoHideMenuBar: false, webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false, sandbox: true, webSecurity: true, allowRunningInsecureContent: false, webviewTag: true, spellcheck: false, backgroundThrottling: false } }); // keeps the new-drop checks running while the game is in front
   // Alt used to pop the Edit menu up in the top-left corner. Keep the menu (so Ctrl+C/V/X/A/Z still work) but never show its bar.
   win.setMenuBarVisibility(false);
   // The icon Windows shows for this window's right-click menu and for pins made from it. Windows cannot read a file inside

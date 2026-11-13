@@ -9,6 +9,14 @@
 
   // ---- what changed: newest first. Add an entry (next id) with every update. ----
   const CHANGES = [
+    { id: 13, date: 'Nov 2026', items: [
+      'God roll finder (thumbs-up button above the vault): every legendary weapon graded with your wish lists. S = god roll, A = keeper, C/D = safe to dismantle, ? = not rated yet.',
+      'Weapons that no wish list mentions get a small ? instead of nothing, so a blank tile always means "not a keeper". Search is:unrated, is:godroll, is:keeper or is:notkeeper.',
+      'New drop alerts: while you are in the game, Pathfinder checks every 10 seconds and pops up each new weapon as God roll, Keeper, Not a keeper or Not yet rated. Bungie\'s API only, like DIM.',
+      'Collect Postmaster now makes room like DIM (moves your least wanted gear in that slot to the vault first) and pulls engrams too. Phones now show the status line above the tab bar.',
+      'Subclass pop-up laid out like DIM: super, abilities, aspects and fragments. Click one to see the options, click an option to equip it.',
+      'Arc, Solar and Void marks on item tiles are in their element colors. A refreshed Hub, activity-colored glows and new Settings: animations, activity pictures, glow strength and the tab the app opens on.',
+    ] },
     { id: 12, date: 'Nov 2026', items: [
       'Wish lists now pick the same roll as DIM (the first roll in your lists that fits), so the thumbs, the note and Preview Wishlist Perks match DIM.',
       'Item pop-up: weapon perks in DIM\'s order (traits at the top, barrel at the bottom), only real perks in the list, and mods and cosmetics in one row at the bottom. Tier 5 armor shows its tuning (+5 / -5), including a stat that goes to -5.',
