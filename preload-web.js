@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.12: preload.js for the browser */
+/* Pathfinder 0.3.13: preload.js for the browser */
 (function (require) {
 const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('gt', {
@@ -46,6 +46,7 @@ contextBridge.exposeInMainWorld('gt', {
   tfPerks: (v) => ipcRenderer.invoke('tf:perks', v),
   wlExport: (v) => ipcRenderer.invoke('wl:export', v),
   notify: (v) => ipcRenderer.invoke('app:notify', v),
+  dropShow: (v) => ipcRenderer.invoke('drop:show', v),
   overlay: (v) => ipcRenderer.invoke('overlay:set', v),
   farmSet: (v) => ipcRenderer.invoke('farm:set', v),
   farmGet: () => ipcRenderer.invoke('farm:get'),

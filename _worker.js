@@ -1,5 +1,5 @@
 // Made by web/build.js: the PC app download, link previews for share links, and the site's files for everything else.
-const API = "https://gt-token.brandonwkindred.workers.dev", REPO = "BugsTheCanadian420/Brays-Pathfinder";
+const API = "https://gt-token.brandonwkindred.workers.dev", REPO = "BugsTheCanadian420/Brays-Pathfinder", DOMAIN = "d2pathfinder.com";
 const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 // If the site has a service binding named TOKEN to the token service (Pages > Settings > Bindings), it is used; otherwise the
 // token service's public address.
@@ -20,6 +20,8 @@ const json = (o, st) => new Response(JSON.stringify(o), { status: st || 200, hea
 export default {
   async fetch(request, env) {
     const u0 = new URL(request.url), p0 = u0.pathname.replace(/\/+$/, '').toLowerCase();
+    // status.<your domain> is a short way to the status page (it lives on the main address, where Bungie allows the checks)
+    if (DOMAIN && u0.hostname.toLowerCase() === 'status.' + DOMAIN) return Response.redirect('https://' + DOMAIN + '/status', 302);
     if (REPO && (request.method === 'GET' || request.method === 'HEAD') && (p0 === '/download' || p0 === '/download/windows' || p0 === '/download/info')) {
       try {
         const rel = await latest();

@@ -9,6 +9,16 @@
 
   // ---- what changed: newest first. Add an entry (next id) with every update. ----
   const CHANGES = [
+    { id: 16, date: 'Nov 2026', items: [
+      'Pop-ups fit and sit in the right place at any Interface scale, window size and position: the item pop-up opens next to its item, stays below the top bar and above the phone tab bar, and shrinks to fit a small window instead of running off the edge.',
+      'Menus and info boxes (right-click menu, search suggestions, mod info, equip picker) are always kept inside the window.',
+      'Interface scale above 100% no longer makes a page wider than the window. Phones and tablets used to shrink the whole page to compensate, so everything came out smaller; now the page is shown as large as fits.',
+    ] },
+    { id: 15, date: 'Nov 2026', items: [
+      'Postmaster: send an item straight to the vault or to another character, from its pop-up, the right-click menu or by dragging it. Pathfinder pulls it out first (making room in that slot if it is full) and then moves it on, like DIM.',
+      'New drops over the game (PC app): a small card in the bottom-right corner for a few seconds while the game is in front, in windowed or borderless mode. Switch it off in Settings, Wish lists.',
+      'Status page: d2pathfinder.com/status shows whether Pathfinder, its sign-in service and Bungie\'s API are working (About and help, Status).',
+    ] },
     { id: 14, date: 'Nov 2026', items: [
       'Beta interface style is now Pathfinder\'s own look, "Trail map": a contour-map background, a route line with a diamond waypoint on the tab you are on and on every section heading, and road-sign lettering. Settings, Appearance, Interface style, Beta.',
       'Loadouts: on the Equipped card, click a subclass ability, aspect or fragment to see the options and equip another one right there.',
@@ -137,7 +147,7 @@ ${list.map((c) => `<div class="gtnv"><small>${esc(c.date)}</small><ul>${c.items.
     return `<div class="card sc" id="gtab"><h2>About &amp; help</h2><p class="mute">Pathfinder ${esc(VER || '')} &middot; ${isWeb() ? 'website' : 'PC app'}. Not made by or affiliated with Bungie.</p>
 <h3 class="gth">Updates</h3><p class="mute">${esc(updLine())}</p>${!isWeb() && UPD.canUpdate ? `<p>${UPD.state === 'ready' ? '<button class="b" data-ab="install">Restart to install</button>' : '<button class="g" data-ab="check">Check for updates</button>'}</p>` : ''}
 <h3 class="gth">Help</h3><p class="mute">Questions, bugs or ideas: <a href="mailto:${HELP}" data-ab="mail">${HELP}</a></p>
-<p><button class="g" data-ab="news">What's new</button> <button class="g" data-ab="privacy">Privacy</button>${isWeb() && window.__GT_DL__ ? ' <button class="g" data-ab="pcapp">Get the PC app</button>' : ''}</p>
+<p><button class="g" data-ab="news">What's new</button> <button class="g" data-ab="status" title="Is Pathfinder, its sign-in service and Bungie's API working right now?">Status</button> <button class="g" data-ab="privacy">Privacy</button>${isWeb() && window.__GT_DL__ ? ' <button class="g" data-ab="pcapp">Get the PC app</button>' : ''}</p>
 <h3 class="gth">Problems</h3><p class="mute">Errors the app ran into, newest first. If something breaks, copy the report and send it along with what you were doing.</p>${rows}
 <p><button class="b" data-ab="copy">Copy problem report</button> <button class="g" data-ab="clear"${L.length ? '' : ' disabled'}>Clear</button> <span class="mute" id="gtabm"></span></p></div>`;
   }
@@ -152,6 +162,7 @@ ${list.map((c) => `<div class="gtnv"><small>${esc(c.date)}</small><ul>${c.items.
       const b = e.target.closest('[data-ab]'); if (!b) return;
       const a = b.dataset.ab, msg = (t) => { const s = document.getElementById('gtabm'); if (s) s.textContent = t; };
       if (a === 'news') { showNews(true); return; }
+      if (a === 'status') { openLink(SITE + '/status'); return; }
       if (a === 'privacy') { openLink(SITE + '/privacy'); return; }
       if (a === 'pcapp') { location.href = window.__GT_DL__; return; }
       if (a === 'clear') { lsSet(LOGK, []); drawCard(); return; }

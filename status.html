@@ -1,0 +1,66 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Status · Pathfinder</title>
+<meta name="description" content="Whether Pathfinder, its sign-in service and Bungie's API are working right now."><link rel="icon" href="icon-192.png">
+<style>body{background:#0e0f11;color:#cfd2d8;font:16px/1.55 system-ui,-apple-system,Segoe UI,sans-serif;margin:0;padding:24px 16px}main{max-width:680px;margin:0 auto}h1{color:#fff;font-size:28px;margin:8px 0 2px}a{color:#e8b84a}
+#sum{margin:14px 0 18px;padding:14px 16px;border-radius:8px;border:1px solid #2b2e33;background:#15171b;color:#fff;font-size:18px;font-weight:600}#sum.ok{border-color:#2f6b3f;background:#12241a}#sum.bad{border-color:#7a3232;background:#261414}#sum.warn{border-color:#7a6326;background:#241f10}
+.row{display:flex;gap:12px;align-items:flex-start;padding:13px 2px;border-top:1px solid #24272c}.dot{flex:none;width:12px;height:12px;border-radius:50%;margin-top:6px;background:#5a5e66}.ok .dot{background:#4caf50}.bad .dot{background:#e05b5b}.warn .dot{background:#e8b84a}
+.row b{display:block;color:#fff;font-size:16px}.row span{display:block;color:#9aa0a8;font-size:14px}.row em{margin-left:auto;flex:none;font-style:normal;font-size:13px;color:#9aa0a8;padding-top:3px}
+small{display:block;margin-top:16px;color:#8b9098;font-size:13px}button{background:#1e2126;border:1px solid #3a3d43;color:#e6e8ec;border-radius:6px;padding:6px 12px;font:inherit;font-size:14px;cursor:pointer}</style></head>
+<body><main><p><a href="./">&larr; Pathfinder</a></p><h1>Status</h1>
+<div id="sum">Checking&hellip;</div>
+<div class="row" id="r-site"><i class="dot"></i><div><b>Website</b><span>d2pathfinder.com</span></div><em></em></div>
+<div class="row" id="r-bungie"><i class="dot"></i><div><b>Bungie's API</b><span>Your inventory, loadouts and moves all go through it.</span></div><em></em></div>
+<div class="row" id="r-d2"><i class="dot"></i><div><b>Destiny 2</b><span>Whether Bungie has the game's services switched on.</span></div><em></em></div>
+<div class="row" id="r-token"><i class="dot"></i><div><b>Sign-in, share links and sync</b><span>Pathfinder's own small service.</span></div><em></em></div>
+<div class="row" id="r-dl"><i class="dot"></i><div><b>PC app download</b><span></span></div><em></em></div>
+<p style="margin-top:18px"><button id="again">Check again</button></p>
+<small>Checked from your browser <span id="when"></span>. Bungie's API is checked with this site's public app key. If only Bungie's rows are red, Pathfinder is fine and will work again when Bungie is back.</small>
+</main><script>
+(function () {
+  var TOKEN = "https://gt-token.brandonwkindred.workers.dev";
+  var $ = function (id) { return document.getElementById(id); };
+  function set(id, st, txt, det) { var r = $(id); r.className = 'row ' + st; r.querySelector('em').textContent = txt; if (det) r.querySelector('span').textContent = det; return st; }
+  function timed(p, ms) { return Promise.race([p, new Promise(function (_, no) { setTimeout(function () { no(new Error('timeout')); }, ms); })]); }
+  async function run() {
+    $('sum').className = ''; $('sum').textContent = 'Checking…';
+    var res = {};
+    res.site = set('r-site', 'ok', 'Working');
+    var key = '';
+    try { var c = await (await timed(fetch('web-config.json', { cache: 'no-store' }), 8000)).json(); key = (c && c.bungie && c.bungie.apiKey) || ''; if (!TOKEN && c && c.bungie && /^https:\/\/[a-z0-9.-]+/i.test(c.bungie.tokenUrl || '')) TOKEN = c.bungie.tokenUrl.replace(/\/+$/, ''); } catch (e) { /* no key: Bungie cannot be checked */ }
+    var bungie = (async function () {
+      if (!key) { res.bungie = set('r-bungie', 'warn', 'Not checked'); res.d2 = set('r-d2', 'warn', 'Not checked'); return; }
+      try {
+        var t0 = Date.now(), r = await timed(fetch('https://www.bungie.net/Platform/Settings/', { headers: { 'X-API-Key': key }, cache: 'no-store' }), 12000), j = await r.json(), ms = Date.now() - t0;
+        if (j && j.ErrorCode === 1) {
+          res.bungie = set('r-bungie', ms > 6000 ? 'warn' : 'ok', ms > 6000 ? 'Slow (' + Math.round(ms / 1000) + 's)' : 'Working');
+          var sys = (j.Response && j.Response.systems) || {}, d2 = sys.Destiny2, on = !d2 || d2.enabled !== false;
+          res.d2 = set('r-d2', on ? 'ok' : 'bad', on ? 'Online' : 'Down for maintenance');
+        } else {
+          var maint = j && (j.ErrorCode === 5 || /maintenance|disabled/i.test(String(j.ErrorStatus || '') + ' ' + String(j.Message || '')));
+          res.bungie = set('r-bungie', 'bad', maint ? 'Down for maintenance' : 'Error'); res.d2 = set('r-d2', 'bad', maint ? 'Down for maintenance' : 'Unknown');
+        }
+      } catch (e) { res.bungie = set('r-bungie', 'bad', 'Not answering'); res.d2 = set('r-d2', 'warn', 'Unknown'); }
+    })();
+    var token = (async function () {
+      if (!TOKEN) { res.token = set('r-token', 'warn', 'Not set up'); return; }
+      try { await timed(fetch(TOKEN + '/', { mode: 'no-cors', cache: 'no-store' }), 10000); res.token = set('r-token', 'ok', 'Working'); }
+      catch (e) { res.token = set('r-token', 'bad', 'Not answering'); }
+    })();
+    var dl = (async function () {
+      try {
+        var r = await timed(fetch('download/info', { cache: 'no-store' }), 10000), j = r.ok ? await r.json() : null;
+        if (j && j.v) res.dl = set('r-dl', 'ok', 'Working', 'Newest version: ' + j.v + (j.date ? ', released ' + new Date(j.date).toLocaleDateString() : ''));
+        else res.dl = set('r-dl', 'warn', 'Unavailable', 'The download page on GitHub still works.');
+      } catch (e) { res.dl = set('r-dl', 'warn', 'Unavailable', 'The download page on GitHub still works.'); }
+    })();
+    await Promise.all([bungie, token, dl]);
+    var bad = Object.keys(res).filter(function (k) { return res[k] === 'bad'; }), warn = Object.keys(res).filter(function (k) { return res[k] === 'warn'; });
+    var s = $('sum');
+    if (!bad.length && !warn.length) { s.className = 'ok'; s.textContent = 'Everything is working.'; }
+    else if (bad.indexOf('token') >= 0) { s.className = 'bad'; s.textContent = 'Pathfinder’s sign-in service is not answering.'; }
+    else if (bad.length) { s.className = 'bad'; s.textContent = 'Bungie is having trouble. Pathfinder works again when Bungie is back.'; }
+    else { s.className = 'warn'; s.textContent = 'Mostly working. See the yellow rows.'; }
+    $('when').textContent = 'at ' + new Date().toLocaleTimeString();
+  }
+  $('again').onclick = run; run(); setInterval(run, 60000);
+})();
+</script></body></html>

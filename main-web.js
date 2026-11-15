@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.12: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.13: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -607,7 +607,7 @@ H('vault:load', async () => {
   // Postmaster things that are not weapons or armor (materials, engrams...): look up just their names and icons.
   const need = [...new Set(pmRaw.map((r) => r.it.itemHash))].filter((h) => !PMDEF[h]);
   await Promise.all(need.map(async (h) => {
-    try { const o = await api('/Destiny2/Manifest/DestinyInventoryItemDefinition/' + h + '/', false); PMDEF[h] = { n: (o.displayProperties && o.displayProperties.name) || 'Item', i: (o.displayProperties && o.displayProperties.icon) || '', r: (o.inventory && o.inventory.tierTypeName) || 'Common', t: o.itemTypeDisplayName || '', eg: o.itemType === 8 || (o.inventory && o.inventory.bucketTypeHash === 375726501) || /engram/i.test(o.itemTypeDisplayName || '') ? 1 : 0 }; }
+    try { const o = await api('/Destiny2/Manifest/DestinyInventoryItemDefinition/' + h + '/', false); PMDEF[h] = { n: (o.displayProperties && o.displayProperties.name) || 'Item', i: (o.displayProperties && o.displayProperties.icon) || '', r: (o.inventory && o.inventory.tierTypeName) || 'Common', t: o.itemTypeDisplayName || '', eg: o.itemType === 8 || (o.inventory && o.inventory.bucketTypeHash === 375726501) || /engram/i.test(o.itemTypeDisplayName || '') ? 1 : 0, mv: o.nonTransferrable ? 0 : 1 }; }
     catch (e) { PMDEF[h] = { n: 'Item', i: '', r: 'Common', t: '' }; }
   }));
   // Ids stay the same from one load to the next (they used to be the item's position in the list, so after a pull a remembered
@@ -616,7 +616,7 @@ H('vault:load', async () => {
   pmRaw.forEach(({ it, loc }) => {
     const f = PMDEF[it.itemHash]; if (!f) return;
     const sk = loc + ':' + it.itemHash; pmSeen[sk] = (pmSeen[sk] || 0) + 1;
-    items.push({ id: 'pm:' + sk + ':' + pmSeen[sk], inst: it.itemInstanceId || '0', q: it.quantity || 1, h: it.itemHash, n: f.n, i: f.i, r: f.r, t: f.t, b: 0, c: 3, p: 0, el: 0, loc, e: 0, pm: 1, eg: f.eg ? 1 : undefined });
+    items.push({ id: 'pm:' + sk + ':' + pmSeen[sk], inst: it.itemInstanceId || '0', q: it.quantity || 1, h: it.itemHash, n: f.n, i: f.i, r: f.r, t: f.t, b: 0, c: 3, p: 0, el: 0, loc, e: 0, pm: 1, eg: f.eg ? 1 : undefined, mv: f.mv && !f.eg && it.itemInstanceId ? 1 : undefined }); // mv: a one-of-a-kind item (ghost, ship...) that can go on to the vault once pulled
   });
   const cl = (pr.characterLoadouts && pr.characterLoadouts.data) || {};
   const lo = {};
@@ -1426,6 +1426,38 @@ H('wl:export', (e, v) => {
     out.push('dimwishlist:item=' + item + '&perks=' + r[0].join(',') + (r[1] || r[3] ? '#notes:' + (r[1] || '') + (r[3] ? '|tags:' + r[3] : '') : ''));
   }
   return out.join('\n') + '\n';
+});
+
+// ---------------- new-drop card over the game ----------------
+// A small always-on-top card in the bottom-right corner for a few seconds when a new weapon drops while another window (the
+// game) is in front. It is an ordinary window of this app: it never reads the screen or touches the game. It shows over
+// windowed and borderless games; a true exclusive-fullscreen game hides every other window, so the Windows notification
+// is sent as well.
+let dropWin = null, dropT = 0;
+const escH = (t) => String(t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+function dropCard(list) {
+  const { screen } = require('electron');
+  const wa = screen.getPrimaryDisplay().workArea, W = 340, Ht = 16 + 70 * list.length;
+  const rows = list.map((d) => `<div class="r" style="--c:${d.c}">${d.i ? `<img src="https://www.bungie.net${escH(d.i)}">` : ''}<div><small>New drop</small><b>${escH(d.n)}</b><span>${escH(d.s)}</span></div></div>`).join('');
+  const html = `<!doctype html><meta charset="utf-8"><style>html,body{margin:0;background:transparent;overflow:hidden;font-family:'Segoe UI',system-ui,sans-serif}body{padding:8px}
+.r{display:flex;gap:10px;align-items:center;height:54px;margin-bottom:8px;padding:4px 12px 4px 8px;background:rgba(14,17,22,.94);border:1px solid #2f3540;border-left:4px solid var(--c);border-radius:6px;box-sizing:border-box}
+img{width:44px;height:44px;border-radius:3px;flex:none}div div{min-width:0}small{display:block;font-size:10px;letter-spacing:1.4px;text-transform:uppercase;color:#8b93a0}
+b{display:block;color:#fff;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}span{display:block;color:var(--c);font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}</style><body>${rows}`;
+  if (dropWin && !dropWin.isDestroyed()) dropWin.destroy();
+  dropWin = new BrowserWindow({ width: W, height: Ht, x: wa.x + wa.width - W - 16, y: wa.y + wa.height - Ht - 16, frame: false, transparent: true, resizable: false, movable: false, focusable: false, skipTaskbar: true, alwaysOnTop: true, show: false, hasShadow: false, webPreferences: { sandbox: true, contextIsolation: true, nodeIntegration: false, javascript: false } });
+  const w = dropWin;
+  w.setAlwaysOnTop(true, 'screen-saver'); w.setIgnoreMouseEvents(true);
+  w.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html)).then(() => { if (!w.isDestroyed()) w.showInactive(); }).catch(() => {});
+  clearTimeout(dropT); dropT = setTimeout(() => { if (!w.isDestroyed()) w.destroy(); if (dropWin === w) dropWin = null; }, 9000);
+}
+H('drop:show', (e, v) => {
+  OBJ(v);
+  const list = ARR(v.items, 4).map((d) => { OBJ(d); return { n: TXT(d.n, 80), s: TXT(d.s || '', 140), c: typeof d.c === 'string' && /^#[0-9a-fA-F]{6}$/.test(d.c) ? d.c : '#e8b84a', i: typeof d.i === 'string' && /^\/common\/[\w./-]{1,200}$/.test(d.i) ? d.i : '' }; });
+  if (!list.length) return false;
+  let shown = false;
+  if (v.over !== false) { try { dropCard(list); shown = true; } catch (er) { /* the notification below still goes out */ } }
+  try { if (Notification.isSupported()) new Notification({ title: list.length === 1 ? 'New drop: ' + list[0].n : list.length + ' new drops', body: list.map((d) => (list.length === 1 ? '' : d.n + ': ') + d.s).join('\n').slice(0, 240), silent: shown }).show(); } catch (er) { /* no notifications on this system */ }
+  return shown;
 });
 
 // ---------------- small desktop helpers ----------------

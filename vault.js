@@ -741,6 +741,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 .sbo.on{border-color:var(--g-accent,#7ab8e8);background:var(--g-accent-soft,rgba(122,184,232,.12));cursor:default}.sbo.off{opacity:.45;cursor:default}.sbo.off:hover{background:none;border-color:transparent}
 .sboi{flex:none;width:34px;height:34px;background:#0f1114;border:1px solid #3a3d43;border-radius:3px;overflow:hidden}.sboi img{width:100%;height:100%;display:block}
 .sbo b{display:block;color:#fff;font-size:12.5px;font-weight:600}.sbo b em{font-style:normal;font-weight:600;font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:var(--g-accent,#7ab8e8);margin-left:4px}.sbo small{display:block;color:#9aa0a8;font-size:11.5px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+body:has(#vsheet .dp) #gtnfab{visibility:hidden}
 #gtdrops{position:fixed;right:14px;bottom:14px;z-index:9400;display:flex;flex-direction:column;gap:8px;width:min(330px,calc(100vw - 24px));pointer-events:none}
 .gtdrop{pointer-events:auto;display:flex;gap:10px;align-items:center;padding:8px 10px;background:var(--g-panel,#1a1c20);border:1px solid var(--g-line,#2b2e33);border-left:3px solid var(--dc);box-shadow:0 8px 26px rgba(0,0,0,.55),0 0 18px -6px var(--dc);cursor:pointer;animation:gtdin .28s cubic-bezier(.2,.8,.2,1);transition:opacity .35s,transform .35s}
 .gtdrop.out{opacity:0;transform:translateX(16px)}@keyframes gtdin{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
@@ -785,7 +786,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 
   // ---------------- settings, update toast ----------------
   const DEFSET = { theme: 'dim', accent: '#7ab8e8', accentUser: '', bgdim: 45, tile: 44, scale: 100, power: true, emblems: true, postmaster: true, compact: false, sort: 'rarity',
-    ui: 'pf', ornaments: true, locksync: false, clarity: 'both', single: false, charsort: 'recent', charorder: [], vgroup: 'none', armorsep: false, vaultunder: false, invw: 3, hidecollect: false, pmbadge: true, nrmark: true, dropalert: true, anim: 'subtle', cardart: true, glow: 55, starttab: 'vault', farmspaces: 3, sortkeys: null, cst: { 0: [0, 0, 0, 0, 0, 0], 1: [0, 0, 0, 0, 0, 0], 2: [0, 0, 0, 0, 0, 0] } };
+    ui: 'pf', ornaments: true, locksync: false, clarity: 'both', single: false, charsort: 'recent', charorder: [], vgroup: 'none', armorsep: false, vaultunder: false, invw: 3, hidecollect: false, pmbadge: true, nrmark: true, dropalert: true, dropover: true, anim: 'subtle', cardart: true, glow: 55, starttab: 'vault', farmspaces: 3, sortkeys: null, cst: { 0: [0, 0, 0, 0, 0, 0], 1: [0, 0, 0, 0, 0, 0], 2: [0, 0, 0, 0, 0, 0] } };
   // Item sort rules, like DIM: a checked list in order. d = 1 normal, -1 flipped.
   const SORTK = [['power', 'Power level'], ['name', 'Name'], ['type', 'Type'], ['rarity', 'Rarity'], ['stack', 'Stack size'], ['class', 'Required class'], ['tag', 'Tag (favorite, keep, junk, infuse, archive)'], ['season', 'Season'], ['dmg', 'Damage type'], ['champ', 'Anti-champion type'], ['mw', 'Masterworked'], ['crafted', 'Crafted'], ['tier', 'Tier']];
   const sortFromOld = (m) => { const on = m === 'power' ? ['power', 'rarity', 'name'] : m === 'name' ? ['name', 'power'] : m === 'tag' ? ['tag', 'power', 'rarity', 'name'] : ['rarity', 'power', 'name']; return [...on.map((k) => ({ k, d: 1, on: true })), ...SORTK.filter((q) => !on.includes(q[0])).map((q) => ({ k: q[0], d: 1, on: false }))]; };
@@ -896,7 +897,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
     r.setAttribute('data-anim', ['off', 'subtle', 'full'].includes(SET.anim) ? SET.anim : 'subtle'); r.setAttribute('data-cardart', SET.cardart === false ? '0' : '1');
     r.style.setProperty('--gt-glow', String(Math.max(0, Math.min(100, SET.glow === undefined ? 55 : +SET.glow)) / 100));
     r.setAttribute('data-gcompact', SET.compact ? '1' : '0'); r.setAttribute('data-gpower', SET.power ? '1' : '0');
-    r.style.setProperty('--gt-t', SET.tile + 'px'); r.style.setProperty('--gt-z', SET.scale / 100);
+    r.style.setProperty('--gt-t', SET.tile + 'px'); if (window.__gtfitscale) window.__gtfitscale(); else r.style.setProperty('--gt-z', SET.scale / 100); // polish.js lowers it if this page would not fit the window
     // The accent's dark partner (selected tabs, switches, chips). Mixing a light colour like yellow with black turns it olive,
     // so light accents are used as they are with dark text on top, and darker accents get a deeper shade of the same hue.
     const ac = /^#[0-9a-f]{6}$/i.test(String(SET.accent)) ? SET.accent : '#7ab8e8', rgb = [1, 3, 5].map((i) => parseInt(ac.slice(i, i + 2), 16));
@@ -981,6 +982,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
     <p><button class="g" data-sa="wlfile">Upload a file...</button> <button class="g" data-sa="wlrefresh">Refresh all</button> ${lists.length ? '<button class="g" data-sa="wlclear">Remove all</button>' : ''}<input type="file" id="wlfile" accept=".txt,text/plain" hidden></p>
     <div class="sx"><div class="sxt"><b>Mark weapons no list has rated yet</b><small>A small <b style="color:#ffd27a">?</b> on legendary weapons that none of your lists mention, so a blank tile always means "not a keeper". Search <code>is:unrated</code>.</small></div><div class="sxc"><label class="tgl"><input type="checkbox" data-sk="nrmark"${SET.nrmark !== false ? ' checked' : ''}><i></i></label></div></div>
     <div class="sx"><div class="sxt"><b>New drop alerts</b><small>While you are in the game, Pathfinder checks Bungie every 10 seconds and pops up each new weapon as God roll, Keeper, Not a keeper or Not yet rated (plus a Windows notification when the game is in front). Bungie's API only; nothing touches the game.</small></div><div class="sxc"><label class="tgl"><input type="checkbox" data-sk="dropalert"${SET.dropalert !== false ? ' checked' : ''}><i></i></label></div></div>
+    ${window.gt && window.gt.dropShow && !document.documentElement.classList.contains('gtweb') ? `<div class="sx"><div class="sxt"><b>Show new drops over the game</b><small>A small card in the bottom-right corner for a few seconds while the game is in front. Works with windowed and borderless games; in exclusive fullscreen only the Windows notification can show. It is a normal window of this app and never touches the game.</small></div><div class="sxc"><label class="tgl"><input type="checkbox" data-sk="dropover"${SET.dropover !== false ? ' checked' : ''}><i></i></label></div></div>` : ''}
     <p><button class="b" data-sa="grf">&#128269; Open the god roll finder</button></p>
     <textarea id="wltext" placeholder="Or paste wish list text here (lines starting with dimwishlist:)" style="width:100%;height:56px">${esc(WLD.wltext)}</textarea><p><button class="g" data-sa="wlpt">Paste from clipboard</button> <button class="g" data-sa="wlpaste">Add pasted text</button></p></div>`;
   }
@@ -1089,7 +1091,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
       ${sx('Glow strength', 'The soft colored glow around activity cards: purple for raids, bronze for dungeons, and so on.', rng('glow', 0, 100, '%'))}
     </div>
     <div class="card sc"><h2>Display</h2>
-      ${sx('Interface scale', 'Makes everything bigger or smaller.', rng('scale', 80, 140, '%'))}
+      ${sx('Interface scale', 'Makes everything bigger or smaller. A page that would not fit the window at that size is shown as large as fits.', rng('scale', 80, 140, '%'))}
       ${sx('Open the app on', '', opt('starttab', [['vault', 'Inventory'], ['home', 'Home'], ['loadouts', 'Loadouts'], ['activity', 'Activity'], ['last', 'The last tab I used']]))}
       ${sx('Show emblems on characters', '', tgl('emblems'))}
       ${sx('Show postmaster', '', tgl('postmaster'))}
@@ -1832,21 +1834,43 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
   }
   // Collect Postmaster, like DIM: if a weapon or armor slot is full, the least wanted unequipped items in that slot go to the
   // vault first so everything fits; engrams come out too while there is room in the engram slots.
+  // Which unequipped items leave for the vault so n more fit in slot b on this character (least wanted first: junk, untagged, lowest power).
+  function roomFor(ch, b, n) {
+    if (!(WEAPON.has(b) || ARMOR.has(b))) return [];
+    const tags = TAGS(), keepRank = (x) => { const t = tags[x.id]; return t === 'junk' ? 0 : !t ? 1 : t === 'infuse' ? 2 : t === 'archive' ? 3 : 9; };
+    const here = D.items.filter((o) => o.loc === ch && o.b === b && !o.e && !o.pm);
+    const over = here.length + n - 9; if (over <= 0) return [];
+    return here.filter((o) => keepRank(o) < 9).sort((a, c) => keepRank(a) - keepRank(c) || (a.p || 0) - (c.p || 0)).slice(0, over);
+  }
+  // A postmaster item's real id for moving it once it is out (weapons and armor carry it as their id; other one-of-a-kind items as inst).
+  const pmInst = (x) => (/^\d+$/.test(String(x.id)) ? String(x.id) : x.mv && x.inst && x.inst !== '0' ? String(x.inst) : '');
+  const pmCanSend = (x) => !!(x && x.pm && !x.eg && pmInst(x));
+  // Postmaster -> anywhere, like DIM: pull it onto the character whose postmaster holds it (making room in that slot if it is
+  // full), then move it on to the vault or another character. Things that only stack (materials, engrams) can only be pulled.
+  function pmSend(x, to) {
+    const ch = x.loc, it = slim(x), inst = pmInst(x), onward = to !== ch && !!inst;
+    if (to !== ch && !inst) { setNote(x.n + ' can only be pulled to the character whose postmaster it is in.'); return; }
+    const room = roomFor(ch, x.b, 1), roomS = room.map(slim);
+    const who = (loc) => { if (loc === 'vault') return 'the vault'; const c = D.chars.find((k) => k.id === loc); return c ? CL[c.cls] || 'your character' : 'your character'; };
+    quickPlace(x, to, false);
+    act((onward ? 'send ' : 'pull ') + x.n + ' to ' + who(to), () => { room.forEach((o) => { o.loc = 'vault'; }); x.pm = 0; x.loc = to; x.e = 0; }, async () => {
+      for (const s of roomS) { try { await gt.move({ item: s, from: ch, to: 'vault' }); } catch (e) { /* the pull below says if it still does not fit */ } }
+      const r = await gt.pmPull({ items: [it], char: ch });
+      if (r && Array.isArray(r.revert) && r.revert.length) throw new Error((r.failed && r.failed[0] && r.failed[0].why) || 'it could not be pulled');
+      if (!onward) return true;
+      try { await gt.move({ item: { ...it, id: inst, inst: undefined, loc: ch, e: 0 }, from: ch, to }); }
+      catch (e) { throw new Error('it came out of the postmaster onto ' + who(ch) + ', but could not go on to ' + who(to) + ' (' + clean(e) + ')'); }
+      return true;
+    }, false, String(x.id));
+  }
   function collectPm(ch) {
     const all = D.items.filter((o) => o.loc === ch && o.pm);
     const engFree = Math.max(0, 10 - (D.gen || []).filter((x) => x.loc === ch && x.b === ENGR).length);
     const its = all.filter((o) => !o.eg).concat(all.filter((o) => o.eg).slice(0, engFree));
     if (!its.length) { setNote(all.length ? 'Your engram slots are full: open some engrams at the Tower first.' : 'Nothing in the postmaster.'); return; }
-    const tags = TAGS(), keepRank = (x) => { const t = tags[x.id]; return t === 'junk' ? 0 : !t ? 1 : t === 'infuse' ? 2 : t === 'archive' ? 3 : 9; };
     const room = [];
     const need = {}; its.forEach((o) => { if (WEAPON.has(o.b) || ARMOR.has(o.b)) need[o.b] = (need[o.b] || 0) + 1; });
-    Object.keys(need).forEach((b) => {
-      b = +b;
-      const here = D.items.filter((o) => o.loc === ch && o.b === b && !o.e && !o.pm);
-      let over = here.length + need[b] - 9; if (over <= 0) return;
-      const cand = here.filter((o) => keepRank(o) < 9).sort((a, c) => keepRank(a) - keepRank(c) || (a.p || 0) - (c.p || 0));
-      cand.slice(0, over).forEach((o) => room.push(o));
-    });
+    Object.keys(need).forEach((b) => { roomFor(ch, +b, need[b]).forEach((o) => room.push(o)); });
     const roomS = room.map(slim), snaps = its.map(slim);
     const label = 'collect postmaster' + (room.length ? ' (moving ' + room.length + ' to the vault to make room)' : '');
     act(label, () => { room.forEach((o) => { o.loc = 'vault'; }); its.forEach((o) => { o.pm = 0; }); }, async () => {
@@ -2084,7 +2108,7 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
     const fresh = n.items.filter((x) => !SEEN.has(x.id) && x.pk && (WEAPON.has(x.b) || x.pm) && (x.r === 'Legendary' || x.r === 'Exotic'));
     ids.forEach((id) => SEEN.add(id));
     if (!fresh.length || SET.dropalert === false || fresh.length > 6) return; // a big jump is an account switch or a first sync, not drops
-    setTimeout(() => fresh.forEach(dropToast), 0);
+    setTimeout(() => dropAway(fresh.map(dropToast)), 0);
   }
   function dropToast(x) {
     const gr = x.r === 'Exotic' ? 'A' : WL ? grade(x) : '?', w = DROPW[gr], ws = wish(x);
@@ -2095,8 +2119,15 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
     t.onclick = (e) => { if (!e.target.closest('.dx')) { show('vault'); setTimeout(() => openPop(x.id), 60); } t.remove(); };
     box.appendChild(t); while (box.children.length > 4) box.firstElementChild.remove();
     setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 400); }, 15000);
-    // The game is in front: a Windows notification too (the window may be behind the game).
-    if ((document.hidden || !document.hasFocus()) && gt.notify) gt.notify({ title: 'New drop: ' + x.n, body: (x.r === 'Exotic' ? 'Exotic' : w[0]) + (nm ? ' - ' + nm : '') }).catch(() => {});
+    return { n: x.n, s: (x.r === 'Exotic' ? 'Exotic' : w[0]) + (nm ? ' - ' + nm : ''), c: w[1], i: typeof x.i === 'string' && x.i[0] === '/' ? x.i : '' };
+  }
+  // The game is in front (this window is hidden or not the active one): on the PC app a small card appears over the game for a
+  // few seconds plus a Windows notification; on the website a browser notification.
+  function dropAway(list) {
+    if (!list.length || !(document.hidden || !document.hasFocus())) return;
+    const web = document.documentElement.classList.contains('gtweb');
+    if (!web && gt.dropShow) gt.dropShow({ items: list.slice(0, 4), over: SET.dropover !== false }).catch(() => {});
+    else if (gt.notify) list.slice(0, 3).forEach((d) => gt.notify({ title: 'New drop: ' + d.n, body: d.s }).catch(() => {}));
   }
   let dropT = 0, dropBusy = false;
   async function dropTick() {
@@ -2110,7 +2141,7 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
     dropBusy = false;
   }
   setTimeout(dropTick, 15000);
-  window.__gtdrop = { check: dropCheck, toast: (id) => { const x = byId(id); if (x) dropToast(x); }, seen: () => SEEN && SEEN.size };
+  window.__gtdrop = { check: dropCheck, toast: (id) => { const x = byId(id); if (x) dropToast(x); }, away: dropAway, seen: () => SEEN && SEEN.size };
   window.addEventListener('focus', () => autoSync('focus'));
   document.addEventListener('visibilitychange', () => { if (!document.hidden) autoSync('focus'); });
   setInterval(() => autoSync('timer'), 60000);
@@ -2158,6 +2189,7 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
     });
   }
   function doMove(it, to) {
+    if (it.pm) return pmSend(it, to);
     if (it.e && it.loc !== 'vault' && it.loc !== to) return moveEquipped(it, to, false);
     quickPlace(it, to, false);
     const s = slim(it), from = it.loc;
@@ -2194,8 +2226,10 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
   const clearDz = () => { dzEls.forEach((z) => z.classList.remove('dz', 'eqok')); dzEls = []; };
   const clearOver = () => { if (overEl) overEl.classList.remove('over'); overEl = null; };
   function dropInfo(zone) {
-    const it = byId(dragId); if (!it || it.pm || it.ro) return null;
+    const it = byId(dragId); if (!it || it.ro) return null;
     const kind = zone.dataset.drop, loc = zone.dataset.loc;
+    // from the postmaster: any character column or the vault (dropping on its own character pulls it)
+    if (it.pm) return pmCanSend(it) && kind !== 'eq' && (loc === 'vault' || D.chars.some((c) => c.id === loc)) ? { kind: 'move', loc } : null;
     if (kind === 'eq') {
       const c = D.chars.find((x) => x.id === loc);
       if (!c || +zone.dataset.b !== it.b) return null;
@@ -2218,7 +2252,7 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
     if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || !D) return;
     if (e.pointerType === 'touch' && PHONE.matches) return; // on a phone a finger on an item scrolls the page; items move with the buttons in the item sheet
     const t = e.target.closest && e.target.closest('#vgrid .vt'); if (!t) return;
-    const it = byId(t.dataset.id); if (!it || it.pm || it.ro) return;
+    const it = byId(t.dataset.id); if (!it || it.ro || (it.pm && !(pmCanSend(it) && (WEAPON.has(it.b) || ARMOR.has(it.b))))) return;
     pd = { id: it.id, t, x: e.clientX, y: e.clientY, on: false, g: null, raf: 0, lx: e.clientX, ly: e.clientY };
   });
   function pdMove(e) {
@@ -2500,7 +2534,12 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
     if (x.pm) {
       s.push('<h6>Postmaster</h6>');
       if (x.eg) s.push('<p class="dpe">Pulls into your engram slots if there is room. Open engrams at the Tower in game.</p>');
-      D.chars.filter((c) => c.id === x.loc).forEach((c) => s.push(sbtn('pull', c.id, 'Pull to ' + esc(CL[c.cls]), '&#8681;', false, 'Pull to ' + (CL[c.cls] || ''))));
+      D.chars.filter((c) => c.id === x.loc).forEach((c) => s.push(sbtn('pull', c.id, 'Pull to ' + esc(CL[c.cls]), '&#8681;', false, 'Pull to ' + (CL[c.cls] || '') + (roomFor(c.id, x.b, 1).length ? ' (that slot is full: one item goes to the vault to make room)' : ''))));
+      if (pmCanSend(x)) {
+        s.push('<h6>Send to</h6>');
+        s.push(sbtn('pull', 'vault', 'Vault', '&#9644;', false, 'Pull it out and send it to the vault'));
+        chars.filter((c) => c.id !== x.loc).forEach((c) => s.push(sbtn('pull', c.id, esc(CL[c.cls] || ''), '&#9656;', false, 'Pull it out and send it to ' + (CL[c.cls] || ''))));
+      }
       return s.join('');
     }
     if (!x.ro && x.id) s.push(sbtn('lock', undefined, x.lk ? 'Locked' : 'Lock', x.lk ? '&#128274;' : '&#128275;', !!x.lk, (x.lk ? 'Locked. Click to unlock' : 'Unlocked. Click to lock') + ' (L)'));
@@ -2582,22 +2621,69 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
       dp.style.left = ''; dp.style.top = ''; POS = null;
       return;
     }
-    dp.querySelectorAll('.dpm,.dps').forEach((n) => { n.style.maxHeight = (vh - 16) + 'px'; });
-    const w = dp.offsetWidth, h = dp.offsetHeight, t = anchorEl();
+    // Everything below is in real screen pixels, then turned into the pop-up's own units (see popUnits): that is what keeps it
+    // the right size and next to the item at any Interface scale, window size and position.
+    if (dp.style.zoom) dp.style.zoom = '';
+    let u = popUnits(dp, '');
+    // the room it may use: under the top bar (which would cover it) and above the phone tab bar
+    const sa = safeArea(), A = sa.top + 6, B = sa.bottom - 6, room = Math.max(160, B - A);
+    dp.querySelectorAll('.dpm,.dps').forEach((n) => { n.style.maxHeight = Math.floor(room / u.ky) + 'px'; });
+    let bx = dp.getBoundingClientRect();
+    if (bx.width > vw - 16) { // wider than the window (a small window at a big scale): shrink the whole pop-up to fit
+      const f = Math.max(0.45, (vw - 16) / bx.width); dp.style.zoom = String(f); u = popUnits(dp, f.toFixed(3));
+      dp.querySelectorAll('.dpm,.dps').forEach((n) => { n.style.maxHeight = Math.floor(room / u.ky) + 'px'; });
+      bx = dp.getBoundingClientRect();
+    }
+    const w = Math.round(bx.width), h = Math.round(bx.height), t = anchorEl();
     let L, T;
-    if (!t || vw < 640) { L = Math.max(8, (vw - w) / 2); T = Math.max(8, (vh - h) / 2); POS = null; }
+    if (!t || vw < 640) { L = Math.max(8, (vw - w) / 2); T = Math.max(A, A + (room - h) / 2); POS = null; }
     else {
       const r = t.getBoundingClientRect();
       if (POS && POS.id === sel && POS.w === w) {
         L = POS.L; T = r.top + POS.dy;
-        if (why !== 'scroll' && T + h > vh - 8) { T = Math.max(8, vh - h - 8); POS.dy = T - r.top; }
+        if (why !== 'scroll' && T + h > B) { T = Math.max(A, B - h); POS.dy = T - r.top; }
       } else {
         L = r.right + 8; if (L + w > vw - 8) L = r.left - 8 - w; if (L < 8) L = Math.max(8, vw - w - 8);
-        T = Math.max(8, Math.min(r.top - 4, vh - h - 8));
+        T = Math.max(A, Math.min(r.top - 4, B - h));
         POS = { id: sel, L, w, dy: T - r.top };
       }
     }
-    dp.style.left = Math.round(L) + 'px'; dp.style.top = Math.round(T) + 'px';
+    dp.style.left = Math.round((L - u.ox) / u.kx) + 'px'; dp.style.top = Math.round((T - u.oy) / u.ky) + 'px';
+    if (why === 'scroll') return; // while the page scrolls the pop-up rides along with its item, even off the edge
+    // Last check against the real result: nudge it back if any edge is still outside the window.
+    for (let i = 0; i < 2; i++) {
+      const r2 = dp.getBoundingClientRect(); let dx = 0, dy = 0;
+      if (r2.right > vw - 4) dx = vw - 4 - r2.right; if (r2.left + dx < 4) dx = 4 - r2.left;
+      if (r2.bottom > B + 2) dy = B - r2.bottom; if (r2.top + dy < A - 2) dy = A - r2.top;
+      if (Math.abs(dx) < 1 && Math.abs(dy) < 1) break;
+      dp.style.left = Math.round(parseFloat(dp.style.left) + dx / u.kx) + 'px'; dp.style.top = Math.round(parseFloat(dp.style.top) + dy / u.ky) + 'px';
+      if (POS && t) { const r3 = t.getBoundingClientRect(); POS.L = L + dx; POS.dy = T + dy - r3.top; }
+    }
+  }
+  // Screen pixels per unit of the pop-up's own left/top/max-height, and where its 0,0 lands on screen. Interface scale zooms the
+  // page the pop-up lives in, so those units are not screen pixels; this measures them (two test positions) instead of assuming,
+  // so it is right at any scale and in any browser. Measured once per scale and window size.
+  // The part of the window a floating box may use: below the top bar when it is pinned to the top, above the phone tab bar.
+  function safeArea() {
+    let top = 0, bottom = innerHeight;
+    const hd = document.querySelector('header.gtbar');
+    if (hd && hd.getClientRects().length) { const r = hd.getBoundingClientRect(); if (r.top <= 1 && r.bottom > 0 && r.bottom < innerHeight / 3) top = r.bottom; }
+    const tb = document.getElementById('gtw-tabs');
+    if (tb && tb.getClientRects().length) { const r = tb.getBoundingClientRect(); if (r.top > innerHeight / 2) bottom = Math.min(bottom, r.top); }
+    return { top, bottom };
+  }
+  window.__gtsafe = safeArea;
+  let PK = null;
+  function popUnits(dp, own) {
+    const key = (getComputedStyle(document.documentElement).getPropertyValue('--gt-z') || '1').trim() + '|' + (POPX ? 'x' : 'v') + '|' + innerWidth + 'x' + innerHeight + '|' + own;
+    if (PK && PK.key === key) return PK;
+    const sl = dp.style.left, st = dp.style.top;
+    dp.style.left = '0px'; dp.style.top = '0px'; const a = dp.getBoundingClientRect();
+    dp.style.left = '100px'; dp.style.top = '100px'; const b = dp.getBoundingClientRect();
+    dp.style.left = sl; dp.style.top = st;
+    const kx = (b.left - a.left) / 100, ky = (b.top - a.top) / 100, okk = (k) => (k > 0.2 && k < 6 ? k : 1);
+    PK = { key, kx: okk(kx), ky: okk(ky), ox: a.left, oy: a.top };
+    return PK;
   }
   // The pop-up can also open over another tab (Loadouts): then it lives in its own layer on the page, with the same handlers.
   let POPX = false;
@@ -2605,7 +2691,7 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
     if (!POPX) return g('vpop');
     let b = g('vpopx');
     if (!b) {
-      b = document.createElement('div'); b.id = 'vpopx'; document.body.appendChild(b);
+      b = document.createElement('div'); b.id = 'vpopx'; b.style.zoom = 'var(--gt-z,1)'; document.body.appendChild(b); // same size as in the Inventory at any Interface scale
       b.addEventListener('click', (e) => sec.onclick(e)); b.addEventListener('change', (e) => { if (sec.onchange) sec.onchange(e); }); b.addEventListener('input', onSecInput);
     }
     return b;
@@ -2617,7 +2703,9 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
       const old = box.querySelector('.dpm'), top = old ? old.scrollTop : 0;
       box.innerHTML = `<div id="vsheet">${itemPop(x)}</div>`;
       const nw = box.querySelector('.dpm'); if (nw && top) nw.scrollTop = top;
-      placePop(); return;
+      placePop();
+      const pk = box.querySelector('.sbpk'); if (pk && nw) { const a = pk.getBoundingClientRect(), c = nw.getBoundingClientRect(); if (a.bottom > c.bottom || a.top < c.top) nw.scrollTop += a.height > c.height ? a.top - c.top : a.bottom - c.bottom + 6; } // subclass options just opened below the fold: bring them into view
+      return;
     }
     sel = null;
     box.innerHTML = '';
@@ -2703,7 +2791,7 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
       const inp = g('vstq'), n = Math.max(1, Math.min(pt.q, parseInt(inp && inp.value, 10) || pt.q)), to = t.dataset.t, from = pt.loc, h = x.h;
       return act('move ' + n + ' ' + x.n, () => {}, () => gt.moveStack({ h, from, to, q: n }), true);
     }
-    if (t.dataset.a === 'pull' && x) { const it = slim(x), ch = t.dataset.t; return act('pull ' + x.n, () => { const o = byId(it.id); o.pm = 0; o.loc = ch; o.e = 0; }, () => gt.pmPull({ items: [it], char: ch })); }
+    if (t.dataset.a === 'pull' && x) return pmSend(x, t.dataset.t);
     if (t.dataset.a === 'lock' && x) return toggleLock(x);
     if (t.dataset.a === 'wlp' && x) {
       const d = DET[sel]; if (!d) return;
@@ -2792,7 +2880,10 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
   function ctxOpen(x, px, py) {
     const rows = [`<div class="ch">${esc(x.n)}</div>`, '<div data-c="info">Show details</div>'];
     if (!x.ro && x.id && !x.pm) rows.push(`<div data-c="lock">${x.lk ? 'Unlock' : 'Lock'}</div>`);
-    if (x.pm && !x.eg) D.chars.filter((c) => c.id === x.loc).forEach((c) => rows.push(`<div data-c="pull:${esc(c.id)}">Pull to ${esc(CL[c.cls])}</div>`));
+    if (x.pm) {
+      D.chars.filter((c) => c.id === x.loc).forEach((c) => rows.push(`<div data-c="pull:${esc(c.id)}">Pull to ${esc(CL[c.cls])}</div>`));
+      if (pmCanSend(x)) { rows.push('<div class="cs">Send to</div>'); ['vault', ...sortedChars().map((c) => c.id)].filter((t) => t !== x.loc).forEach((t) => rows.push(`<div data-c="pull:${esc(t)}">${t === 'vault' ? 'Vault' : esc(CL[ent(t).cls] || '')}</div>`)); }
+    }
     else if (!x.ro) {
       const eq = sortedChars().filter((c) => (x.c === 3 || x.c === undefined || x.c === c.cls) && !(x.e && x.loc === c.id));
       if (eq.length) { rows.push('<div class="cs">Equip on</div>'); eq.forEach((c) => rows.push(`<div data-c="eq:${esc(c.id)}">${esc(CL[c.cls] || 'Character')}</div>`)); }
@@ -2822,7 +2913,7 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
     else if (k === 'lock') toggleLock(x);
     else if (k === 'eq') doEquip(x, v);
     else if (k === 'mv') doMove(x, v);
-    else if (k === 'pull') { const it = slim(x); act('pull ' + x.n, () => { const o = byId(it.id); o.pm = 0; o.loc = v; o.e = 0; }, () => gt.pmPull({ items: [it], char: v })); }
+    else if (k === 'pull') pmSend(x, v);
     else if (k === 'tag') setTag(x, v);
     else if (k === 'cmp' && window.__gtx) window.__gtx.compare(x.id);
     else if (k === 'note') { openPop(x.id); noteEdit = true; renderPop(); const nb = g('vnotebox'); if (nb) nb.focus(); }
