@@ -34,11 +34,35 @@
 :root[data-anim="subtle"] #home .hm-g>*,:root[data-anim="subtle"] #activity .agrid>*,:root[data-anim="subtle"] #hub .hgrid>*{animation-duration:.22s}
 ${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((i) => `:root[data-anim="full"] :is(#home .hm-g,#activity .agrid,#hub .hgrid)>:nth-child(${i}){animation-delay:${i * 35}ms}:root[data-anim="subtle"] :is(#home .hm-g,#activity .agrid,#hub .hgrid)>:nth-child(${i}){animation-delay:${i * 15}ms}`).join('')}
 :root:not([data-anim="off"]) .card,:root:not([data-anim="off"]) #home .hm-c,:root:not([data-anim="off"]) #activity .acard{transition:border-color .18s,box-shadow .18s,transform .18s var(--gt-ease),background-color .18s}
-:root[data-anim="full"] #home .hm-c:hover{transform:translateY(-3px)}
+:root[data-anim="full"] #home .hm-c:hover,:root[data-anim="full"] #activity .acard.clk:hover{transform:translateY(-3px)!important}
 :root:not([data-anim="off"]) nav button,:root:not([data-anim="off"]) button.g,:root:not([data-anim="off"]) button.b{transition:background-color .15s,border-color .15s,color .15s,box-shadow .15s}
 :root[data-anim="full"] nav button.on{box-shadow:inset 0 -2px 0 var(--g-accent,#7ab8e8)}
-:root:not([data-anim="off"]) .vt{transition:transform .12s var(--gt-ease),filter .12s}
-:root[data-anim="full"] #vgrid .vt:hover{transform:translateY(-1px)}
+:root:not([data-anim="off"]) .vt{transition:filter .12s}
+/* --- things that answer what you do: hover, press, open --- */
+@keyframes gtpop{from{opacity:0;transform:translateY(8px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes gtgrow{from{transform:scaleX(0)}to{transform:none}}
+@keyframes gtnudge{0%{transform:translateY(3px)}60%{transform:translateY(-1px)}100%{transform:none}}
+/* every button eases its colors and gives a little when pressed */
+:root:not([data-anim="off"]) button{transition:background-color .15s,border-color .15s,color .15s,box-shadow .15s,transform .09s var(--gt-ease),opacity .15s}
+:root:not([data-anim="off"]) button:active:not(:disabled):not(.sbs){transform:scale(.97)}
+:root:not([data-anim="off"]) input,:root:not([data-anim="off"]) select,:root:not([data-anim="off"]) textarea{transition:border-color .15s,background-color .15s,box-shadow .15s}
+/* cards you can click rise a touch; rows and item tiles respond to the pointer */
+:root:not([data-anim="off"]) #home .hm-c:hover,:root:not([data-anim="off"]) #activity .acard.clk:hover,:root:not([data-anim="off"]) #guides .gfc:hover{transform:translateY(-2px)}
+:root:not([data-anim="off"]) #home .hm-row,:root:not([data-anim="off"]) #junkm .jkr,:root:not([data-anim="off"]) .sbo,:root:not([data-anim="off"]) #gtctx>div{transition:background-color .12s,border-color .12s,padding-left .12s}
+:root:not([data-anim="off"]) #home .hm-row.lnk:hover{padding-left:4px}
+:root:not([data-anim="off"]) #vgrid .vt:hover,:root:not([data-anim="off"]) .dl-card .vt:hover{filter:brightness(1.14)}
+/* windows that open over the page: the dim fades in and the box settles into place */
+:root:not([data-anim="off"]) #junkm:not(.noan),:root:not([data-anim="off"]) #gtnews,:root:not([data-anim="off"]) #loimg,:root:not([data-anim="off"]) #cmpm{animation:gtfade .16s ease-out}
+:root:not([data-anim="off"]) #junkm:not(.noan)>.jk,:root:not([data-anim="off"]) #gtnews>*,:root:not([data-anim="off"]) #loimg>*,:root:not([data-anim="off"]) #cmpm>*{animation:gtpop .2s var(--gt-ease)}
+:root[data-anim="full"] #junkm:not(.noan)>.jk,:root[data-anim="full"] #gtnews>*,:root[data-anim="full"] #loimg>*,:root[data-anim="full"] #cmpm>*{animation-duration:.28s}
+/* menus and info boxes only fade: they are measured to keep them on screen, and a moving box measures wrong */
+:root:not([data-anim="off"]) #gtctx.open,:root:not([data-anim="off"]) #dlpp,:root:not([data-anim="off"]) #eqpick,:root:not([data-anim="off"]) #gtmp,:root:not([data-anim="off"]) #gtdlp,:root:not([data-anim="off"]) .sbpk{animation:gtfade .12s ease-out}
+/* progress bars on Home fill up once when the page opens */
+:root:not([data-anim="off"]) #home .hm-bar i{transform-origin:left center;animation:gtgrow .55s var(--gt-ease) .12s both}
+/* phone tab bar: the tab you tap gives a small nudge */
+:root:not([data-anim="off"]) #gtw-tabs button.on svg{animation:gtnudge .26s var(--gt-ease)}
+/* the tile being dragged must follow the pointer exactly: never eased */
+.vt.vghost,.vt.dragging{transition:none!important;animation:none!important}
 /* the item pop-up only fades (no movement): it is measured to place it, and a moving box measures wrong */
 :root:not([data-anim="off"]) #vsheet .dp{animation:gtfade .14s ease-out}
 /* off (and "subtle" when the system asks for less motion): no animation anywhere */

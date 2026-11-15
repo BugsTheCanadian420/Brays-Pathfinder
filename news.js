@@ -9,6 +9,10 @@
 
   // ---- what changed: newest first. Add an entry (next id) with every update. ----
   const CHANGES = [
+    { id: 17, date: 'Nov 2026', items: [
+      'More small animations: buttons give a little when pressed, cards rise slightly under the pointer, item tiles brighten, windows like the god roll finder and What\'s new settle into place, menus fade in, and the progress bars on Home fill up. Settings, Appearance, Animations: Off, Subtle or Full.',
+      'Fixed: a dragged item trailed slightly behind the pointer. It follows exactly again.',
+    ] },
     { id: 16, date: 'Nov 2026', items: [
       'Pop-ups fit and sit in the right place at any Interface scale, window size and position: the item pop-up opens next to its item, stays below the top bar and above the phone tab bar, and shrinks to fit a small window instead of running off the edge.',
       'Menus and info boxes (right-click menu, search suggestions, mod info, equip picker) are always kept inside the window.',

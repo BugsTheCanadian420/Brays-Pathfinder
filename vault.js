@@ -1647,14 +1647,14 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
   const JTABS = [['sug', 'Suggested', 'Trash rolls on your wish lists and duplicates of something better you own.'], ['lowst', 'Low armor stats', 'Legendary armor with a stat total at least 20 below your best piece for that slot and class.'], ['lowpw', 'Low power', 'Legendary weapons and armor 100 or more below your best gear. Some may still be worth keeping for perks or looks.'], ['tagged', 'Tagged junk', 'Everything you have tagged Junk, ready to dismantle in game.']];
   let JTAB = 'sug'; const JSEL = new Set();
   function junkOpen(keepSel) {
-    let m = g('junkm'); const st = m ? m.querySelector('.jkl') : null, scroll = st ? st.scrollTop : 0; if (m) m.remove();
+    let m = g('junkm'); const had = !!m, st = m ? m.querySelector('.jkl') : null, scroll = st ? st.scrollTop : 0; if (m) m.remove();
     const all = junkScan(), T = TAGS();
     const tagged = D.items.filter((o) => T[o.id] === 'junk' && !o.pm).map((x) => ({ x, k: 'tagged', why: x.lk ? 'Tagged junk, but locked' : x.e ? 'Tagged junk, but equipped' : 'Tagged junk' }));
     const lists = { sug: all.filter((o) => o.k === 'trash' || o.k === 'dupe'), lowst: all.filter((o) => o.k === 'lowst'), lowpw: all.filter((o) => o.k === 'lowpw'), tagged };
     if (!keepSel) { JSEL.clear(); if (JTAB === 'sug') lists.sug.forEach((o) => JSEL.add(o.x.id)); }
     const list = lists[JTAB] || [], ids = new Set(list.map((o) => o.x.id)); [...JSEL].forEach((id) => { if (!ids.has(id)) JSEL.delete(id); });
     const nSel = JSEL.size, vc = D.items.filter((o) => o.loc === 'vault').length;
-    m = document.createElement('div'); m.id = 'junkm';
+    m = document.createElement('div'); m.id = 'junkm'; if (had) m.classList.add('noan');
     const whereTxt = (o) => { if (o.loc === 'vault') return 'Vault'; const c = D.chars.find((k) => k.id === o.loc); return c ? CL[c.cls] || 'Guardian' : ''; };
     const tabInfo = JTABS.find((t) => t[0] === JTAB) || JTABS[0];
     const acts = JTAB === 'tagged'
@@ -1704,7 +1704,7 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
   const GTABS = [['S', 'God rolls', 'Rolls your wish lists call a god roll. Keep these.'], ['A', 'Keepers', 'Rolls on your wish lists (thumbs up). Keep these.'], ['CD', 'Not keepers', 'Your lists rate these weapons and this copy is not one of their rolls (or is a trash roll). Safe to dismantle unless you use it.'], ['?', 'Not yet rated', 'No wish list mentions these weapons yet, so keep them until you check them.']];
   const GCOL = { S: '#e8b84a', A: '#4caf50', C: '#8b8f97', D: '#d9534f', '?': '#ffd27a' };
   function grfOpen() {
-    let m = g('junkm'); if (m) m.remove();
+    let m = g('junkm'); const had = !!m; if (m) m.remove();
     if (!WL) { setNote('Add a wish list first (Settings, Wish lists): the god roll finder grades your weapons with it.'); return; }
     const ws = D.items.filter((x) => WEAPON.has(x.b) && x.r === 'Legendary' && x.pk && !x.pm);
     const by = { S: [], A: [], CD: [], '?': [] };
@@ -1719,7 +1719,7 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
       return o.gr === 'D' ? 'Trash roll on your wish list' : o.gr === '?' ? 'No wish list has this weapon yet' : 'Not one of the wish list rolls for this weapon';
     };
     const junkable = list.filter((o) => !['favorite', 'keep', 'junk'].includes(T[o.x.id]) && !o.x.e);
-    m = document.createElement('div'); m.id = 'junkm'; m.className = 'grf';
+    m = document.createElement('div'); m.id = 'junkm'; m.className = 'grf' + (had ? ' noan' : '');
     m.innerHTML = `<div class="jk"><div class="jkh"><b>God roll finder</b><span class="mute">${ws.length} legendary weapons graded with your wish lists</span><button class="g" data-gk="x" title="Close">&#10005;</button></div>
 <div class="jkt">${GTABS.map(([k, lbl]) => `<button data-gt="${k}" class="${k === GTAB ? 'on' : ''}"><em class="grb" style="--gc:${GCOL[k[0]]}">${k === 'CD' ? 'C/D' : k}</em> ${esc(lbl)} <i>${by[k].length}</i></button>`).join('')}</div>
 <p class="mute jkd">${esc(info[2])} Click a weapon to see its perks; <b>Apply Perks</b> in its pop-up puts the wish list perks in.</p>
