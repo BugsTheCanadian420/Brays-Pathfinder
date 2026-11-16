@@ -9,6 +9,10 @@
 
   // ---- what changed: newest first. Add an entry (next id) with every update. ----
   const CHANGES = [
+    { id: 18, date: 'Nov 2026', items: [
+      'Beta interface style, second pass: rounded glass panels with depth, modern lettering, the current tab as a soft pill, and gentle accent light over the contour map.',
+      'A beta copy of the website can now be published at d2pathfinder.com/beta to try changes before everyone gets them. When one is up, Settings, About and help shows "Try the beta".',
+    ] },
     { id: 17, date: 'Nov 2026', items: [
       'More small animations: buttons give a little when pressed, cards rise slightly under the pointer, item tiles brighten, windows like the god roll finder and What\'s new settle into place, menus fade in, and the progress bars on Home fill up. Settings, Appearance, Animations: Off, Subtle or Full.',
       'Fixed: a dragged item trailed slightly behind the pointer. It follows exactly again.',
@@ -151,7 +155,7 @@ ${list.map((c) => `<div class="gtnv"><small>${esc(c.date)}</small><ul>${c.items.
     return `<div class="card sc" id="gtab"><h2>About &amp; help</h2><p class="mute">Pathfinder ${esc(VER || '')} &middot; ${isWeb() ? 'website' : 'PC app'}. Not made by or affiliated with Bungie.</p>
 <h3 class="gth">Updates</h3><p class="mute">${esc(updLine())}</p>${!isWeb() && UPD.canUpdate ? `<p>${UPD.state === 'ready' ? '<button class="b" data-ab="install">Restart to install</button>' : '<button class="g" data-ab="check">Check for updates</button>'}</p>` : ''}
 <h3 class="gth">Help</h3><p class="mute">Questions, bugs or ideas: <a href="mailto:${HELP}" data-ab="mail">${HELP}</a></p>
-<p><button class="g" data-ab="news">What's new</button> <button class="g" data-ab="status" title="Is Pathfinder, its sign-in service and Bungie's API working right now?">Status</button> <button class="g" data-ab="privacy">Privacy</button>${isWeb() && window.__GT_DL__ ? ' <button class="g" data-ab="pcapp">Get the PC app</button>' : ''}</p>
+<p><button class="g" data-ab="news">What's new</button> ${window.__gtbetaInfo ? '<button class="g" data-ab="beta" title="Try the next version early. Same sign-in and settings; you can come back any time.">Try the beta</button> ' : window.__GT_BETA__ ? '<button class="g" data-ab="unbeta">Back to the regular site</button> ' : ''}<button class="g" data-ab="status" title="Is Pathfinder, its sign-in service and Bungie's API working right now?">Status</button> <button class="g" data-ab="privacy">Privacy</button>${isWeb() && window.__GT_DL__ ? ' <button class="g" data-ab="pcapp">Get the PC app</button>' : ''}</p>
 <h3 class="gth">Problems</h3><p class="mute">Errors the app ran into, newest first. If something breaks, copy the report and send it along with what you were doing.</p>${rows}
 <p><button class="b" data-ab="copy">Copy problem report</button> <button class="g" data-ab="clear"${L.length ? '' : ' disabled'}>Clear</button> <span class="mute" id="gtabm"></span></p></div>`;
   }
@@ -166,6 +170,8 @@ ${list.map((c) => `<div class="gtnv"><small>${esc(c.date)}</small><ul>${c.items.
       const b = e.target.closest('[data-ab]'); if (!b) return;
       const a = b.dataset.ab, msg = (t) => { const s = document.getElementById('gtabm'); if (s) s.textContent = t; };
       if (a === 'news') { showNews(true); return; }
+      if (a === 'beta') { location.href = 'beta/'; return; }
+      if (a === 'unbeta') { location.href = '../'; return; }
       if (a === 'status') { openLink(SITE + '/status'); return; }
       if (a === 'privacy') { openLink(SITE + '/privacy'); return; }
       if (a === 'pcapp') { location.href = window.__GT_DL__; return; }

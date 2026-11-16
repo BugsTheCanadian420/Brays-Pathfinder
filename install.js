@@ -96,7 +96,28 @@
     window.dispatchEvent(new Event('resize')); // the top bar re-fits its tabs around the new button
   }
 
-  const start = () => { pcButton(); setTimeout(banner, 4000); };
+  // ---------- beta copy of the site (<site>/beta/) ----------
+  // On the beta: a small "Beta" button in the top bar that explains it and leads back. On the regular site: note whether a
+  // beta is published right now, so Settings > About & help can offer it.
+  function betaChip() {
+    if (!window.__GT_BETA__ || document.getElementById('gtbeta')) return;
+    const hd = document.querySelector('header.gtbar') || document.querySelector('header'); if (!hd) return;
+    const b = document.createElement('button'); b.id = 'gtbeta'; b.type = 'button'; b.textContent = 'Beta'; b.title = 'You are on the beta version of Pathfinder';
+    b.style.cssText = 'order:4;flex:none;margin-left:8px;background:#e8b84a;color:#16130a;border:0;border-radius:16px;padding:4px 11px;font:700 11.5px system-ui,sans-serif;letter-spacing:.05em;cursor:pointer';
+    b.addEventListener('click', () => {
+      let p = document.getElementById('gtdlp'); if (p) { p.remove(); return; }
+      p = document.createElement('div'); p.id = 'gtdlp';
+      const r = b.getBoundingClientRect(); p.style.top = (r.bottom + 6) + 'px'; p.style.left = Math.max(8, Math.min(innerWidth - 308, r.right - 300)) + 'px';
+      p.innerHTML = '<b>You are on the beta</b><p>This is the next version of Pathfinder, published early to try out. It uses the same sign-in and settings as the regular site, and things here may still change or break.</p><a class="dl" href="../">Back to the regular site</a>';
+      document.body.appendChild(p);
+      const close = (e) => { if (!p.contains(e.target) && e.target !== b) { p.remove(); document.removeEventListener('mousedown', close, true); document.removeEventListener('touchstart', close, true); } };
+      setTimeout(() => { document.addEventListener('mousedown', close, true); document.addEventListener('touchstart', close, true); }, 0);
+    });
+    hd.appendChild(b); window.dispatchEvent(new Event('resize'));
+  }
+  if (!window.__GT_BETA__) fetch('beta/beta.json', { cache: 'no-store' }).then((x) => (x.ok ? x.json() : null)).then((j) => { if (j && j.v) window.__gtbetaInfo = j; }).catch(() => {});
+
+  const start = () => { pcButton(); betaChip(); setTimeout(banner, 4000); };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
   window.__gtinstall = { banner, pcButton, state: () => ({ deferred: !!deferred, standalone: standalone(), phone: phone(), isIOS, isAndroid, inApp, isWin }) };
 })();

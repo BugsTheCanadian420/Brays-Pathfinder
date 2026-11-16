@@ -22,6 +22,13 @@ export default {
     const u0 = new URL(request.url), p0 = u0.pathname.replace(/\/+$/, '').toLowerCase();
     // status.<your domain> is a short way to the status page (it lives on the main address, where Bungie allows the checks)
     if (DOMAIN && u0.hostname.toLowerCase() === 'status.' + DOMAIN) return Response.redirect('https://' + DOMAIN + '/status', 302);
+    if (DOMAIN && u0.hostname.toLowerCase() === 'beta.' + DOMAIN) return Response.redirect('https://' + DOMAIN + '/beta/', 302);
+    if (p0 === '/beta' && !u0.pathname.endsWith('/')) return Response.redirect(u0.origin + '/beta/', 302);
+    if (p0 === '/beta' || p0.startsWith('/beta/')) { // no beta published right now: the regular site
+      const rb = await env.ASSETS.fetch(request);
+      if (rb.status === 404 && (p0 === '/beta' || p0 === '/beta/index.html')) return Response.redirect(u0.origin + '/', 302);
+      return rb;
+    }
     if (REPO && (request.method === 'GET' || request.method === 'HEAD') && (p0 === '/download' || p0 === '/download/windows' || p0 === '/download/info')) {
       try {
         const rel = await latest();

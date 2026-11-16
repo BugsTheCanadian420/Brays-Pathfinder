@@ -204,7 +204,10 @@
   // ---------- sign-in by redirect ----------
   const BASE_URL = location.origin + location.pathname.replace(/[^/]*$/, '');
   G.flush = () => flush();
-  G.authRedirect = (url, state) => { try { sessionStorage.setItem('gt.oauth.state', state); } catch (e) { /* private mode */ } let gone = false; const go = () => { if (!gone) { gone = true; location.assign(url); } }; flush().then(go, go); setTimeout(go, 1500); }; // saved changes (like a stashed account) reach storage before the page leaves
+  // Bungie always sends a sign-in back to the regular site. Started from the beta copy (/beta/), remember that so the regular
+  // site hands you back to the beta once you are signed in (both copies share the same sign-in and settings).
+  const IS_BETA = !!window.__GT_BETA__;
+  G.authRedirect = (url, state) => { try { sessionStorage.setItem('gt.oauth.state', state); if (IS_BETA) localStorage.setItem('gt_beta_back', String(Date.now())); } catch (e) { /* private mode */ } let gone = false; const go = () => { if (!gone) { gone = true; location.assign(url); } }; flush().then(go, go); setTimeout(go, 1500); }; // saved changes (like a stashed account) reach storage before the page leaves
 
   // ---------- start: load saved files and the site config, then run main.js ----------
   let readyRes; G.ready = new Promise((r) => { readyRes = r; });
@@ -224,6 +227,11 @@
       if (code && state && state === want) { try { await G.handlers['auth:webcode']({}, { code }); } catch (e) { G.signInError = (e && e.message) || String(e); } }
       else if (code) G.signInError = 'That sign-in link was not started from this page. Please sign in again.';
       else G.signInError = 'Bungie sign-in was cancelled.';
+    }
+    if (!code && !IS_BETA) { try { localStorage.removeItem('gt_beta_back'); } catch (e) { /* storage off */ } } // a sign-in from the beta that was never finished
+    if (code && !G.signInError && !IS_BETA) {
+      let back = 0; try { back = +localStorage.getItem('gt_beta_back') || 0; localStorage.removeItem('gt_beta_back'); } catch (e) { /* storage off */ }
+      if (back && Date.now() - back < 15 * 60000) { try { await flush(); } catch (e) { /* go anyway */ } location.replace(BASE_URL + 'beta/'); return; }
     }
     readyRes();
     if (G.signInError) {
