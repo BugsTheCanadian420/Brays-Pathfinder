@@ -1,0 +1,202 @@
+/* =====================================================================================================
+   BETA — Pathfinder's own look: "Trail map" (Settings > Interface style > Beta, and Settings > Theme > Beta).
+   The idea comes from the name. A pathfinder reads a map and marks a route, so:
+     - the background is a contour map (app/topo.svg), drawn faintly;
+     - the one loud thing is the trail: a thin route line with a diamond waypoint. It marks the tab you are on and
+       starts every section heading. Nothing else glows, floats or blurs;
+     - headings, tabs, buttons and numbers use road-sign lettering (Bahnschrift on Windows, DIN on Apple, a condensed
+       sans on Android), written in normal sentence case instead of spaced-out capitals;
+     - panels are flat map-paper sheets with a hairline edge and square-ish corners.
+   Interface style rules start with  :root[data-ui="beta"]   Theme rules start with  :root[data-gt="beta"]
+   ===================================================================================================== */
+
+/* ---------- BETA INTERFACE STYLE ---------- */
+:root[data-ui="beta"]{
+  --b-font:'Bahnschrift','DIN Alternate','DIN Condensed','Roboto Condensed','Arial Narrow',sans-serif-condensed,'Segoe UI',sans-serif;
+  --b-ink:#0b141a;--b-paper:#e9eef0;--b-mute:#8fa0a8;--b-route:var(--g-accent,#f2b441);
+  --g-panel:rgba(15,25,32,.9)!important;--g-solid:#101a21!important;--g-col:rgba(255,255,255,.018)!important;
+  --g-line:#23333d!important;--g-btn:#16242d!important;--g-deep:rgba(4,9,12,.55)!important;
+  --b-radius:3px;
+}
+:root[data-ui="beta"] body{font-family:'Open Sans','Segoe UI',Arial,sans-serif!important;letter-spacing:0;color:var(--b-paper)}
+:root[data-ui="beta"]:not([data-gx="1"]) body{background:var(--b-ink) url(topo.svg) center/cover fixed no-repeat!important}
+
+/* the diamond waypoint, reused below */
+:root[data-ui="beta"] .dsec::before,:root[data-ui="beta"] #activity h3.sec::before,:root[data-ui="beta"] #home .hm-sec::before,:root[data-ui="beta"] #hub .hsec h4::before,:root[data-ui="beta"] .card h2::before{
+  content:''!important;display:inline-block!important;flex:none;width:7px;height:7px;margin:0 2px 0 3px;border:1.5px solid var(--b-route);background:none!important;border-radius:0!important;transform:rotate(45deg);box-shadow:none!important}
+
+/* top bar: quiet strip, the route line runs along its bottom edge and the current tab is the waypoint on it */
+:root[data-ui="beta"] header.gtbar{background:rgba(9,17,22,.94)!important;border-bottom:1px solid var(--g-line)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;box-shadow:none!important}
+:root[data-ui="beta"] header.gtbar nav button{font-family:var(--b-font)!important;text-transform:none!important;letter-spacing:.02em!important;font-weight:500!important;font-size:clamp(13.5px,.95vw,15.5px)!important;color:var(--b-mute)!important;border-radius:0!important;background:none!important;box-shadow:none!important;transition:color .12s}
+:root[data-ui="beta"] header.gtbar nav button:hover{color:var(--b-paper)!important;background:none!important}
+:root[data-ui="beta"] header.gtbar nav button.on,:root[data-ui="beta"] header.gtbar nav #gtmore.has{color:#fff!important;font-weight:600!important;background:none!important;box-shadow:inset 0 -2px 0 var(--b-route)!important}
+:root[data-ui="beta"] header.gtbar nav button.on::after,:root[data-ui="beta"] header.gtbar nav #gtmore.has::after{content:''!important;display:block!important;position:absolute;left:50%;bottom:-4px;width:7px;height:7px;margin-left:-4px;background:var(--b-route);transform:rotate(45deg);box-shadow:0 0 0 2px rgba(9,17,22,.94)}
+:root[data-ui="beta"] header.gtbar nav button.gtset.on::after{display:none!important}
+:root[data-ui="beta"] #gtsrch .vbar input{border-radius:var(--b-radius)!important;background-color:rgba(255,255,255,.04)!important;border:1px solid var(--g-line)!important}
+:root[data-ui="beta"] #gtsrch .vbar .vtg,:root[data-ui="beta"] #gtsrch .vbar button.g{border-radius:var(--b-radius)!important;background:rgba(255,255,255,.03)!important;border-color:var(--g-line)!important}
+:root[data-ui="beta"] #gtdl{border-radius:var(--b-radius)!important;font-family:var(--b-font)!important;font-size:13.5px!important;letter-spacing:.02em!important}
+
+/* section headings: waypoint, name in sentence case, then the dashed trail to the edge */
+:root[data-ui="beta"] .dsec,:root[data-ui="beta"] #activity h3.sec,:root[data-ui="beta"] #home .hm-sec,:root[data-ui="beta"] #hub .hsec h4{
+  display:flex!important;align-items:center;gap:9px;font-family:var(--b-font)!important;font-size:16px!important;font-weight:600!important;letter-spacing:.015em!important;text-transform:none!important;color:var(--b-paper)!important}
+:root[data-ui="beta"] .dsec::after,:root[data-ui="beta"] #activity h3.sec::after,:root[data-ui="beta"] #home .hm-sec::after{content:''!important;display:block!important;flex:1;height:0!important;background:none!important;border-top:1px dashed #33474f}
+:root[data-ui="beta"] .pmh .dsec::after{display:none!important}
+:root[data-ui="beta"] .dsec small{font-family:'Open Sans','Segoe UI',sans-serif;letter-spacing:0;color:var(--b-mute)}
+:root[data-ui="beta"] #hub .hsec span{color:var(--b-mute)}
+
+/* panels: flat sheets, hairline edge, no glass */
+:root[data-ui="beta"] .card,:root[data-ui="beta"] section.gdark .card,:root[data-ui="beta"] #home .hm-c,:root[data-ui="beta"] #activity .acard,:root[data-ui="beta"] #hub .hcard,:root[data-ui="beta"] #hub .hhero{
+  border-radius:var(--b-radius)!important;border:1px solid var(--g-line)!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+:root[data-ui="beta"] .card,:root[data-ui="beta"] section.gdark .card,:root[data-ui="beta"] #home .hm-c{background:var(--g-panel)!important}
+:root[data-ui="beta"] #home .hm-c::before{height:0!important}
+:root[data-ui="beta"] #home .hm-c:hover,:root[data-ui="beta"] #activity .acard.clk:hover,:root[data-ui="beta"] #hub .hcard:hover{border-color:var(--b-route)!important;box-shadow:none!important;transform:none!important}
+:root[data-ui="beta"] #activity .acard[data-ak]{border-color:color-mix(in srgb,var(--akc) 45%,var(--g-line))!important}
+:root[data-ui="beta"] section.gdark h2,:root[data-ui="beta"] .card h2{display:flex;align-items:center;gap:9px;font-family:var(--b-font)!important;font-size:18px!important;font-weight:600!important;letter-spacing:.015em!important;text-transform:none!important;color:#fff!important}
+:root[data-ui="beta"] #hub .hcard h3,:root[data-ui="beta"] #hub .hhero h2,:root[data-ui="beta"] #home .hm-c h3,:root[data-ui="beta"] #activity .acard>b{font-family:var(--b-font)!important;text-transform:none!important;letter-spacing:.015em!important}
+:root[data-ui="beta"] #hub .hcard h3{font-size:17px!important}
+:root[data-ui="beta"] #hub .hhero small{display:none}
+:root[data-ui="beta"] #hub .hmono{border-radius:0!important;transform:rotate(45deg) scale(.78);box-shadow:none!important}
+:root[data-ui="beta"] #hub .hmono{font-size:0!important}
+:root[data-ui="beta"] #hub .hcard .go{text-transform:none!important;letter-spacing:.02em!important;font-family:var(--b-font)!important;font-size:14px!important}
+
+/* buttons, chips, inputs: sign plates */
+:root[data-ui="beta"] section.gdark button,:root[data-ui="beta"] #vault button.g,:root[data-ui="beta"] #vault button.b,:root[data-ui="beta"] button.g,:root[data-ui="beta"] button.b{
+  border-radius:var(--b-radius)!important;border:1px solid var(--g-line)!important;font-family:var(--b-font)!important;font-size:14px;letter-spacing:.02em!important;text-transform:none!important;transition:background .12s,border-color .12s,color .12s}
+:root[data-ui="beta"] section.gdark button:hover,:root[data-ui="beta"] button.g:hover{background:rgba(255,255,255,.07)!important;border-color:#46606b!important}
+:root[data-ui="beta"] button.b,:root[data-ui="beta"] section.gdark button.on,:root[data-ui="beta"] #activity .abar button.on,:root[data-ui="beta"] #hub .hbar button.on,:root[data-ui="beta"] .chip.on{background:var(--b-route)!important;color:var(--g-on-accent,#10161a)!important;border-color:transparent!important;font-weight:600!important}
+:root[data-ui="beta"] #activity .abar button,:root[data-ui="beta"] #hub .hbar button{letter-spacing:.02em!important;text-transform:none!important;font-size:14px!important;border-radius:var(--b-radius)!important}
+:root[data-ui="beta"] section.gdark input:not([type=checkbox]):not([type=range]):not([type=color]),:root[data-ui="beta"] section.gdark select,:root[data-ui="beta"] section.gdark textarea{border-radius:var(--b-radius)!important;background:rgba(255,255,255,.04)!important;border:1px solid var(--g-line)!important}
+:root[data-ui="beta"] input[type=range]{accent-color:var(--b-route)}
+:root[data-ui="beta"] :focus-visible{outline:2px solid var(--b-route)!important;outline-offset:2px}
+
+/* item tiles: square with a survey outline on hover; power numbers in the sign lettering */
+:root[data-ui="beta"] .vt{border-radius:2px!important;box-shadow:none!important}
+:root[data-ui="beta"] .vt>img:first-child{border-radius:1px}
+:root[data-ui="beta"] .vt:hover{box-shadow:none!important;outline:1.5px solid var(--b-route);outline-offset:2px;transform:none!important}
+:root[data-ui="beta"] .vt .ft{font-family:var(--b-font)!important;letter-spacing:.01em}
+:root[data-ui="beta"] .cht{border-radius:var(--b-radius)!important;overflow:hidden}
+:root[data-ui="beta"] .cht b,:root[data-ui="beta"] .cht .pw{font-family:var(--b-font)!important;letter-spacing:.01em}
+:root[data-ui="beta"] #home .hm-ch{border-radius:var(--b-radius)!important}
+
+/* item pop-up and other floating sheets */
+:root[data-ui="beta"] .dpm,:root[data-ui="beta"] .dps,:root[data-ui="beta"] #junkm .jk,:root[data-ui="beta"] .gtdrop,:root[data-ui="beta"] #vnote{border-radius:var(--b-radius)!important;background:#0e181f!important;border:1px solid #2c404b!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;box-shadow:0 14px 34px rgba(0,0,0,.5)!important}
+:root[data-ui="beta"] .gtdrop{border-left:3px solid var(--dc)!important}
+:root[data-ui="beta"] .dps button{border-radius:var(--b-radius)!important}
+:root[data-ui="beta"] .dph b,:root[data-ui="beta"] .dph h3{font-family:var(--b-font)!important;letter-spacing:.015em!important}
+
+/* phones: the tab you are on gets the route line and waypoint on the bottom bar */
+:root[data-ui="beta"] #gtw-tabs{background:rgba(9,17,22,.96)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;border-top:1px solid var(--g-line)!important}
+:root[data-ui="beta"] #gtw-tabs button{position:relative;font-family:var(--b-font)!important;font-size:12px!important;font-weight:500!important}
+:root[data-ui="beta"] #gtw-tabs button.on{color:#fff!important;box-shadow:inset 0 2px 0 var(--b-route)!important}
+:root[data-ui="beta"] #gtw-tabs button.on::before{content:'';position:absolute;left:50%;top:-4px;width:7px;height:7px;margin-left:-4px;background:var(--b-route);transform:rotate(45deg)}
+
+/* settings picker preview for this style: a scrap of map with the trail on it */
+.uic.u-beta i{position:relative;overflow:hidden;border-radius:3px;background:repeating-radial-gradient(circle at 78% 30%,transparent 0 9px,rgba(127,179,189,.28) 9px 10px),#0b141a;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
+.uic.u-beta i::before{content:'';position:absolute;left:12%;right:12%;bottom:30%;border-top:1.5px dashed #f2b441}
+.uic.u-beta i::after{content:'';position:absolute;left:50%;bottom:30%;width:8px;height:8px;margin:0 0 -4px -4px;background:#f2b441;transform:rotate(45deg)}
+
+/* ---------- BETA THEME (colours and background; the base colours come from the theme list in vault.js) ---------- */
+:root[data-gt="beta"]{--g-bg:#0b141a;--g-panel:rgba(15,25,32,.88);--g-col:rgba(14,23,30,.6);--g-line:#23333d;--g-deep:rgba(4,9,12,.8);--g-btn:#16242d;--g-solid:#101a21}
+
+/* small labels follow the same lettering, in sentence case */
+:root[data-ui="beta"] #home .hm-h,:root[data-ui="beta"] .thh,:root[data-ui="beta"] #home .hm-c .go,:root[data-ui="beta"] #home .hm-row .r{font-family:var(--b-font)!important;text-transform:none!important;letter-spacing:.02em!important}
+:root[data-ui="beta"] #home .hm-h{font-size:15px!important;color:var(--b-paper)!important}
+:root[data-ui="beta"] .thh{font-size:14px!important;color:var(--b-mute)!important}
+:root[data-ui="beta"] #home .hm-c .go{font-size:13px!important;color:var(--b-mute)!important}
+
+/* phones: the character switcher follows the same square plates */
+:root[data-ui="beta"] .phsw button{border-radius:var(--b-radius)!important;font-family:var(--b-font)!important}
+:root[data-ui="beta"] .phsw button.on{box-shadow:inset 0 -2px 0 var(--b-route)!important;border-color:var(--g-line)!important}
+
+/* =====================================================================================================
+   BETA, second pass: softer and more modern. Same identity (contour map, the waypoint diamond, the trail), but:
+   rounded glass panels with depth instead of flat square sheets, the system's modern UI lettering instead of the
+   condensed road-sign face, the current tab as a soft pill, and gentle accent light in the background.
+   These rules come last on purpose: they replace the matching ones above.
+   ===================================================================================================== */
+:root[data-ui="beta"]{
+  --b-font:'Segoe UI Variable Display','Segoe UI Variable Text','SF Pro Display',-apple-system,BlinkMacSystemFont,'Inter','Roboto','Segoe UI',system-ui,sans-serif;
+  --b-radius:12px;--b-r2:9px;--b-ink:#0a1117;--b-mute:#93a1ab;
+  --g-panel:rgba(18,28,36,.72)!important;--g-solid:#111b23!important;--g-col:rgba(255,255,255,.02)!important;
+  --g-line:rgba(255,255,255,.08)!important;--g-btn:rgba(255,255,255,.05)!important;--g-deep:rgba(4,9,12,.5)!important;
+  --b-glass:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.012));
+  --b-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 14px 34px -20px rgba(0,0,0,.75);
+}
+:root[data-ui="beta"] body{font-family:var(--b-font)!important;-webkit-font-smoothing:antialiased}
+:root[data-ui="beta"]:not([data-gx="1"]) body{background:
+  radial-gradient(900px 520px at 88% -8%,color-mix(in srgb,var(--b-route) 13%,transparent),transparent 62%),
+  radial-gradient(760px 520px at -6% 104%,rgba(63,143,160,.16),transparent 60%),
+  url(topo.svg) center/cover no-repeat,var(--b-ink)!important;background-attachment:fixed!important}
+
+/* top bar: frosted, the current tab is a soft pill with the waypoint in front of its name */
+:root[data-ui="beta"] header.gtbar{background:rgba(10,17,23,.72)!important;-webkit-backdrop-filter:blur(18px) saturate(1.3)!important;backdrop-filter:blur(18px) saturate(1.3)!important;border-bottom:1px solid rgba(255,255,255,.07)!important}
+:root[data-ui="beta"] header.gtbar nav button{font-weight:500!important;letter-spacing:0!important;border-radius:999px!important;padding-left:13px!important;padding-right:13px!important;transition:color .15s,background-color .15s}
+:root[data-ui="beta"] header.gtbar nav button:hover{background:rgba(255,255,255,.05)!important}
+:root[data-ui="beta"] header.gtbar nav button.on,:root[data-ui="beta"] header.gtbar nav #gtmore.has{background:color-mix(in srgb,var(--b-route) 15%,transparent)!important;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--b-route) 30%,transparent)!important;color:#fff!important}
+:root[data-ui="beta"] header.gtbar nav button.on::after,:root[data-ui="beta"] header.gtbar nav #gtmore.has::after{display:none!important}
+:root[data-ui="beta"] header.gtbar nav button.on::before{content:'';display:inline-block;width:6px;height:6px;margin-right:8px;vertical-align:1px;background:var(--b-route);border-radius:1.5px;transform:rotate(45deg);box-shadow:0 0 8px color-mix(in srgb,var(--b-route) 70%,transparent)}
+:root[data-ui="beta"] header.gtbar nav button.gtset.on::before{display:none}
+:root[data-ui="beta"] #gtsrch .vbar input{border-radius:999px!important;background-color:rgba(255,255,255,.05)!important;border:1px solid rgba(255,255,255,.08)!important}
+:root[data-ui="beta"] #gtsrch .vbar .vtg,:root[data-ui="beta"] #gtsrch .vbar button.g{border-radius:var(--b-r2)!important;background:rgba(255,255,255,.04)!important;border-color:rgba(255,255,255,.08)!important}
+:root[data-ui="beta"] #gtdl{border-radius:999px!important}
+
+/* section headings: the waypoint, the name, then the trail fading out */
+:root[data-ui="beta"] .dsec,:root[data-ui="beta"] #activity h3.sec,:root[data-ui="beta"] #home .hm-sec,:root[data-ui="beta"] #hub .hsec h4{font-size:15px!important;letter-spacing:-.005em!important;font-weight:650!important}
+:root[data-ui="beta"] .dsec::before,:root[data-ui="beta"] #activity h3.sec::before,:root[data-ui="beta"] #home .hm-sec::before,:root[data-ui="beta"] #hub .hsec h4::before,:root[data-ui="beta"] .card h2::before{border:0!important;background:var(--b-route)!important;border-radius:1.5px!important;width:6px;height:6px;box-shadow:0 0 8px color-mix(in srgb,var(--b-route) 60%,transparent)!important}
+:root[data-ui="beta"] .dsec::after,:root[data-ui="beta"] #activity h3.sec::after,:root[data-ui="beta"] #home .hm-sec::after{border-top:0!important;height:1px!important;background:linear-gradient(90deg,rgba(255,255,255,.14),transparent 85%)!important}
+
+/* panels: rounded glass with a little depth */
+:root[data-ui="beta"] .card,:root[data-ui="beta"] section.gdark .card,:root[data-ui="beta"] #home .hm-c,:root[data-ui="beta"] #hub .hhero{
+  border-radius:var(--b-radius)!important;border:1px solid rgba(255,255,255,.075)!important;background:var(--b-glass),var(--g-panel)!important;box-shadow:var(--b-shadow)!important;-webkit-backdrop-filter:blur(14px) saturate(1.2)!important;backdrop-filter:blur(14px) saturate(1.2)!important}
+:root[data-ui="beta"] #settings .card{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background:var(--b-glass),rgba(18,28,36,.9)!important}
+:root[data-ui="beta"] #activity .acard,:root[data-ui="beta"] #hub .hcard{border-radius:var(--b-radius)!important;box-shadow:var(--b-shadow)!important}
+:root[data-ui="beta"] #home .hm-c:hover,:root[data-ui="beta"] #activity .acard.clk:hover,:root[data-ui="beta"] #hub .hcard:hover{border-color:color-mix(in srgb,var(--b-route) 45%,transparent)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 18px 38px -18px rgba(0,0,0,.8),0 0 0 1px color-mix(in srgb,var(--b-route) 18%,transparent)!important;transform:translateY(-2px)!important}
+:root[data-ui="beta"] section.gdark h2,:root[data-ui="beta"] .card h2{font-size:17px!important;letter-spacing:-.01em!important;font-weight:650!important}
+:root[data-ui="beta"] #hub .hcard h3,:root[data-ui="beta"] #hub .hhero h2,:root[data-ui="beta"] #home .hm-c h3,:root[data-ui="beta"] #activity .acard>b{letter-spacing:-.01em!important;font-weight:650!important}
+:root[data-ui="beta"] #hub .hcard h3{font-size:16px!important}
+:root[data-ui="beta"] #hub .hmono{border-radius:10px!important;transform:none!important;font-size:13px!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 6px 14px -8px var(--hc)!important}
+:root[data-ui="beta"] #hub .hcard::before{width:0!important}
+:root[data-ui="beta"] #hub .hcard .go{letter-spacing:0!important;font-weight:600!important;font-size:13.5px!important}
+
+/* buttons, chips, inputs */
+:root[data-ui="beta"] section.gdark button,:root[data-ui="beta"] #vault button.g,:root[data-ui="beta"] #vault button.b,:root[data-ui="beta"] button.g,:root[data-ui="beta"] button.b{
+  border-radius:var(--b-r2)!important;border:1px solid rgba(255,255,255,.09)!important;letter-spacing:0!important;font-weight:550;font-size:13.5px}
+:root[data-ui="beta"] section.gdark button:hover,:root[data-ui="beta"] button.g:hover{background:rgba(255,255,255,.09)!important;border-color:rgba(255,255,255,.18)!important}
+:root[data-ui="beta"] button.b,:root[data-ui="beta"] section.gdark button.on,:root[data-ui="beta"] #activity .abar button.on,:root[data-ui="beta"] #hub .hbar button.on,:root[data-ui="beta"] .chip.on{
+  background:linear-gradient(180deg,color-mix(in srgb,var(--b-route) 100%,#fff 0%),color-mix(in srgb,var(--b-route) 82%,#000))!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 8px 18px -10px var(--b-route)!important;border-color:transparent!important}
+:root[data-ui="beta"] #activity .abar button,:root[data-ui="beta"] #hub .hbar button{border-radius:999px!important;letter-spacing:0!important;font-size:13.5px!important}
+:root[data-ui="beta"] section.gdark input:not([type=checkbox]):not([type=range]):not([type=color]),:root[data-ui="beta"] section.gdark select,:root[data-ui="beta"] section.gdark textarea{border-radius:var(--b-r2)!important;background-color:rgba(255,255,255,.05)!important;border:1px solid rgba(255,255,255,.09)!important}
+:root[data-ui="beta"] header.gtbar nav button{border:0!important}
+
+/* item tiles: softly rounded, an accent ring on hover */
+:root[data-ui="beta"] .vt{border-radius:7px!important;overflow:hidden}
+:root[data-ui="beta"] .vt>img:first-child{border-radius:0}
+:root[data-ui="beta"] .vt:hover{outline:0!important;box-shadow:0 0 0 2px var(--b-route),0 8px 18px -8px rgba(0,0,0,.8)!important}
+:root[data-ui="beta"] .vt .ft,:root[data-ui="beta"] .cht b,:root[data-ui="beta"] .cht .pw{letter-spacing:0!important;font-variant-numeric:tabular-nums}
+:root[data-ui="beta"] .cht,:root[data-ui="beta"] #home .hm-ch{border-radius:var(--b-radius)!important}
+
+/* pop-ups and floating sheets */
+:root[data-ui="beta"] .dpm,:root[data-ui="beta"] .dps,:root[data-ui="beta"] #junkm .jk,:root[data-ui="beta"] .gtdrop,:root[data-ui="beta"] #vnote,:root[data-ui="beta"] #gtctx,:root[data-ui="beta"] #dlpp{border-radius:var(--b-radius)!important;background:#101a22!important;border:1px solid rgba(255,255,255,.1)!important;box-shadow:0 24px 60px -18px rgba(0,0,0,.85),inset 0 1px 0 rgba(255,255,255,.05)!important}
+:root[data-ui="beta"] .dpm{overflow:hidden auto}
+:root[data-ui="beta"] .gtdrop{border-left:3px solid var(--dc)!important}
+:root[data-ui="beta"] .dps button{border-radius:var(--b-r2)!important}
+:root[data-ui="beta"] .dph b,:root[data-ui="beta"] .dph h3{letter-spacing:-.01em!important}
+
+/* phones */
+:root[data-ui="beta"] #gtw-tabs{background:rgba(10,17,23,.78)!important;-webkit-backdrop-filter:blur(18px) saturate(1.3)!important;backdrop-filter:blur(18px) saturate(1.3)!important;border-top:1px solid rgba(255,255,255,.07)!important}
+:root[data-ui="beta"] #gtw-tabs button{font-size:11.5px!important;letter-spacing:0!important}
+:root[data-ui="beta"] #gtw-tabs button.on{box-shadow:none!important;color:#fff!important}
+:root[data-ui="beta"] #gtw-tabs button.on::before{top:6px;left:50%;width:46px;height:30px;margin-left:-23px;border-radius:999px;transform:none;background:color-mix(in srgb,var(--b-route) 20%,transparent);z-index:-1}
+:root[data-ui="beta"] #gtw-tabs button.on svg{color:var(--b-route)}
+:root[data-ui="beta"] .phsw button{border-radius:999px!important}
+:root[data-ui="beta"] .phsw button.on{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--b-route) 40%,transparent)!important;background:color-mix(in srgb,var(--b-route) 14%,transparent)!important}
+
+/* small labels */
+:root[data-ui="beta"] #home .hm-h,:root[data-ui="beta"] .thh,:root[data-ui="beta"] #home .hm-c .go,:root[data-ui="beta"] #home .hm-row .r{letter-spacing:0!important}
+:root[data-ui="beta"] #home .hm-h{font-weight:650!important}
+
+/* settings picker preview */
+.uic.u-beta i{border-radius:8px;background:radial-gradient(60% 70% at 85% 0,rgba(242,180,65,.35),transparent 70%),repeating-radial-gradient(circle at 78% 30%,transparent 0 9px,rgba(127,179,189,.22) 9px 10px),#0a1117}
+.uic.u-beta i::before{border-top:0;height:1px;background:linear-gradient(90deg,#f2b441,transparent)}
+.uic.u-beta i::after{left:14%;border-radius:2px;box-shadow:0 0 8px #f2b441}
+:root[data-ui="beta"] header.gtbar nav#nav button{letter-spacing:.01em!important;height:32px!important;min-height:0!important;align-self:center!important;line-height:1!important}
