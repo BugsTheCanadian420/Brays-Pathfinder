@@ -221,7 +221,9 @@ async function api(p, auth = true) {
   const c = rd();
   const h = { 'X-API-Key': c.apiKey, 'User-Agent': UA };
   if (auth) h.Authorization = 'Bearer ' + c.tok.access;
-  const r = await fetch(BASE + '/Platform' + p, { headers: h });
+  // A request Bungie never answers would leave a pop-up loading forever; give up after 20 seconds instead.
+  const sig = typeof AbortSignal !== 'undefined' && AbortSignal.timeout ? AbortSignal.timeout(20000) : undefined;
+  const r = await fetch(BASE + '/Platform' + p, sig ? { headers: h, signal: sig } : { headers: h });
   const j = await readJson(r);
   if (j.ErrorCode !== 1) throw new Error(j.Message || 'Bungie error ' + j.ErrorCode);
   return j.Response;
@@ -674,17 +676,37 @@ H('vault:load', async () => {
 });
 
 // Stats and perks for one item (opened from the click menu).
-const entDef = async (tbl, h) => { const k = tbl + h; if (ENTC[k] !== undefined) return ENTC[k]; try { ENTC[k] = await api('/Destiny2/Manifest/' + tbl + '/' + h + '/', false); } catch (e) { ENTC[k] = null; } return ENTC[k]; };
+// Single definitions, kept on disk (trimmed to the parts the item pop-up uses) so a weapon opens instantly the next time,
+// and shared while a lookup is in flight so two pop-ups never ask Bungie for the same thing twice.
+const ENTF = () => path.join(app.getPath('userData'), 'entdefs1.json');
+let ENTD = null, ENTW = 0;
+const entLoad = () => { if (ENTD) return ENTD; try { ENTD = JSON.parse(fs.readFileSync(ENTF(), 'utf8')) || {}; } catch (e) { ENTD = {}; } return ENTD; };
+const entSave = () => { clearTimeout(ENTW); ENTW = setTimeout(() => { try { fs.writeFileSync(ENTF(), JSON.stringify(ENTD)); } catch (e) { /* memory only */ } }, 1500); };
+const entTrim = (tbl, o) => {
+  if (!o) return null;
+  if (tbl === 'DestinyInventoryItemDefinition') return { itemType: o.itemType, sockets: o.sockets && { socketCategories: o.sockets.socketCategories }, equippingBlock: o.equippingBlock && { equipableItemSetHash: o.equippingBlock.equipableItemSetHash } };
+  if (tbl === 'DestinyObjectiveDefinition') return { progressDescription: o.progressDescription, completionValue: o.completionValue, displayProperties: { name: o.displayProperties && o.displayProperties.name } };
+  if (tbl === 'DestinyEquipableItemSetDefinition') return { displayProperties: o.displayProperties, setPerks: o.setPerks };
+  if (tbl === 'DestinySandboxPerkDefinition') return { displayProperties: o.displayProperties };
+  return o;
+};
+const ENTP = {};
+const entDef = async (tbl, h) => {
+  const k = tbl + h; if (ENTC[k] !== undefined) return ENTC[k];
+  const disk = entLoad(); if (disk[k] !== undefined) return (ENTC[k] = disk[k]);
+  if (!ENTP[k]) ENTP[k] = api('/Destiny2/Manifest/' + tbl + '/' + h + '/', false).then((o) => entTrim(tbl, o), () => null).then((o) => { ENTC[k] = o; if (o) { disk[k] = o; entSave(); } delete ENTP[k]; return o; });
+  return ENTP[k];
+};
 const ARSH = [2996146975, 392767087, 1943323491, 1735777505, 144602215, 4244567218]; // weapons, health, class, grenade, super, melee
 const ARCHN = new Set(['paragon', 'brawler', 'gunner', 'specialist', 'grenadier', 'bulwark']); // Armor 3.0 archetypes
 H('item:detail', async (e, v) => { await ensureM();
   OBJ(v); const id = ID(v.id), h = v.h !== undefined ? HASH(v.h) : 0;
   const df = await defs();
-  const r = await api(`/Destiny2/${M.membershipType}/Profile/${M.membershipId}/Item/${id}/?components=300,301,304,305,309,310`);
+  // The live item and its definition are asked for at the same time (the definition is usually already on disk).
+  const [r, idf] = await Promise.all([api(`/Destiny2/${M.membershipType}/Profile/${M.membershipId}/Item/${id}/?components=300,301,304,305,309,310`), entDef('DestinyInventoryItemDefinition', h)]);
   const out = { stats: [], groups: [], cos: [] };
   const sv = (r.stats && r.stats.data && r.stats.data.stats) || {};
   const inst = (r.instance && r.instance.data) || {};
-  const idf = await entDef('DestinyInventoryItemDefinition', h);
   const isArmor = !!(idf && idf.itemType === 2);
   const socks = (r.sockets && r.sockets.data && r.sockets.data.sockets) || [];
   const rp = (r.reusablePlugs && r.reusablePlugs.data && r.reusablePlugs.data.plugs) || {};
@@ -743,7 +765,8 @@ H('item:detail', async (e, v) => { await ensureM();
     const sd = sh && await entDef('DestinyEquipableItemSetDefinition', sh);
     if (sd) {
       const sp = [];
-      for (const q of sd.setPerks || []) { const pd = await entDef('DestinySandboxPerkDefinition', q.sandboxPerkHash), dp = pd && pd.displayProperties; if (dp) sp.push({ n: dp.name || '', d: dp.description || '', i: dp.icon || '', rc: q.requiredSetCount || 0 }); }
+      const pds = await Promise.all((sd.setPerks || []).map((q) => entDef('DestinySandboxPerkDefinition', q.sandboxPerkHash)));
+      (sd.setPerks || []).forEach((q, qi) => { const pd = pds[qi], dp = pd && pd.displayProperties; if (dp) sp.push({ n: dp.name || '', d: dp.description || '', i: dp.icon || '', rc: q.requiredSetCount || 0 }); });
       out.set = { n: (sd.displayProperties && sd.displayProperties.name) || '', h: +sh, perks: sp.sort((a, b) => a.rc - b.rc) };
     }
   } catch (er) { /* set bonus not shown */ }
@@ -752,6 +775,8 @@ H('item:detail', async (e, v) => { await ensureM();
     const od = async (oh) => { const o = await entDef('DestinyObjectiveDefinition', oh); return o ? { n: (o.progressDescription || (o.displayProperties && o.displayProperties.name) || '').slice(0, 80), cv: o.completionValue || 0 } : null; };
     const obj = [];
     const po = (r.plugObjectives && r.plugObjectives.data && r.plugObjectives.data.objectivesPerPlug) || {};
+    const io0 = (r.objectives && r.objectives.data && r.objectives.data.objectives) || [];
+    await Promise.all([...Object.keys(po).slice(0, 12).flatMap((ph) => po[ph].slice(0, 3)), ...io0.slice(0, 8)].map((o) => entDef('DestinyObjectiveDefinition', o.objectiveHash)));
     for (const ph of Object.keys(po).slice(0, 12)) {
       const pd = df.p[ph];
       for (const o of po[ph].slice(0, 3)) { const d = await od(o.objectiveHash); if (d) obj.push({ k: /tracker/i.test((pd && pd.c) || '') ? 'tr' : 'pl', pn: (pd && pd.n) || '', i: (pd && pd.i) || '', n: d.n, p: o.progress || 0, c: o.completionValue || d.cv }); }

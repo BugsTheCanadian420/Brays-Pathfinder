@@ -2717,6 +2717,7 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
   async function openPop(id, el) {
     const x = byId(id); if (!x) return;
     sel = id; psel = {}; plast = null; pex = ''; noteEdit = false; PMSG = ''; ptab = 'ov'; stq = 0; popEl = el || null;
+    if (DET[id] && DET[id].err) delete DET[id]; // a failed load is tried again when the item is opened again
     // Wait a moment for the details (usually already on their way from the hover) so the pop-up opens once, at its full size.
     if (!x.ro && !noInst(x) && !DET[id]) { const p = fetchDet(x); await Promise.race([p, new Promise((r) => setTimeout(r, 350))]); if (sel !== id) return; }
     renderPop();
@@ -2734,11 +2735,16 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
   const PEND = {};
   function fetchDet(x) {
     const id = x.id; if (DET[id]) return Promise.resolve(DET[id]);
-    if (!PEND[id]) PEND[id] = gt.itemDetail({ id, h: x.h }).then((d) => (DET[id] = d), (e) => (DET[id] = { err: clean(e) })).finally(() => { delete PEND[id]; });
+    if (!PEND[id]) PEND[id] = Promise.race([gt.itemDetail({ id, h: x.h }), new Promise((_, no) => setTimeout(() => no(new Error('Bungie is taking too long to answer. Close and open the item to try again.')), 15000))]).then((d) => (DET[id] = d), (e) => (DET[id] = { err: clean(e) })).finally(() => { delete PEND[id]; });
     return PEND[id];
   }
   // Point at an item for a moment and its details start loading, so the pop-up usually opens complete instead of filling in a second later.
   let preT = 0;
+  // Phones and touch screens: start loading on the touch itself, a moment before the tap becomes a click.
+  sec.addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'mouse' || !D) return; const v = e.target.closest && e.target.closest('.vt[data-id]'); if (!v) return;
+    const x = byId(v.dataset.id); if (x && !x.ro && !noInst(x) && !DET[x.id]) fetchDet(x);
+  }, { passive: true });
   sec.addEventListener('pointerover', (e) => {
     if (e.pointerType !== 'mouse' || !D) return; const v = e.target.closest && e.target.closest('.vt[data-id]'); if (!v) return;
     clearTimeout(preT); preT = setTimeout(() => { const x = byId(v.dataset.id); if (x && !x.ro && !noInst(x) && !DET[x.id] && v.matches(':hover')) fetchDet(x); }, 140);

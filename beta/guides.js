@@ -66,20 +66,22 @@
   list.onclick = (e) => { const c = e.target.closest('[data-g],[data-old]'); if (!c) return; if (c.dataset.g) show(c.dataset.g); else if (oldOpen) { oldOpen(c.dataset.old); page.classList.remove('in'); } };
 
   // ---------- Community maps from app/g, placed with the encounter they belong to ----------
-  const STOP = new Set(['encounter', 'first', 'second', 'third', 'fourth', 'final', 'the', 'and', 'screenshots', 'maps', 'loot', 'overview', 'other', 'still', 'needs', 'secret', 'chests', 'chest', 'collectibles', 'section', 'sections', 'traversal']);
-  const words = (s) => norm(s).split(' ').filter((w) => w.length > 3 && !STOP.has(w));
+  // Each image's place was decided by looking at it (research/mapplace.py -> g.pl). Older or unlisted images fall back to
+  // their section: overview pictures go with the loot, chest pictures with the chests, the rest at the end.
   function shots(g) {
-    const F = g.b && full(g.b); const out = { by: {}, loot: [], chest: [], rest: [] };
+    const F = g.b && full(g.b); const out = { by: {}, top: [], loot: [], chest: [], rest: [] }, seen = new Set(), pl = g.pl || {};
     if (!F || !F.sections) return out;
     F.sections.forEach((s, i) => {
       if (/still needs maps/i.test(s.t || '')) return;
-      const ims = (s.img || []).map((cap, j) => ({ u: built(g.b + '|' + i + '_' + j), cap, sec: s.t })).filter((x) => x.u);
-      if (!ims.length) return;
-      if (/overview|loot/i.test(s.t)) { out.loot.push(...ims); return; }
-      if (/chest/i.test(s.t)) { out.chest.push(...ims); return; }
-      const w = words(s.t); let best = -1, bs = 0;
-      g.enc.forEach((e, k) => { const ew = new Set(words(e.n)); const sc = w.filter((x) => ew.has(x)).length; if (sc > bs) { bs = sc; best = k; } });
-      if (best >= 0) (out.by[best] = out.by[best] || []).push(...ims); else out.rest.push(...ims);
+      (s.img || []).forEach((cap, j) => {
+        const key = i + '_' + j, u = built(g.b + '|' + key); if (!u || seen.has(u)) return;
+        let to = pl[key];
+        if (to === 'skip') return;
+        if (to === undefined) to = /overview|loot/i.test(s.t) ? 'loot' : /chest/i.test(s.t) ? 'chest' : 'rest';
+        seen.add(u);
+        const x = { u, cap };
+        if (typeof to === 'number' && g.enc[to]) (out.by[to] = out.by[to] || []).push(x); else (out[to] || out.rest).push(x);
+      });
     });
     return out;
   }
@@ -142,7 +144,8 @@
     let h = `<button class="g gx-back" id="gback">← All guides</button>`;
     h += `<div class="gx-hero${a ? '' : ' ph'}" style="--cat:${catVar(g.type)}${a ? `;background-image:url('${E(B(a))}')` : ''}"><div class="gx-hc"><span class="gx-kind">${E(g.type)}</span><h2>${E(g.n)}</h2><div class="gx-facts"><div><small>Fireteam</small>${E(g.players)} players</div><div><small>Location</small>${E(g.loc)}</div><div><small>Released</small>${E(g.rel)}</div></div></div>${save ? `<span class="gx-save">${save}</span>` : ''}</div>`;
     h += `<p class="gx-intro">${E(g.intro)}</p>`;
-    if (g.basics && g.basics.length) h += `<div class="gx-sec" style="--cat:${catVar(g.type)}"><h3>Before you start</h3><ul class="gx-basics">${g.basics.map((b) => `<li>${E(b)}</li>`).join('')}</ul></div>`;
+    if (g.basics && g.basics.length) h += `<div class="gx-sec" style="--cat:${catVar(g.type)}"><h3>Before you start</h3><ul class="gx-basics">${g.basics.map((b) => `<li>${E(b)}</li>`).join('')}</ul>${shotHTML(S.top)}</div>`;
+    else if (S.top.length) h += `<div class="gx-sec" style="--cat:${catVar(g.type)}"><h3>Cheat sheets</h3>${shotHTML(S.top)}</div>`;
     h += `<div class="gx-toc" role="navigation" aria-label="Jump to">${g.enc.map((e, i) => `<a href="#gx-e${i}" data-jump="${i}" class="${e.kind === 'enc' ? 'e' : ''}"><i></i>${E(e.n)}</a>`).join('')}${g.chests && g.chests.length ? '<a href="#gx-chests" data-jump="chests">Hidden chests</a>' : ''}<a href="#gx-loot" data-jump="loot">Loot</a></div>`;
     h += `<div class="gx-sec" style="--cat:${catVar(g.type)}"><h3>The route</h3><div class="gx-route">${g.enc.map((e, i) => wpHTML(g, e, i, S)).join('')}</div></div>`;
     if (g.chests && g.chests.length) h += `<div class="gx-sec" id="gx-chests" style="--cat:${catVar(g.type)}"><h3>Hidden chests</h3><ul class="gx-list">${g.chests.map((c) => `<li>${E(c)}</li>`).join('')}</ul>${shotHTML(S.chest)}</div>`;

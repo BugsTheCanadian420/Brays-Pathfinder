@@ -1,0 +1,109 @@
+/* =====================================================================================================
+   IN-GAME — made to look like Destiny 2's own menus (Settings > Interface style > In-game).
+   What the game does, copied on purpose:
+     - a dark, blurred scene behind everything, darker at the edges;
+     - Helvetica-style lettering (the game uses Neue Haas Grotesk): big bold uppercase titles, small labels in wide
+       uppercase tracking, light level in gold with the diamond;
+     - the director tabs centred along the top, the current one white with a bar under it, and the Q / E keys either side;
+     - square everything: thin white frames, frosted black panels, buttons that turn white when you point at them;
+     - the item inspect card: a rarity-coloured header with the name in heavy capitals, the type underneath, then a
+       smoky black body; perks as circles, the active one filled in the game's blue.
+   Loaded after vault.js's own in-game rules, so these win.
+   ===================================================================================================== */
+html:root[data-ui="d2"]{
+  --d2-font:'Inter Tight','Neue Haas Grotesk Display Pro','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --d2-gold:#f5dc56;--d2-blue:#4887ba;--d2-frame:rgba(255,255,255,.22);--d2-frame2:rgba(255,255,255,.55);
+  --g-panel:rgba(8,10,14,.55)!important;--g-line:rgba(255,255,255,.14)!important;--g-btn:rgba(255,255,255,.05)!important;--gold:#f5dc56!important}
+html:root[data-ui="d2"] body{font-family:var(--d2-font)!important;letter-spacing:.01em!important}
+html:root[data-ui="d2"]:not([data-gx="1"]) body{background:
+  radial-gradient(1200px 700px at 50% 30%,rgba(52,66,84,.55),transparent 70%),
+  radial-gradient(1600px 900px at 50% 120%,rgba(20,34,52,.9),transparent 70%),
+  linear-gradient(180deg,#141b25 0%,#0b0f15 55%,#05070a 100%)!important;background-attachment:fixed!important}
+html:root[data-ui="d2"]:not([data-gx="1"]) body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:-1;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.55) 100%)}
+
+/* director tabs */
+html:root[data-ui="d2"] header.gtbar{height:56px!important;background:linear-gradient(180deg,rgba(0,0,0,.72),rgba(0,0,0,.28))!important;border-bottom:1px solid rgba(255,255,255,.1)!important;-webkit-backdrop-filter:blur(12px)!important;backdrop-filter:blur(12px)!important;box-shadow:none!important}
+/* the Q and E keys either side of the tabs (the tab list itself has no box, so they hang off the first tab and More) */
+html:root[data-ui="d2"] header.gtbar nav#nav>button.gtp:first-child{margin-left:34px!important}
+html:root[data-ui="d2"] header.gtbar nav#nav>button.gtp:first-child::before,html:root[data-ui="d2"] header.gtbar nav#nav #gtmore::before{content:'Q';position:absolute;top:50%;left:-28px;width:20px;height:20px;margin-top:-10px;box-sizing:border-box;border:1px solid rgba(255,255,255,.55);font:600 11px/18px var(--d2-font);letter-spacing:0;text-align:center;color:rgba(255,255,255,.85);background:none}
+html:root[data-ui="d2"] header.gtbar nav#nav #gtmore{margin-right:34px!important}
+html:root[data-ui="d2"] header.gtbar nav#nav #gtmore::before{content:'E';left:auto;right:-28px}
+html:root[data-ui="d2"] header.gtbar nav#nav button{font-family:var(--d2-font)!important;text-transform:uppercase!important;letter-spacing:.14em!important;font-weight:600!important;font-size:13px!important;color:rgba(255,255,255,.55)!important;height:56px!important;padding:0 16px!important;margin:0!important;border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important;position:relative}
+html:root[data-ui="d2"] header.gtbar nav#nav button:hover{color:rgba(255,255,255,.9)!important;background:none!important}
+html:root[data-ui="d2"] header.gtbar nav#nav button.on,html:root[data-ui="d2"] header.gtbar nav#nav #gtmore.has{color:#fff!important;background:linear-gradient(180deg,rgba(255,255,255,0),rgba(255,255,255,.07))!important;box-shadow:none!important}
+html:root[data-ui="d2"] header.gtbar nav#nav button.on::after,html:root[data-ui="d2"] header.gtbar nav#nav #gtmore.has::after{content:''!important;display:block!important;position:absolute;left:16px;right:16px;bottom:0;height:3px;background:#fff;box-shadow:0 0 10px rgba(255,255,255,.6);transform:none;width:auto;margin:0;border-radius:0}
+html:root[data-ui="d2"] header.gtbar nav#nav button.gtset.on::after{display:none!important}
+html:root[data-ui="d2"] #gtsrch .vbar input{border-radius:0!important;background:rgba(0,0,0,.45)!important;border:1px solid rgba(255,255,255,.28)!important;font-family:var(--d2-font)!important}
+html:root[data-ui="d2"] #gtsrch .vbar .vtg,html:root[data-ui="d2"] #gtsrch .vbar button.g{border-radius:0!important}
+
+/* section labels: small, wide, white, with the fading rule */
+html:root[data-ui="d2"] .dsec,html:root[data-ui="d2"] #activity h3.sec,html:root[data-ui="d2"] #home .hm-sec,html:root[data-ui="d2"] #hub .hsec h4{font-family:var(--d2-font)!important;text-transform:uppercase!important;letter-spacing:.24em!important;font-weight:600!important;font-size:12.5px!important;color:rgba(255,255,255,.85)!important;display:flex!important;align-items:center;gap:12px}
+html:root[data-ui="d2"] .dsec::after,html:root[data-ui="d2"] #activity h3.sec::after,html:root[data-ui="d2"] #home .hm-sec::after{content:''!important;display:block!important;flex:1;height:1px!important;background:linear-gradient(90deg,rgba(255,255,255,.4),rgba(255,255,255,0))!important;border:0!important}
+html:root[data-ui="d2"] .dsec::before,html:root[data-ui="d2"] #home .hm-sec::before{display:none!important}
+html:root[data-ui="d2"] section.gdark h2,html:root[data-ui="d2"] .card h2,html:root[data-ui="d2"] #guides .gx-top h2,html:root[data-ui="d2"] #guides .gx-hero h2{font-family:var(--d2-font)!important;text-transform:uppercase!important;letter-spacing:.06em!important;font-weight:800!important}
+html:root[data-ui="d2"] #hub .hcard h3,html:root[data-ui="d2"] #home .hm-c h3,html:root[data-ui="d2"] #activity .acard>b{font-family:var(--d2-font)!important;text-transform:uppercase!important;letter-spacing:.05em!important;font-weight:700!important}
+
+/* panels: frosted black, thin frame, a brighter edge along the top */
+html:root[data-ui="d2"] .card,html:root[data-ui="d2"] section.gdark .card,html:root[data-ui="d2"] #home .hm-c,html:root[data-ui="d2"] #activity .acard,html:root[data-ui="d2"] #hub .hcard,html:root[data-ui="d2"] #hub .hhero{border-radius:0!important;background:rgba(6,8,12,.55)!important;border:1px solid rgba(255,255,255,.13)!important;border-top-color:rgba(255,255,255,.32)!important;box-shadow:none!important;-webkit-backdrop-filter:blur(16px)!important;backdrop-filter:blur(16px)!important}
+html:root[data-ui="d2"] #home .hm-c:hover,html:root[data-ui="d2"] #activity .acard.clk:hover,html:root[data-ui="d2"] #hub .hcard:hover{border-color:rgba(255,255,255,.75)!important;transform:none!important;box-shadow:0 0 0 1px rgba(255,255,255,.75),0 0 18px rgba(255,255,255,.12)!important}
+
+/* buttons: outlined, turn white on hover */
+html:root[data-ui="d2"] section.gdark button,html:root[data-ui="d2"] #vault button.g,html:root[data-ui="d2"] #vault button.b,html:root[data-ui="d2"] button.g,html:root[data-ui="d2"] button.b{font-family:var(--d2-font)!important;border-radius:0!important;border:1px solid rgba(255,255,255,.45)!important;background:rgba(255,255,255,.04)!important;color:#f2f2f2!important;text-transform:uppercase!important;letter-spacing:.12em!important;font-weight:600!important;font-size:12px!important;box-shadow:none!important;transition:background-color .1s,color .1s}
+html:root[data-ui="d2"] section.gdark button:hover,html:root[data-ui="d2"] button.g:hover,html:root[data-ui="d2"] button.b:hover,html:root[data-ui="d2"] #vault button.g:hover,html:root[data-ui="d2"] section.gdark button.on,html:root[data-ui="d2"] .chip.on{background:#f2f2f2!important;color:#0d0d0d!important;border-color:#fff!important}
+html:root[data-ui="d2"] section.gdark input:not([type=checkbox]):not([type=range]):not([type=color]),html:root[data-ui="d2"] section.gdark select,html:root[data-ui="d2"] section.gdark textarea{border-radius:0!important;background:rgba(0,0,0,.5)!important;border:1px solid rgba(255,255,255,.28)!important;font-family:var(--d2-font)!important}
+html:root[data-ui="d2"] :focus-visible{outline:2px solid #fff!important;outline-offset:1px}
+
+/* character banners: emblem art, class name in heavy capitals, light level in gold on the right */
+html:root[data-ui="d2"] .ch.em .cht{padding-left:48px!important}
+html:root[data-ui="d2"] .cht{height:64px!important;border-radius:0!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.2)!important;background-size:cover!important;justify-content:space-between!important;gap:6px!important;padding-right:8px!important}
+html:root[data-ui="d2"] .chnm{min-width:0;overflow:hidden;flex:1 1 auto}
+html:root[data-ui="d2"] .chnm b{font-family:var(--d2-font)!important;font-size:14px!important;font-weight:800!important;letter-spacing:.01em!important;text-transform:uppercase!important;overflow:hidden;text-overflow:ellipsis;max-width:100%;display:block}
+html:root[data-ui="d2"] .chnm small{font-style:normal!important;letter-spacing:.06em;text-transform:uppercase;font-size:11px!important}
+html:root[data-ui="d2"] .chp{flex:none;font-family:var(--d2-font)!important;font-size:18px!important;font-weight:500!important;color:var(--d2-gold)!important;letter-spacing:0!important;text-shadow:0 1px 4px rgba(0,0,0,.8)}
+html:root[data-ui="d2"] .cht.vh{background:linear-gradient(90deg,rgba(255,255,255,.1),rgba(255,255,255,0) 90%)!important}
+
+/* item tiles: square with a thin white frame; hover gives the bright frame and glow */
+html:root[data-ui="d2"] .vt{border-radius:0!important;border-color:transparent!important;outline:1px solid rgba(255,255,255,.28)!important;outline-offset:-1px!important;box-shadow:none!important}
+html:root[data-ui="d2"] .vt>img:first-child{border-radius:0!important}
+html:root[data-ui="d2"] .vt:hover{outline:2px solid #fff!important;outline-offset:0!important;box-shadow:0 0 14px rgba(255,255,255,.35)!important;transform:none!important}
+html:root[data-ui="d2"] .vt .ft{font-family:var(--d2-font)!important;font-weight:600!important;letter-spacing:.02em!important}
+
+/* inspect card */
+html:root[data-ui="d2"] .dpm{border-radius:0!important;background:rgba(4,5,8,.86)!important;border:1px solid rgba(255,255,255,.2)!important;-webkit-backdrop-filter:blur(18px)!important;backdrop-filter:blur(18px)!important;box-shadow:0 20px 60px rgba(0,0,0,.7)!important}
+html:root[data-ui="d2"] .dps{width:128px!important;border-radius:0!important;background:rgba(4,5,8,.86)!important;border:1px solid rgba(255,255,255,.2)!important;margin-left:4px!important}
+html:root[data-ui="d2"] .dph{border-radius:0!important;padding:14px 14px 10px!important;border-top:0!important;position:relative;background-image:linear-gradient(180deg,rgba(255,255,255,.1),rgba(255,255,255,0) 60%)!important}
+html:root[data-ui="d2"] .dph.Legendary{background-color:#522f65!important}
+html:root[data-ui="d2"] .dph.Exotic{background-color:#ceae33!important}
+html:root[data-ui="d2"] .dph.Rare{background-color:#5076a3!important}
+html:root[data-ui="d2"] .dph.Uncommon{background-color:#366c4c!important}
+html:root[data-ui="d2"] .dph h2{font-family:var(--d2-font)!important;font-size:22px!important;font-weight:800!important;letter-spacing:.03em!important;text-transform:uppercase!important;line-height:1.05!important}
+html:root[data-ui="d2"] .dph .pw{font-family:var(--d2-font)!important;font-size:28px!important;font-weight:500!important}
+html:root[data-ui="d2"] .dph b,html:root[data-ui="d2"] .dph small,html:root[data-ui="d2"] .dph .r2{font-family:var(--d2-font)!important;text-transform:uppercase;letter-spacing:.12em;font-size:11px}
+html:root[data-ui="d2"] .dpt{background:transparent!important;border-bottom:1px solid rgba(255,255,255,.16)!important}
+html:root[data-ui="d2"] .dpt span{font-family:var(--d2-font)!important;text-transform:uppercase;letter-spacing:.18em;font-size:11px}
+html:root[data-ui="d2"] .dpsb .dpbar{height:9px!important;background:rgba(255,255,255,.14)!important;border-radius:0!important}
+html:root[data-ui="d2"] .dpq h4,html:root[data-ui="d2"] .dps h6{font-family:var(--d2-font)!important;letter-spacing:.2em!important}
+html:root[data-ui="d2"] .dpc{border-radius:50%!important;background:rgba(255,255,255,.06)!important;border:2px solid rgba(255,255,255,.35)!important;opacity:.85}
+html:root[data-ui="d2"] .dpc.eqp{background:var(--d2-blue)!important;border-color:#cfe4f5!important;opacity:1}
+html:root[data-ui="d2"] .dpc:hover,html:root[data-ui="d2"] .dpc.sel{border-color:#fff!important;box-shadow:0 0 10px rgba(255,255,255,.45)!important;opacity:1}
+html:root[data-ui="d2"] .dps button{font-family:var(--d2-font)!important;border-radius:0!important;border:1px solid rgba(255,255,255,.3)!important;background:transparent!important;text-transform:uppercase!important;letter-spacing:.02em!important;font-size:10px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html:root[data-ui="d2"] .dps button:hover{background:#f2f2f2!important;color:#0d0d0d!important}
+html:root[data-ui="d2"] .dpkv,html:root[data-ui="d2"] .dpbt,html:root[data-ui="d2"] .dpp{border-color:rgba(255,255,255,.14)!important}
+
+/* phones */
+html:root[data-ui="d2"] #gtw-tabs{background:rgba(0,0,0,.78)!important;border-top:1px solid rgba(255,255,255,.18)!important;-webkit-backdrop-filter:blur(12px)!important;backdrop-filter:blur(12px)!important}
+html:root[data-ui="d2"] #gtw-tabs button{font-family:var(--d2-font)!important;text-transform:uppercase;letter-spacing:.1em;font-size:10px!important;font-weight:600!important}
+html:root[data-ui="d2"] #gtw-tabs button.on{color:#fff!important;box-shadow:inset 0 3px 0 #fff!important}
+html:root[data-ui="d2"] .phsw button{border-radius:0!important;font-family:var(--d2-font)!important;text-transform:uppercase;letter-spacing:.1em}
+@media (max-width:760px){html:root[data-ui="d2"] header.gtbar nav#nav>button.gtp:first-child::before,html:root[data-ui="d2"] header.gtbar nav#nav #gtmore::before{display:none}html:root[data-ui="d2"] header.gtbar nav#nav>button.gtp:first-child{margin-left:0!important}html:root[data-ui="d2"] header.gtbar nav#nav #gtmore{margin-right:0!important}}
+
+/* Helpful tab in game colours */
+html:root[data-ui="d2"] #guides{--gx-r:0px}
+html:root[data-ui="d2"] #guides .gx-card b,html:root[data-ui="d2"] #guides .gx-wp h4,html:root[data-ui="d2"] #guides .gx-sec>h3{font-family:var(--d2-font);text-transform:uppercase;letter-spacing:.06em;font-weight:800}
+html:root[data-ui="d2"] #guides .gx-wp>.gx-in,html:root[data-ui="d2"] #guides .gx-basics li,html:root[data-ui="d2"] #guides .gx-list li,html:root[data-ui="d2"] #guides .gx-item{background:rgba(6,8,12,.55);border-color:rgba(255,255,255,.14)}
+html:root[data-ui="d2"] #guides .gx-seg button{border-radius:0;text-transform:uppercase;letter-spacing:.12em;font-size:12px}
+html:root[data-ui="d2"] #guides .gx-seg button.on{background:#f2f2f2;color:#0d0d0d;border-color:#fff}
+
+/* settings picker preview */
+.uic.u-d2 i{background:linear-gradient(180deg,rgba(255,255,255,.1),transparent 40%),radial-gradient(circle at 50% 10%,#3a4656,#07090c 75%)!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.4)!important;border-radius:0!important;position:relative}
+.uic.u-d2 i::after{content:'';position:absolute;left:38%;right:38%;top:14px;height:2px;background:#fff;box-shadow:0 0 6px #fff}
