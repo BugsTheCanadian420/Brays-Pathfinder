@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.14: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.15: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -2255,6 +2255,56 @@ async function exoDefs() {
   try { fs.writeFileSync(f, JSON.stringify(o)); } catch (e) { /* kept in memory */ }
   return (EXD = o);
 }
+// Helpful tab: official art and loot for each guide, straight from Bungie's own data.
+// One pass over the activity and collectible tables, cached on disk per game version.
+let GDA = null;
+const gnorm = (s) => String(s || '').toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
+async function guideArt(G) {
+  const mf = await manifest(), key = G.map((g) => g.n + '=' + g.k.join(',')).join('|');
+  const v = mf.version + '.g2.' + key.length + '.' + key.split('').reduce((a, c) => (a * 31 + c.charCodeAt(0)) | 0, 7);
+  if (GDA && GDA.v === v) return GDA;
+  const f = path.join(app.getPath('userData'), 'guideart.json');
+  try { const o = JSON.parse(fs.readFileSync(f, 'utf8')); if (o.v === v) return (GDA = o); } catch (e) { /* download below */ }
+  send('Downloading activity art and loot lists for the guides. This only happens once per game update.');
+  const P = mf.jsonWorldComponentContentPaths.en, df = await defs();
+  const want = G.map((g) => ({ n: g.n, a: g.k.map(gnorm) }));
+  const o = { v, img: {}, loot: {} }, best = {};
+  await table(P.DestinyActivityDefinition, (k, x) => {
+    const img = x.pgcrImage || ''; if (!img || /placeholder|missing/i.test(img)) return;
+    const n = gnorm(x.displayProperties && x.displayProperties.name); if (!n) return;
+    for (const w of want) for (const a of w.a) {
+      const sc = n === a || n === 'the ' + a ? 3 : (n.startsWith(a + ' ') || n.startsWith('the ' + a + ' ')) ? 2 : 0;
+      if (sc > (best[w.n] || 0)) { best[w.n] = sc; o.img[w.n] = img; }
+    }
+  });
+  const seen = {};
+  await table(P.DestinyCollectibleDefinition, (k, x) => {
+    const d = df.d[x.itemHash]; if (!d) return;
+    const src = ' ' + gnorm(x.sourceString) + ' '; if (src.length < 4) return;
+    for (const w of want) if (w.a.some((a) => src.includes(' ' + a + ' '))) {
+      const L = (o.loot[w.n] = o.loot[w.n] || []), sk = w.n + '|' + d.n + '|' + d.c;
+      if (seen[sk]) continue; seen[sk] = 1;
+      L.push({ h: Number(k), ih: x.itemHash, n: d.n, i: d.i, r: d.r || '', t: d.t || '', b: d.b, c: d.c === undefined ? 3 : d.c });
+    }
+  });
+  try { fs.writeFileSync(f, JSON.stringify(o)); } catch (e) { /* kept in memory */ }
+  return (GDA = o);
+}
+H('guide:art', async (e, v) => {
+  const G = ARR(v, 80).map((g) => { OBJ(g); return { n: TXT(g.n, 80), k: ARR(g.k, 6).map((x) => TXT(x, 80)) }; });
+  return guideArt(G);
+});
+// Which collectibles this account already owns, so the loot grid can mark them. Empty when signed out.
+H('guide:owned', async () => {
+  try {
+    const m = await acct(), pr = await api(pbase(m) + '?components=800');
+    const out = [], pc = (pr.profileCollectibles && pr.profileCollectibles.data && pr.profileCollectibles.data.collectibles) || {};
+    const cc = (pr.characterCollectibles && pr.characterCollectibles.data) || {};
+    const add = (C) => { for (const h in C) if (!(C[h].state & 1)) out.push(Number(h)); };
+    add(pc); for (const c in cc) add(cc[c].collectibles || {});
+    return out;
+  } catch (e) { return []; }
+});
 H('act:exotics', async () => {
   const m = await acct(), E = await exoDefs();
   const pr = await api(pbase(m) + '?components=200,800');

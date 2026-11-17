@@ -1,0 +1,149 @@
+/* Helpful tab (beta): researched guides laid out as a route. Every activity is a trail of waypoints:
+   solid diamonds are encounters, hollow ones are traversal. Colours come from the theme variables,
+   so light, dark and the Beta theme all carry through. */
+#guides{--gx-r:6px;--gx-warn:#d0574a;--gx-dps:var(--gold);--gx-tip:var(--arc)}
+#guides #gall,#guides #glist .cat{display:none!important}
+#guides .gx-top{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:2px 0 12px}
+#guides .gx-top h2{margin:0;font-size:24px;flex:1 1 auto}
+#guides .gx-top input{flex:1 1 260px;max-width:420px;margin:0}
+#guides #gchips.gx-seg{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 0 14px;padding-bottom:2px}
+#guides #gchips.gx-seg::-webkit-scrollbar{display:none}
+#guides .gx-seg button{flex:none;background:none;border:1px solid var(--line);color:var(--mute);border-radius:999px;padding:6px 14px;font:inherit;font-weight:600;cursor:pointer;white-space:nowrap}
+#guides .gx-seg button.on{color:var(--text);border-color:var(--text)}
+#guides .gx-seg button small{opacity:.7;margin-left:6px;font-weight:500}
+#guides .gx-seg button:focus-visible,#guides .gx-card:focus-visible,#guides .gx-toc a:focus-visible,#guides .gx-shot:focus-visible{outline:2px solid var(--arc);outline-offset:2px}
+
+/* Hub grid */
+#guides .gx-group{margin:0 0 22px}
+#guides .gx-group>h3{font-size:15px;color:var(--mute);font-weight:600;margin:0 0 8px;display:flex;gap:8px;align-items:baseline}
+#guides .gx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+#guides .gx-card{position:relative;display:flex;flex-direction:column;justify-content:flex-end;min-height:150px;padding:0;border:1px solid var(--line);border-radius:var(--gx-r);overflow:hidden;cursor:pointer;text-align:left;color:#fff;background:var(--panel);font:inherit;isolation:isolate}
+#guides .gx-card .gx-art{position:absolute;inset:0;background:var(--cat,#445) center/cover no-repeat;z-index:-2;transition:transform .5s ease}
+#guides .gx-card .gx-art.ph{background:linear-gradient(135deg,color-mix(in srgb,var(--cat,#445) 70%,#000),#0c1118)}
+#guides .gx-card::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(6,9,14,.05) 20%,rgba(6,9,14,.86) 92%)}
+#guides .gx-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--cat,#888);z-index:1}
+#guides .gx-card .gx-ct{padding:12px 14px 12px 16px}
+#guides .gx-card b{display:block;font-size:20px;line-height:1.15;text-shadow:0 1px 8px rgba(0,0,0,.6)}
+#guides .gx-card span{display:block;font-size:13px;opacity:.82;margin-top:3px}
+#guides .gx-card .gx-loc{font-style:normal}
+:root:not([data-anim="off"]) #guides .gx-card:hover .gx-art{transform:scale(1.04)}
+#guides .gx-card.gx-plain{min-height:0;color:var(--text)}
+#guides .gx-card.gx-plain::after{display:none}
+#guides .gx-card.gx-plain span{color:var(--mute);opacity:1}
+#guides .gx-card.gx-plain b{text-shadow:none;font-size:18px}
+#guides .gx-empty{padding:18px;border:1px dashed var(--line);border-radius:var(--gx-r);color:var(--mute)}
+
+/* Guide page */
+#guides #gpage.gx-page{max-width:980px}
+#guides .gx-back{margin:0 0 10px}
+#guides .gx-hero{position:relative;min-height:230px;border-radius:var(--gx-r);overflow:hidden;display:flex;align-items:flex-end;color:#fff;background:#0c1118 center/cover no-repeat;border:1px solid var(--line);isolation:isolate}
+#guides .gx-hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(6,9,14,0) 25%,rgba(6,9,14,.9) 100%),linear-gradient(90deg,rgba(6,9,14,.55),rgba(6,9,14,0) 70%)}
+#guides .gx-hero.ph{background-image:linear-gradient(135deg,color-mix(in srgb,var(--cat,#445) 65%,#000),#0c1118)}
+#guides .gx-hero .gx-hc{padding:20px 22px;width:100%}
+#guides .gx-hero h2{text-align:left;font-size:clamp(28px,5vw,44px);line-height:1.02;margin:0 0 8px;text-shadow:0 2px 14px rgba(0,0,0,.55)}
+#guides .gx-facts{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:14px}
+#guides .gx-facts div{display:flex;flex-direction:column}
+#guides .gx-facts small{font-size:11px;opacity:.72}
+#guides .gx-kind{display:inline-block;font-size:13px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--cat,#888);color:#fff;margin-bottom:8px}
+#guides .gx-hero .gx-save{position:absolute;top:12px;right:12px;font-size:13px}
+#guides .gx-hero .gx-save button{padding:4px 10px!important;min-height:0!important;font-size:13px!important}
+#guides .gx-hero .gx-save svg{width:16px!important;height:16px!important}
+#guides .gx-intro{font-size:17px;line-height:1.55;max-width:72ch;margin:16px 2px 4px}
+#guides .gx-sec{margin:22px 0 0}
+#guides .gx-sec>h3{font-size:19px;margin:0 0 10px;display:flex;align-items:center;gap:10px}
+#guides .gx-sec>h3::before{content:"";width:9px;height:9px;transform:rotate(45deg);background:var(--cat,var(--gold));flex:none}
+#guides .gx-basics{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;margin:0;padding:0;list-style:none}
+#guides .gx-basics li{background:var(--panel);border:1px solid var(--line);border-radius:var(--gx-r);padding:10px 12px;line-height:1.45}
+#guides .gx-toc{display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin;padding:2px 0 6px;margin:18px 0 0}
+#guides .gx-toc a{flex:none;display:flex;gap:7px;align-items:center;text-decoration:none;color:var(--mute);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:14px;white-space:nowrap;background:var(--panel)}
+#guides .gx-toc a i{width:7px;height:7px;transform:rotate(45deg);border:1.5px solid currentColor;flex:none}
+#guides .gx-toc a.e i{background:currentColor}
+#guides .gx-toc a:hover{color:var(--text)}
+
+/* The route */
+#guides .gx-route{position:relative;margin:14px 0 0;padding-left:30px}
+#guides .gx-route::before{content:"";position:absolute;left:10px;top:14px;bottom:14px;width:2px;background:linear-gradient(var(--cat,var(--gold)),color-mix(in srgb,var(--cat,var(--gold)) 25%,transparent))}
+#guides .gx-wp{position:relative;margin:0 0 12px;scroll-margin-top:90px}
+#guides .gx-wp::before{content:"";position:absolute;left:-26px;top:17px;width:12px;height:12px;transform:rotate(45deg);background:var(--bg);border:2px solid var(--cat,var(--gold));box-sizing:border-box}
+#guides .gx-wp.e::before{background:var(--cat,var(--gold));box-shadow:0 0 0 4px var(--bg)}
+#guides .gx-wp>.gx-in{background:var(--panel);border:1px solid var(--line);border-radius:var(--gx-r);padding:14px 16px}
+#guides .gx-wp.t>.gx-in{background:transparent;border-style:dashed}
+#guides .gx-wp .gx-wh{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin-bottom:4px}
+#guides .gx-wp h4{margin:0;font-size:20px;line-height:1.2;color:var(--text)}
+#guides .gx-wp .gx-wh small{color:var(--mute);font-size:13px}
+#guides .gx-goal{font-weight:600;margin:2px 0 8px;line-height:1.45}
+#guides .gx-roles{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px;padding:0;list-style:none}
+#guides .gx-roles li{font-size:13.5px;border:1px solid var(--line);border-radius:4px;padding:3px 8px;background:var(--inp);line-height:1.35}
+#guides .gx-steps{margin:0;padding-left:22px;line-height:1.5}
+#guides .gx-steps li{margin:0 0 6px;padding-left:2px}
+#guides .gx-steps li::marker{color:var(--mute);font-weight:600}
+#guides .gx-call{display:block;width:auto;margin:10px 0 0;padding:8px 12px;border-left:3px solid var(--mute);background:color-mix(in srgb,var(--inp) 70%,transparent);border-radius:0 4px 4px 0;line-height:1.45}
+#guides .gx-call>b{display:block;font-size:13px;margin-bottom:2px}
+#guides .gx-call ul{margin:0;padding-left:18px}
+#guides .gx-call.gx-dps{border-left-color:var(--gx-dps)}#guides .gx-call.gx-dps>b{color:var(--gx-dps)}
+#guides .gx-call.gx-wipe{border-left-color:var(--gx-warn)}#guides .gx-call.gx-wipe>b{color:var(--gx-warn)}
+#guides .gx-call.gx-tip{border-left-color:var(--gx-tip)}#guides .gx-call.gx-tip>b{color:var(--gx-tip)}
+#guides .gx-call.gx-chal{border-left-color:var(--cat,var(--gold))}
+#guides .gx-drops{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0;align-items:center}
+#guides .gx-drops>b{font-size:13px;color:var(--mute);margin-right:2px}
+#guides .gx-chip{font-size:13.5px;border:1px solid var(--line);border-radius:4px;padding:2px 8px;display:inline-flex;gap:6px;align-items:center}
+#guides .gx-chip img{width:20px;height:20px;border-radius:2px}
+#guides .gx-shots{display:flex;gap:8px;overflow-x:auto;margin:12px 0 0;padding-bottom:4px}
+#guides .gx-shot{flex:none;width:200px;display:block;border:1px solid var(--line);border-radius:4px;overflow:hidden;background:var(--inp);cursor:zoom-in;padding:0;font:inherit;color:var(--mute);text-align:left}
+#guides .gx-shot img{display:block;width:100%;height:120px;object-fit:cover}
+#guides .gx-shot span{display:block;font-size:12.5px;padding:5px 8px;line-height:1.3}
+
+/* Chests, exotic, loot */
+#guides .gx-list{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+#guides .gx-list li{background:var(--panel);border:1px solid var(--line);border-radius:var(--gx-r);padding:10px 12px;line-height:1.5}
+#guides .gx-list li b{color:var(--text)}
+#guides .gx-loot{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+#guides .gx-item{display:flex;gap:10px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:var(--gx-r);padding:8px;position:relative;min-width:0}
+#guides .gx-item img{width:48px;height:48px;border-radius:3px;flex:none;border:1px solid rgba(255,255,255,.15);background:#1b2230}
+#guides .gx-item.ex img{border-color:#ceae33}
+#guides .gx-item.ex{border-color:color-mix(in srgb,#ceae33 55%,var(--line))}
+#guides .gx-item b{display:block;font-size:15px;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#guides .gx-item small{color:var(--mute);font-size:12.5px}
+#guides .gx-item .own{color:var(--ok)}
+#guides .gx-armor{display:flex;flex-wrap:wrap;gap:4px;margin:10px 0 0}
+#guides .gx-armor img{width:34px;height:34px;border-radius:3px;border:1px solid var(--line)}
+#guides .gx-armor img.own{outline:2px solid var(--ok);outline-offset:-2px}
+#guides .gx-table{width:100%;border-collapse:collapse;font-size:15px}
+#guides .gx-table th{text-align:left;font-weight:600;padding:8px 10px 8px 0;vertical-align:top;white-space:nowrap;color:var(--text);width:1%}
+#guides .gx-table td{padding:6px 0;border-top:1px solid var(--line)}
+#guides .gx-table th{border-top:1px solid var(--line)}
+#guides .gx-table td .gx-chip{margin:2px 4px 2px 0}
+#guides .gx-note{color:var(--mute);font-size:13.5px;margin:8px 0 0;line-height:1.45}
+#guides .gx-wait{color:var(--mute);font-size:14px;padding:10px 0}
+#guides .gx-src{margin:0;padding-left:18px;line-height:1.7;font-size:14.5px}
+#guides .gx-src a{color:var(--arc)}
+
+/* Lightbox for community maps */
+#gx-lb{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;cursor:zoom-out}
+#gx-lb[hidden]{display:none}
+#gx-lb img{max-width:100%;max-height:calc(100% - 40px);object-fit:contain}
+#gx-lb p{color:#ccd;margin:10px 0 0;font-size:14px;text-align:center}
+
+/* One orchestrated moment: the route draws in when a guide opens */
+:root[data-anim="subtle"] #guides .gx-page.in .gx-wp,:root[data-anim="full"] #guides .gx-page.in .gx-wp{animation:gxIn .38s ease both;animation-delay:calc(var(--i,0) * 45ms)}
+:root[data-anim="full"] #guides .gx-page.in .gx-hero{animation:gxHero .5s ease both}
+@keyframes gxIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes gxHero{from{opacity:.4;background-size:110%}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){#guides .gx-page.in .gx-wp,#guides .gx-page.in .gx-hero{animation:none!important}#guides .gx-card .gx-art{transition:none}}
+
+@media (max-width:640px){
+  #guides .gx-card .gx-loc{display:none}
+  #guides .gx-hero{min-height:200px}
+  #guides .gx-hero .gx-hc{padding:16px}
+  #guides .gx-route{padding-left:22px}
+  #guides .gx-route::before{left:6px}
+  #guides .gx-wp::before{left:-21px}
+  #guides .gx-wp>.gx-in{padding:12px}
+  #guides .gx-grid{grid-template-columns:1fr 1fr;gap:8px}
+  #guides .gx-card{min-height:120px}
+  #guides .gx-card b{font-size:17px}
+  #guides .gx-loot{grid-template-columns:1fr}
+  #guides .gx-table th{white-space:normal;width:34%}
+}
+@media (max-width:380px){#guides .gx-grid{grid-template-columns:1fr}}
+:root #guides #glist.gx-hub{display:block!important}

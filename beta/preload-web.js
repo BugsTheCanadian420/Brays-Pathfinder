@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.14: preload.js for the browser */
+/* Pathfinder 0.3.15: preload.js for the browser */
 (function (require) {
 const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('gt', {
@@ -60,6 +60,8 @@ contextBridge.exposeInMainWorld('gt', {
   bkExport: (v) => ipcRenderer.invoke('bk:export', v),
   bkImport: () => ipcRenderer.invoke('bk:import'),
   actExotics: () => ipcRenderer.invoke('act:exotics'),
+  guideArt: (v) => ipcRenderer.invoke('guide:art', v),
+  guideOwned: () => ipcRenderer.invoke('guide:owned'),
   imgFetch: (v) => ipcRenderer.invoke('img:fetch', v),
   imgCopy: (v) => ipcRenderer.invoke('img:copy', v),
   imgSave: (v) => ipcRenderer.invoke('img:save', v),
