@@ -1,202 +1,155 @@
 /* =====================================================================================================
-   BETA — Pathfinder's own look: "Trail map" (Settings > Interface style > Beta, and Settings > Theme > Beta).
-   The idea comes from the name. A pathfinder reads a map and marks a route, so:
-     - the background is a contour map (app/topo.svg), drawn faintly;
-     - the one loud thing is the trail: a thin route line with a diamond waypoint. It marks the tab you are on and
-       starts every section heading. Nothing else glows, floats or blurs;
-     - headings, tabs, buttons and numbers use road-sign lettering (Bahnschrift on Windows, DIN on Apple, a condensed
-       sans on Android), written in normal sentence case instead of spaced-out capitals;
-     - panels are flat map-paper sheets with a hairline edge and square-ish corners.
+   BETA — "Night shift": Pathfinder's own look (Settings > Interface style > Beta, and Settings > Theme > Beta).
+   Clean and quiet, built to feel nothing like DIM's flat grey grid:
+     - one deep blue-black canvas lit by two soft pools of light, no textures or patterns;
+     - tabs are quiet text; the tab you are on is a bright pill;
+     - everything else sits on soft, rounded, slightly lifted surfaces with a hairline edge;
+     - Manrope lettering in sentence case, tabular numbers;
+     - the accent colour (Settings > Accent colour) is used sparingly: the primary button, focus rings, the
+       ring around a hovered item, and the equipped perk.
    Interface style rules start with  :root[data-ui="beta"]   Theme rules start with  :root[data-gt="beta"]
    ===================================================================================================== */
 
-/* ---------- BETA INTERFACE STYLE ---------- */
 :root[data-ui="beta"]{
-  --b-font:'Bahnschrift','DIN Alternate','DIN Condensed','Roboto Condensed','Arial Narrow',sans-serif-condensed,'Segoe UI',sans-serif;
-  --b-ink:#0b141a;--b-paper:#e9eef0;--b-mute:#8fa0a8;--b-route:var(--g-accent,#f2b441);
-  --g-panel:rgba(15,25,32,.9)!important;--g-solid:#101a21!important;--g-col:rgba(255,255,255,.018)!important;
-  --g-line:#23333d!important;--g-btn:#16242d!important;--g-deep:rgba(4,9,12,.55)!important;
-  --b-radius:3px;
+  --b-font:'Manrope','Segoe UI Variable Text','SF Pro Text',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,system-ui,sans-serif;
+  --b-bg:var(--g-tb,#06080c);
+  --b-s1:rgba(255,255,255,.035);
+  --b-s2:rgba(255,255,255,.065);
+  --b-line:rgba(255,255,255,.075);
+  --b-line2:rgba(255,255,255,.14);
+  --b-text:#eef1f6;
+  --b-mute:#8c96a6;
+  --b-acc:var(--g-accent,#7ab8e8);
+  --b-r1:16px;--b-r2:11px;--b-r3:8px;
+  --b-lift:0 1px 0 rgba(255,255,255,.04) inset,0 18px 40px -26px rgba(0,0,0,.9);
+  --g-panel:var(--g-tp,rgba(16,20,27,.78))!important;--g-solid:var(--g-ts,#0f1319)!important;--g-col:transparent!important;
+  --g-line:rgba(255,255,255,.075)!important;--g-btn:rgba(255,255,255,.045)!important;--g-deep:rgba(0,0,0,.4)!important;
 }
-:root[data-ui="beta"] body{font-family:'Open Sans','Segoe UI',Arial,sans-serif!important;letter-spacing:0;color:var(--b-paper)}
-:root[data-ui="beta"]:not([data-gx="1"]) body{background:var(--b-ink) url(topo.svg) center/cover fixed no-repeat!important}
-
-/* the diamond waypoint, reused below */
-:root[data-ui="beta"] .dsec::before,:root[data-ui="beta"] #activity h3.sec::before,:root[data-ui="beta"] #home .hm-sec::before,:root[data-ui="beta"] #hub .hsec h4::before,:root[data-ui="beta"] .card h2::before{
-  content:''!important;display:inline-block!important;flex:none;width:7px;height:7px;margin:0 2px 0 3px;border:1.5px solid var(--b-route);background:none!important;border-radius:0!important;transform:rotate(45deg);box-shadow:none!important}
-
-/* top bar: quiet strip, the route line runs along its bottom edge and the current tab is the waypoint on it */
-:root[data-ui="beta"] header.gtbar{background:rgba(9,17,22,.94)!important;border-bottom:1px solid var(--g-line)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;box-shadow:none!important}
-:root[data-ui="beta"] header.gtbar nav button{font-family:var(--b-font)!important;text-transform:none!important;letter-spacing:.02em!important;font-weight:500!important;font-size:clamp(13.5px,.95vw,15.5px)!important;color:var(--b-mute)!important;border-radius:0!important;background:none!important;box-shadow:none!important;transition:color .12s}
-:root[data-ui="beta"] header.gtbar nav button:hover{color:var(--b-paper)!important;background:none!important}
-:root[data-ui="beta"] header.gtbar nav button.on,:root[data-ui="beta"] header.gtbar nav #gtmore.has{color:#fff!important;font-weight:600!important;background:none!important;box-shadow:inset 0 -2px 0 var(--b-route)!important}
-:root[data-ui="beta"] header.gtbar nav button.on::after,:root[data-ui="beta"] header.gtbar nav #gtmore.has::after{content:''!important;display:block!important;position:absolute;left:50%;bottom:-4px;width:7px;height:7px;margin-left:-4px;background:var(--b-route);transform:rotate(45deg);box-shadow:0 0 0 2px rgba(9,17,22,.94)}
-:root[data-ui="beta"] header.gtbar nav button.gtset.on::after{display:none!important}
-:root[data-ui="beta"] #gtsrch .vbar input{border-radius:var(--b-radius)!important;background-color:rgba(255,255,255,.04)!important;border:1px solid var(--g-line)!important}
-:root[data-ui="beta"] #gtsrch .vbar .vtg,:root[data-ui="beta"] #gtsrch .vbar button.g{border-radius:var(--b-radius)!important;background:rgba(255,255,255,.03)!important;border-color:var(--g-line)!important}
-:root[data-ui="beta"] #gtdl{border-radius:var(--b-radius)!important;font-family:var(--b-font)!important;font-size:13.5px!important;letter-spacing:.02em!important}
-
-/* section headings: waypoint, name in sentence case, then the dashed trail to the edge */
-:root[data-ui="beta"] .dsec,:root[data-ui="beta"] #activity h3.sec,:root[data-ui="beta"] #home .hm-sec,:root[data-ui="beta"] #hub .hsec h4{
-  display:flex!important;align-items:center;gap:9px;font-family:var(--b-font)!important;font-size:16px!important;font-weight:600!important;letter-spacing:.015em!important;text-transform:none!important;color:var(--b-paper)!important}
-:root[data-ui="beta"] .dsec::after,:root[data-ui="beta"] #activity h3.sec::after,:root[data-ui="beta"] #home .hm-sec::after{content:''!important;display:block!important;flex:1;height:0!important;background:none!important;border-top:1px dashed #33474f}
-:root[data-ui="beta"] .pmh .dsec::after{display:none!important}
-:root[data-ui="beta"] .dsec small{font-family:'Open Sans','Segoe UI',sans-serif;letter-spacing:0;color:var(--b-mute)}
-:root[data-ui="beta"] #hub .hsec span{color:var(--b-mute)}
-
-/* panels: flat sheets, hairline edge, no glass */
-:root[data-ui="beta"] .card,:root[data-ui="beta"] section.gdark .card,:root[data-ui="beta"] #home .hm-c,:root[data-ui="beta"] #activity .acard,:root[data-ui="beta"] #hub .hcard,:root[data-ui="beta"] #hub .hhero{
-  border-radius:var(--b-radius)!important;border:1px solid var(--g-line)!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
-:root[data-ui="beta"] .card,:root[data-ui="beta"] section.gdark .card,:root[data-ui="beta"] #home .hm-c{background:var(--g-panel)!important}
-:root[data-ui="beta"] #home .hm-c::before{height:0!important}
-:root[data-ui="beta"] #home .hm-c:hover,:root[data-ui="beta"] #activity .acard.clk:hover,:root[data-ui="beta"] #hub .hcard:hover{border-color:var(--b-route)!important;box-shadow:none!important;transform:none!important}
-:root[data-ui="beta"] #activity .acard[data-ak]{border-color:color-mix(in srgb,var(--akc) 45%,var(--g-line))!important}
-:root[data-ui="beta"] section.gdark h2,:root[data-ui="beta"] .card h2{display:flex;align-items:center;gap:9px;font-family:var(--b-font)!important;font-size:18px!important;font-weight:600!important;letter-spacing:.015em!important;text-transform:none!important;color:#fff!important}
-:root[data-ui="beta"] #hub .hcard h3,:root[data-ui="beta"] #hub .hhero h2,:root[data-ui="beta"] #home .hm-c h3,:root[data-ui="beta"] #activity .acard>b{font-family:var(--b-font)!important;text-transform:none!important;letter-spacing:.015em!important}
-:root[data-ui="beta"] #hub .hcard h3{font-size:17px!important}
-:root[data-ui="beta"] #hub .hhero small{display:none}
-:root[data-ui="beta"] #hub .hmono{border-radius:0!important;transform:rotate(45deg) scale(.78);box-shadow:none!important}
-:root[data-ui="beta"] #hub .hmono{font-size:0!important}
-:root[data-ui="beta"] #hub .hcard .go{text-transform:none!important;letter-spacing:.02em!important;font-family:var(--b-font)!important;font-size:14px!important}
-
-/* buttons, chips, inputs: sign plates */
-:root[data-ui="beta"] section.gdark button,:root[data-ui="beta"] #vault button.g,:root[data-ui="beta"] #vault button.b,:root[data-ui="beta"] button.g,:root[data-ui="beta"] button.b{
-  border-radius:var(--b-radius)!important;border:1px solid var(--g-line)!important;font-family:var(--b-font)!important;font-size:14px;letter-spacing:.02em!important;text-transform:none!important;transition:background .12s,border-color .12s,color .12s}
-:root[data-ui="beta"] section.gdark button:hover,:root[data-ui="beta"] button.g:hover{background:rgba(255,255,255,.07)!important;border-color:#46606b!important}
-:root[data-ui="beta"] button.b,:root[data-ui="beta"] section.gdark button.on,:root[data-ui="beta"] #activity .abar button.on,:root[data-ui="beta"] #hub .hbar button.on,:root[data-ui="beta"] .chip.on{background:var(--b-route)!important;color:var(--g-on-accent,#10161a)!important;border-color:transparent!important;font-weight:600!important}
-:root[data-ui="beta"] #activity .abar button,:root[data-ui="beta"] #hub .hbar button{letter-spacing:.02em!important;text-transform:none!important;font-size:14px!important;border-radius:var(--b-radius)!important}
-:root[data-ui="beta"] section.gdark input:not([type=checkbox]):not([type=range]):not([type=color]),:root[data-ui="beta"] section.gdark select,:root[data-ui="beta"] section.gdark textarea{border-radius:var(--b-radius)!important;background:rgba(255,255,255,.04)!important;border:1px solid var(--g-line)!important}
-:root[data-ui="beta"] input[type=range]{accent-color:var(--b-route)}
-:root[data-ui="beta"] :focus-visible{outline:2px solid var(--b-route)!important;outline-offset:2px}
-
-/* item tiles: square with a survey outline on hover; power numbers in the sign lettering */
-:root[data-ui="beta"] .vt{border-radius:2px!important;box-shadow:none!important}
-:root[data-ui="beta"] .vt>img:first-child{border-radius:1px}
-:root[data-ui="beta"] .vt:hover{box-shadow:none!important;outline:1.5px solid var(--b-route);outline-offset:2px;transform:none!important}
-:root[data-ui="beta"] .vt .ft{font-family:var(--b-font)!important;letter-spacing:.01em}
-:root[data-ui="beta"] .cht{border-radius:var(--b-radius)!important;overflow:hidden}
-:root[data-ui="beta"] .cht b,:root[data-ui="beta"] .cht .pw{font-family:var(--b-font)!important;letter-spacing:.01em}
-:root[data-ui="beta"] #home .hm-ch{border-radius:var(--b-radius)!important}
-
-/* item pop-up and other floating sheets */
-:root[data-ui="beta"] .dpm,:root[data-ui="beta"] .dps,:root[data-ui="beta"] #junkm .jk,:root[data-ui="beta"] .gtdrop,:root[data-ui="beta"] #vnote{border-radius:var(--b-radius)!important;background:#0e181f!important;border:1px solid #2c404b!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;box-shadow:0 14px 34px rgba(0,0,0,.5)!important}
-:root[data-ui="beta"] .gtdrop{border-left:3px solid var(--dc)!important}
-:root[data-ui="beta"] .dps button{border-radius:var(--b-radius)!important}
-:root[data-ui="beta"] .dph b,:root[data-ui="beta"] .dph h3{font-family:var(--b-font)!important;letter-spacing:.015em!important}
-
-/* phones: the tab you are on gets the route line and waypoint on the bottom bar */
-:root[data-ui="beta"] #gtw-tabs{background:rgba(9,17,22,.96)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;border-top:1px solid var(--g-line)!important}
-:root[data-ui="beta"] #gtw-tabs button{position:relative;font-family:var(--b-font)!important;font-size:12px!important;font-weight:500!important}
-:root[data-ui="beta"] #gtw-tabs button.on{color:#fff!important;box-shadow:inset 0 2px 0 var(--b-route)!important}
-:root[data-ui="beta"] #gtw-tabs button.on::before{content:'';position:absolute;left:50%;top:-4px;width:7px;height:7px;margin-left:-4px;background:var(--b-route);transform:rotate(45deg)}
-
-/* settings picker preview for this style: a scrap of map with the trail on it */
-.uic.u-beta i{position:relative;overflow:hidden;border-radius:3px;background:repeating-radial-gradient(circle at 78% 30%,transparent 0 9px,rgba(127,179,189,.28) 9px 10px),#0b141a;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
-.uic.u-beta i::before{content:'';position:absolute;left:12%;right:12%;bottom:30%;border-top:1.5px dashed #f2b441}
-.uic.u-beta i::after{content:'';position:absolute;left:50%;bottom:30%;width:8px;height:8px;margin:0 0 -4px -4px;background:#f2b441;transform:rotate(45deg)}
-
-/* ---------- BETA THEME (colours and background; the base colours come from the theme list in vault.js) ---------- */
-:root[data-gt="beta"]{--g-bg:#0b141a;--g-panel:rgba(15,25,32,.88);--g-col:rgba(14,23,30,.6);--g-line:#23333d;--g-deep:rgba(4,9,12,.8);--g-btn:#16242d;--g-solid:#101a21}
-
-/* small labels follow the same lettering, in sentence case */
-:root[data-ui="beta"] #home .hm-h,:root[data-ui="beta"] .thh,:root[data-ui="beta"] #home .hm-c .go,:root[data-ui="beta"] #home .hm-row .r{font-family:var(--b-font)!important;text-transform:none!important;letter-spacing:.02em!important}
-:root[data-ui="beta"] #home .hm-h{font-size:15px!important;color:var(--b-paper)!important}
-:root[data-ui="beta"] .thh{font-size:14px!important;color:var(--b-mute)!important}
-:root[data-ui="beta"] #home .hm-c .go{font-size:13px!important;color:var(--b-mute)!important}
-
-/* phones: the character switcher follows the same square plates */
-:root[data-ui="beta"] .phsw button{border-radius:var(--b-radius)!important;font-family:var(--b-font)!important}
-:root[data-ui="beta"] .phsw button.on{box-shadow:inset 0 -2px 0 var(--b-route)!important;border-color:var(--g-line)!important}
-
-/* =====================================================================================================
-   BETA, second pass: softer and more modern. Same identity (contour map, the waypoint diamond, the trail), but:
-   rounded glass panels with depth instead of flat square sheets, the system's modern UI lettering instead of the
-   condensed road-sign face, the current tab as a soft pill, and gentle accent light in the background.
-   These rules come last on purpose: they replace the matching ones above.
-   ===================================================================================================== */
-:root[data-ui="beta"]{
-  --b-font:'Segoe UI Variable Display','Segoe UI Variable Text','SF Pro Display',-apple-system,BlinkMacSystemFont,'Inter','Roboto','Segoe UI',system-ui,sans-serif;
-  --b-radius:12px;--b-r2:9px;--b-ink:#0a1117;--b-mute:#93a1ab;
-  --g-panel:rgba(18,28,36,.72)!important;--g-solid:#111b23!important;--g-col:rgba(255,255,255,.02)!important;
-  --g-line:rgba(255,255,255,.08)!important;--g-btn:rgba(255,255,255,.05)!important;--g-deep:rgba(4,9,12,.5)!important;
-  --b-glass:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.012));
-  --b-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 14px 34px -20px rgba(0,0,0,.75);
-}
-:root[data-ui="beta"] body{font-family:var(--b-font)!important;-webkit-font-smoothing:antialiased}
+:root[data-ui="beta"] body{font-family:var(--b-font)!important;color:var(--b-text);letter-spacing:-.003em;-webkit-font-smoothing:antialiased;font-feature-settings:"tnum" 1,"ss01" 1}
 :root[data-ui="beta"]:not([data-gx="1"]) body{background:
-  radial-gradient(900px 520px at 88% -8%,color-mix(in srgb,var(--b-route) 13%,transparent),transparent 62%),
-  radial-gradient(760px 520px at -6% 104%,rgba(63,143,160,.16),transparent 60%),
-  url(topo.svg) center/cover no-repeat,var(--b-ink)!important;background-attachment:fixed!important}
+  radial-gradient(1100px 620px at 50% -220px,color-mix(in srgb,var(--b-acc) 16%,transparent),transparent 70%),
+  radial-gradient(900px 700px at 105% 110%,var(--g-tg,rgba(64,110,160,.12)),transparent 65%),
+  var(--b-bg)!important;background-attachment:fixed!important}
+:root[data-ui="beta"]:not([data-gx="1"]) body::before{display:none!important}
+:root[data-ui="beta"][data-gx="1"] body{background:var(--b-bg)!important}
+:root[data-ui="beta"] #gtmp{border-radius:14px!important;border:1px solid var(--b-line2)!important;padding:6px!important}
+:root[data-ui="beta"] #gtmp .gi{border-radius:9px;border-left:0!important}
+:root[data-ui="beta"] #gtmp .gi.on{background:var(--b-s2)!important;box-shadow:inset 3px 0 0 var(--b-acc)}
+:root[data-ui="beta"] #gtmp .gl{font-family:var(--b-font);letter-spacing:.04em;text-transform:none;font-size:11.5px;font-weight:700;border:0!important;background:none!important;box-shadow:none!important;border-radius:0!important;margin:0!important;padding:10px 12px 3px!important}
+:root[data-ui="beta"] #gtmp .gl:empty{padding:0!important;margin:5px 10px!important;border-top:1px solid var(--b-line)!important}
+:root[data-ui="beta"] #gtmp .gi b{font-family:var(--b-font);letter-spacing:0}
+:root[data-ui="beta"] ::selection{background:color-mix(in srgb,var(--b-acc) 40%,transparent)}
+:root[data-ui="beta"] *{scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.16) transparent}
 
-/* top bar: frosted, the current tab is a soft pill with the waypoint in front of its name */
-:root[data-ui="beta"] header.gtbar{background:rgba(10,17,23,.72)!important;-webkit-backdrop-filter:blur(18px) saturate(1.3)!important;backdrop-filter:blur(18px) saturate(1.3)!important;border-bottom:1px solid rgba(255,255,255,.07)!important}
-:root[data-ui="beta"] header.gtbar nav button{font-weight:500!important;letter-spacing:0!important;border-radius:999px!important;padding-left:13px!important;padding-right:13px!important;transition:color .15s,background-color .15s}
-:root[data-ui="beta"] header.gtbar nav button:hover{background:rgba(255,255,255,.05)!important}
-:root[data-ui="beta"] header.gtbar nav button.on,:root[data-ui="beta"] header.gtbar nav #gtmore.has{background:color-mix(in srgb,var(--b-route) 15%,transparent)!important;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--b-route) 30%,transparent)!important;color:#fff!important}
-:root[data-ui="beta"] header.gtbar nav button.on::after,:root[data-ui="beta"] header.gtbar nav #gtmore.has::after{display:none!important}
-:root[data-ui="beta"] header.gtbar nav button.on::before{content:'';display:inline-block;width:6px;height:6px;margin-right:8px;vertical-align:1px;background:var(--b-route);border-radius:1.5px;transform:rotate(45deg);box-shadow:0 0 8px color-mix(in srgb,var(--b-route) 70%,transparent)}
-:root[data-ui="beta"] header.gtbar nav button.gtset.on::before{display:none}
-:root[data-ui="beta"] #gtsrch .vbar input{border-radius:999px!important;background-color:rgba(255,255,255,.05)!important;border:1px solid rgba(255,255,255,.08)!important}
-:root[data-ui="beta"] #gtsrch .vbar .vtg,:root[data-ui="beta"] #gtsrch .vbar button.g{border-radius:var(--b-r2)!important;background:rgba(255,255,255,.04)!important;border-color:rgba(255,255,255,.08)!important}
-:root[data-ui="beta"] #gtdl{border-radius:999px!important}
+/* ---------- top bar: glass strip with one floating segmented control ---------- */
+:root[data-ui="beta"] header.gtbar{background:rgba(7,9,13,.66)!important;-webkit-backdrop-filter:blur(22px) saturate(1.4)!important;backdrop-filter:blur(22px) saturate(1.4)!important;border-bottom:1px solid var(--b-line)!important;box-shadow:none!important;height:56px!important}
+:root[data-ui="beta"] header.gtbar nav#nav button{font-family:var(--b-font)!important;text-transform:none!important;letter-spacing:0!important;font-weight:600!important;font-size:13.5px!important;color:var(--b-mute)!important;border:0!important;border-radius:999px!important;background:none!important;box-shadow:none!important;height:32px!important;min-height:0!important;line-height:1!important;padding:0 14px!important;margin:0!important;align-self:center!important;transition:color .15s,background-color .2s}
+:root[data-ui="beta"] header.gtbar nav#nav button:hover{color:var(--b-text)!important;background:var(--b-s1)!important}
+:root[data-ui="beta"] header.gtbar nav#nav button.on,:root[data-ui="beta"] header.gtbar nav#nav #gtmore.has{background:var(--b-text)!important;color:#0a0d12!important;box-shadow:0 2px 10px -4px rgba(0,0,0,.6)!important}
+:root[data-ui="beta"] header.gtbar nav#nav button.on::before,:root[data-ui="beta"] header.gtbar nav#nav button.on::after,:root[data-ui="beta"] header.gtbar nav#nav #gtmore.has::after{display:none!important}
+:root[data-ui="beta"] header.gtbar nav#nav button.gtset{background:none!important;color:var(--b-mute)!important}
+:root[data-ui="beta"] header.gtbar nav#nav button.gtset.on{color:var(--b-text)!important;background:var(--b-s2)!important}
+:root[data-ui="beta"] #gtsrch .vbar input{border-radius:999px!important;background-color:var(--b-s1)!important;border:1px solid var(--b-line)!important;color:var(--b-text)!important}
+:root[data-ui="beta"] #gtsrch .vbar input:focus{border-color:color-mix(in srgb,var(--b-acc) 60%,transparent)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--b-acc) 18%,transparent)!important}
+:root[data-ui="beta"] #gtsrch .vbar .vtg,:root[data-ui="beta"] #gtsrch .vbar button.g{border-radius:var(--b-r2)!important;background:var(--b-s1)!important;border:1px solid var(--b-line)!important}
+:root[data-ui="beta"] #gtdl{border-radius:999px!important;font-family:var(--b-font)!important}
 
-/* section headings: the waypoint, the name, then the trail fading out */
-:root[data-ui="beta"] .dsec,:root[data-ui="beta"] #activity h3.sec,:root[data-ui="beta"] #home .hm-sec,:root[data-ui="beta"] #hub .hsec h4{font-size:15px!important;letter-spacing:-.005em!important;font-weight:650!important}
-:root[data-ui="beta"] .dsec::before,:root[data-ui="beta"] #activity h3.sec::before,:root[data-ui="beta"] #home .hm-sec::before,:root[data-ui="beta"] #hub .hsec h4::before,:root[data-ui="beta"] .card h2::before{border:0!important;background:var(--b-route)!important;border-radius:1.5px!important;width:6px;height:6px;box-shadow:0 0 8px color-mix(in srgb,var(--b-route) 60%,transparent)!important}
-:root[data-ui="beta"] .dsec::after,:root[data-ui="beta"] #activity h3.sec::after,:root[data-ui="beta"] #home .hm-sec::after{border-top:0!important;height:1px!important;background:linear-gradient(90deg,rgba(255,255,255,.14),transparent 85%)!important}
+/* ---------- headings: plain and confident, no ornaments ---------- */
+:root[data-ui="beta"] .dsec,:root[data-ui="beta"] #activity h3.sec,:root[data-ui="beta"] #home .hm-sec,:root[data-ui="beta"] #hub .hsec h4{display:flex!important;align-items:baseline;gap:8px;font-family:var(--b-font)!important;font-size:15px!important;font-weight:700!important;letter-spacing:-.01em!important;text-transform:none!important;color:var(--b-text)!important;background:none!important;padding-left:0!important}
+:root[data-ui="beta"] .dsec::before,:root[data-ui="beta"] #activity h3.sec::before,:root[data-ui="beta"] #home .hm-sec::before,:root[data-ui="beta"] #hub .hsec h4::before,:root[data-ui="beta"] .card h2::before{display:none!important;content:none!important}
+:root[data-ui="beta"] .dsec::after,:root[data-ui="beta"] #activity h3.sec::after,:root[data-ui="beta"] #home .hm-sec::after{content:''!important;display:block!important;flex:1;height:1px!important;align-self:center;background:var(--b-line)!important;border:0!important}
+:root[data-ui="beta"] .pmh .dsec::after{display:none!important}
+:root[data-ui="beta"] .dsec small,:root[data-ui="beta"] #hub .hsec span{font-weight:600;color:var(--b-mute);letter-spacing:0}
+:root[data-ui="beta"] section.gdark h2,:root[data-ui="beta"] .card h2{font-family:var(--b-font)!important;font-size:18px!important;font-weight:700!important;letter-spacing:-.015em!important;text-transform:none!important;color:var(--b-text)!important}
+:root[data-ui="beta"] #hub .hcard h3,:root[data-ui="beta"] #hub .hhero h2,:root[data-ui="beta"] #home .hm-c h3,:root[data-ui="beta"] #activity .acard>b,:root[data-ui="beta"] #guides .gx-hero h2,:root[data-ui="beta"] #guides .gx-top h2{font-family:var(--b-font)!important;text-transform:none!important;letter-spacing:-.02em!important;font-weight:700!important}
+:root[data-ui="beta"] #home .hm-h,:root[data-ui="beta"] .thh,:root[data-ui="beta"] #home .hm-c .go,:root[data-ui="beta"] #home .hm-row .r{font-family:var(--b-font)!important;text-transform:none!important;letter-spacing:0!important}
+:root[data-ui="beta"] #home .hm-h{font-weight:700!important;color:var(--b-text)!important}
+:root[data-ui="beta"] .thh{font-weight:600!important;color:var(--b-mute)!important}
 
-/* panels: rounded glass with a little depth */
-:root[data-ui="beta"] .card,:root[data-ui="beta"] section.gdark .card,:root[data-ui="beta"] #home .hm-c,:root[data-ui="beta"] #hub .hhero{
-  border-radius:var(--b-radius)!important;border:1px solid rgba(255,255,255,.075)!important;background:var(--b-glass),var(--g-panel)!important;box-shadow:var(--b-shadow)!important;-webkit-backdrop-filter:blur(14px) saturate(1.2)!important;backdrop-filter:blur(14px) saturate(1.2)!important}
-:root[data-ui="beta"] #settings .card{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background:var(--b-glass),rgba(18,28,36,.9)!important}
-:root[data-ui="beta"] #activity .acard,:root[data-ui="beta"] #hub .hcard{border-radius:var(--b-radius)!important;box-shadow:var(--b-shadow)!important}
-:root[data-ui="beta"] #home .hm-c:hover,:root[data-ui="beta"] #activity .acard.clk:hover,:root[data-ui="beta"] #hub .hcard:hover{border-color:color-mix(in srgb,var(--b-route) 45%,transparent)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 18px 38px -18px rgba(0,0,0,.8),0 0 0 1px color-mix(in srgb,var(--b-route) 18%,transparent)!important;transform:translateY(-2px)!important}
-:root[data-ui="beta"] section.gdark h2,:root[data-ui="beta"] .card h2{font-size:17px!important;letter-spacing:-.01em!important;font-weight:650!important}
-:root[data-ui="beta"] #hub .hcard h3,:root[data-ui="beta"] #hub .hhero h2,:root[data-ui="beta"] #home .hm-c h3,:root[data-ui="beta"] #activity .acard>b{letter-spacing:-.01em!important;font-weight:650!important}
-:root[data-ui="beta"] #hub .hcard h3{font-size:16px!important}
-:root[data-ui="beta"] #hub .hmono{border-radius:10px!important;transform:none!important;font-size:13px!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 6px 14px -8px var(--hc)!important}
-:root[data-ui="beta"] #hub .hcard::before{width:0!important}
-:root[data-ui="beta"] #hub .hcard .go{letter-spacing:0!important;font-weight:600!important;font-size:13.5px!important}
+/* ---------- surfaces ---------- */
+:root[data-ui="beta"] .card,:root[data-ui="beta"] section.gdark .card,:root[data-ui="beta"] #home .hm-c,:root[data-ui="beta"] #activity .acard,:root[data-ui="beta"] #hub .hcard,:root[data-ui="beta"] #hub .hhero{
+  border-radius:var(--b-r1)!important;border:1px solid var(--b-line)!important;box-shadow:var(--b-lift)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+:root[data-ui="beta"] .card,:root[data-ui="beta"] section.gdark .card,:root[data-ui="beta"] #home .hm-c{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.015)),rgba(13,17,23,.7)!important}
+:root[data-ui="beta"] #home .hm-c::before,:root[data-ui="beta"] #hub .hcard::before{height:0!important;width:0!important}
+:root[data-ui="beta"] #home .hm-c,:root[data-ui="beta"] #activity .acard,:root[data-ui="beta"] #hub .hcard{transition:border-color .2s,transform .2s,box-shadow .2s}
+:root[data-ui="beta"] #home .hm-c:hover,:root[data-ui="beta"] #activity .acard.clk:hover,:root[data-ui="beta"] #hub .hcard:hover{border-color:var(--b-line2)!important;box-shadow:0 1px 0 rgba(255,255,255,.06) inset,0 22px 44px -24px rgba(0,0,0,.95)!important}
+:root[data-anim="off"][data-ui="beta"] #home .hm-c:hover{transform:none!important}
+:root[data-ui="beta"] #activity .acard[data-ak]{border-color:color-mix(in srgb,var(--akc) 30%,var(--b-line))!important}
+:root[data-ui="beta"] #hub .hmono{border-radius:12px!important;transform:none!important;font-size:13px!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.2)!important}
+:root[data-ui="beta"] #hub .hhero small{display:none}
+:root[data-ui="beta"] #hub .hcard .go{text-transform:none!important;letter-spacing:0!important;font-weight:700!important;font-size:13.5px!important;font-family:var(--b-font)!important}
+:root[data-ui="beta"] #settings .card{background:rgba(13,17,23,.92)!important}
 
-/* buttons, chips, inputs */
+/* ---------- controls ---------- */
 :root[data-ui="beta"] section.gdark button,:root[data-ui="beta"] #vault button.g,:root[data-ui="beta"] #vault button.b,:root[data-ui="beta"] button.g,:root[data-ui="beta"] button.b{
-  border-radius:var(--b-r2)!important;border:1px solid rgba(255,255,255,.09)!important;letter-spacing:0!important;font-weight:550;font-size:13.5px}
-:root[data-ui="beta"] section.gdark button:hover,:root[data-ui="beta"] button.g:hover{background:rgba(255,255,255,.09)!important;border-color:rgba(255,255,255,.18)!important}
-:root[data-ui="beta"] button.b,:root[data-ui="beta"] section.gdark button.on,:root[data-ui="beta"] #activity .abar button.on,:root[data-ui="beta"] #hub .hbar button.on,:root[data-ui="beta"] .chip.on{
-  background:linear-gradient(180deg,color-mix(in srgb,var(--b-route) 100%,#fff 0%),color-mix(in srgb,var(--b-route) 82%,#000))!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 8px 18px -10px var(--b-route)!important;border-color:transparent!important}
-:root[data-ui="beta"] #activity .abar button,:root[data-ui="beta"] #hub .hbar button{border-radius:999px!important;letter-spacing:0!important;font-size:13.5px!important}
-:root[data-ui="beta"] section.gdark input:not([type=checkbox]):not([type=range]):not([type=color]),:root[data-ui="beta"] section.gdark select,:root[data-ui="beta"] section.gdark textarea{border-radius:var(--b-r2)!important;background-color:rgba(255,255,255,.05)!important;border:1px solid rgba(255,255,255,.09)!important}
-:root[data-ui="beta"] header.gtbar nav button{border:0!important}
+  border-radius:var(--b-r2)!important;border:1px solid var(--b-line)!important;background:var(--b-s1)!important;color:var(--b-text)!important;font-family:var(--b-font)!important;font-weight:600;font-size:13.5px;letter-spacing:0!important;text-transform:none!important;box-shadow:none!important;transition:background-color .15s,border-color .15s,color .15s}
+:root[data-ui="beta"] section.gdark button:hover,:root[data-ui="beta"] button.g:hover,:root[data-ui="beta"] #vault button.g:hover{background:var(--b-s2)!important;border-color:var(--b-line2)!important}
+:root[data-ui="beta"] button.b,:root[data-ui="beta"] #vault button.b,:root[data-ui="beta"] section.gdark button.on,:root[data-ui="beta"] #activity .abar button.on,:root[data-ui="beta"] #hub .hbar button.on,:root[data-ui="beta"] .chip.on{background:var(--b-acc)!important;color:var(--g-on-accent,#0a0d12)!important;border-color:transparent!important;font-weight:700!important}
+:root[data-ui="beta"] button.b:hover{filter:brightness(1.08)}
+:root[data-ui="beta"] #activity .abar button,:root[data-ui="beta"] #hub .hbar button,:root[data-ui="beta"] .chip{border-radius:999px!important;letter-spacing:0!important;text-transform:none!important;font-size:13.5px!important}
+:root[data-ui="beta"] section.gdark input:not([type=checkbox]):not([type=range]):not([type=color]),:root[data-ui="beta"] section.gdark select,:root[data-ui="beta"] section.gdark textarea{border-radius:var(--b-r2)!important;background-color:rgba(255,255,255,.04)!important;border:1px solid var(--b-line)!important;color:var(--b-text)!important}
+:root[data-ui="beta"] section.gdark input:focus,:root[data-ui="beta"] section.gdark select:focus,:root[data-ui="beta"] section.gdark textarea:focus{border-color:color-mix(in srgb,var(--b-acc) 60%,transparent)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--b-acc) 18%,transparent)!important;outline:0!important}
+:root[data-ui="beta"] input[type=range],:root[data-ui="beta"] input[type=checkbox]{accent-color:var(--b-acc)}
+:root[data-ui="beta"] :focus-visible{outline:2px solid var(--b-acc)!important;outline-offset:2px}
 
-/* item tiles: softly rounded, an accent ring on hover */
-:root[data-ui="beta"] .vt{border-radius:7px!important;overflow:hidden}
-:root[data-ui="beta"] .vt>img:first-child{border-radius:0}
-:root[data-ui="beta"] .vt:hover{outline:0!important;box-shadow:0 0 0 2px var(--b-route),0 8px 18px -8px rgba(0,0,0,.8)!important}
-:root[data-ui="beta"] .vt .ft,:root[data-ui="beta"] .cht b,:root[data-ui="beta"] .cht .pw{letter-spacing:0!important;font-variant-numeric:tabular-nums}
-:root[data-ui="beta"] .cht,:root[data-ui="beta"] #home .hm-ch{border-radius:var(--b-radius)!important}
+/* ---------- inventory ---------- */
+:root[data-ui="beta"] .vt{border-radius:var(--b-r3)!important;overflow:hidden;border-color:transparent!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.09)!important;transition:box-shadow .12s,transform .12s}
+:root[data-ui="beta"] .vt>img:first-child{border-radius:0!important}
+:root[data-ui="beta"] .vt:hover{outline:0!important;box-shadow:0 0 0 2px var(--b-acc),0 10px 22px -10px rgba(0,0,0,.9)!important}
+:root[data-ui="beta"] .vt .ft{font-family:var(--b-font)!important;font-weight:700;letter-spacing:0!important}
+:root[data-ui="beta"] .cht,:root[data-ui="beta"] #home .hm-ch{border-radius:14px!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)!important;overflow:hidden}
+:root[data-ui="beta"] .cht.vh{background:var(--b-s1)!important}
+:root[data-ui="beta"] .chm{border-radius:var(--b-r2)!important}
+:root[data-ui="beta"] .chnm b{font-family:var(--b-font)!important;font-weight:800!important;letter-spacing:-.01em!important;text-transform:none!important}
+:root[data-ui="beta"] .chp{font-family:var(--b-font)!important;font-weight:700!important;letter-spacing:-.01em!important;font-variant-numeric:tabular-nums}
 
-/* pop-ups and floating sheets */
-:root[data-ui="beta"] .dpm,:root[data-ui="beta"] .dps,:root[data-ui="beta"] #junkm .jk,:root[data-ui="beta"] .gtdrop,:root[data-ui="beta"] #vnote,:root[data-ui="beta"] #gtctx,:root[data-ui="beta"] #dlpp{border-radius:var(--b-radius)!important;background:#101a22!important;border:1px solid rgba(255,255,255,.1)!important;box-shadow:0 24px 60px -18px rgba(0,0,0,.85),inset 0 1px 0 rgba(255,255,255,.05)!important}
+/* ---------- item pop-up and floating sheets: two lifted glass cards ---------- */
+:root[data-ui="beta"] .dpm,:root[data-ui="beta"] .dps,:root[data-ui="beta"] #junkm .jk,:root[data-ui="beta"] .gtdrop,:root[data-ui="beta"] #vnote,:root[data-ui="beta"] #gtctx,:root[data-ui="beta"] #dlpp{
+  border-radius:var(--b-r1)!important;background:rgba(14,18,25,.9)!important;border:1px solid var(--b-line2)!important;-webkit-backdrop-filter:blur(24px) saturate(1.3)!important;backdrop-filter:blur(24px) saturate(1.3)!important;box-shadow:0 30px 70px -24px rgba(0,0,0,.95),inset 0 1px 0 rgba(255,255,255,.06)!important}
 :root[data-ui="beta"] .dpm{overflow:hidden auto}
+:root[data-ui="beta"] .dps{margin-left:6px!important;border-left:1px solid var(--b-line2)!important;padding:6px!important;gap:4px!important}
+:root[data-ui="beta"] .dph{border-radius:0!important;padding:12px 14px 10px!important;border:0!important}
+:root[data-ui="beta"] .dph.Legendary{background:linear-gradient(135deg,#6a3d86,#3b2152)!important}
+:root[data-ui="beta"] .dph.Exotic{background:linear-gradient(135deg,#e5c24a,#b48f26)!important}
+:root[data-ui="beta"] .dph.Rare{background:linear-gradient(135deg,#5b86b8,#36597f)!important}
+:root[data-ui="beta"] .dph.Uncommon{background:linear-gradient(135deg,#3f7c58,#265038)!important}
+:root[data-ui="beta"] .dph h2{font-family:var(--b-font)!important;text-transform:none!important;letter-spacing:-.01em!important;font-size:17px!important;font-weight:800!important}
+:root[data-ui="beta"] .dph b,:root[data-ui="beta"] .dph h3{font-family:var(--b-font)!important;letter-spacing:0!important}
+:root[data-ui="beta"] .dps button{border-radius:var(--b-r3)!important;height:28px!important;background:var(--b-s1)!important;border:1px solid var(--b-line)!important;font-size:12px!important}
+:root[data-ui="beta"] .dps button:hover{background:var(--b-s2)!important;border-color:var(--b-line2)!important;color:#fff!important}
+:root[data-ui="beta"] .dps h6{font-family:var(--b-font)!important;text-transform:none!important;letter-spacing:0!important;font-size:11px!important;color:var(--b-mute)!important}
+:root[data-ui="beta"] .dpq h4{text-transform:none!important;letter-spacing:0!important;font-size:12px!important;color:var(--b-mute)!important}
+:root[data-ui="beta"] .dpc{border-color:rgba(255,255,255,.14)!important;background:rgba(255,255,255,.04)!important}
+:root[data-ui="beta"] .dpc.eqp{background:color-mix(in srgb,var(--b-acc) 55%,#10151c)!important;border-color:var(--b-acc)!important}
+:root[data-ui="beta"] .dpc.sel{box-shadow:0 0 0 2px #fff!important}
+:root[data-ui="beta"] .dpkv,:root[data-ui="beta"] .dpbt,:root[data-ui="beta"] .dpp{border-color:var(--b-line)!important}
 :root[data-ui="beta"] .gtdrop{border-left:3px solid var(--dc)!important}
-:root[data-ui="beta"] .dps button{border-radius:var(--b-r2)!important}
-:root[data-ui="beta"] .dph b,:root[data-ui="beta"] .dph h3{letter-spacing:-.01em!important}
 
-/* phones */
-:root[data-ui="beta"] #gtw-tabs{background:rgba(10,17,23,.78)!important;-webkit-backdrop-filter:blur(18px) saturate(1.3)!important;backdrop-filter:blur(18px) saturate(1.3)!important;border-top:1px solid rgba(255,255,255,.07)!important}
-:root[data-ui="beta"] #gtw-tabs button{font-size:11.5px!important;letter-spacing:0!important}
-:root[data-ui="beta"] #gtw-tabs button.on{box-shadow:none!important;color:#fff!important}
-:root[data-ui="beta"] #gtw-tabs button.on::before{top:6px;left:50%;width:46px;height:30px;margin-left:-23px;border-radius:999px;transform:none;background:color-mix(in srgb,var(--b-route) 20%,transparent);z-index:-1}
-:root[data-ui="beta"] #gtw-tabs button.on svg{color:var(--b-route)}
-:root[data-ui="beta"] .phsw button{border-radius:999px!important}
-:root[data-ui="beta"] .phsw button.on{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--b-route) 40%,transparent)!important;background:color-mix(in srgb,var(--b-route) 14%,transparent)!important}
+/* ---------- phones ---------- */
+:root[data-ui="beta"] #gtw-tabs{background:rgba(7,9,13,.78)!important;-webkit-backdrop-filter:blur(22px) saturate(1.4)!important;backdrop-filter:blur(22px) saturate(1.4)!important;border-top:1px solid var(--b-line)!important}
+:root[data-ui="beta"] #gtw-tabs button{position:relative;font-family:var(--b-font)!important;font-size:11.5px!important;font-weight:600!important;letter-spacing:0!important;color:var(--b-mute)!important;box-shadow:none!important}
+:root[data-ui="beta"] #gtw-tabs button.on{color:var(--b-text)!important}
+:root[data-ui="beta"] #gtw-tabs button.on::before{content:'';position:absolute;top:5px;left:50%;width:52px;height:30px;margin-left:-26px;border-radius:999px;background:var(--b-s2);z-index:-1;transform:none}
+:root[data-ui="beta"] #gtw-tabs button.on svg{color:var(--b-acc)}
+:root[data-ui="beta"] .phsw button{border-radius:999px!important;font-family:var(--b-font)!important}
+:root[data-ui="beta"] .phsw button.on{background:var(--b-text)!important;color:#0a0d12!important;border-color:transparent!important;box-shadow:none!important}
+@media (max-width:760px){
+  :root[data-ui="beta"] header.gtbar{height:52px!important}
+  }
 
-/* small labels */
-:root[data-ui="beta"] #home .hm-h,:root[data-ui="beta"] .thh,:root[data-ui="beta"] #home .hm-c .go,:root[data-ui="beta"] #home .hm-row .r{letter-spacing:0!important}
-:root[data-ui="beta"] #home .hm-h{font-weight:650!important}
+/* ---------- Helpful tab: match the surfaces ---------- */
+:root[data-ui="beta"] #guides{--gx-r:14px}
+:root[data-ui="beta"] #guides .gx-wp>.gx-in,:root[data-ui="beta"] #guides .gx-basics li,:root[data-ui="beta"] #guides .gx-list li,:root[data-ui="beta"] #guides .gx-item{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.015)),rgba(13,17,23,.7);border-color:var(--b-line)}
+:root[data-ui="beta"] #guides .gx-seg button.on{background:var(--b-text);color:#0a0d12;border-color:transparent}
 
-/* settings picker preview */
-.uic.u-beta i{border-radius:8px;background:radial-gradient(60% 70% at 85% 0,rgba(242,180,65,.35),transparent 70%),repeating-radial-gradient(circle at 78% 30%,transparent 0 9px,rgba(127,179,189,.22) 9px 10px),#0a1117}
-.uic.u-beta i::before{border-top:0;height:1px;background:linear-gradient(90deg,#f2b441,transparent)}
-.uic.u-beta i::after{left:14%;border-radius:2px;box-shadow:0 0 8px #f2b441}
-:root[data-ui="beta"] header.gtbar nav#nav button{letter-spacing:.01em!important;height:32px!important;min-height:0!important;align-self:center!important;line-height:1!important}
+/* ---------- settings picker preview for this style ---------- */
+.uic.u-beta i{position:relative;overflow:hidden;border-radius:9px;background:radial-gradient(120% 90% at 50% -30%,rgba(122,184,232,.45),transparent 60%),#06080c;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.uic.u-beta i::before{content:'';position:absolute;left:14%;right:14%;top:9px;height:14px;border-radius:999px;background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.uic.u-beta i::after{content:'';position:absolute;left:calc(14% + 3px);top:12px;width:26px;height:8px;border-radius:999px;background:#eef1f6}
+
+/* ---------- settings picker previews for Bray (the founder) and Manta (the dev and tester) ---------- */
+.uic.u-bray i{position:relative;overflow:hidden;border-radius:9px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 70 44'%3E%3Cpath d='M10 32 L13 11 L25 23 L35 5 L45 23 L57 11 L60 32 Z' fill='%23f2c14e'/%3E%3Crect x='10' y='35' width='50' height='5' rx='1.5' fill='%23f2c14e'/%3E%3Ccircle cx='35' cy='22' r='3' fill='%237a4a10'/%3E%3Ccircle cx='13' cy='10' r='2.6' fill='%23ffe08a'/%3E%3Ccircle cx='35' cy='4' r='2.6' fill='%23ffe08a'/%3E%3Ccircle cx='57' cy='10' r='2.6' fill='%23ffe08a'/%3E%3C/svg%3E") center/auto 64% no-repeat,radial-gradient(90% 120% at 50% 110%,rgba(242,193,78,.42),transparent 62%),linear-gradient(180deg,#1a1408,#0b0904);box-shadow:inset 0 0 0 1px rgba(242,193,78,.35)}
+.uic.u-manta i{position:relative;overflow:hidden;border-radius:9px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 52'%3E%3Cpath d='M50 13 C57 13 63 16 69 20 C79 24 89 24 98 21 C90 30 78 34 66 34 C60 34 56 37 52 42 L50 51 L48 42 C44 37 40 34 34 34 C22 34 10 30 2 21 C11 24 21 24 31 20 C37 16 43 13 50 13 Z' fill='%233fe0cf'/%3E%3Cpath d='M45 14 C43 9 44 6 46 5 C47 8 47 11 48 13 Z M55 14 C57 9 56 6 54 5 C53 8 53 11 52 13 Z' fill='%233fe0cf'/%3E%3Ccircle cx='46' cy='18' r='1.2' fill='%230a2a30'/%3E%3Ccircle cx='54' cy='18' r='1.2' fill='%230a2a30'/%3E%3C/svg%3E") 50% 55%/auto 70% no-repeat,repeating-linear-gradient(0deg,rgba(63,224,207,.07) 0 1px,transparent 1px 8px),repeating-linear-gradient(90deg,rgba(63,224,207,.07) 0 1px,transparent 1px 8px),radial-gradient(100% 120% at 50% -20%,rgba(40,140,170,.5),transparent 65%),#04141a;box-shadow:inset 0 0 0 1px rgba(63,224,207,.3)}
+
+/* ---------- BETA THEME (base colours; picture-free) ---------- */
+:root[data-gt="beta"]{--g-bg:#06080c;--g-panel:rgba(16,20,27,.78);--g-col:transparent;--g-line:rgba(255,255,255,.075);--g-deep:rgba(0,0,0,.4);--g-btn:rgba(255,255,255,.045);--g-solid:#0f1319}

@@ -100,22 +100,43 @@
   // On the beta: a small "Beta" button in the top bar that explains it and leads back. On the regular site: note whether a
   // beta is published right now, so Settings > About & help can offer it.
   function betaChip() {
-    if (!window.__GT_BETA__ || document.getElementById('gtbeta')) return;
+    // A "Beta" switch that always sits in the top bar: on (gold) on the beta, off on the regular site once a beta is published.
+    // Clicking it explains where you are and switches between the two. Same sign-in and settings on both.
+    if (document.getElementById('gtbeta')) return;
+    const on = !!window.__GT_BETA__, info = window.__gtbetaInfo;
+    if (!on && !info) return;
     const hd = document.querySelector('header.gtbar') || document.querySelector('header'); if (!hd) return;
-    const b = document.createElement('button'); b.id = 'gtbeta'; b.type = 'button'; b.textContent = 'Beta'; b.title = 'You are on the beta version of Pathfinder';
-    b.style.cssText = 'order:4;flex:none;margin-left:8px;background:#e8b84a;color:#16130a;border:0;border-radius:16px;padding:4px 11px;font:700 11.5px system-ui,sans-serif;letter-spacing:.05em;cursor:pointer';
+    if (!document.getElementById('gtbeta-css')) {
+      const st = document.createElement('style'); st.id = 'gtbeta-css';
+      st.textContent = '#gtbeta{order:4;flex:none;margin-left:8px;display:inline-flex;align-items:center;gap:7px;border-radius:999px;padding:4px 6px 4px 11px;font:700 11.5px system-ui,sans-serif;letter-spacing:.04em;cursor:pointer;border:1px solid #e8b84a;background:transparent;color:#e8b84a}'
+        + '#gtbeta.on{background:#e8b84a;color:#16130a}#gtbeta i{position:relative;width:24px;height:14px;border-radius:999px;background:rgba(232,184,74,.25);flex:none}'
+        + '#gtbeta.on i{background:rgba(22,19,10,.35)}#gtbeta i::after{content:"";position:absolute;top:2px;left:2px;width:10px;height:10px;border-radius:50%;background:#e8b84a;transition:left .15s}'
+        + '#gtbeta.on i::after{left:12px;background:#16130a}#gtbeta:focus-visible{outline:2px solid #fff;outline-offset:2px}'
+        + '#gtbetap{position:fixed;z-index:9800;width:300px;background:#12151b;color:#e6e7ea;border:1px solid #3a3d43;border-radius:12px;box-shadow:0 18px 50px rgba(0,0,0,.7);padding:14px 16px;font:14px/1.45 system-ui,sans-serif}'
+        + '#gtbetap b{display:block;font-size:15px;margin-bottom:4px}#gtbetap p{margin:0 0 10px;color:#aab1bb}#gtbetap small{display:block;color:#7d8590;margin:-4px 0 10px}'
+        + '#gtbetap a{display:block;text-align:center;text-decoration:none;font-weight:700;border-radius:8px;padding:9px 12px;background:#e8b84a;color:#16130a}#gtbetap a.alt{background:transparent;color:#e6e7ea;border:1px solid #3a3d43}';
+      document.head.appendChild(st);
+    }
+    const b = document.createElement('button'); b.id = 'gtbeta'; b.type = 'button'; b.className = on ? 'on' : '';
+    b.setAttribute('role', 'switch'); b.setAttribute('aria-checked', on ? 'true' : 'false');
+    b.title = on ? 'You are on the beta. Click to go back to the regular site.' : 'Try the beta: the next version of Pathfinder, early';
+    b.innerHTML = 'Beta<i aria-hidden="true"></i>';
     b.addEventListener('click', () => {
-      let p = document.getElementById('gtdlp'); if (p) { p.remove(); return; }
-      p = document.createElement('div'); p.id = 'gtdlp';
-      const r = b.getBoundingClientRect(); p.style.top = (r.bottom + 6) + 'px'; p.style.left = Math.max(8, Math.min(innerWidth - 308, r.right - 300)) + 'px';
-      p.innerHTML = '<b>You are on the beta</b><p>This is the next version of Pathfinder, published early to try out. It uses the same sign-in and settings as the regular site, and things here may still change or break.</p><a class="dl" href="../">Back to the regular site</a>';
+      let p = document.getElementById('gtbetap'); if (p) { p.remove(); return; }
+      p = document.createElement('div'); p.id = 'gtbetap';
+      const r = b.getBoundingClientRect(); p.style.top = (r.bottom + 8) + 'px'; p.style.left = Math.max(8, Math.min(innerWidth - 308, r.right - 300)) + 'px';
+      const v = on ? (window.__GT_BETA_V__ || '') : (info && info.v) || '';
+      p.innerHTML = on
+        ? '<b>Beta is on</b><p>You are on the next version of Pathfinder, published early to try out. Same sign-in and settings as the regular site; things here may still change or break.</p>' + (v ? '<small>' + v + '</small>' : '') + '<a class="alt" href="../">Turn beta off (back to the regular site)</a>'
+        : '<b>Try the beta</b><p>The next version of Pathfinder, published early. Same sign-in and settings; you can come back any time from this same switch.</p>' + (v ? '<small>' + v + '</small>' : '') + '<a href="beta/">Turn beta on</a>';
       document.body.appendChild(p);
-      const close = (e) => { if (!p.contains(e.target) && e.target !== b) { p.remove(); document.removeEventListener('mousedown', close, true); document.removeEventListener('touchstart', close, true); } };
+      const close = (e) => { if (!p.contains(e.target) && !b.contains(e.target)) { p.remove(); document.removeEventListener('mousedown', close, true); document.removeEventListener('touchstart', close, true); } };
       setTimeout(() => { document.addEventListener('mousedown', close, true); document.addEventListener('touchstart', close, true); }, 0);
     });
     hd.appendChild(b); window.dispatchEvent(new Event('resize'));
   }
-  if (!window.__GT_BETA__) fetch('beta/beta.json', { cache: 'no-store' }).then((x) => (x.ok ? x.json() : null)).then((j) => { if (j && j.v) window.__gtbetaInfo = j; }).catch(() => {});
+  if (window.__GT_BETA__) fetch('beta.json', { cache: 'no-store' }).then((x) => (x.ok ? x.json() : null)).then((j) => { if (j && j.v) window.__GT_BETA_V__ = j.v; }).catch(() => {});
+  else fetch('beta/beta.json', { cache: 'no-store' }).then((x) => (x.ok ? x.json() : null)).then((j) => { if (j && j.v) { window.__gtbetaInfo = j; betaChip(); } }).catch(() => {});
 
   const start = () => { pcButton(); betaChip(); setTimeout(banner, 4000); };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
