@@ -149,14 +149,14 @@ ${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((i) => `:root[data-anim="full"] :i
   // ---------- which tab the app opens on ----------
   try {
     const get = window.__gtget || (() => undefined);
-    let st = get('starttab') || 'vault';
-    let homeStart = false; try { homeStart = JSON.parse(localStorage.getItem('gt.home.start') || 'false'); } catch (e) { /* none */ }
-    if (st === 'vault' && homeStart) st = 'home';
+    // Settings > Display > "Open the app on" decides. The older "Open the app on Home" box (gt.home.start) only counts for
+    // people who never picked anything in Settings; it used to win over Settings and kept opening Home.
+    let st = get('starttab');
+    if (!st) { let homeStart = false; try { homeStart = JSON.parse(localStorage.getItem('gt.home.start') || 'false'); } catch (e) { /* none */ } st = homeStart ? 'home' : 'vault'; }
     if (st === 'last') st = window.__gtLastTab || 'vault';
     if (st && st !== 'vault') {
-      if (st === 'home' && window.__gthome) window.__gthome.open();
-      else {
-        const go = () => { const b = document.querySelector('#nav button[data-t="' + CSS.escape(st) + '"]'); if (b && !b.classList.contains('gthide')) b.click(); };
+      if (st === 'home') { if (window.__gthome) window.__gthome.open(); else if (window.show) window.show('vault'); } else {
+        const go = () => { const b = document.querySelector('#nav button[data-t="' + CSS.escape(st) + '"]'); if (b && !b.classList.contains('gthide')) b.click(); else if (window.show) window.show('vault'); };
         setTimeout(go, 0);
       }
     }
