@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.15: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.16: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -14,6 +14,24 @@ let win, M = null;
 // The same file also runs inside the web version (web/ folder): there the browser stand-ins set __GT_WEB__ and provide the window.
 const WEB = !!globalThis.__GT_WEB__;
 if (WEB) win = globalThis.__GT_WEB__.win;
+// PC beta (built by beta.bat as "Pathfinder Beta", version like 0.2.94-beta.3). It installs next to the regular app with
+// its own settings folder; the first time it starts it copies your settings, tags, notes and wish lists from the regular app.
+const IS_BETA = !WEB && /-beta/i.test(String(app.getVersion && app.getVersion()));
+if (IS_BETA) {
+  try {
+    const ud = app.getPath('userData'), mark = path.join(ud, '.copied-from-pathfinder');
+    const from = ['Pathfinder', 'guardian-toolkit'].map((n) => path.join(app.getPath('appData'), n)).find((d) => d !== ud && fs.existsSync(path.join(d, 'Local Storage')));
+    if (from && !fs.existsSync(mark)) {
+      fs.mkdirSync(ud, { recursive: true });
+      for (const f of fs.readdirSync(from)) {
+        const src = path.join(from, f), st = fs.statSync(src);
+        if (st.isFile() && /\.json$/i.test(f) && st.size < 60e6 && !fs.existsSync(path.join(ud, f))) fs.copyFileSync(src, path.join(ud, f));
+      }
+      for (const d of ['Local Storage', 'IndexedDB']) { const src = path.join(from, d); if (fs.existsSync(src) && !fs.existsSync(path.join(ud, d))) fs.cpSync(src, path.join(ud, d), { recursive: true }); }
+      fs.writeFileSync(mark, new Date().toISOString());
+    }
+  } catch (e) { /* starts fresh instead */ }
+}
 const cfgPath = () => path.join(app.getPath('userData'), 'config.json');
 // app-config.json ships with the app: update/revocation addresses and, optionally, a ready-made Bungie app so friends only have to sign in.
 const appCfg = (() => { try { return JSON.parse(fs.readFileSync(path.join(__dirname, 'app-config.json'), 'utf8')); } catch { return {}; } })();
@@ -1029,7 +1047,7 @@ const pushUpd = (o) => { Object.assign(upd, o); if (win && !win.isDestroyed()) w
 function setupUpdater() {
   if (!updater || !app.isPackaged) return;
   updater.autoDownload = true;
-  updater.allowDowngrade = false; updater.allowPrerelease = false;
+  updater.allowDowngrade = false; updater.allowPrerelease = IS_BETA; // the beta follows its own feed of -beta versions
   updater.autoInstallOnAppQuit = true;
   updater.on('checking-for-update', () => pushUpd({ state: 'checking' }));
   updater.on('update-available', (i) => pushUpd({ state: 'downloading', version: i.version, pct: 0 }));
@@ -1048,7 +1066,7 @@ H('upd:install', () => { if (updater) updater.quitAndInstall(true, true); return
 try { app.setPath('userData', path.join(app.getPath('appData'), 'guardian-toolkit')); } catch (e) { /* keep default */ }
 // Windows: the app's own ID (the one the installer puts on its shortcuts), so the taskbar button, its right-click menu and
 // pins all belong to the installed Pathfinder and show its current icon, not an old icon Windows cached for the program file.
-const AUMID = 'local.guardian.toolkit';
+const AUMID = IS_BETA ? 'local.guardian.toolkit.beta' : 'local.guardian.toolkit';
 if (process.platform === 'win32' && !WEB) { try { app.setAppUserModelId(AUMID); } catch (e) { /* older Windows */ } }
 if (!app.requestSingleInstanceLock()) app.quit();
 else app.on('second-instance', () => { if (win) { if (win.isMinimized()) win.restore(); win.focus(); } });
@@ -1116,7 +1134,8 @@ app.whenReady().then(async () => {
     { role: 'undo' }, { role: 'redo' }, { type: 'separator' },
     { role: 'cut' }, { role: 'copy' }, { role: 'paste' }, { role: 'selectAll' },
   ] }]));
-  win = new BrowserWindow({ width: 1200, height: 850, backgroundColor: '#07090e', title: 'Pathfinder', icon: winIcon(), autoHideMenuBar: false, webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false, sandbox: true, webSecurity: true, allowRunningInsecureContent: false, webviewTag: true, spellcheck: false, backgroundThrottling: false } }); // keeps the new-drop checks running while the game is in front
+  win = new BrowserWindow({ width: 1200, height: 850, backgroundColor: '#07090e', title: IS_BETA ? 'Pathfinder Beta' : 'Pathfinder', icon: winIcon(), autoHideMenuBar: false, webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false, sandbox: true, webSecurity: true, allowRunningInsecureContent: false, webviewTag: true, spellcheck: false, backgroundThrottling: false } }); // keeps the new-drop checks running while the game is in front
+  if (IS_BETA) win.on('page-title-updated', (e) => { e.preventDefault(); try { win.setTitle('Pathfinder Beta ' + app.getVersion()); } catch (er) { /* closing */ } });
   // Alt used to pop the Edit menu up in the top-left corner. Keep the menu (so Ctrl+C/V/X/A/Z still work) but never show its bar.
   win.setMenuBarVisibility(false);
   // The icon Windows shows for this window's right-click menu and for pins made from it. Windows cannot read a file inside
