@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.16: preload.js for the browser */
+/* Pathfinder 0.3.17-beta.2: preload.js for the browser */
 (function (require) {
 const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('gt', {
@@ -22,6 +22,15 @@ contextBridge.exposeInMainWorld('gt', {
   moveStack: (v) => ipcRenderer.invoke('item:stack', v),
   itemLock: (v) => ipcRenderer.invoke('item:lock', v),
   itemPlug: (v) => ipcRenderer.invoke('item:plug', v),
+  modOpts: (v) => ipcRenderer.invoke('item:modopts', v),
+  ratingsGet: (v) => ipcRenderer.invoke('ratings:get', v),
+  ratingsShare: (v) => ipcRenderer.invoke('ratings:share', v),
+  pfaStatus: () => ipcRenderer.invoke('pfa:status'),
+  pfaSignup: (v) => ipcRenderer.invoke('pfa:signup', v),
+  pfaLogin: (v) => ipcRenderer.invoke('pfa:login', v),
+  pfaSync: () => ipcRenderer.invoke('pfa:sync'),
+  pfaLogout: () => ipcRenderer.invoke('pfa:logout'),
+  pfaDelete: () => ipcRenderer.invoke('pfa:delete'),
   writeClipboard: (t) => ipcRenderer.invoke('clip:write', t),
   dimFetch: (v) => ipcRenderer.invoke('dim:fetch', v),
   itemSlots: (v) => ipcRenderer.invoke('item:slots', v),

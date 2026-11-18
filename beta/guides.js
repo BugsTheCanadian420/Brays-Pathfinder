@@ -61,7 +61,7 @@
   }
   $('gchips').onclick = (e) => { const b = e.target.closest('[data-c]'); if (b) { cat = b.dataset.c; draw(); } };
   $('gsearch').oninput = draw;
-  page.onkeydown = (e) => { const t = e.target.closest('.gx-shot'); if (t && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); t.click(); } };
+  page.onkeydown = (e) => { const t = e.target.closest('.gx-shot, .gx-item[data-li]'); if (t && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); t.click(); } };
   list.onkeydown = (e) => { if ((e.key === 'Enter' || e.key === ' ') && e.target.closest('.gx-card')) { e.preventDefault(); e.target.closest('.gx-card').click(); } };
   list.onclick = (e) => { const c = e.target.closest('[data-g],[data-old]'); if (!c) return; if (c.dataset.g) show(c.dataset.g); else if (oldOpen) { oldOpen(c.dataset.old); page.classList.remove('in'); } };
 
@@ -116,6 +116,17 @@
   }
   const ARMOR = new Set([3448274439, 3551918588, 14239492, 20886954, 1585787867]);
   const CLS = ['Titan', 'Hunter', 'Warlock'];
+  // ---------- Loot, tied to your inventory ----------
+  // Bungie's list for the activity, matched against your collections (collected or not) and your inventory (how many copies,
+  // best power, how many are wish list rolls). Clicking a weapon opens your best copy, or searches your inventory for it.
+  let lootF = 'all';
+  const V = () => window.__gtv;
+  const inv = () => { try { const d = V() && V().D(); return d ? d.items || [] : []; } catch (e) { return []; } };
+  function copiesOf(x) {
+    const n = norm(x.n);
+    return inv().filter((o) => !o.pm && (o.h === x.ih || norm(o.n) === n) && (ARMOR.has(x.b) ? o.c === x.c : true));
+  }
+  function wishUp(o) { try { const w = V() && V().wish ? V().wish(o) : null; return !!(w && w.v === 1); } catch (e) { return false; } }
   function lootHTML(g) {
     let h = '';
     const L = ART.loot[g.id] || [], own = ART.own;
@@ -123,18 +134,43 @@
       const skip = (x) => /\((adept|timelost|harrowed)\)$/i.test(x.n);
       const W = L.filter((x) => !ARMOR.has(x.b) && !skip(x)).sort((a, b) => (b.r === 'Exotic') - (a.r === 'Exotic') || a.n.localeCompare(b.n));
       const A = L.filter((x) => ARMOR.has(x.b));
-      const have = own ? W.concat(A).filter((x) => own.has(x.h)).length : -1;
-      if (W.length) h += `<div class="gx-loot">${W.map((x) => `<div class="gx-item${x.r === 'Exotic' ? ' ex' : ''}" title="${E(x.n)}"><img src="${E(B(x.i))}" alt="" loading="lazy"><div style="min-width:0"><b>${E(x.n)}</b><small>${E(x.r === 'Exotic' ? 'Exotic ' + x.t.toLowerCase() : x.t)}${own && own.has(x.h) ? ' · <span class="own" title="In your collections">✓ owned</span>' : ''}</small></div></div>`).join('')}</div>`;
+      const info = new Map(); W.concat(A).forEach((x) => { const cp = copiesOf(x); info.set(x, { cp, col: own ? own.has(x.h) : null, up: cp.filter(wishUp).length, best: cp.reduce((m, o) => Math.max(m, o.p || 0), 0) }); });
+      const signed = inv().length > 0;
+      const nCol = own ? W.concat(A).filter((x) => info.get(x).col).length : -1;
+      const nInv = W.filter((x) => info.get(x).cp.length).length, nCopies = W.reduce((t, x) => t + info.get(x).cp.length, 0), nUp = W.reduce((t, x) => t + info.get(x).up, 0);
+      const show = (x) => { const i = info.get(x); return lootF === 'all' || (lootF === 'miss' ? !i.cp.length && i.col !== true : lootF === 'have' ? i.cp.length > 0 : true); };
+      h += `<div class="gx-lsum">${nCol >= 0 ? `<div><b>${nCol}<small>/${W.length + A.length}</small></b><span>in your collections</span></div>` : ''}${signed ? `<div><b>${nInv}<small>/${W.length}</small></b><span>weapons in your inventory${nCopies > nInv ? ` (${nCopies} copies)` : ''}</span></div>` : ''}${signed && nUp ? `<div><b>${nUp}</b><span>wish list rolls</span></div>` : ''}${!signed && nCol < 0 ? '<div><span>Sign in to see what you already have from here.</span></div>' : ''}</div>`;
+      if (signed || own) h += `<div class="gx-lf" role="group" aria-label="Show">${[['all', 'Everything'], ['have', 'In my inventory'], ['miss', 'Still missing']].map(([k, t]) => `<button type="button" class="${lootF === k ? 'on' : ''}" data-lf="${k}">${t}</button>`).join('')}</div>`;
+      const Wv = W.filter(show);
+      if (Wv.length) h += `<div class="gx-loot">${Wv.map((x) => {
+        const i = info.get(x), cp = i.cp.length;
+        const tags = [i.col === true ? '<span class="gtg-own">✓ collected</span>' : i.col === false ? '<span class="gtg-no">Not collected</span>' : '', cp ? `<span class="gtg-inv">${cp} in inventory${i.best ? ` · ${i.best}` : ''}</span>` : '', i.up ? `<span class="gtg-up">${i.up} wish list roll${i.up > 1 ? 's' : ''}</span>` : ''].filter(Boolean).join('');
+        return `<div class="gx-item${x.r === 'Exotic' ? ' ex' : ''}${i.col === false && !cp ? ' gx-miss' : ''}" role="button" tabindex="0" data-li="${E(x.n)}" data-lh="${x.ih}" title="${cp ? 'Open your best copy' : 'Search your inventory for ' + E(x.n)}"><img src="${E(B(x.i))}" alt="" loading="lazy"><div style="min-width:0"><b>${E(x.n)}</b><small>${E(x.r === 'Exotic' ? 'Exotic ' + String(x.t || '').toLowerCase() : x.t)}</small><div class="gx-tags">${tags}</div></div></div>`;
+      }).join('')}</div>`;
+      else h += `<div class="gx-empty">${lootF === 'miss' ? 'You have everything here. Nice.' : 'None of these are in your inventory right now.'}</div>`;
       if (A.length) {
-        const by = [0, 1, 2].map((c) => A.filter((x) => x.c === c)).filter((l) => l.length);
-        h += `<p class="gx-note" style="margin-top:12px"><b>Armor</b> · ${by.map((l) => `${CLS[l[0].c]} ${l.length}`).join(' · ')} pieces</p><div class="gx-armor">${A.map((x) => `<img src="${E(B(x.i))}" alt="${E(x.n)}" title="${E(x.n)} (${E(CLS[x.c] || 'Any class')})" loading="lazy" class="${own && own.has(x.h) ? 'own' : ''}">`).join('')}</div>`;
+        h += '<div class="gx-arm">' + [0, 1, 2].map((c) => {
+          const l = A.filter((x) => x.c === c); if (!l.length) return '';
+          const got = own ? l.filter((x) => info.get(x).col).length : -1, inInv = l.filter((x) => info.get(x).cp.length).length;
+          return `<div class="gx-armc"><div class="gx-armh"><b>${CLS[c]} armor</b><small>${got >= 0 ? `${got}/${l.length} collected` : `${l.length} pieces`}${inInv ? ` · ${inInv} in inventory` : ''}</small></div><div class="gx-armor">${l.map((x) => { const i = info.get(x); return `<img src="${E(B(x.i))}" alt="${E(x.n)}" title="${E(x.n)}${i.col === true ? ' (collected)' : i.col === false ? ' (not collected)' : ''}${i.cp.length ? ' · ' + i.cp.length + ' in inventory' : ''}" loading="lazy" class="${i.col ? 'own' : ''}${i.col === false ? ' miss' : ''}${i.cp.length ? ' inv' : ''}" data-li="${E(x.n)}" data-lh="${x.ih}">`; }).join('')}</div></div>`;
+        }).join('') + '</div>';
       }
-      h += `<p class="gx-note">Every item Bungie's collections list for this activity, read live from the game's own data${have >= 0 ? ` · you own ${have} of ${W.length + A.length}` : ''}.</p>`;
+      h += `<p class="gx-note">Bungie's own loot list for this activity, read live from the game's data. Tap a weapon to open your best copy, or to search your inventory for it.</p>`;
     } else if (ART.state === 'loading') h += '<div class="gx-wait">Loading the official loot list from Bungie…</div>';
     if (g.loot) h += `<table class="gx-table" style="margin-top:12px"><caption class="gx-note" style="text-align:left;caption-side:top;margin:0 0 6px">Drops by encounter</caption>${Object.keys(g.loot).map((k) => `<tr><th scope="row">${E(k)}</th><td>${g.loot[k].map((n) => chip(g, n)).join('')}</td></tr>`).join('')}</table>`;
     else if (!L.length && g.lootAll) h += `<div class="gx-drops">${g.lootAll.map((n) => chip(g, n)).join('')}</div>`;
     if (g.lootNote) h += `<p class="gx-note">${E(g.lootNote)}</p>`;
     return h;
+  }
+  // Open the best copy you own, or show it in the Inventory tab through the search box.
+  function openLoot(name, ih) {
+    const cp = inv().filter((o) => !o.pm && (o.h === ih || norm(o.n) === norm(name))).sort((a, b) => (b.p || 0) - (a.p || 0));
+    const nb = document.querySelector('nav button[data-t=vault]'); if (nb) nb.click();
+    setTimeout(() => {
+      const box = document.getElementById('vq');
+      if (box) { box.value = 'exactname:"' + String(name).toLowerCase().replace(/"/g, '') + '"'; box.dispatchEvent(new Event('input', { bubbles: true })); }
+      if (cp[0] && V() && V().open) setTimeout(() => { const el = document.querySelector('#vgrid .vt[data-id="' + cp[0].id + '"]'); if (el) el.scrollIntoView({ block: 'center' }); V().open(cp[0].id, el || null); }, 250);
+    }, 120);
   }
   let cur = null;
   function render(id, fresh) {
@@ -166,6 +202,10 @@
     if (t.closest('#gback')) { page.hidden = true; page.classList.remove('in'); const hub = $('ghub'); if (hub) hub.hidden = false; cur = null; window.scrollTo(0, 0); return; }
     const j = t.closest('[data-jump]');
     if (j) { e.preventDefault(); const el = $(j.dataset.jump === 'chests' ? 'gx-chests' : j.dataset.jump === 'loot' ? 'gx-loot' : 'gx-e' + j.dataset.jump); if (el) el.scrollIntoView({ behavior: document.documentElement.dataset.anim === 'off' ? 'auto' : 'smooth', block: 'start' }); return; }
+    const lf = t.closest('[data-lf]');
+    if (lf) { lootF = lf.dataset.lf; const g = GG.find((x) => x.id === cur), box = $('gx-lootbox'); if (g && box) box.innerHTML = lootHTML(g); return; }
+    const li = t.closest('[data-li]');
+    if (li) { openLoot(li.dataset.li, +li.dataset.lh); return; }
     const s = t.closest('.gx-shot');
     if (s) { lb.querySelector('img').src = s.dataset.full; lb.querySelector('img').alt = s.dataset.cap; lb.querySelector('p').textContent = s.dataset.cap; lb.hidden = false; }
   };

@@ -436,7 +436,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 .dpc .pwb{position:absolute;right:-4px;bottom:-4px;width:15px;height:15px;border-radius:50%;background:#2e7d32;color:#fff;display:flex;align-items:center;justify-content:center;border:1px solid #111;pointer-events:none}.dpc .pwb svg{width:8px;height:8px}
 .dpi{padding:5px 12px 9px 50px;font-size:12.5px;line-height:1.45;color:#cfd2d8;cursor:pointer;background:rgba(255,255,255,.03)}
 .dpi b{color:#fff;font-size:13.5px}.dpi small{color:#9b9ea5}.dpi .pds{display:block;margin-top:2px}.dpi .pbn{color:#9b9ea5;margin-top:3px}
-.dpmr{display:flex;flex-wrap:wrap;gap:4px;padding:6px 10px;border-top:1px solid #2b2d31}.dpmr div{width:26px;height:26px;background:#2a2c30;border:1px solid #4a4d54;overflow:hidden}.dpmr img{width:100%;height:100%;display:block}
+.dpmr{display:flex;flex-wrap:wrap;gap:4px;padding:6px 10px;border-top:1px solid #2b2d31}.dpmr .dmod{cursor:pointer;transition:border-color .12s}.dpmr .dmod:hover,.dpmr .dmod.open{border-color:#fff!important}.mpk{margin:2px 10px 8px;border:1px solid #3a3d43;background:rgba(0,0,0,.35);max-height:300px;overflow:auto}.mph{display:flex;gap:8px;align-items:baseline;padding:7px 9px;border-bottom:1px solid #2b2d31;position:sticky;top:0;background:#15171b;z-index:1}.mph .mute{font-size:11.5px}.mpw{padding:9px;font-size:12.5px;color:#aab}.mpl{display:flex;flex-direction:column}.mpo{display:flex;gap:9px;padding:7px 9px;border-bottom:1px solid #22252a;cursor:pointer;align-items:flex-start}.mpo:hover{background:rgba(255,255,255,.06)}.mpo.on{background:rgba(70,121,159,.25);cursor:default}.mpo.off{cursor:default}.mpo.miss .mpi{opacity:.45;filter:grayscale(1)}.mpi{width:30px;height:30px;flex:none;background:#2a2c30;border:1px solid #4a4d54}.mpi img{width:100%;height:100%;display:block}.mpo b{display:block;font-size:13px}.mpo em{font-style:normal;font-size:11px;color:#8cb4d6;margin-left:6px}.mpo em.no{color:#c99}.mpo small{display:block;font-size:11.5px;color:#9aa1ab;line-height:1.35;margin-top:2px}.mpo small.how{color:#e0c56a}.dpc .cpct{position:absolute;left:50%;bottom:-13px;transform:translateX(-50%);font-style:normal;font-size:9.5px;line-height:1;color:#9aa1ab;white-space:nowrap;pointer-events:none}.dpc .cpct.hi{color:#e5c653}.dpr .alt,.dpr .cur{padding-bottom:9px}.cpl{font-size:11.5px;color:#e5c653;margin-bottom:3px}.cmb{font-size:12px;color:#9aa1ab;padding:2px 10px 6px}.cmb b{color:#e6e7ea;font-weight:600}.pfa{border:1px solid var(--g-line,#2b2d31);border-radius:8px;padding:10px 12px;margin:10px 0;background:rgba(255,255,255,.02)}.pfah{display:flex;gap:10px;align-items:baseline;margin-bottom:4px}.pfaon{color:#6fcf8a;font-size:12px}.pfaf{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.pfaf input{flex:1 1 180px;min-width:0}.pfam{font-size:13px;color:#e0c56a;margin:6px 0}.pfae{color:#e07a6a}.pfan{font-size:12px}.dpmr div{width:26px;height:26px;background:#2a2c30;border:1px solid #4a4d54;overflow:hidden}.dpmr img{width:100%;height:100%;display:block}
 .dpbt{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:6px 10px 8px;border-top:1px solid #2b2d31}
 .dpbt .pbtn{display:inline-flex;align-items:center;gap:5px;padding:4px 9px!important;font-size:11px!important;border-radius:3px;text-transform:none!important;letter-spacing:0!important}.dpbt .pbtn svg{width:13px;height:13px}
 .dpbt .pnoap{font-size:11px}
@@ -629,7 +629,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 #settings .scols{display:flex;gap:16px;align-items:flex-start}#settings .scol{flex:1 1 0;min-width:0}
 #settings .sg{grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:6px}#settings .th{padding:6px 6px 7px;font-size:12.5px}#settings .th i{height:20px;margin-bottom:5px}
 #settings .uis{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
-#settings .setgrid{display:contents}
+#settings .setgrid{display:contents}#gtmp{background:var(--g-solid,#15171b)!important;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}#gtmp.open{box-shadow:0 0 0 100vmax rgba(0,0,0,.5),0 14px 36px rgba(0,0,0,.7)!important}#vqs{background:var(--g-solid,#15171b)!important}.sset{display:grid;grid-template-columns:240px minmax(0,1fr);gap:22px;align-items:start;max-width:1120px;margin:0 auto}.snav{position:sticky;top:64px;box-sizing:border-box;margin:0;display:flex;flex-direction:column;gap:2px;padding:8px;background:var(--g-solid,#15171b);border:1px solid var(--g-line,#2b2e33);border-radius:12px}#settings .snav .sni{display:flex;align-items:center;gap:12px;width:100%;box-sizing:border-box;margin:0;border-radius:8px;padding:9px 12px;color:#c3c7ce;font-size:13.5px;font-weight:600;line-height:1.2;letter-spacing:0;text-transform:none;cursor:pointer;user-select:none}#settings .snav .sni svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;opacity:.8}#settings .snav .sni:hover{background:rgba(255,255,255,.06);color:#fff}#settings .snav .sni.on{background:var(--g-accent-soft,rgba(122,184,232,.16));color:#fff;box-shadow:inset 3px 0 0 var(--g-accent,#7ab8e8)}#settings .snav .sni.on svg{opacity:1;color:var(--g-accent,#7ab8e8)}#settings .snav .sni:focus-visible{outline:2px solid var(--g-accent,#7ab8e8);outline-offset:1px}.spane{min-width:0}.spane>.card{display:none!important;margin:0!important}.spane>.card.son{display:block!important}@media (max-width:760px){.sset{grid-template-columns:1fr;gap:10px}.snav{position:static;flex-direction:row;overflow-x:auto;scrollbar-width:none;padding:5px}#settings .snav .sni{width:auto;flex:none;white-space:nowrap;padding:8px 11px}}
 #settings .card{max-width:none;margin:0 0 16px;break-inside:avoid;padding:14px 18px}
 #settings .card h2{padding-bottom:8px;margin-bottom:4px;border-bottom:1px solid var(--g-line)}
 /* saved sets: opened from the button in the top bar */
@@ -795,7 +795,7 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
 
   // ---------------- settings, update toast ----------------
   const DEFSET = { theme: 'dim', accent: '#7ab8e8', accentUser: '', bgdim: 45, tile: 44, scale: 100, power: true, emblems: true, postmaster: true, compact: false, sort: 'rarity',
-    ui: 'pf', ornaments: true, locksync: false, clarity: 'both', single: false, charsort: 'recent', charorder: [], vgroup: 'none', armorsep: false, vaultunder: false, vaultsep: false, invw: 3, hidecollect: false, pmbadge: true, nrmark: true, dropalert: true, dropover: true, anim: 'subtle', cardart: true, glow: 55, starttab: 'vault', farmspaces: 3, sortkeys: null, cst: { 0: [0, 0, 0, 0, 0, 0], 1: [0, 0, 0, 0, 0, 0], 2: [0, 0, 0, 0, 0, 0] } };
+    ui: 'pf', ornaments: true, locksync: false, clarity: 'both', single: false, charsort: 'recent', charorder: [], vgroup: 'none', armorsep: false, vaultunder: false, vaultsep: false, matchfirst: true, commrate: true, sharerolls: false, invw: 3, hidecollect: false, pmbadge: true, nrmark: true, dropalert: true, dropover: true, anim: 'subtle', cardart: true, glow: 55, starttab: 'vault', farmspaces: 3, sortkeys: null, cst: { 0: [0, 0, 0, 0, 0, 0], 1: [0, 0, 0, 0, 0, 0], 2: [0, 0, 0, 0, 0, 0] } };
   // Item sort rules, like DIM: a checked list in order. d = 1 normal, -1 flipped.
   const SORTK = [['power', 'Power level'], ['name', 'Name'], ['type', 'Type'], ['rarity', 'Rarity'], ['stack', 'Stack size'], ['class', 'Required class'], ['tag', 'Tag (favorite, keep, junk, infuse, archive)'], ['season', 'Season'], ['dmg', 'Damage type'], ['champ', 'Anti-champion type'], ['mw', 'Masterworked'], ['crafted', 'Crafted'], ['tier', 'Tier']];
   const sortFromOld = (m) => { const on = m === 'power' ? ['power', 'rarity', 'name'] : m === 'name' ? ['name', 'power'] : m === 'tag' ? ['tag', 'power', 'rarity', 'name'] : ['rarity', 'power', 'name']; return [...on.map((k) => ({ k, d: 1, on: true })), ...SORTK.filter((q) => !on.includes(q[0])).map((q) => ({ k: q[0], d: 1, on: false }))]; };
@@ -836,73 +836,82 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
   // Each theme is a colour family (hue h, saturation s) that fills the panel, button and line colours. Some also paint a background:
   // glow = coloured light behind the page, img = a Destiny 2 picture bundled in app/themes, an = slow drift.
   const rg = (at, h, s, l, a, w, ht) => `radial-gradient(${Math.round((w || 900) * 1.3)}px ${Math.round((ht || 520) * 1.4)}px at ${at},hsl(${h} ${s}% ${l}% / ${Math.min(.8, +(a * 1.7).toFixed(2))}),transparent 72%)`;
-  const TGRP = { b: 'Beta', c: 'Classic', e: 'Gradient', s: 'Shader inspired', d: 'Destiny 2 art' };
-  const TL = [
-    // id, name, group, hue, sat, accent, glow layers, extras
-    // Beta: the contour-map theme that goes with the Beta interface style (more of it is in app/beta.css).
-    ['beta', 'Beta', 'b', 200, 30, '#f2b441', ['url(topo.svg)', rg('100% 0%', 195, 45, 40, .10, 1100, 600)]],
-    ['solar', 'Solar', 'e', 22, 35, '#ff8a3d', [rg('85% 105%', 24, 95, 50, .38), rg('8% -8%', 42, 95, 55, .16)]],
-    ['arc', 'Arc', 'e', 207, 45, '#6fc7ff', [rg('50% -10%', 205, 100, 60, .30, 1100, 560), rg('100% 100%', 215, 90, 55, .14)]],
-    ['stasis', 'Stasis', 'e', 212, 40, '#7fe0ff', [rg('80% -5%', 190, 90, 70, .25), rg('0% 100%', 225, 80, 60, .18)]],
-    ['strand', 'Strand', 'e', 150, 38, '#3fe08a', [rg('10% 110%', 150, 80, 45, .30), rg('90% -10%', 165, 70, 50, .20)]],
-    ['prism', 'Prismatic', 'e', 265, 30, '#c9a6ff', [rg('15% 20%', 280, 90, 60, .30), rg('85% 25%', 185, 90, 55, .26), rg('50% 95%', 45, 95, 58, .22)], { an: 1 }],
-    ['aurora', 'Aurora', 'e', 170, 30, '#6dffc0', [rg('20% 10%', 160, 95, 50, .30, 1000, 500), rg('80% 30%', 280, 85, 60, .26), rg('50% 100%', 200, 90, 50, .18)], { an: 1 }],
-    ['nebula', 'Nebula', 'e', 290, 32, '#ff7ad9', [rg('25% 30%', 320, 90, 55, .30), rg('75% 70%', 230, 90, 60, .28), rg('55% 0%', 270, 90, 55, .18)], { an: 1 }],
-    ['midnight', 'Midnight', 'e', 232, 38, '#8fa0ff', [rg('50% -15%', 235, 90, 60, .28, 1200, 600)]],
-    ['synth', 'Synthwave', 'e', 275, 40, '#ff5fa8', ['linear-gradient(180deg,transparent 55%,hsl(320 90% 50% / .20) 100%)', rg('50% 105%', 20, 100, 55, .28, 1100, 420), rg('50% -10%', 270, 90, 55, .20)]],
-    ['dawning', 'Dawning Frost', 'e', 212, 38, '#ffd27a', [rg('50% -10%', 205, 80, 60, .24, 1200, 560), rg('90% 110%', 38, 95, 60, .24)]],
-    ['slate', 'Slate', 'e', 215, 12, '#9fb0c4', null],
-    // Shader inspired: dyed-gear looks. Saturated chrome and a real surface (metal sheen, stripes, mesh, spores, swirl), not a soft glow.
-    ['gilded', 'Gilded Cabal', 's', 42, 62, '#f2c14e', ['linear-gradient(118deg,transparent 18%,hsl(46 100% 72% / .20) 34%,transparent 48%,hsl(40 100% 60% / .10) 66%,transparent 80%)', 'repeating-linear-gradient(135deg,hsl(42 90% 55% / .09) 0 2px,transparent 2px 16px)', 'linear-gradient(160deg,hsl(42 90% 42% / .42),hsl(30 70% 8% / .6) 70%)']],
-    ['legion', 'Crimson Legion', 's', 355, 62, '#ff4b3e', ['repeating-linear-gradient(60deg,hsl(355 90% 55% / .10) 0 1px,transparent 1px 18px)', 'repeating-linear-gradient(-60deg,hsl(355 90% 55% / .10) 0 1px,transparent 1px 18px)', 'linear-gradient(180deg,transparent 40%,hsl(355 90% 40% / .38))', rg('0% 0%', 0, 90, 45, .18)]],
-    ['hive', 'Hive Rot', 's', 112, 50, '#a6e24c', ['radial-gradient(circle at 18% 28%,hsl(112 70% 32% / .40) 0 5%,transparent 6%)', 'radial-gradient(circle at 72% 62%,hsl(95 70% 30% / .38) 0 7%,transparent 8%)', 'radial-gradient(circle at 44% 86%,hsl(280 50% 30% / .40) 0 6%,transparent 7%)', 'radial-gradient(circle at 86% 14%,hsl(112 70% 32% / .34) 0 4%,transparent 5%)', rg('20% 105%', 105, 80, 30, .30)]],
-    ['vex', 'Vex Chrome', 's', 196, 26, '#c3eef8', ['linear-gradient(105deg,transparent 22%,hsl(190 80% 88% / .13) 36%,transparent 50%)', 'linear-gradient(105deg,transparent 58%,hsl(190 80% 88% / .08) 70%,transparent 82%)', 'repeating-linear-gradient(90deg,hsl(190 40% 90% / .045) 0 1px,transparent 1px 3px)', 'linear-gradient(180deg,hsl(196 30% 40% / .26),hsl(196 30% 8% / .5))']],
-    ['taken', 'Taken Dusk', 's', 178, 58, '#35e3cf', ['conic-gradient(from 20deg at 50% 45%,hsl(178 85% 32% / .30),transparent 22%,hsl(285 60% 32% / .26) 48%,transparent 72%,hsl(178 85% 32% / .30))', 'radial-gradient(60% 55% at 50% 45%,transparent 30%,hsl(178 60% 4% / .75) 100%)']],
-    ['fallen', 'Fallen Rust', 's', 17, 60, '#ff7b2e', ['repeating-linear-gradient(45deg,hsl(17 95% 48% / .13) 0 14px,transparent 14px 30px)', 'linear-gradient(0deg,hsl(17 90% 38% / .40),transparent 60%)', rg('100% 0%', 195, 70, 40, .14)]],
-    ['dreaming', 'Dreaming Pastel', 's', 292, 46, '#f3a9ff', ['radial-gradient(circle,hsl(300 100% 90% / .18) 0 1.5px,transparent 2px)', 'linear-gradient(135deg,hsl(300 90% 72% / .30),hsl(185 90% 68% / .26) 45%,hsl(55 95% 74% / .24))'], { an: 1 }],
-    ['a_lantern', 'Lantern Gate', 'd', 22, 38, '#ff8a4a', [], { img: 'lantern-gate' }],
-    ['a_blossom', 'Blossom Tower', 'd', 235, 36, '#e070b0', [], { img: 'blossom-tower' }],
-    ['a_memorial', 'Memorial Garden', 'd', 228, 30, '#8aa8ff', [], { img: 'memorial-garden' }],
-    ['a_rust', 'Rust Yard', 'd', 18, 34, '#e08a50', [], { img: 'rust-yard' }],
-    ['a_europa', 'Lunar Frost', 'd', 205, 30, '#9ad8ff', [], { img: 'europa-frost' }],
-    ['a_spire', 'Crimson Spire', 'd', 355, 30, '#ff5a5a', [], { img: 'crimson-spire' }],
-    ['a_mist', 'Cube Mist', 'd', 215, 25, '#9fc3e8', [], { img: 'cube-mist' }],
-    ['a_grove', 'Aurora Grove', 'd', 160, 30, '#6fe0b0', [], { img: 'aurora-grove' }],
-    ['a_vortex', 'Vortex', 'd', 215, 40, '#7fb4ff', [], { img: 'vortex' }],
-    ['a_lake', 'Emerald Lake', 'd', 175, 35, '#4fd0b8', [], { img: 'emerald-lake' }],
-    ['a_gardens', 'Hanging Gardens', 'd', 125, 28, '#8fd070', [], { img: 'hanging-gardens' }],
-  ].map(([id, n, g, h, s, a, glow, x]) => ({ id, n, g, h, s, a, glow, ...(x || {}) }));
-  const OLD = [['dim', 'DIM Dark', '#1b1c1f'], ['black', 'Black', '#000'], ['blue', 'Destiny Blue', '#121c2a'], ['ember', 'Ember', '#2a1d16'], ['void', 'Void', '#241a30'], ['forest', 'Forest', '#1a2a1d']];
-  const THEMES = OLD.map(([id, n, c]) => [id, n, c]).concat(TL.map((t) => [t.id, t.n, `hsl(${t.h} ${t.s}% 12%)`]));
-  const hs = (t, l, a) => `hsl(${t.h} ${t.s}% ${l}%${a ? ' / ' + a : ''})`;
-  const hasBg = (t) => !!(t.img || (t.glow && t.glow.length));
+  // Looks are three separate picks you can mix freely: a colour (the tint of every surface plus a starting accent),
+  // the accent colour itself, and a background picture. Any colour works with any picture and any interface style.
+  // id, name, hue, saturation, starting accent, swatch
+  const COLS = [
+    ['beta', 'Night', 214, 30, '#f2b441', '#0b0e13'],
+    ['dim', 'DIM Dark', 220, 6, '#7ab8e8', '#1b1c1f'],
+    ['black', 'Black', 0, 0, '#d8dde5', '#000'],
+    ['slate', 'Slate', 215, 14, '#9fb0c4', '#1b2128'],
+    ['blue', 'Destiny Blue', 214, 40, '#6fc7ff', '#121c2a'],
+    ['void', 'Void', 268, 30, '#b38cff', '#241a30'],
+    ['ember', 'Ember', 20, 30, '#ff8a3d', '#2a1d16'],
+    ['crimson', 'Crimson', 356, 34, '#ff5a5a', '#2a1418'],
+    ['gold', 'Gold', 42, 34, '#f2c14e', '#29220f'],
+    ['forest', 'Forest', 135, 25, '#5fd38a', '#1a2a1d'],
+    ['teal', 'Teal', 178, 32, '#35e3cf', '#10282a'],
+    ['rose', 'Rose', 320, 26, '#ff7ad9', '#2a1626'],
+  ].map(([id, n, h, s, a, sw]) => ({ id, n, h, s, a, sw }));
+  // Background pictures. 'topo' is the contour-line drawing; the rest are Destiny 2 places.
+  const BGS = [['', 'None'], ['topo', 'Contour lines'], ['lantern-gate', 'Lantern Gate'], ['blossom-tower', 'Blossom Tower'], ['memorial-garden', 'Memorial Garden'], ['rust-yard', 'Rust Yard'], ['europa-frost', 'Lunar Frost'], ['crimson-spire', 'Crimson Spire'], ['cube-mist', 'Cube Mist'], ['aurora-grove', 'Aurora Grove'], ['vortex', 'Vortex'], ['emerald-lake', 'Emerald Lake'], ['hanging-gardens', 'Hanging Gardens']];
+  // Themes from earlier versions (the gradient and shader-inspired ones are gone; the old picture themes are now a colour plus a picture).
+  const MIG = { solar: 'ember', arc: 'blue', stasis: 'blue', strand: 'forest', prism: 'void', aurora: 'teal', nebula: 'rose', midnight: 'blue', synth: 'rose', dawning: 'blue', gilded: 'gold', legion: 'crimson', hive: 'forest', vex: 'slate', taken: 'teal', fallen: 'ember', dreaming: 'rose',
+    a_lantern: ['ember', 'lantern-gate'], a_blossom: ['rose', 'blossom-tower'], a_memorial: ['blue', 'memorial-garden'], a_rust: ['ember', 'rust-yard'], a_europa: ['blue', 'europa-frost'], a_spire: ['crimson', 'crimson-spire'], a_mist: ['slate', 'cube-mist'], a_grove: ['forest', 'aurora-grove'], a_vortex: ['blue', 'vortex'], a_lake: ['teal', 'emerald-lake'], a_gardens: ['forest', 'hanging-gardens'] };
+  const tById = (id) => COLS.find((t) => t.id === id);
+  function migTheme() {
+    const m = MIG[SET.theme];
+    if (m) { if (Array.isArray(m)) { SET.theme = m[0]; if (!SET.bg) SET.bg = m[1]; } else SET.theme = m; }
+    if (!tById(SET.theme)) SET.theme = 'dim';
+    if (SET.bg === undefined || !BGS.some((b) => b[0] === SET.bg)) SET.bg = '';
+    if (SET.ui === 'd2') SET.ui = 'bray';
+  }
+  const hs = (t, l, a) => `hsl(${t.h} ${t.s}% ${l}%${a !== undefined && a !== '' ? ' / ' + a : ''})`;
   (() => {
-    const cs = TL.map((t) => {
-      const gx = hasBg(t), fb = t.glow && t.glow.length ? t.glow.join(',') : rg('50% -10%', t.h, 80, 50, .30, 1100, 560) + ',' + rg('100% 100%', t.h, 70, 40, .2);
-      const layers = t.img
-        ? `linear-gradient(180deg,${hs(t, 4, 'calc(var(--g-dim,.45) - .15)')},${hs(t, 4, 'min(.97,calc(var(--g-dim,.45) + .12))')}),url("themes/${t.img}.jpg"),${fb}`
-        : (t.glow ? t.glow.join(',') : 'none');
-      return `:root[data-gt="${t.id}"]{--g-bg:${hs(t, 5)};--g-panel:${hs(t, 9.5, gx ? .74 : '')};--g-col:${hs(t, 7.5, gx ? .66 : '')};--g-line:${hs(t, 19)};--g-deep:${hs(t, 4.5, gx ? .8 : '')};--g-btn:${hs(t, 13)};--g-solid:${hs(t, 9.5)};--g-layers:${layers}}`;
+    // Every colour gets the same set of surface shades. With a picture on, surfaces turn see-through so the picture shows.
+    // The classic colours (DIM Dark, Black, Destiny Blue, Ember, Void, Forest) keep their exact shades from the table near the top.
+    const CLASSIC = { dim: ['#0e0f11', '#1b1c1f', '#17181b', '#101113'], black: ['#000', '#0b0b0c', '#050506', '#000'], blue: ['#0a1018', '#121c2a', '#0e1622', '#0a121c'], ember: ['#120d0b', '#1f1713', '#19120f', '#120d0b'], void: ['#0f0a14', '#1b1424', '#150f1d', '#0f0a14'], forest: ['#0b110d', '#141f17', '#101a13', '#0b110d'] };
+    const rgba = (hex, a) => { const x = hex.length === 4 ? hex.slice(1).split('').map((c) => c + c).join('') : hex.slice(1); return `rgba(${[0, 2, 4].map((i) => parseInt(x.slice(i, i + 2), 16)).join(',')},${a})`; };
+    const cs = COLS.map((t) => {
+      const sel = t.id === 'dim' ? ':root:not([data-gt])' : `:root[data-gt="${t.id}"]`, c = CLASSIC[t.id];
+      // --g-tb/--g-tp/--g-ts/--g-tg: the tint the Beta, Bray and Manta styles use for their canvas, panels and light.
+      const tint = t.id === 'beta' ? '--g-tb:#06080c;--g-tp:rgba(16,20,27,.78);--g-ts:#0f1319;--g-tg:rgba(64,110,160,.12)'
+        : t.id === 'black' ? '--g-tb:#000;--g-tp:rgba(12,12,13,.8);--g-ts:#0b0b0c;--g-tg:rgba(255,255,255,.04)'
+        : `--g-tb:${hs(t, 3.5)};--g-tp:${hs(t, 8.5, .78)};--g-ts:${hs(t, 8)};--g-tg:hsl(${t.h} ${Math.max(t.s, 45)}% 45% / .14)`;
+      const base = t.id === 'beta' ? '' : c ? '' : `--g-bg:${hs(t, 5)};--g-panel:${hs(t, 9.5)};--g-col:${hs(t, 7.5)};--g-line:${hs(t, 19)};--g-deep:${hs(t, 4.5)};--g-btn:${hs(t, 13)};--g-solid:${hs(t, 9.5)};`;
+      const see = t.id === 'beta' ? '' : c ? `--g-panel:${rgba(c[1], .76)};--g-col:${rgba(c[2], .66)};--g-deep:${rgba(c[3], .8)};--g-solid:${c[1]}` : `--g-panel:${hs(t, 9.5, .74)};--g-col:${hs(t, 7.5, .66)};--g-deep:${hs(t, 4.5, .8)}`;
+      return `${sel}{${base}${tint}}` + (see ? `\n${sel}[data-gx="1"]{${see}}` : '');
     }).join('\n');
     const el = document.createElement('style'); el.id = 'gtth';
     el.textContent = cs + `
 :root[data-gx="1"] body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:var(--g-layers);background-size:cover;background-position:center;background-repeat:no-repeat}
-:root[data-gx="1"][data-gan="1"] body::before{inset:-25%;will-change:transform;animation:gtdrift 48s ease-in-out infinite alternate}
-@keyframes gtdrift{from{transform:translate3d(-4%,-3%,0) scale(1.04)}to{transform:translate3d(4%,3%,0) scale(1.16)}}
-@media (prefers-reduced-motion:reduce){:root[data-gx="1"][data-gan="1"] body::before{animation:none;inset:0}}
 :root[data-gx="1"][data-dark="1"] header,:root[data-gx="1"][data-dark="1"] nav{background:var(--g-panel)!important;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 :root[data-gx="1"] #vault .card,:root[data-gx="1"] #loadouts .card,:root[data-gx="1"] #triumphs .card,:root[data-gx="1"] #organizer .card,:root[data-gx="1"] #optimizer .card,:root[data-gx="1"] #settings .card,:root[data-gx="1"] section.gdark .card{-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
 .kyl{display:grid;grid-template-columns:1fr 1fr;gap:2px 22px}.kyr{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px solid var(--g-line,#2b2e33);font-size:13.5px;color:#d7dae0}.kyb,.kyr kbd{min-width:38px;padding:4px 9px!important;border:1px solid #4a4d54!important;border-bottom-width:2px!important;border-radius:5px!important;background:#15171b!important;color:#fff!important;font:600 12.5px/1.2 ui-monospace,Consolas,monospace!important;letter-spacing:0!important;text-transform:none!important;text-align:center;cursor:pointer}.kyr kbd{cursor:default;color:#aeb3bb!important}.kyb.none{color:#7c7f86!important;border-style:dashed!important}.kyb.ed{border-color:var(--g-accent,#7ab8e8)!important;color:var(--g-accent,#7ab8e8)!important}@media (max-width:1100px){.kyl{grid-template-columns:1fr}}
-.thh{grid-column:1/-1;margin:10px 0 0;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--mute)}.thh:first-child{margin-top:0}`;
+.thh{grid-column:1/-1;margin:10px 0 0;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--mute)}.thh:first-child{margin-top:0}
+.th i.thc{position:relative}.th i.thc b{position:absolute;right:-3px;bottom:-3px;width:11px;height:11px;border-radius:50%;border:2px solid var(--g-solid,#15171b)}
+.acs{display:flex;flex-wrap:wrap;gap:7px;align-items:center}.acs .acw{box-sizing:border-box;width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid transparent;box-shadow:inset 0 0 0 1px rgba(0,0,0,.35);padding:0}.acs .acw.on{border-color:#fff}.acs .acw:focus-visible{outline:2px solid #fff;outline-offset:2px}.acs input[type=color]{width:34px;height:26px;padding:0;border:0;background:none;cursor:pointer}
+.bgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px;margin:6px 0 10px}.bgs .bgo{position:relative;height:64px;border-radius:9px;overflow:hidden;cursor:pointer;border:2px solid transparent;background:#0e1014 center/cover no-repeat;display:flex;align-items:flex-end;padding:6px 8px;font-size:12px;font-weight:600;color:#fff;text-shadow:0 1px 3px #000}.bgs .bgo::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 35%,rgba(0,0,0,.7))}.bgs .bgo span{position:relative}.bgs .bgo.on{border-color:var(--g-accent,#7ab8e8)}.bgs .bgo.none{background:repeating-linear-gradient(135deg,#15171b 0 8px,#1b1e23 8px 16px)}`;
     document.head.appendChild(el);
   })();
-  const tById = (id) => TL.find((t) => t.id === id);
+  const ACCS = ['#f2b441', '#7ab8e8', '#6fc7ff', '#b38cff', '#ff8a3d', '#ff5a5a', '#f2c14e', '#5fd38a', '#35e3cf', '#ff7ad9', '#d8dde5'];
+  function bgLayers() {
+    const t = tById(SET.theme) || COLS[1], d = Math.max(.25, Math.min(.9, (+SET.bgdim || 45) / 100));
+    const veil = t.id === 'black' ? [`rgba(0,0,0,${(d - .12).toFixed(2)})`, `rgba(0,0,0,${Math.min(.97, d + .12).toFixed(2)})`] : t.id === 'beta' ? [`rgba(6,8,12,${(d - .12).toFixed(2)})`, `rgba(6,8,12,${Math.min(.97, d + .12).toFixed(2)})`] : [hs(t, 4, (d - .12).toFixed(2)), hs(t, 4, Math.min(.97, d + .12).toFixed(2))];
+    const glow = `radial-gradient(1400px 800px at 50% -10%,hsl(${t.h} ${Math.max(t.s, 40)}% 45% / .22),transparent 70%)`;
+    if (SET.bg === 'topo') return `url(topo.svg),${glow},${t.id === 'beta' ? '#06080c' : t.id === 'black' ? '#000' : hs(t, 4)}`;
+    return `linear-gradient(180deg,${veil[0]},${veil[1]}),url("themes/${SET.bg}.jpg"),${glow},${hs(t, 4)}`;
+  }
   function applySet() {
-    const r = document.documentElement, t = tById(SET.theme);
+    migTheme();
+    const r = document.documentElement;
     if (SET.theme === 'dim') r.removeAttribute('data-gt'); else r.setAttribute('data-gt', SET.theme);
-    r.setAttribute('data-gx', t && hasBg(t) ? '1' : '0'); r.setAttribute('data-gan', t && t.an ? '1' : '0');
+    r.setAttribute('data-gx', SET.bg ? '1' : '0'); r.setAttribute('data-gan', '0'); r.setAttribute('data-gbg', SET.bg || 'none');
+    if (SET.bg) r.style.setProperty('--g-layers', bgLayers()); else r.style.removeProperty('--g-layers');
     r.style.setProperty('--g-dim', String(Math.max(.25, Math.min(.9, (+SET.bgdim || 45) / 100))));
-    r.setAttribute('data-ui', ['pf', 'd2', 'dim', 'beta'].includes(SET.ui) ? SET.ui : 'pf');
+    // Bray and Manta are copies of the Beta style for now (each will get its own look); they share its rules and carry their own name.
+    const ui = ['pf', 'dim', 'beta', 'bray', 'manta'].includes(SET.ui) ? SET.ui : 'pf';
+    r.setAttribute('data-ui', ui === 'bray' || ui === 'manta' ? 'beta' : ui); r.setAttribute('data-uin', ui);
     r.setAttribute('data-anim', ['off', 'subtle', 'full'].includes(SET.anim) ? SET.anim : 'subtle'); r.setAttribute('data-cardart', SET.cardart === false ? '0' : '1');
     r.style.setProperty('--gt-glow', String(Math.max(0, Math.min(100, SET.glow === undefined ? 55 : +SET.glow)) / 100));
     r.setAttribute('data-gcompact', SET.compact ? '1' : '0'); r.setAttribute('data-gpower', SET.power ? '1' : '0');
@@ -998,32 +1007,54 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
   const CSTN = ['Weapons', 'Health', 'Class', 'Grenade', 'Super', 'Melee'];
   const NUMK = new Set(['invw', 'farmspaces']);
   function themeGrid() {
-    const sw = (id, n, bg, on) => `<div class="th${on ? ' on' : ''}" data-th="${id}"><i style="background:${bg}"></i>${esc(n)}</div>`;
-    let h = `<div class="thh">${TGRP.c}</div>` + THEMES.slice(0, OLD.length).map(([id, n, c]) => sw(id, n, c, SET.theme === id)).join('');
-    ['b', 'e', 's', 'd'].forEach((g) => {
-      h += `<div class="thh">${TGRP[g]}</div>`;
-      TL.filter((t) => t.g === g).forEach((t) => {
-        const grad = `linear-gradient(135deg,${hs(t, 8)} 45%,${t.a})`;
-        h += sw(t.id, t.n, t.img ? `center/cover url(themes/${t.img}_t.jpg),${grad}` : t.g === 's' && t.glow ? t.glow.join(',') + ',' + hs(t, 12) : grad, SET.theme === t.id);
-      });
-    });
-    return h;
+    return COLS.map((t) => `<div class="th${SET.theme === t.id ? ' on' : ''}" data-th="${t.id}"><i class="thc" style="background:${t.sw}"><b style="background:${t.a}"></b></i>${esc(t.n)}</div>`).join('');
+  }
+  const accGrid = () => `<div class="acs">${ACCS.map((c) => `<div role="button" tabindex="0" class="acw${String(SET.accent).toLowerCase() === c ? ' on' : ''}" data-acc="${c}" style="background:${c}" title="${c}" aria-label="Accent ${c}"></div>`).join('')}<input type="color" data-sk="accent" value="${esc(SET.accent)}" title="Any colour"></div>`;
+  const bgGrid = () => `<div class="bgs">${BGS.map(([id, n]) => `<div class="bgo${id ? '' : ' none'}${(SET.bg || '') === id ? ' on' : ''}" data-bg="${id}"${id === 'topo' ? ' style="background-image:url(topo.svg);background-color:#0b0e13;background-size:180%"' : id ? ` style="background-image:url(themes/${id}_t.jpg)"` : ''}><span>${esc(n)}</span></div>`).join('')}</div>`;
+  function markLook() {
+    settingsSec.querySelectorAll('[data-th]').forEach((n) => n.classList.toggle('on', n.dataset.th === SET.theme));
+    settingsSec.querySelectorAll('[data-bg]').forEach((n) => n.classList.toggle('on', n.dataset.bg === (SET.bg || '')));
+    settingsSec.querySelectorAll('[data-acc]').forEach((n) => n.classList.toggle('on', n.dataset.acc === String(SET.accent).toLowerCase()));
+    const ac = settingsSec.querySelector('input[data-sk="accent"]'); if (ac) ac.value = SET.accent;
   }
   function pickTheme(id) {
     const t = tById(id), prev = tById(SET.theme);
-    if (t && t.a) { if (!(prev && prev.a)) SET.accentUser = SET.accent; SET.accent = t.a; }
-    else if (prev && prev.a && SET.accentUser) { SET.accent = SET.accentUser; SET.accentUser = ''; }
-    SET.theme = id; applySet(); saveSet();
-    // Only move the highlight and the accent box; rebuilding the whole settings page made every pick feel slow.
-    settingsSec.querySelectorAll('[data-th]').forEach((n) => n.classList.toggle('on', n.dataset.th === id));
-    const ac = settingsSec.querySelector('input[data-sk="accent"]'); if (ac) ac.value = SET.accent;
+    if (!t) return;
+    // A colour brings its own accent, unless you picked a different accent yourself: that one stays, so any mix works.
+    if (!prev || String(SET.accent).toLowerCase() === prev.a.toLowerCase() || SET.accent === DEFSET.accent) SET.accent = t.a;
+    SET.theme = id; applySet(); saveSet(); markLook();
   }
+  function pickBg(id) { SET.bg = id; applySet(); saveSet(); markLook(); }
+  function pickAcc(c) { SET.accent = c; SET.accentUser = ''; applySet(); saveSet(); markLook(); }
   // ---- saved Bungie accounts ----
   let ACL = null, aclBusy = false;
   function aclHTML() {
     if (!window.gt || !gt.acctList) return '';
     if (!ACL) { if (!aclBusy) { aclBusy = true; gt.acctList().then((r) => { ACL = r; aclBusy = false; if (settingsSec.classList.contains('on')) drawSettings(); }).catch(() => { aclBusy = false; }); } return '<p class="mute">Loading accounts...</p>'; }
     return ACL.list.map((a) => `<div class="acr${a.on ? ' on' : ''}"><b>${esc(a.n)}${a.code ? `<span>#${esc(a.code)}</span>` : ''}</b>${a.on ? '<em>Active</em>' : `<button class="g" data-acsw="${esc(a.mid)}">Switch</button>`}<button class="g" data-acrm="${esc(a.mid)}" title="Remove this account from ${GT_HERE}">Remove</button>${a.ok ? '' : '<small>Sign-in expired: switching asks you to sign in again</small>'}</div>`).join('');
+  }
+  // ---- Pathfinder account (optional): one login that brings all your Bungie accounts to every device and build ----
+  let PFA = null, pfaBusy = false, PFAMSG = '', PFAEM = '';
+  function pfaHTML() {
+    if (!window.gt || !gt.pfaStatus) return '';
+    if (!PFA) { if (!pfaBusy) { pfaBusy = true; gt.pfaStatus().then((r) => { PFA = r; pfaBusy = false; if (settingsSec.classList.contains('on')) drawSettings(); }).catch(() => { pfaBusy = false; }); } return ''; }
+    if (!PFA.avail) return '';
+    const msg = PFAMSG ? `<p class="pfam">${esc(PFAMSG)}</p>` : '';
+    if (PFA.on) {
+      const when = PFA.at ? new Date(PFA.at).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '';
+      return `<div class="pfa"><div class="pfah"><b>Pathfinder account</b><span class="pfaon">Signed in</span></div><p class="mute">${esc(PFA.email)} &middot; ${PFA.n} Bungie account${PFA.n === 1 ? '' : 's'} saved${when ? ' &middot; last synced ' + esc(when) : ''}.${PFA.err ? ' <span class="pfae">Last sync did not work: ' + esc(PFA.err) + '</span>' : ''}</p>${msg}<p><button class="g" data-pfa="sync">Sync now</button> <button class="g" data-pfa="logout">Sign out of Pathfinder account</button> <button class="g" data-pfa="del">Delete Pathfinder account</button></p><p class="mute pfan">Every Bungie account you add here is saved to your Pathfinder account, locked with your password before it leaves this device. Removing an account here only removes it from ${GT_HERE}.</p></div>`;
+    }
+    return `<div class="pfa"><div class="pfah"><b>Pathfinder account</b><span class="mute">Optional</span></div><p class="mute">Sign in once on another PC, the beta, the website or your phone and all your Bungie accounts (alts too) come with you. Everything works without one.</p>${PFA.out ? '<p class="pfae">Your Pathfinder account sign-in ended. Sign in again to keep syncing.</p>' : ''}<div class="pfaf"><input id="pfaem" type="email" placeholder="Email" autocomplete="username" value="${esc(PFAEM || PFA.email || '')}"><input id="pfapw" type="password" placeholder="Password (8+ characters)" autocomplete="current-password"><button class="b" data-pfa="login">Sign in</button><button class="g" data-pfa="signup">Create account</button></div>${msg}<p class="mute pfan">Your password never leaves this device. Your Bungie sign-ins are locked with it before they are saved, so nobody else can open them, including Pathfinder. If you forget it, you just sign in to Bungie again.</p></div>`;
+  }
+  async function pfaAct(a) {
+    const em = (document.getElementById('pfaem') || {}).value || '', pw = (document.getElementById('pfapw') || {}).value || '';
+    if (em) PFAEM = em; // keep what you typed when the settings redraw
+    const run = async (label, fn) => { PFAMSG = label; drawSettings(); try { const r = await fn(); if (r && (r.reload || r.restart)) { afterAcct(r); return; } PFA = r && r.avail !== undefined ? r : await gt.pfaStatus(); PFAMSG = r && r.added ? `Added ${r.added} Bungie account${r.added === 1 ? '' : 's'} from your Pathfinder account. Switch to ${r.added === 1 ? 'it' : 'them'} above.` : a === 'sync' ? 'Synced.' : ''; ACL = null; } catch (er) { PFAMSG = clean(er); try { PFA = await gt.pfaStatus(); } catch (e2) { /* keep */ } } drawSettings(); };
+    if (a === 'login') return run('Signing in… (locking your key takes a second)', () => gt.pfaLogin({ email: em, pw }));
+    if (a === 'signup') { if (!confirm('Create a Pathfinder account for ' + em + '?\n\nYour password cannot be recovered. If you forget it, you just sign in to Bungie again on each device.')) return; return run('Creating your account…', () => gt.pfaSignup({ email: em, pw })); }
+    if (a === 'sync') return run('Syncing…', () => gt.pfaSync());
+    if (a === 'logout') { if (!confirm('Sign out of your Pathfinder account on ' + GT_HERE + '? Your Bungie accounts stay signed in here.')) return; return run('Signing out…', () => gt.pfaLogout()); }
+    if (a === 'del') { if (!confirm('Delete your Pathfinder account and the sign-ins saved in it? This cannot be undone. Bungie accounts already on your devices stay signed in.')) return; return run('Deleting…', () => gt.pfaDelete()); }
   }
   const acctNs = (mid, prim) => (prim && mid && String(mid) !== String(prim) ? '@' + mid : '');
   function afterAcct(r) {
@@ -1066,7 +1097,7 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
     const cst = [0, 1, 2].map((c) => `<div class="cstr"><b>${CL[c]}</b>${CSTN.map((n, i) => `<button class="chip${SET.cst[c][i] ? ' on' : ''}" data-cst="${c}:${i}">${n}</button>`).join('')}</div>`).join('');
     const navL = window.__gtnav ? window.__gtnav.list() : [];
     const tabsCard = navL.length ? `<div class="sxtabs"><div class="thh">Tabs</div><p class="mute">Turn off the tabs you don't use. The bar re-fits the rest. Inventory and Settings always stay.</p><div class="navtg">${navL.map(([id, n, h, lock]) => `<button class="chip${h ? '' : ' on'}" data-navt="${esc(id)}"${lock ? ' disabled title="Always shown"' : ''}>${esc(n)}</button>`).join('')}</div></div>` : '';
-    const acct = `<div class="card sc"><h2>Accounts</h2><p class="mute">${D && D.name ? 'Signed in as <b>' + esc(D.name) + '</b>.' : 'Signed in with Bungie.'} Add your alts, or a friend's account if they sign in here themselves, and switch between them. Switching ${window.__GT_WEB__ ? 'reloads the page' : 'restarts the app'}. Tags and notes are shared; loadouts are kept per account.</p><div class="acl">${aclHTML()}</div>${syncHTML(sx)}<p><button class="b" data-sa="addacct">Add another account</button> <button class="g" data-sa="out">Sign out of this account</button></p>${window.__GT_WEB__ ? '<p class="mute" style="font-size:12px">If Bungie signs you straight back in as the same account, sign out on bungie.net first, then press Add another account again.</p>' : ''}</div>`;
+    const acct = `<div class="card sc"><h2>Accounts</h2><p class="mute">${D && D.name ? 'Signed in as <b>' + esc(D.name) + '</b>.' : 'Signed in with Bungie.'} Add your alts, or a friend's account if they sign in here themselves, and switch between them. Switching ${window.__GT_WEB__ ? 'reloads the page' : 'restarts the app'}. Tags and notes are shared; loadouts are kept per account.</p><div class="acl">${aclHTML()}</div>${pfaHTML()}${syncHTML(sx)}<p><button class="b" data-sa="addacct">Add another account</button> <button class="g" data-sa="out">Sign out of this account</button></p>${window.__GT_WEB__ ? '<p class="mute" style="font-size:12px">If Bungie signs you straight back in as the same account, sign out on bungie.net first, then press Add another account again.</p>' : ''}</div>`;
     settingsSec.innerHTML = `<div class="setgrid">
     <div class="card sc"><h2>Item display</h2>${pv}
       ${sx('Item size', 'An item size of 50px looks sharpest.', rng('tile', 32, 72, 'px'))}
@@ -1082,6 +1113,9 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
       ${sx('Group vault weapons by', '', opt('vgroup', [['none', 'None'], ['type', 'Type'], ['rarity', 'Rarity'], ['element', 'Element'], ['tag', 'Tag']]))}
       ${sx('Separate armor on different lines by class', '', tgl('armorsep'))}
       ${sx('Show vaulted items under equipped items', 'Puts the vault below the characters instead of beside them.', tgl('vaultunder'))}
+      ${sx('Community perk ratings', 'Shows how often each perk turns up on a weapon across the community (public equipped gear plus Pathfinder players who share), like light.gg.', tgl('commrate'))}
+      ${sx('Share my kept rolls anonymously', 'Helps the community ratings: sends only the weapon and perk numbers of weapons you lock, tag favorite or keep, or have equipped. Nothing about you or your account. Off unless you turn it on.', tgl('sharerolls'))}
+      ${sx('Search: matches first', 'While you search, items that match move to the front of each slot and the greyed-out ones go after them.', tgl('matchfirst'))}
       ${sx('Keep characters packed together', 'The vault gets its own column, so a full vault no longer opens gaps between Kinetic, Energy, Power and armor on your characters. Only when the vault is beside the characters.', tgl('vaultsep'))}
       ${sx('Sort items by', 'Tick the rules to use and drag them into order. The arrow flips a rule.', sortList, true)}
       ${sx('Character inventory width', '', opt('invw', [[3, '3 items'], [4, '4 items'], [5, '5 items'], [6, '6 items']]))}
@@ -1091,10 +1125,15 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
     </div>
     <div class="card sc"><h2>Appearance</h2>
       <div class="thh">Interface style</div>
-      <div class="uis">${[['pf', 'Pathfinder', 'The current look.'], ['d2', 'In-game', 'Looks like the Destiny 2 menus.'], ['dim', 'DIM', 'Looks like Destiny Item Manager.'], ['beta', 'Beta', 'Night shift: clean, modern, Pathfinder\'s own look. Still changing.']].map(([k, n, d]) => `<div class="uic u-${k}${(SET.ui || 'pf') === k ? ' on' : ''}" data-uis="${k}"><i></i><b>${n}</b><small>${d}</small></div>`).join('')}</div>
+      <div class="uis">${[['pf', 'Pathfinder', 'The classic Pathfinder look.'], ['beta', 'Beta', 'Night shift: clean and modern. Still changing.'], ['bray', 'Bray', 'Same as Beta for now. Will get its own look.'], ['manta', 'Manta', 'Same as Beta for now. Will get its own look.'], ['dim', 'DIM', 'Looks like Destiny Item Manager.']].map(([k, n, d]) => `<div class="uic u-${k === 'bray' || k === 'manta' ? 'beta' : k}${(SET.ui || 'pf') === k ? ' on' : ''}" data-uis="${k}"><i></i><b>${n}</b><small>${d}</small></div>`).join('')}</div>
+      <div class="thh">Colour</div>
+      <p class="mute" style="margin:2px 0 6px">The tint of every panel. Mix it with any accent and any background picture.</p>
       <div class="sg">${themeGrid()}</div>
-      ${sx('Background picture dimming', 'For themes with a picture or glow. Higher is darker and easier to read.', rng('bgdim', 25, 90, '%'))}
-      ${sx('Accent color', '', `<input type="color" data-sk="accent" value="${esc(SET.accent)}">`)}
+      <div class="thh">Accent colour</div>
+      ${accGrid()}
+      <div class="thh">Background picture</div>
+      ${bgGrid()}
+      ${sx('Background picture dimming', 'Higher is darker and easier to read.', rng('bgdim', 25, 90, '%'))}
       <div class="thh">Motion and cards</div>
       ${sx('Animations', 'Page fades, cards easing in and hover lifts. Off turns every animation off.', opt('anim', [['off', 'Off'], ['subtle', 'Subtle'], ['full', 'Full']]))}
       ${sx('Activity pictures on cards', 'The raid, dungeon and activity art behind cards on Home, Activity and Rotations.', tgl('cardart'))}
@@ -1113,22 +1152,51 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
   // Settings cards in even columns: each card, in a sensible order, goes into whichever column is shortest, so no side runs
   // far longer than the other. Re-done when cards are added (Farming, Reminders... come from another file) or the window resizes.
   const SORD = ['Accounts', 'Item display', 'Inventory display', 'Appearance', 'Display', 'Wish lists', 'Farming', 'Reminders', 'Keyboard shortcuts', 'Backup', 'About & help'];
-  let balT = 0, balN = 0;
+  // Settings as a menu (like a browser's settings page): the sections are listed on the left and only the one you pick is shown.
+  // Cards come from several files (Farming, Reminders, About & help...), so this runs again whenever new cards show up.
+  const SICO = {
+    'Accounts': '<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>',
+    'Item display': '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 15l3-3 2 2 3-4"/>',
+    'Inventory display': '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>',
+    'Appearance': '<path d="M14 4l6 6-9 9H5v-6z"/><path d="M12 6l6 6"/>',
+    'Display': '<rect x="3" y="4" width="18" height="12" rx="1"/><path d="M8 20h8M12 16v4"/>',
+    'Wish lists': '<path d="M7 11v9H4v-9zM7 11l4-7c1.5 0 2.5 1 2.5 2.5V10h5a2 2 0 012 2.3l-1.2 6A2 2 0 0117.3 20H7"/>',
+    'Farming': '<path d="M12 21V10"/><path d="M12 13c-4 0-7-3-7-7 4 0 7 3 7 7zM12 10c0-3 2.5-6 7-6 0 4-3 6-7 6z"/>',
+    'Reminders': '<path d="M6 16V11a6 6 0 0112 0v5l2 2H4z"/><path d="M10 21h4"/>',
+    'Keyboard shortcuts': '<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/>',
+    'Backup': '<path d="M7 18a5 5 0 01-.6-10A6 6 0 0118 9a4.5 4.5 0 01-1 9z"/><path d="M12 11v6M9.5 13.5L12 11l2.5 2.5"/>',
+    'About & help': '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/>',
+  };
+  const sico = (t) => `<svg viewBox="0 0 24 24" aria-hidden="true">${SICO[t] || '<circle cx="12" cy="12" r="8"/>'}</svg>`;
+  let balT = 0, SSEC = (() => { try { return localStorage.getItem('gt_setsec') || 'Accounts'; } catch (e) { return 'Accounts'; } })();
   function balanceSettings(force) {
     const root = settingsSec; if (!root || !root.isConnected || !root.classList.contains('on')) return;
-    const cards = [...root.querySelectorAll('.card')].filter((c) => c.parentElement && (c.parentElement === root || c.parentElement.classList.contains('setgrid') || c.parentElement.classList.contains('scol')));
-    if (!cards.length) return;
-    const n = Math.max(1, Math.min(2, Math.floor((root.clientWidth + 16) / 520)));
-    const loose = cards.some((c) => !c.parentElement.classList.contains('scol'));
-    if (!force && !loose && n === balN) return;
-    balN = n;
-    const key = (c) => { const h = (c.querySelector('h2') || {}).textContent || ''; const i = SORD.indexOf(h.trim()); return i < 0 ? 99 : i; };
-    cards.sort((a, b) => key(a) - key(b));
-    let wrap = root.querySelector(':scope > .scols'); if (!wrap) { wrap = document.createElement('div'); wrap.className = 'scols'; root.appendChild(wrap); }
-    wrap.replaceChildren(); const cols = Array.from({ length: n }, () => { const d = document.createElement('div'); d.className = 'scol'; wrap.appendChild(d); return d; });
-    cards.forEach((c) => { const col = cols.reduce((a, b) => (b.offsetHeight < a.offsetHeight ? b : a)); col.appendChild(c); });
-    root.querySelectorAll(':scope > .setgrid').forEach((g2) => { if (!g2.children.length) g2.remove(); });
+    let wrap = root.querySelector(':scope > .sset');
+    const loose = [...root.querySelectorAll('.card')].filter((c) => !c.closest('.spane') || c.parentElement !== c.closest('.spane'));
+    if (!force && wrap && !loose.length) return;
+    if (!wrap) { wrap = document.createElement('div'); wrap.className = 'sset'; wrap.innerHTML = '<div class="snav" role="navigation" aria-label="Settings sections"></div><div class="spane"></div>'; root.appendChild(wrap); }
+    const pane = wrap.querySelector('.spane'), nav = wrap.querySelector('.snav');
+    loose.forEach((c) => { if (c.parentElement && (c.parentElement === root || c.parentElement.classList.contains('setgrid') || c.parentElement.classList.contains('scol') || c.parentElement.classList.contains('scols'))) pane.appendChild(c); });
+    root.querySelectorAll(':scope > .setgrid, :scope > .scols').forEach((g2) => { if (!g2.querySelector('.card')) g2.remove(); });
+    const title = (c) => ((c.querySelector('h2') || {}).textContent || '').trim();
+    const key = (c) => { const i = SORD.indexOf(title(c)); return i < 0 ? 99 : i; };
+    const cards = [...pane.children].filter((c) => c.classList.contains('card')).sort((a, b) => key(a) - key(b));
+    cards.forEach((c) => pane.appendChild(c));
+    const names = cards.map(title).filter(Boolean);
+    if (!names.includes(SSEC)) SSEC = names[0] || 'Accounts';
+    cards.forEach((c) => { c.classList.toggle('son', title(c) === SSEC); });
+    const navH = names.map((n) => `<div role="button" tabindex="0" class="sni${n === SSEC ? ' on' : ''}" data-ssec="${esc(n)}"${n === SSEC ? ' aria-current="page"' : ''}>${sico(n)}<span>${esc(n)}</span></div>`).join('');
+    if (nav.dataset.h !== navH) {
+      nav.innerHTML = navH; nav.dataset.h = navH;
+      const on = nav.querySelector('.sni.on'); if (on && nav.scrollWidth > nav.clientWidth + 2) nav.scrollLeft = Math.max(0, on.offsetLeft - 12); // phones: the row scrolls, keep the open section in view
+    }
   }
+  settingsSec.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('.sni,.acw')) { e.preventDefault(); e.target.click(); } });
+  settingsSec.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-ssec]'); if (!b) return;
+    SSEC = b.dataset.ssec; try { localStorage.setItem('gt_setsec', SSEC); } catch (er) { /* remembered for now */ }
+    balanceSettings(true); const p = settingsSec.querySelector('.spane'); if (p && p.getBoundingClientRect().top < 0) window.scrollTo({ top: 0 });
+  });
   new MutationObserver(() => { clearTimeout(balT); balT = setTimeout(() => balanceSettings(false), 30); }).observe(settingsSec, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
   window.addEventListener('resize', () => { clearTimeout(balT); balT = setTimeout(() => balanceSettings(false), 120); });
   async function wlDo(arg) {
@@ -1171,6 +1239,8 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
     if (sdb) { const q = SET.sortkeys[+sdb.dataset.sd]; if (q) { q.d = -q.d; saveSet(); drawSettings(); if (window.__gtRender) window.__gtRender(); } return; }
     const cs = e.target.closest('[data-cst]');
     if (cs) { const [c, i] = cs.dataset.cst.split(':').map(Number); SET.cst[c][i] = SET.cst[c][i] ? 0 : 1; saveSet(); drawSettings(); if (window.__gtRender) window.__gtRender(); return; }
+    const bgo = e.target.closest('[data-bg]'); if (bgo) { pickBg(bgo.dataset.bg); return; }
+    const acw = e.target.closest('[data-acc]'); if (acw) { pickAcc(acw.dataset.acc); return; }
     const uis = e.target.closest('[data-uis]'); if (uis) { SET.ui = uis.dataset.uis; applySet(); saveSet(); settingsSec.querySelectorAll('[data-uis]').forEach((n) => n.classList.toggle('on', n.dataset.uis === SET.ui)); return; }
     const th = e.target.closest('[data-th]'); if (th) { pickTheme(th.dataset.th); return; }
     const nt = e.target.closest('[data-navt]'); if (nt && window.__gtnav && !nt.disabled) { const cur = window.__gtnav.list().find((x) => x[0] === nt.dataset.navt); if (cur) window.__gtnav.set(cur[0], !cur[2]); drawSettings(); return; }
@@ -1178,6 +1248,8 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
     if (asw) { try { localStorage.setItem('gt_acct_ns', acctNs(asw.dataset.acsw, ACL && ACL.prim)); } catch (er) { /* storage off */ } try { afterAcct(await gt.acctSwitch({ mid: asw.dataset.acsw })); } catch (er) { alert(clean(er)); } return; }
     const arm = e.target.closest('[data-acrm]');
     if (arm) { const a1 = ACL && ACL.list.find((x) => x.mid === arm.dataset.acrm); if (!confirm('Remove ' + ((a1 && a1.n) || 'this account') + ' from ' + GT_HERE + '? You can add it again any time.')) return; try { afterAcct(await gt.acctRemove({ mid: arm.dataset.acrm })); } catch (er) { alert(clean(er)); } return; }
+    const pfb = e.target.closest('[data-pfa]');
+    if (pfb) { pfaAct(pfb.dataset.pfa); return; }
     const b = e.target.closest('[data-sa]'); if (!b) return;
     const a = b.dataset.sa;
     if (a === 'grf') { if (window.__gtgrf) { show('vault'); setTimeout(window.__gtgrf, 50); } return; }
@@ -1260,6 +1332,9 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
   const GROUPS = [['Weapons', SL.slice(0, 3).map((s) => s[0])], ['Armor', SL.slice(3, 8).map((s) => s[0])], ['General', SL.slice(8).map((s) => s[0])]];
   const WEAPON = new Set(SL.slice(0, 3).map((s) => s[0]));
   // Read-only rows in the General section, shown only when you own something of that kind.
+  // Read-only extras that can still be dragged between characters and the vault (ships).
+  const RODRAG = new Set([284967655]);
+  const noDrag = (it) => !!it.ro && !RODRAG.has(it.b);
   const XROWS = [[3284755031, 'Subclass'], [284967655, 'Ship'], [4274335291, 'Emblem'], [3683254069, 'Finisher'], [3054419239, 'Emote'], [4292445962, 'Clan banner']];
   const ENGR = 375726501;
   const ARMOR = new Set(SL.slice(3, 8).map((s) => s[0]));
@@ -1544,11 +1619,13 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
     [['anti barrier', 'barrier'], ['antibarrier', 'barrier'], ['shield piercing', 'barrier'], ['disruption', 'overload'], ['stagger', 'unstoppable'], ['dupe', 'duplicate'], ['dupes', 'duplicate'], ['duplicates', 'duplicate'], ['duplicate', 'duplicate'], ['class item', 'classitem'], ['chest armor', 'chest'], ['leg armor', 'legs'], ['in loadout', 'inloadout'], ['deep sight', 'deepsight'], ['red border', 'deepsight']].forEach(([k, v]) => put(k, 'is:' + v));
     Object.keys(TYA).forEach((k) => { if (k.length > 1 && !['grenade', 'class', 'mark', 'bond', 'cloak', 'auto', 'pulse', 'scout', 'linear', 'rocket', 'trace', 'fusion', 'sniper', 'bow'].includes(k)) put(k, 'is:' + nz(TYA[k])); });
     [...new Set(D.items.filter((x) => WEAPON.has(x.b) && x.t).map((x) => x.t))].forEach((t) => { put(t, 'is:' + nz(t)); put(t + 's', 'is:' + nz(t)); });
+    // Every weapon type works even when you own none ("pulserifle", "pulse rifles").
+    ['handcannon', 'autorifle', 'pulserifle', 'scoutrifle', 'submachinegun', 'combatbow', 'sniperrifle', 'fusionrifle', 'linearfusionrifle', 'grenadelauncher', 'rocketlauncher', 'machinegun', 'tracerifle', 'sidearm', 'shotgun', 'sword', 'glaive'].forEach((t) => { put(t, 'is:' + t); put(t + 's', 'is:' + t); });
     ACM = m; ACMn = D.items.length; return m;
   };
-  function autoFix(inp, e) {
-    if (!D || !e || e.inputType !== 'insertText' || e.data !== ' ') return false;
-    const v = inp.value, pos = inp.selectionStart; if (pos !== v.length) return false;
+  function autoFix(inp, e, enter) {
+    if (!D || !e || (!enter && (e.inputType !== 'insertText' || e.data !== ' '))) return false;
+    const v = enter ? inp.value.replace(/\s+$/, '') + ' ' : inp.value, pos = enter ? v.length : inp.selectionStart; if (pos !== v.length) return false;
     const head = v.slice(0, -1); if ((head.match(/"/g) || []).length % 2) return false; // inside quotes: leave it
     const words = head.split(/\s+/), M = acMap();
     for (let n = Math.min(3, words.length); n >= 1; n--) {
@@ -1594,9 +1671,22 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
     const inp = e.target, box = document.getElementById('vqs');
     if (e.key === 'Backspace' && LASTAC && inp.value === LASTAC.after) { e.preventDefault(); const b0 = LASTAC.before.replace(/ $/, ''); LASTAC = null; inp.value = b0; inp.setSelectionRange(b0.length, b0.length); q = b0.toLowerCase(); renderGrid(); sugDraw(inp); setNote(''); return; }
     if (e.key === 'Escape') { if (box) { box.remove(); e.stopPropagation(); } return; }
+    // Enter: use the highlighted suggestion; with none highlighted, a word that is exactly a filter ("pulserifle", "hand cannon")
+    // turns into it (is:pulserifle). Either way the list closes.
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (box && SUG.list.length) {
+        const flat = (t) => String(t || '').toLowerCase().replace(/^-?[a-z]+:/, '').replace(/["\s]/g, '');
+        const tok = flat(SUG.tok), phrase = flat(inp.value.slice(0, SUG.end).split(/\s+/).slice(-3).join(''));
+        const i = SUG.i >= 0 ? SUG.i : SUG.list.findIndex((o) => /^-?[a-z]+:/.test(o.v) && (flat(o.v) === tok || (o.st !== undefined && phrase.endsWith(flat(o.v)))));
+        if (i >= 0 && !/[:"]/.test(SUG.tok)) sugPick(inp, i); else if (SUG.i >= 0) sugPick(inp, SUG.i); else if (autoFix(inp, e, true)) { q = inp.value.toLowerCase(); renderGrid(); }
+      } else if (autoFix(inp, e, true)) { q = inp.value.toLowerCase(); renderGrid(); }
+      const bx = document.getElementById('vqs'); if (bx) bx.remove();
+      return;
+    }
     if (!box || !SUG.list.length) return;
     if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); SUG.i = (SUG.i + (e.key === 'ArrowDown' ? 1 : -1) + SUG.list.length) % SUG.list.length; box.querySelectorAll('.qs').forEach((n, k) => n.classList.toggle('on', k === SUG.i)); return; }
-    if (e.key === 'Tab' || (e.key === 'Enter' && SUG.i >= 0)) { e.preventDefault(); sugPick(inp, SUG.i >= 0 ? SUG.i : 0); }
+    if (e.key === 'Tab') { e.preventDefault(); sugPick(inp, SUG.i >= 0 ? SUG.i : 0); }
   }
   const CC = ['#4a5a78', '#5c6b49', '#7a5a3f'];
   // ---- saved searches (kept on this computer) ----
@@ -1760,6 +1850,8 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
   // Turns a frame icon (light glyph on a dark or see-through badge) into a clean black glyph, whatever the file looks like.
   try { if (!document.getElementById('gtfrsvg')) (document.body || document.documentElement).insertAdjacentHTML('beforeend', '<svg id="gtfrsvg" width="0" height="0" style="position:absolute;pointer-events:none" aria-hidden="true"><filter id="gtfr" color-interpolation-filters="sRGB" x="0" y="0" width="100%" height="100%"><feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  .85 2.86 .29 4 -6"/></filter></svg>'); } catch (e) { /* the badge just stays plain */ }
   const CLSV = ['<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 3 6v7c0 4 3.6 7.4 9 9 5.4-1.6 9-5 9-9V6zM12 5.2l6 2.6v5c0 2.7-2.3 5-6 6.3-3.7-1.3-6-3.6-6-6.3v-5z"/><path d="M12 8l3.5 1.6v3.1c0 1.6-1.4 3-3.5 3.8-2.1-.8-3.5-2.2-3.5-3.8V9.6z"/></svg>', '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 2.5 20h4.2L12 9.6 17.3 20h4.2z"/><path d="M12 14.5 9.6 20h4.8z"/></svg>', '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 9 9 2.5 7l3 8L12 21l6.5-6 3-8L15 9zM12 8.2l1.6 2.8L12 18l-1.6-7z"/></svg>'];
+  // Search: matches first (Settings). Keeps the normal order inside each half, so items do not jump around otherwise.
+  const mfirst = (arr) => { if (!q || SET.matchfirst === false) return arr; const a = [], b = []; arr.forEach((x) => (match(x) ? a : b).push(x)); return a.concat(b); };
   const tile = (x) => {
     const w = wish(x), tgv = TAGS()[x.id], tgd = tgv && TG.find((t) => t[0] === tgv), ic = (D && D.ic) || {};
     const bkI = x.bt && ic.bk && ic.bk[x.bt], elI = x.el && x.el !== 1 && ic.el && ic.el[x.el];
@@ -1769,7 +1861,7 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
     const foot = left || bkI || elH || num !== '' ? `<div class="ft"><span class="lf">${left}</span>${bkI ? `<img class="bkf" src="${esc(icon(bkI))}" alt="" title="${esc(BRK[x.bt] || 'Champion')}" draggable="false">` : ''}${elH}${num !== '' ? `<span class="pn">${num}</span>` : ''}</div>` : '';
     const lockH = x.lk && !(SET.locksync && tgv) ? `<b class="lk">${SV_LK}</b>` : '', tagH = tgd ? `<em class="tg" style="background:${tgd[2]}" title="${tgd[3]}">${tagSvg(tgd[0], 9)}</em>` : '';
     const badge = lockH || tagH ? `<div class="br">${lockH}${tagH}</div>` : '';
-    return `<div class="vt ${esc(x.r)}${x.of && SET.ornaments !== false ? ' of' : ''}${x.b === ENGR || x.eg ? ' eng' : ''}${x.mx && x.q >= x.mx ? ' full' : ''}${foot ? ' hf' : ''}${x.mw ? ' mw' : ''}${window.__gtf && window.__gtf.isSel(x.id) ? ' bsel' : ''}${q && !match(x) ? ' fade' : ''}"${(x.pm || x.ro) ? '' : ' draggable="true"'} data-id="${esc(x.id)}" title="${esc(x.n)} - ${esc(x.r)} ${esc(x.t)}${w.v ? (w.v > 0 ? ' - WISH LIST ROLL' : ' - trash roll') : ''}${w.notes.length ? ' - ' + esc(w.notes.join(' / ')) : ''}${x.orn ? ' (ornament: ' + esc(x.orn) + ')' : ''}"><img src="${esc(icon(SET.ornaments === false && x.bi ? x.bi : x.i))}" alt="" draggable="false">${x.wm ? `<img class="wm" src="${esc(icon(x.wm))}" alt="" draggable="false">` : ''}${x.fr && x.r !== 'Exotic' ? `<span class="fr"><img src="${esc(icon(x.fr))}" alt="" draggable="false"></span>` : ''}${ARMOR.has(x.b) && x.c >= 0 && x.c < 3 ? `<span class="cl" title="${CL[x.c] || ''}">${CLSV[x.c]}</span>` : ''}${x.gt > 0 || x.cr ? `<u class="tp${x.cr ? ' cr' : ''}">${x.gt > 0 ? '<i></i>'.repeat(Math.min(5, x.gt)) : ''}${x.cr ? CRSVG : ''}</u>` : ''}${badge}${foot}</div>`;
+    return `<div class="vt ${esc(x.r)}${x.of && SET.ornaments !== false ? ' of' : ''}${x.b === ENGR || x.eg ? ' eng' : ''}${x.mx && x.q >= x.mx ? ' full' : ''}${foot ? ' hf' : ''}${x.mw ? ' mw' : ''}${window.__gtf && window.__gtf.isSel(x.id) ? ' bsel' : ''}${q && !match(x) ? ' fade' : ''}"${(x.pm || noDrag(x)) ? '' : ' draggable="true"'} data-id="${esc(x.id)}" title="${esc(x.n)} - ${esc(x.r)} ${esc(x.t)}${w.v ? (w.v > 0 ? ' - WISH LIST ROLL' : ' - trash roll') : ''}${w.notes.length ? ' - ' + esc(w.notes.join(' / ')) : ''}${x.orn ? ' (ornament: ' + esc(x.orn) + ')' : ''}"><img src="${esc(icon(SET.ornaments === false && x.bi ? x.bi : x.i))}" alt="" draggable="false">${x.wm ? `<img class="wm" src="${esc(icon(x.wm))}" alt="" draggable="false">` : ''}${x.fr && x.r !== 'Exotic' ? `<span class="fr"><img src="${esc(icon(x.fr))}" alt="" draggable="false"></span>` : ''}${ARMOR.has(x.b) && x.c >= 0 && x.c < 3 ? `<span class="cl" title="${CL[x.c] || ''}">${CLSV[x.c]}</span>` : ''}${x.gt > 0 || x.cr ? `<u class="tp${x.cr ? ' cr' : ''}">${x.gt > 0 ? '<i></i>'.repeat(Math.min(5, x.gt)) : ''}${x.cr ? CRSVG : ''}</u>` : ''}${badge}${foot}</div>`;
   };
   let plast = null, pmOpen = true;
 
@@ -1817,12 +1909,12 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
   const inVault = (x) => x.loc === 'vault' || hiddenUsable(x);
   function charCell(c, h) {
     const mine = allI().filter((x) => x.loc === c.id && !x.pm && x.b === h);
-    const eq = mine.find((x) => x.e), inv = mine.filter((x) => !x.e).sort(sortI);
+    const eq = mine.find((x) => x.e), inv = mfirst(mine.filter((x) => !x.e).sort(sortI));
     // Like DIM: the equipped item has its own box (drop here to equip), with a + under it to pick something to equip.
     return `<div class="dc" data-drop="char" data-loc="${esc(c.id)}" data-b="${h}"><div class="eq" title="${esc(slotName(h))}: drop here to equip" data-drop="eq" data-loc="${esc(c.id)}" data-b="${h}">${eq ? tile(eq) : ''}<i class="eqp" data-act="eqpick" data-c="${esc(c.id)}" data-b="${h}" title="Choose something to equip">+</i></div><div class="inv">${inv.map(tile).join('')}</div></div>`;
   }
   function vaultCell(h) {
-    const its = allI().filter((x) => x.b === h && inVault(x)).sort(sortI), under = SET.vaultunder || PHONE.matches ? ' under' : '';
+    const its = mfirst(allI().filter((x) => x.b === h && inVault(x)).sort(sortI)), under = SET.vaultunder || PHONE.matches ? ' under' : '';
     const grp = (label, arr) => `<div class="vg"><div class="vgl">${esc(label)}</div><div class="vgt">${arr.map(tile).join('')}</div></div>`;
     const split = (key, order) => { const m = new Map(); its.forEach((x) => { const k = key(x); if (!m.has(k)) m.set(k, []); m.get(k).push(x); }); return [...m.entries()].sort(order); };
     let body = its.map(tile).join(''), cls = '';
@@ -1930,7 +2022,25 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
   }
   let gridDirty = false;
   new MutationObserver(() => { if (gridDirty && sec.classList.contains('on')) { gridDirty = false; renderGrid(); } }).observe(sec, { attributes: true, attributeFilter: ['class'] });
+  // Share my kept rolls (Settings, off by default): weapon and perk numbers of weapons you lock, tag favorite or keep, or have
+  // equipped, each copy once, to the community ratings. Nothing about you or your account is sent.
+  let shareT = 0;
+  function shareRolls() {
+    if (!SET.sharerolls || !window.gt || !gt.ratingsShare || !D || shareT) return;
+    shareT = setTimeout(async () => {
+      shareT = 0;
+      let done = {}; try { done = JSON.parse(localStorage.getItem('gt_shared')) || {}; } catch (e) { done = {}; }
+      const tg = TAGS();
+      const pick = D.items.filter((x) => WEAPON.has(x.b) && !x.pm && x.ah && x.ah.length && !done[x.id] && (x.lk || x.e || tg[x.id] === 'favorite' || tg[x.id] === 'keep'));
+      for (let i = 0; i < pick.length && i < 240; i += 60) {
+        const part = pick.slice(i, i + 60);
+        try { await gt.ratingsShare({ rolls: part.map((x) => ({ h: x.h, p: x.ah.slice(0, 24) })) }); part.forEach((x) => { done[x.id] = 1; }); } catch (e) { break; }
+      }
+      try { localStorage.setItem('gt_shared', JSON.stringify(done)); } catch (e) { /* tried again next time */ }
+    }, 15000);
+  }
   function renderGrid() {
+    shareRolls();
     if (dragId) { dragPend = true; return; } // never rebuild the page under a drag in progress
     if (!sec.classList.contains('on') && g('vgrid') && g('vgrid').firstChild) { gridDirty = true; return; } // hidden: rebuilt when shown
     const y = window.scrollY, el = g('vgrid'); if (!el || !D) return;
@@ -1971,7 +2081,7 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
     if (gen.length) {
       h += '<div class="dsec">Inventory</div>';
       // One grid of consumables and materials, then one of mods and shaders. (The seasonal artifact is not shown here; it has its own page.)
-      const merge = (bs) => { const m = {}; gen.filter((x) => bs.includes(x.b)).forEach((x) => { if (m[x.h]) m[x.h] = { ...m[x.h], q: m[x.h].q + x.q }; else m[x.h] = { ...x, id: 'a:' + x.h }; }); return Object.values(m).sort(sortI); };
+      const merge = (bs) => { const m = {}; gen.filter((x) => bs.includes(x.b)).forEach((x) => { if (m[x.h]) m[x.h] = { ...m[x.h], q: m[x.h].q + x.q }; else m[x.h] = { ...x, id: 'a:' + x.h }; }); return mfirst(Object.values(m).sort(sortI)); };
       const g1 = merge([1469714392, 3865314626]), g2 = merge([3313201758, 2973005342]);
       if (g1.length) h += `<div class="xg">${g1.map(tile).join('')}</div>`;
       if (g2.length) h += `<div class="xg xg2">${g2.map(tile).join('')}</div>`;
@@ -2195,9 +2305,10 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
   // then the vault, then another character; a non-exotic with the most power is preferred.
   function standIn(it) {
     const c = D.chars.find((x) => x.id === it.loc); if (!c) return null;
-    const fits = (o) => o !== it && o.b === it.b && !o.e && !o.pm && !o.ro && (o.c === 3 || o.c === undefined || o.c === c.cls);
+    // Ships live with the cosmetics (read-only list) but can be moved, so they can stand in for each other too.
+    const fits = (o) => o !== it && o.b === it.b && !o.e && !o.pm && !noDrag(o) && (o.c === 3 || o.c === undefined || o.c === c.cls);
     const rank = (o) => (o.loc === it.loc ? 0 : o.loc === 'vault' ? 1 : 2) * 10 + (o.r === 'Exotic' ? 1 : 0);
-    return D.items.filter(fits).sort((p, q) => rank(p) - rank(q) || (q.p || 0) - (p.p || 0))[0] || null;
+    return allI().filter(fits).sort((p, q) => rank(p) - rank(q) || (q.p || 0) - (p.p || 0))[0] || null;
   }
   function moveEquipped(it, to, equipThere) {
     const r = standIn(it);
@@ -2205,7 +2316,7 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
     const src = it.loc, si = slim(it), sr = slim(r);
     act((equipThere ? 'equip ' : 'move ') + it.n, () => {
       r.loc = src; r.e = 1; it.e = 0; it.loc = to;
-      if (equipThere) { D.items.forEach((o) => { if (o !== it && o.loc === to && o.b === it.b && o.e) o.e = 0; }); it.e = 1; }
+      if (equipThere) { allI().forEach((o) => { if (o !== it && o.loc === to && o.b === it.b && o.e) o.e = 0; }); it.e = 1; }
     }, async () => {
       await gt.equip({ item: sr, to: src });
       const s2 = { ...si, e: 0 };
@@ -2223,7 +2334,7 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
   function eqPick(t) {
     const old = document.getElementById('eqpick'); if (old) { const same = old.dataset.k === t.dataset.c + t.dataset.b; old.remove(); if (same) return; }
     const c = D.chars.find((x) => x.id === t.dataset.c), b = +t.dataset.b; if (!c) return;
-    const list = D.items.filter((x) => x.b === b && !x.pm && !x.ro && !(x.loc === c.id && x.e) && (x.c === 3 || x.c === undefined || x.c === c.cls) && match(x)).sort((p, q2) => (q2.r === 'Exotic') - (p.r === 'Exotic') || (q2.p || 0) - (p.p || 0)).slice(0, 60);
+    const list = allI().filter((x) => x.b === b && !x.pm && !noDrag(x) && !(x.loc === c.id && x.e) && (x.c === 3 || x.c === undefined || x.c === c.cls) && match(x)).sort((p, q2) => (q2.r === 'Exotic') - (p.r === 'Exotic') || (q2.p || 0) - (p.p || 0)).slice(0, 60);
     const m = document.createElement('div'); m.id = 'eqpick'; m.dataset.k = t.dataset.c + t.dataset.b;
     m.innerHTML = `<h6>Equip on ${esc(CL[c.cls] || 'Guardian')}: ${esc(slotName(b))}</h6>${list.length ? `<div class="eqg">${list.map((x) => tile(x).replace(' draggable="true"', '')).join('')}</div>` : '<p>Nothing else you own fits this slot' + (q ? ' with this search' : '') + '.</p>'}${q ? '<p>Only items matching your search are listed.</p>' : ''}`;
     const r = t.getBoundingClientRect(); document.body.appendChild(m);
@@ -2239,7 +2350,7 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
     const s = slim(it);
     act('equip ' + it.n, () => {
       it.loc = to;
-      D.items.forEach((o) => { if (o !== it && o.loc === to && o.b === it.b && o.e) o.e = 0; });
+      allI().forEach((o) => { if (o !== it && o.loc === to && o.b === it.b && o.e) o.e = 0; });
       it.e = 1;
     }, () => gt.equip({ item: s, to }));
   }
@@ -2250,7 +2361,7 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
   const clearDz = () => { dzEls.forEach((z) => z.classList.remove('dz', 'eqok')); dzEls = []; };
   const clearOver = () => { if (overEl) overEl.classList.remove('over'); overEl = null; };
   function dropInfo(zone) {
-    const it = byId(dragId); if (!it || it.ro) return null;
+    const it = byId(dragId); if (!it || noDrag(it)) return null;
     const kind = zone.dataset.drop, loc = zone.dataset.loc;
     // from the postmaster: any character column or the vault (dropping on its own character pulls it)
     if (it.pm) return pmCanSend(it) && kind !== 'eq' && (loc === 'vault' || D.chars.some((c) => c.id === loc)) ? { kind: 'move', loc } : null;
@@ -2276,7 +2387,7 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
     if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || !D) return;
     if (e.pointerType === 'touch' && PHONE.matches) return; // on a phone a finger on an item scrolls the page; items move with the buttons in the item sheet
     const t = e.target.closest && e.target.closest('#vgrid .vt'); if (!t) return;
-    const it = byId(t.dataset.id); if (!it || it.ro || (it.pm && !(pmCanSend(it) && (WEAPON.has(it.b) || ARMOR.has(it.b))))) return;
+    const it = byId(t.dataset.id); if (!it || noDrag(it) || (it.pm && !(pmCanSend(it) && (WEAPON.has(it.b) || ARMOR.has(it.b))))) return;
     pd = { id: it.id, t, x: e.clientX, y: e.clientY, on: false, g: null, raf: 0, lx: e.clientX, ly: e.clientY };
   });
   function pdMove(e) {
@@ -2319,7 +2430,7 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
     if (e.isTrusted && e.target.closest && e.target.closest('#vgrid .vt')) { e.preventDefault(); return; } // real drags use the mouse code above
     const t = e.target.closest && e.target.closest('.vt'); if (!t || !D) return;
     const it = byId(t.dataset.id);
-    if (!it || it.pm || it.ro) { e.preventDefault(); return; }
+    if (!it || it.pm || noDrag(it)) { e.preventDefault(); return; }
     dragId = it.id; t.classList.add('dragging');
     // light up every column this item can be dropped in, right away
     dzEls = [...sec.querySelectorAll('#vgrid .dc[data-b="' + it.b + '"]')].filter((z) => { return z.dataset.drop === 'vault' || dropInfo(z) || z.dataset.loc === it.loc; });
@@ -2409,6 +2520,32 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
   }
   // After a perk change, Bungie keeps sending the old perk for a few seconds. Show the new perk right away, then check with Bungie
   // a little later and take its answer once it agrees (or once enough time has passed that it must be right).
+  // Community ratings per weapon (item hash -> numbers from the ratings service; 0 when there are none).
+  const RAT = {};
+  const ratOf = (x, h) => { const r = SET.commrate !== false && x && RAT[x.h]; if (!r || !r.perks) return null; const t = (r.seen.s || 0) + (r.seen.p || 0); if (t < 5) return null; const p = r.perks[h]; return { pct: p ? Math.round((((p.s || 0) + (p.p || 0)) / t) * 100) : 0, t }; };
+  const MODO = {}; // item:socket -> options from Bungie (or the promise while loading)
+  function modPicker(x, d, col, on) {
+    const key = x.id + ':' + on.si, got = MODO[key];
+    if (!got) {
+      MODO[key] = gt.modOpts({ h: x.h, si: on.si, char: x.loc !== 'vault' ? x.loc : '', cur: col.map((p) => [p.h, !!p.ci || !!p.on]) })
+        .then((r) => { MODO[key] = r || { opts: [] }; if (sel === x.id) renderPop(); }, (er) => { MODO[key] = { err: clean(er), opts: [] }; if (sel === x.id) renderPop(); });
+      return '<div class="mpk"><div class="mpw">Loading every option for this socket…</div></div>';
+    }
+    if (got.then) return '<div class="mpk"><div class="mpw">Loading every option for this socket…</div></div>';
+    if (got.err) return `<div class="mpk"><div class="mpw">Could not load the options: ${esc(got.err)}</div></div>`;
+    const prog = {}; (d.obj || []).forEach((o) => { if (o.k === 'pl' && o.pn) prog[o.pn] = o; });
+    const list = got.opts.slice().filter((o) => !o.em || o.h !== on.h);
+    const rank = (o) => (o.h === on.h ? 0 : o.ci ? 1 : o.own ? 2 : 3);
+    list.sort((a, b) => rank(a) - rank(b) || a.n.localeCompare(b.n));
+    if (!list.some((o) => o.h === on.h)) list.unshift({ h: on.h, n: on.n, i: on.i, d: on.d, own: true, ci: true });
+    const have = list.filter((o) => o.ci).length, miss = list.filter((o) => !o.own).length;
+    const row = (o) => {
+      const isOn = o.h === on.h, pr = prog[o.n], can = o.ci && !isOn;
+      const how = isOn ? '' : o.ci ? '' : o.own ? (pr ? `In progress: ${pr.n} ${pr.p}/${pr.c}` : 'Found, but not finished yet.') : (o.src ? o.src : 'Not unlocked on this account yet. Bungie’s data does not say where it comes from.');
+      return `<div class="mpo${isOn ? ' on' : ''}${can ? '' : ' off'}${!o.own ? ' miss' : ''}"${can ? ` data-mpp="${o.h}" data-msi="${on.si}"` : ''}><span class="mpi">${pimg(o)}</span><div><b>${esc(o.n)}${isOn ? ' <em>Equipped</em>' : !o.own ? ' <em class="no">Not unlocked</em>' : !o.ci ? ' <em class="no">Locked</em>' : ''}</b>${o.d ? `<small>${esc(o.d.slice(0, 220))}</small>` : ''}${how ? `<small class="how">${esc(how)}</small>` : ''}</div></div>`;
+    };
+    return `<div class="mpk"><div class="mph"><b>${esc(on.c && /catalyst/i.test(on.c) ? 'Catalyst' : /masterwork/i.test(on.c || '') ? 'Masterwork' : 'Mod')}</b><span class="mute">${have} you can use${miss ? ` · ${miss} not unlocked` : ''} · click one to put it in</span></div>${got.known === false ? '<div class="mpw">Open the Inventory tab once so Pathfinder knows which mods you have unlocked.</div>' : ''}<div class="mpl">${list.map(row).join('')}</div></div>`;
+  }
   function markPlug(id, si, h) {
     const d = DET[id], x = byId(id);
     if (d && d.groups) d.groups.forEach((gr) => gr.cols.forEach((col) => { if (col.some((q) => q.si === si && q.h === h)) { const old = col.find((q) => q.on); col.forEach((q) => { q.on = q.h === h; }); if (x && x.pk && old && old.h !== h) { const i = x.pk.indexOf(old.h); if (i >= 0) x.pk[i] = h; else x.pk.push(h); } } }));
@@ -2523,21 +2660,30 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
     if (!subH) d.groups.forEach((gr, gi) => { if (gr.label !== 'Perks') return; order(gr.cols).forEach(([col, ci]) => {
       const k = gi + '-' + ci, on = col.find((p) => p.on) || col[0];
       const si = psel[k] !== undefined && col[psel[k]] ? psel[k] : col.indexOf(on), cur = col[si] || on;
-      const ico = (p, i) => `<div class="dpc${i === si ? ' sel' : ''}${p === on ? ' eqp' : ''}" data-pk="${k}" data-pi="${i}" title="${esc(p.n)}${wpHas(p) ? ' (in a wish list roll)' : ''}">${pimg(p)}${wpHas(p) ? `<i class="pwb">${SV_UP}</i>` : ''}</div>`;
+      const ico = (p, i) => { const rt = ratOf(x, p.h); return `<div class="dpc${i === si ? ' sel' : ''}${p === on ? ' eqp' : ''}" data-pk="${k}" data-pi="${i}" title="${esc(p.n)}${wpHas(p) ? ' (in a wish list roll)' : ''}${rt ? ' · on ' + rt.pct + '% of copies the community runs' : ''}">${pimg(p)}${wpHas(p) ? `<i class="pwb">${SV_UP}</i>` : ''}${rt && rt.pct ? `<i class="cpct${rt.pct >= 25 ? ' hi' : ''}">${rt.pct}%</i>` : ''}</div>`; };
       let h = `<div class="dpr${pex === k ? ' open' : ''}"><div class="cur" data-px="${k}">${ico(cur, si)}<b>${esc(cur.n)}</b></div><div class="alt">${col.slice(0, 10).map((p, i) => (i === si ? '' : ico(p, i))).join('')}</div></div>`;
       if (pex === k) {
         const bonus = (cur.s || []).map(([hh, v]) => (nm(hh) ? `<div class="pbn">${v > 0 ? '+' : ''}${v} ${esc(nm(hh))}</div>` : '')).join('');
-        h += `<div class="dpi" data-px="${k}"><b>${esc(cur.n)}</b>${cur === on ? '' : ' <small>(preview)</small>'}${wpHas(cur) ? ` <span class="pwi">${SV_UP}</span>` : ''}<span class="pds">${SET.clarity === 'clarity' && clr(cur) ? '' : esc(cur.d || '')}</span>${clr(cur) ? `<div class="clr"><small>Community insight</small>${clr(cur).split(/\n+/).map((l) => '<p>' + esc(l) + '</p>').join('')}</div>` : ''}${bonus}</div>`;
+        const crt = ratOf(x, cur.h);
+        h += `<div class="dpi" data-px="${k}">${crt ? `<div class="cpl">Community: on <b>${crt.pct}%</b> of ${crt.t.toLocaleString()} copies seen</div>` : ''}<b>${esc(cur.n)}</b>${cur === on ? '' : ' <small>(preview)</small>'}${wpHas(cur) ? ` <span class="pwi">${SV_UP}</span>` : ''}<span class="pds">${SET.clarity === 'clarity' && clr(cur) ? '' : esc(cur.d || '')}</span>${clr(cur) ? `<div class="clr"><small>Community insight</small>${clr(cur).split(/\n+/).map((l) => '<p>' + esc(l) + '</p>').join('')}</div>` : ''}${bonus}</div>`;
       }
       prow.push(h);
     }); });
     const hasWp = x && wp.size && prow.length;
     const pbtn = (hasWp ? `<button class="g pbtn" data-a="wlp">${SV_UP} Preview Wishlist Perks</button>` : '') + (canApply ? `<button class="b pbtn" data-a="applyp">&#10003; Apply Perks</button>` : changed ? '<span class="mute pnoap">Preview only: Bungie does not let this item change perks in game.</span>' : '');
-    const perks = subH || (prow.length ? `<div class="dpp">${prow.join('')}</div>` : '');
-    const mrows = d.groups.filter((gr) => gr.label === 'Mods').map((gr) => gr.cols.map((col) => { const on = col.find((p) => p.on) || col[0]; return `<div${/tuning/i.test(on.c || '') ? ' class="tun"' : ''} title="${esc(on.n)}${on.d ? ' - ' + esc(on.d) : ''}">${pimg(on)}</div>`; }).join('')).join('');
+    const rr = x && SET.commrate !== false && RAT[x.h], cmb = rr && rr.combos && rr.combos[0] && (rr.seen.s || 0) >= 5 ? rr.combos.slice(0, 2).map((c) => [(D.pn && D.pn[c[0]]) || '', (D.pn && D.pn[c[1]]) || '', Math.round(c[2] / rr.seen.s * 100)]).filter((c) => c[0] && c[1]) : [];
+    const perks = subH || (prow.length ? `<div class="dpp">${prow.join('')}</div>` + (cmb.length ? `<div class="cmb">Most used together: ${cmb.map((c) => `<b>${esc(c[0])} + ${esc(c[1])}</b> (${c[2]}%)`).join(', ')}</div>` : '') : '');
+    // Mods, catalysts and masterworks: click one to see every option for that socket, put in any you have unlocked,
+    // and see the ones you do not have yet with where they come from.
+    let mpick = '';
+    const mrows = d.groups.map((gr, gi) => (gr.label !== 'Mods' ? '' : gr.cols.map((col, ci) => {
+      const on = col.find((p) => p.on) || col[0], k = 'm' + gi + '-' + ci;
+      if (pex === k && x) mpick = modPicker(x, d, col, on);
+      return `<div class="dmod${/tuning/i.test(on.c || '') ? ' tun' : ''}${pex === k ? ' open' : ''}" role="button" tabindex="0" data-mod="${k}" title="${esc(on.n)}${on.d ? ' - ' + esc(on.d) : ''} (click to change)">${pimg(on)}</div>`;
+    }).join(''))).join('');
     // one row of icons at the bottom, like DIM: mods, then cosmetics
     const crows = (d.cos || []).map((o) => `<div class="cos1" title="${esc(o.n)}${o.d ? ' - ' + esc(o.d) : ''}">${pimg(o)}</div>`).join('');
-    const mods = mrows || crows ? `<div class="dpmr dpall">${mrows}${crows}</div>` : ''; void cosm;
+    const mods = (mrows || crows ? `<div class="dpmr dpall">${mrows}${crows}</div>` : '') + mpick; void cosm;
     return rows + energy + arche + setb + frame + objs + perks + mods + (changed ? '<div class="rst" data-a="rst">Reset perk preview</div>' : '') + (pbtn ? `<div class="dpbt">${pbtn}</div>` : '') || '<p class="dpmu">No stats or perks to show for this item.</p>';
   }
   const ent = (id) => D.chars.find((c) => c.id === id);
@@ -2742,6 +2888,7 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
     const x = byId(id); if (!x) return;
     sel = id; psel = {}; plast = null; pex = ''; noteEdit = false; PMSG = ''; ptab = 'ov'; stq = 0; popEl = el || null;
     if (DET[id] && DET[id].err) delete DET[id]; // a failed load is tried again when the item is opened again
+    if (SET.commrate !== false && WEAPON.has(x.b) && RAT[x.h] === undefined && gt.ratingsGet) { RAT[x.h] = null; gt.ratingsGet({ h: x.h }).then((r) => { RAT[x.h] = r || 0; if (sel === id) renderPop(); }, () => { RAT[x.h] = 0; }); }
     // Wait a moment for the details (usually already on their way from the hover) so the pop-up opens once, at its full size.
     if (!x.ro && !noInst(x) && !DET[id]) { const p = fetchDet(x); await Promise.race([p, new Promise((r) => setTimeout(r, 350))]); if (sel !== id) return; }
     renderPop();
@@ -2796,6 +2943,20 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
       const id = x0.id; PMSG = 'Equipping ' + p.n + '...'; pex = ''; renderPop();
       try { await gt.itemPlug({ id, char: charFor(x0), socket: p.si, plug: p.h }); PMSG = p.n + ' equipped.'; markPlug(id, p.si, p.h); renderPop(); renderGrid(); confirmPlugs(id, x0.h, [[p.si, p.h]]); window.dispatchEvent(new Event('gtsub')); }
       catch (er) { PMSG = 'Failed: ' + clean(er); renderPop(); }
+      return;
+    }
+    const dm = e.target.closest('[data-mod]');
+    if (dm && sel) { pex = pex === dm.dataset.mod ? '' : dm.dataset.mod; renderPop(); return; }
+    const mpp = e.target.closest('[data-mpp]');
+    if (mpp && sel) {
+      const x0 = byId(sel), d = DET[sel]; if (!x0 || !d) return;
+      const si = +mpp.dataset.msi, h = +mpp.dataset.mpp, got = MODO[x0.id + ':' + si], o = got && got.opts && got.opts.find((q) => q.h === h); if (!o) return;
+      const id = x0.id; PMSG = 'Putting in ' + o.n + '...'; renderPop();
+      try {
+        await gt.itemPlug({ id, char: charFor(x0), socket: si, plug: h });
+        d.groups.forEach((gr) => gr.cols.forEach((col) => { if (col.some((q) => q.si === si)) { if (!col.some((q) => q.h === h)) col.push({ h, si, ci: true, n: o.n, i: o.i, d: o.d, s: [], c: col[0].c || '' }); col.forEach((q) => { q.on = q.h === h; }); } }));
+        delete MODO[x0.id + ':' + si]; PMSG = o.n + ' is in.'; pex = ''; renderPop(); renderGrid(); confirmPlugs(id, x0.h, [[si, h]]);
+      } catch (er) { PMSG = 'Failed: ' + clean(er); renderPop(); }
       return;
     }
     const pk = e.target.closest('[data-pk]');

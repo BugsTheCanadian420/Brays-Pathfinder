@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.16: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.17-beta.2: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -444,7 +444,9 @@ H('acct:add', async () => {
   catch (e) { PEND_PART = ''; const c2 = rd(); if (!c2.tok && keep) { c2.tok = keep; if (c2.accts) delete c2.accts[keep.mid]; wr(c2); } throw e; }
   const c3 = rd();
   if (c3.tok && c3.accts) delete c3.accts[c3.tok.mid]; // the same account signed in again: keep just one copy
+  if (c3.pfa && c3.tok && c3.pfa.skip) delete c3.pfa.skip[c3.tok.mid];
   wr(c3);
+  if (c3.pfa && c3.pfa.sess) await Promise.race([pfaRun().catch(() => {}), new Promise((r) => setTimeout(r, 6000))]); // put the new account in your Pathfinder account
   return restartApp();
 });
 H('acct:switch', (e, v) => {
@@ -464,10 +466,123 @@ H('acct:remove', async (e, v) => {
     const next = Object.keys(c.accts || {})[0];
     if (next) { c.tok = c.accts[next]; delete c.accts[next]; }
   } else if (c.accts && c.accts[mid]) { part = c.accts[mid].part || ''; delete c.accts[mid]; }
+  if (c.pfa) { c.pfa.skip = c.pfa.skip || {}; c.pfa.skip[mid] = 1; } // removed here: do not bring it back from your Pathfinder account on this device
   wr(c); M = null;
   if (part && !WEB) { try { await session.fromPartition(part).clearStorageData(); } catch (er) { /* nothing stored */ } }
   return restartApp();
 });
+// ---- Community ratings (ratings-service): how often each perk shows up on a weapon, from public equipped gear and
+// from Pathfinder players who chose to share the rolls they keep. ----
+const ratingsUrl = () => {
+  if (preset && preset.ratingsUrl && /^https:\/\//i.test(preset.ratingsUrl)) return preset.ratingsUrl.replace(/\/+$/, '');
+  const t = preset && preset.tokenUrl; return t && /^https:\/\/gt-token\./i.test(t) ? t.replace(/\/+$/, '').replace(/^https:\/\/gt-token\./i, 'https://pathfinder-ratings.') : '';
+};
+const RATC = {};
+H('ratings:get', async (e, v) => {
+  OBJ(v); const h = HASH(v.h), u = ratingsUrl(); if (!u) return null;
+  const c = RATC[h]; if (c && Date.now() - c.at < 30 * 60e3) return c.d;
+  try { const r = await fetch(u + '/r/' + h, { headers: { Accept: 'application/json' } }); if (!r.ok) return null; const d = await r.json(); RATC[h] = { at: Date.now(), d }; return d; } catch (er) { return null; }
+});
+H('ratings:share', async (e, v) => {
+  OBJ(v); const u = ratingsUrl(); if (!u) return { ok: 0 };
+  const rolls = ARR(v.rolls, 60).map((r) => { OBJ(r); return { h: HASH(r.h), p: ARR(r.p, 24).map(HASH) }; });
+  const r = await fetch(u + '/share', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ rolls }) });
+  if (!r.ok) throw new Error('Sharing did not work (HTTP ' + r.status + ')');
+  return r.json();
+});
+// ---- Pathfinder account (optional) ----
+// One Pathfinder login holds all your Bungie accounts (alts too). Sign in once on another PC, the beta, the website or a phone
+// and every Bungie account comes with it. Your Bungie sign-ins are locked here, on this device, with a key made from your
+// password before they are sent; the token service only stores the locked box and can never open it.
+// Note: the website and the PC app are two different Bungie apps, so a Bungie account has to be signed in once on each kind
+// (once on any PC, once on any browser); after that every other PC, build and browser gets it through the account.
+const WCR = globalThis.crypto && globalThis.crypto.subtle ? globalThis.crypto : require('crypto').webcrypto;
+const pfaUrl = () => (preset && preset.tokenUrl && /^https:\/\//i.test(preset.tokenUrl) ? preset.tokenUrl.replace(/\/+$/, '') + '/acct' : '');
+const pb64 = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const pun64 = (t) => Uint8Array.from(atob(String(t).replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((String(t).length + 3) % 4)), (ch) => ch.charCodeAt(0));
+async function pfaKeys(email, pw) {
+  const k = await WCR.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveBits']);
+  const bits = new Uint8Array(await WCR.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: new TextEncoder().encode('pathfinder-account-v1:' + email.trim().toLowerCase()), iterations: 310000 }, k, 512));
+  return { auth: pb64(bits.slice(0, 32)), key: pb64(bits.slice(32)) };
+}
+async function pfaSeal(obj, key) {
+  const k = await WCR.subtle.importKey('raw', pun64(key), 'AES-GCM', false, ['encrypt']), iv = WCR.getRandomValues(new Uint8Array(12));
+  return { iv: pb64(iv), ct: pb64(await WCR.subtle.encrypt({ name: 'AES-GCM', iv }, k, new TextEncoder().encode(JSON.stringify(obj)))) };
+}
+async function pfaOpen(box, key) {
+  if (!box || !box.iv || !box.ct) return { v: 1, accts: {} };
+  const k = await WCR.subtle.importKey('raw', pun64(key), 'AES-GCM', false, ['decrypt']);
+  return JSON.parse(new TextDecoder().decode(await WCR.subtle.decrypt({ name: 'AES-GCM', iv: pun64(box.iv) }, k, pun64(box.ct))));
+}
+async function pfaReq(method, p, body, sess) {
+  const u = pfaUrl(); if (!u) throw new Error('Pathfinder accounts are not set up on this copy yet.');
+  const r = await fetch(u + p, { method, headers: { 'Content-Type': 'application/json', Accept: 'application/json', ...(sess ? { Authorization: 'Bearer ' + sess } : {}) }, body: body ? JSON.stringify(body) : undefined });
+  let j = {}; try { j = await r.json(); } catch (e) { j = {}; }
+  if (!r.ok && !(r.status === 409 && j.error === 'changed')) { const er = new Error(j.message || (r.status === 404 || r.status === 501 ? 'Pathfinder accounts are not switched on in the token service yet (see ACCOUNTS-SETUP.txt).' : 'Pathfinder account error (HTTP ' + r.status + ')')); er.code = j.error || r.status; throw er; }
+  return { ...j, status: r.status };
+}
+const PFA_FRESH = 3 * 864e5; // a newer Bungie sign-in is sent up when it is at least this much newer than the saved one
+let PFA_ERR = '', PFA_BUSY = null;
+// Bring the box and this device together: Bungie accounts you do not have here are added, newer sign-ins replace older ones,
+// and anything newer here is sent back up.
+async function pfaSync(boxIn, verIn) {
+  const c = rd(); if (!c.pfa || !c.pfa.sess) return { off: 1 };
+  let ver = verIn, box = boxIn;
+  if (box === undefined) { const g = await pfaReq('GET', '/box', null, c.pfa.sess); ver = g.ver; box = g.box; }
+  for (let round = 0; round < 3; round++) {
+    let data; try { data = await pfaOpen(box, c.pfa.key); } catch (e) { throw new Error('Could not open your saved sign-ins with this password. If you changed it on another device, sign out and in again here.'); }
+    const B = (data && data.accts) || {}, cid = String(c.clientId || ''), skip = c.pfa.skip || {}, now = Date.now();
+    const local = [c.tok, ...Object.values(c.accts || {})].filter((t) => t && t.mid);
+    let added = 0, changed = false, push = false;
+    for (const mid of Object.keys(B)) {
+      const e = B[mid] && B[mid][cid]; if (!e || !e.refresh || (e.rexp || 0) < now || skip[mid]) continue;
+      const L = local.find((t) => String(t.mid) === String(mid));
+      if (!L) { const t = { ...e, part: '' }; if (!c.tok) c.tok = t; else { c.accts = c.accts || {}; c.accts[mid] = t; } local.push(t); added++; changed = true; }
+      else if ((e.rexp || 0) > (L.rexp || 0) + 60000) { Object.assign(L, { access: e.access, refresh: e.refresh, exp: e.exp, rexp: e.rexp }); changed = true; }
+    }
+    for (const L of local) {
+      if (String(L.cid || cid) !== cid) continue;
+      const mid = String(L.mid), e = B[mid] && B[mid][cid];
+      if (!e || (L.rexp || 0) > (e.rexp || 0) + PFA_FRESH || (!e.n && L.n)) {
+        const { part, ...t } = L; void part; B[mid] = B[mid] || {}; B[mid][cid] = { ...t, cid }; push = true;
+      }
+    }
+    if (changed) wr(c);
+    if (!push) { c.pfa.at = now; c.pfa.n = Object.keys(B).length; wr(c); PFA_ERR = ''; return { added, n: Object.keys(B).length }; }
+    const r = await pfaReq('PUT', '/box', { ver, box: await pfaSeal({ v: 1, accts: B }, c.pfa.key) }, c.pfa.sess);
+    if (r.status !== 409) { const c2 = rd(); if (c2.pfa) { c2.pfa.at = now; c2.pfa.n = Object.keys(B).length; wr(c2); } PFA_ERR = ''; return { added, n: Object.keys(B).length, pushed: 1 }; }
+    ver = r.ver; box = r.box; // another device saved first: merge with theirs and try again
+  }
+  throw new Error('Another device kept saving at the same time. Try "Sync now" again.');
+}
+const pfaRun = (boxIn, verIn) => {
+  if (PFA_BUSY) return PFA_BUSY;
+  PFA_BUSY = pfaSync(boxIn, verIn).catch((e) => { PFA_ERR = e.message; if (e.code === 'signed_out') { const c = rd(); if (c.pfa) { delete c.pfa.sess; wr(c); } } throw e; }).finally(() => { PFA_BUSY = null; });
+  return PFA_BUSY;
+};
+const pfaStatus = () => { const c = rd(), p = c.pfa || {}; return { avail: !!pfaUrl(), on: !!p.sess, email: p.email || '', at: p.at || 0, n: p.n || 0, err: PFA_ERR, out: !!(p.email && !p.sess) }; };
+H('pfa:status', () => pfaStatus());
+const pfaCreds = (v) => { OBJ(v); const email = TXT(v.email, 200).trim(), pw = TXT(v.pw, 200); if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('Enter a valid email address.'); if (pw.length < 8) throw new Error('Use a password of at least 8 characters.'); return { email, pw }; };
+H('pfa:signup', async (e, v) => {
+  const { email, pw } = pfaCreds(v), k = await pfaKeys(email, pw);
+  const r = await pfaReq('POST', '/signup', { email, auth: k.auth });
+  const c = rd(); c.pfa = { email, sess: r.sess, key: k.key, skip: {} }; wr(c);
+  await pfaRun(r.box, r.ver).catch(() => {});
+  return pfaStatus();
+});
+H('pfa:login', async (e, v) => {
+  const { email, pw } = pfaCreds(v), k = await pfaKeys(email, pw);
+  const r = await pfaReq('POST', '/login', { email, auth: k.auth });
+  const c = rd(), hadTok = !!c.tok; c.pfa = { email, sess: r.sess, key: k.key, skip: (c.pfa && c.pfa.email === email && c.pfa.skip) || {} }; wr(c);
+  const s2 = await pfaRun(r.box, r.ver);
+  if (!hadTok && rd().tok) { M = null; return { ...pfaStatus(), ...restartApp() }; }
+  return { ...pfaStatus(), added: s2.added || 0 };
+});
+H('pfa:sync', async () => { const c = rd(), hadTok = !!c.tok, r = await pfaRun(); if (!hadTok && rd().tok) { M = null; return { ...pfaStatus(), ...restartApp() }; } return { ...pfaStatus(), added: r.added || 0 }; });
+H('pfa:logout', async () => { const c = rd(); if (c.pfa && c.pfa.sess) { try { await pfaReq('POST', '/logout', {}, c.pfa.sess); } catch (e) { /* signed out here anyway */ } } delete c.pfa; wr(c); PFA_ERR = ''; return pfaStatus(); });
+H('pfa:delete', async () => { const c = rd(); if (!c.pfa || !c.pfa.sess) throw new Error('Sign in to your Pathfinder account first.'); await pfaReq('DELETE', '', null, c.pfa.sess); delete c.pfa; wr(c); return pfaStatus(); });
+// Keep the box up to date: shortly after start, then every six hours.
+setTimeout(() => { if (rd().pfa) pfaRun().catch(() => {}); setInterval(() => { if (rd().pfa) pfaRun().catch(() => {}); }, 6 * 3600e3); }, 8000);
 // Website only: the sign-in code Bungie sent back to the site (its state was already checked by the page).
 if (WEB) H('auth:webcode', async (e, v) => { OBJ(v); await tokenReq({ grant_type: 'authorization_code', code: TXT(v.code, 4000) }); const c = rd(); if (c.tok && c.accts && c.accts[c.tok.mid]) { delete c.accts[c.tok.mid]; wr(c); } return true; });
 const PMDEF = {}, TITLES = {}, ENTC = {}, OVR = {};
@@ -532,11 +647,14 @@ H('vault:cached', () => {
     return { ...o.d, stale: 1, cachedAt: o.at };
   } catch (e) { return null; }
 });
+// Unlocked plugs for the whole account and per character (weapon mods, catalysts...), from the last inventory load.
+let PLUGS = null;
 H('vault:load', async () => {
   const m = await memb();
   const ldP = lodefs().catch(() => ({ names: {}, colors: {}, icons: {} })); // in parallel with the profile, not after it
   const [df, pr] = await Promise.all([defs(), api(`/Destiny2/${m.membershipType}/Profile/${m.membershipId}/?components=102,103,200,201,205,206,300,304,305,310,1000`)]);
   xdLoad(df);
+  PLUGS = { p: (pr.profilePlugSets && pr.profilePlugSets.data && pr.profilePlugSets.data.plugs) || {}, c: (pr.characterPlugSets && pr.characterPlugSets.data) || {} };
   const d = df.d;
   const ld = await ldP; // names fall back to numbers
   const inst = (pr.itemComponents && pr.itemComponents.instances && pr.itemComponents.instances.data) || {};
@@ -583,7 +701,7 @@ H('vault:load', async () => {
     const o = ovd && (ovd.fg || ovd.i) ? { n: ovd.n, i: ovd.fg || ovd.i, fg: !!ovd.fg } : orn(it.itemInstanceId);
     const s = it.itemInstanceId && inst[it.itemInstanceId] && inst[it.itemInstanceId].primaryStat;
     const wmi = f.wl && f.wl.length ? f.wl[Math.min(it.versionNumber || 0, f.wl.length - 1)] : f.w, stt = it.state || 0, gti = it.itemInstanceId && inst[it.itemInstanceId] && inst[it.itemInstanceId].gearTier;
-    return { wm: wmi >= 0 && df.W ? df.W[wmi] : undefined, bt: f.bt || undefined, fc: f.f || undefined, lk: stt & 1 ? 1 : undefined, mw: stt & 4 ? 1 : undefined, cr: stt & 8 ? 1 : undefined, gt: gti || undefined, id: it.itemInstanceId, h: it.itemHash, n: f.n, i: o ? o.i : f.i, bi: o ? f.i : undefined, orn: o ? o.n : undefined, of: o && o.fg ? 1 : undefined, pk: WB.has(f.b) && it.itemInstanceId ? perks(it.itemInstanceId) : undefined, fr: WB.has(f.b) && it.itemInstanceId ? frI(it.itemInstanceId) : undefined, ep: WB.has(f.b) && it.itemInstanceId ? epl(it.itemInstanceId) : undefined, st: ARB.has(f.b) && it.itemInstanceId ? astats(it.itemInstanceId) : undefined, ap: (ARB.has(f.b) || f.b === SUBB) && it.itemInstanceId ? aplugs(it.itemInstanceId) : undefined, am: f.am || undefined, en: (ARB.has(f.b) && inst[it.itemInstanceId] && inst[it.itemInstanceId].energy && inst[it.itemInstanceId].energy.energyCapacity) || undefined, ds: stt & 16 ? 1 : undefined, r: f.r, t: f.t, b: f.b, c: f.c, p: s ? s.value : 0, el: (inst[it.itemInstanceId] && inst[it.itemInstanceId].damageType) || 0 };
+    return { wm: wmi >= 0 && df.W ? df.W[wmi] : undefined, bt: f.bt || undefined, fc: f.f || undefined, lk: stt & 1 ? 1 : undefined, mw: stt & 4 ? 1 : undefined, cr: stt & 8 ? 1 : undefined, gt: gti || undefined, id: it.itemInstanceId, h: it.itemHash, n: f.n, i: o ? o.i : f.i, bi: o ? f.i : undefined, orn: o ? o.n : undefined, of: o && o.fg ? 1 : undefined, pk: WB.has(f.b) && it.itemInstanceId ? perks(it.itemInstanceId) : undefined, fr: WB.has(f.b) && it.itemInstanceId ? frI(it.itemInstanceId) : undefined, ep: WB.has(f.b) && it.itemInstanceId ? epl(it.itemInstanceId) : undefined, ah: WB.has(f.b) && it.itemInstanceId ? ((sk[it.itemInstanceId] && sk[it.itemInstanceId].sockets) || []).map((q) => (q.isEnabled !== false && q.plugHash) || 0).filter(Boolean) : undefined, st: ARB.has(f.b) && it.itemInstanceId ? astats(it.itemInstanceId) : undefined, ap: (ARB.has(f.b) || f.b === SUBB) && it.itemInstanceId ? aplugs(it.itemInstanceId) : undefined, am: f.am || undefined, en: (ARB.has(f.b) && inst[it.itemInstanceId] && inst[it.itemInstanceId].energy && inst[it.itemInstanceId].energy.energyCapacity) || undefined, ds: stt & 16 ? 1 : undefined, r: f.r, t: f.t, b: f.b, c: f.c, p: s ? s.value : 0, el: (inst[it.itemInstanceId] && inst[it.itemInstanceId].damageType) || 0 };
   };
   { // ornament definitions the cached item data does not have (new universal ornaments): look them up once
     const all = [...((pr.profileInventory.data || {}).items || [])]; for (const k in pr.characterEquipment.data) all.push(...(pr.characterEquipment.data[k].items || [])); for (const k in pr.characterInventories.data) all.push(...(pr.characterInventories.data[k].items || []));
@@ -696,13 +814,20 @@ H('vault:load', async () => {
 // Stats and perks for one item (opened from the click menu).
 // Single definitions, kept on disk (trimmed to the parts the item pop-up uses) so a weapon opens instantly the next time,
 // and shared while a lookup is in flight so two pop-ups never ask Bungie for the same thing twice.
-const ENTF = () => path.join(app.getPath('userData'), 'entdefs1.json');
+const ENTF = () => path.join(app.getPath('userData'), 'entdefs2.json');
 let ENTD = null, ENTW = 0;
 const entLoad = () => { if (ENTD) return ENTD; try { ENTD = JSON.parse(fs.readFileSync(ENTF(), 'utf8')) || {}; } catch (e) { ENTD = {}; } return ENTD; };
 const entSave = () => { clearTimeout(ENTW); ENTW = setTimeout(() => { try { fs.writeFileSync(ENTF(), JSON.stringify(ENTD)); } catch (e) { /* memory only */ } }, 1500); };
 const entTrim = (tbl, o) => {
   if (!o) return null;
-  if (tbl === 'DestinyInventoryItemDefinition') return { itemType: o.itemType, sockets: o.sockets && { socketCategories: o.sockets.socketCategories }, equippingBlock: o.equippingBlock && { equipableItemSetHash: o.equippingBlock.equipableItemSetHash } };
+  if (tbl === 'DestinyInventoryItemDefinition') {
+    const dp = o.displayProperties || {};
+    return { itemType: o.itemType, itemTypeDisplayName: o.itemTypeDisplayName || '', collectibleHash: o.collectibleHash || 0, displayProperties: { name: dp.name || '', icon: dp.icon || '', description: String(dp.description || '').slice(0, 500) },
+      sockets: o.sockets && { socketCategories: o.sockets.socketCategories, socketEntries: (o.sockets.socketEntries || []).map((e) => ({ socketTypeHash: e.socketTypeHash, reusablePlugSetHash: e.reusablePlugSetHash || 0, randomizedPlugSetHash: e.randomizedPlugSetHash || 0, singleInitialItemHash: e.singleInitialItemHash || 0 })) },
+      equippingBlock: o.equippingBlock && { equipableItemSetHash: o.equippingBlock.equipableItemSetHash } };
+  }
+  if (tbl === 'DestinyPlugSetDefinition') return { reusablePlugItems: (o.reusablePlugItems || []).map((p) => ({ plugItemHash: p.plugItemHash })) };
+  if (tbl === 'DestinyCollectibleDefinition') return { sourceString: o.sourceString || '' };
   if (tbl === 'DestinyObjectiveDefinition') return { progressDescription: o.progressDescription, completionValue: o.completionValue, displayProperties: { name: o.displayProperties && o.displayProperties.name } };
   if (tbl === 'DestinyEquipableItemSetDefinition') return { displayProperties: o.displayProperties, setPerks: o.setPerks };
   if (tbl === 'DestinySandboxPerkDefinition') return { displayProperties: o.displayProperties };
@@ -830,6 +955,43 @@ H('item:stack', async (e, v) => {
 H('item:lock', async (e, v) => { OBJ(v); const id = ID(v.id), char = ID(v.char), state = v.state; await post('/Destiny2/Actions/Items/SetLockState/', { state: !!state, itemId: id, characterId: char }); return true; });
 // Put a perk into a socket for free. Bungie only allows this where the game does (crafted weapons, armor mods you own...).
 H('item:plug', async (e, v) => { await ensureM(); OBJ(v); const id = ID(v.id), char = ID(v.char), socket = INT(v.socket, 0, 200), plug = HASH(v.plug); await post('/Destiny2/Actions/Items/InsertSocketPlugFree/', { plug: { socketIndex: socket, socketArrayType: 0, plugItemHash: plug }, itemId: id, characterId: char }); return true; });
+// Every mod or catalyst a weapon socket can take: the ones this account has unlocked (can be put in right away) and the
+// ones it has not, with Bungie's own "Source:" line when there is one. Asked for only when the socket is clicked.
+H('item:modopts', async (e, v) => {
+  await ensureM(); OBJ(v);
+  const h = HASH(v.h), si = INT(v.si, 0, 200), char = v.char ? ID(v.char) : '';
+  const idf = await entDef('DestinyInventoryItemDefinition', h);
+  const se = idf && idf.sockets && idf.sockets.socketEntries && idf.sockets.socketEntries[si];
+  const all = new Map(), mark = (k, own, ci) => { const o = all.get(k) || { own: false, ci: false }; o.own = o.own || own; o.ci = o.ci || ci; all.set(k, o); };
+  const owned = (sh) => {
+    const out = [...((PLUGS && PLUGS.p && PLUGS.p[sh]) || [])];
+    if (PLUGS && PLUGS.c) for (const c of Object.keys(PLUGS.c)) { if (char && c !== char) continue; const L = PLUGS.c[c] && PLUGS.c[c].plugs && PLUGS.c[c].plugs[sh]; if (L) out.push(...L); }
+    return out;
+  };
+  if (se) {
+    for (const sh of [se.reusablePlugSetHash, se.randomizedPlugSetHash].filter(Boolean)) {
+      const def = await entDef('DestinyPlugSetDefinition', sh);
+      ((def && def.reusablePlugItems) || []).forEach((p) => mark(p.plugItemHash, false, false));
+      owned(sh).forEach((p) => mark(p.plugItemHash, true, p.canInsert !== false && p.enabled !== false));
+    }
+    if (se.singleInitialItemHash) mark(se.singleInitialItemHash, true, true);
+  }
+  // What the item itself reports for this socket (its current plug and reusable plugs, each with whether it can go in now).
+  for (const c of ARR(v.cur || [], 200)) { if (!Array.isArray(c)) continue; mark(HASH(c[0]), true, !!c[1]); }
+  const hs = [...all.keys()].slice(0, 160);
+  const ds = await Promise.all(hs.map((k) => entDef('DestinyInventoryItemDefinition', k)));
+  const opts = [];
+  hs.forEach((k, i) => {
+    const d = ds[i], dp = d && d.displayProperties; if (!dp || !dp.name) return;
+    const o = all.get(k);
+    opts.push({ h: k, n: dp.name, i: dp.icon || '', d: dp.description || '', t: d.itemTypeDisplayName || '', own: o.own, ci: o.ci, em: /^(empty|default)\b/i.test(dp.name) ? 1 : 0, ch: d.collectibleHash || 0 });
+  });
+  const need = opts.filter((o) => !o.own && o.ch).slice(0, 80);
+  const cs = await Promise.all(need.map((o) => entDef('DestinyCollectibleDefinition', o.ch)));
+  need.forEach((o, i) => { const c = cs[i]; if (c && c.sourceString) o.src = c.sourceString; });
+  opts.forEach((o) => { delete o.ch; });
+  return { opts, known: !!(PLUGS && Object.keys(PLUGS.p).length) };
+});
 
 async function post(p, body) {
   for (let t = 0; ; t++) {
