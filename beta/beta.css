@@ -153,3 +153,8 @@
 
 /* ---------- BETA THEME (base colours; picture-free) ---------- */
 :root[data-gt="beta"]{--g-bg:#06080c;--g-panel:rgba(16,20,27,.78);--g-col:transparent;--g-line:rgba(255,255,255,.075);--g-deep:rgba(0,0,0,.4);--g-btn:rgba(255,255,255,.045);--g-solid:#0f1319}
+
+/* ---------- BRAY: the founder's style. Beta's layout with Shantell Sans lettering everywhere ---------- */
+:root[data-uin="bray"]{--b-font:'Shantell Sans','Manrope','Segoe UI',system-ui,sans-serif}
+:root[data-uin="bray"] body,:root[data-uin="bray"] button,:root[data-uin="bray"] input,:root[data-uin="bray"] select,:root[data-uin="bray"] textarea{font-family:var(--b-font)!important}
+.uic.u-bray b{font-family:'Shantell Sans','Manrope',system-ui,sans-serif;font-weight:700}
