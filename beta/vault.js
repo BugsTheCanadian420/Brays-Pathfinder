@@ -686,6 +686,15 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 /* titles in their in-game colours: purple, gold once gilded */
 .chnm small.ttl{color:#d9a6ff!important;text-shadow:0 1px 2px rgba(0,0,0,.8)}.chnm small.ttl.gld{color:#f1cc4f!important}
 .dgrid>*{min-width:0}
+.dgrid.sep{grid-template-columns:auto minmax(240px,1fr)!important}
+.dgrid.sep>.dsl{display:grid;grid-template-columns:repeat(var(--n),calc(var(--t)*(var(--iw,3) + 1.9) + 10px));column-gap:inherit;row-gap:inherit;align-items:start;align-content:start;align-self:start}
+.dgrid.sep>.dsr{display:flex;flex-direction:column;align-self:start;min-width:0}
+.dgrid.sep .dsl>.dc{align-self:stretch}
+.dgrid.sep .dsl>*,.dgrid.sep .dsr>*{min-width:0}
+.dgrid.sep .dsr>.dsec{display:flex}
+.dgrid.sep .vsl{font-size:12px;color:var(--mute,#9aa1ab);margin:8px 0 3px}
+.dgrid.sep .dsr>.dsec+.vsl{margin-top:2px}
+.dgrid.sep .dsr>.dc.v{min-height:calc(var(--t) + 6px)!important;height:auto!important}
 .ch{display:flex;flex-direction:column;gap:8px;min-width:0;padding-bottom:6px}
 .chb{display:flex;align-items:stretch;gap:3px}
 .cht{position:relative;flex:1;min-width:0;height:46px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 10px 0 9px;background:linear-gradient(90deg,var(--cc,#3a3d43),rgba(0,0,0,0) 92%) left center/cover;border:0;text-shadow:0 1px 3px #000;overflow:hidden}
@@ -786,7 +795,7 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
 
   // ---------------- settings, update toast ----------------
   const DEFSET = { theme: 'dim', accent: '#7ab8e8', accentUser: '', bgdim: 45, tile: 44, scale: 100, power: true, emblems: true, postmaster: true, compact: false, sort: 'rarity',
-    ui: 'pf', ornaments: true, locksync: false, clarity: 'both', single: false, charsort: 'recent', charorder: [], vgroup: 'none', armorsep: false, vaultunder: false, invw: 3, hidecollect: false, pmbadge: true, nrmark: true, dropalert: true, dropover: true, anim: 'subtle', cardart: true, glow: 55, starttab: 'vault', farmspaces: 3, sortkeys: null, cst: { 0: [0, 0, 0, 0, 0, 0], 1: [0, 0, 0, 0, 0, 0], 2: [0, 0, 0, 0, 0, 0] } };
+    ui: 'pf', ornaments: true, locksync: false, clarity: 'both', single: false, charsort: 'recent', charorder: [], vgroup: 'none', armorsep: false, vaultunder: false, vaultsep: false, invw: 3, hidecollect: false, pmbadge: true, nrmark: true, dropalert: true, dropover: true, anim: 'subtle', cardart: true, glow: 55, starttab: 'vault', farmspaces: 3, sortkeys: null, cst: { 0: [0, 0, 0, 0, 0, 0], 1: [0, 0, 0, 0, 0, 0], 2: [0, 0, 0, 0, 0, 0] } };
   // Item sort rules, like DIM: a checked list in order. d = 1 normal, -1 flipped.
   const SORTK = [['power', 'Power level'], ['name', 'Name'], ['type', 'Type'], ['rarity', 'Rarity'], ['stack', 'Stack size'], ['class', 'Required class'], ['tag', 'Tag (favorite, keep, junk, infuse, archive)'], ['season', 'Season'], ['dmg', 'Damage type'], ['champ', 'Anti-champion type'], ['mw', 'Masterworked'], ['crafted', 'Crafted'], ['tier', 'Tier']];
   const sortFromOld = (m) => { const on = m === 'power' ? ['power', 'rarity', 'name'] : m === 'name' ? ['name', 'power'] : m === 'tag' ? ['tag', 'power', 'rarity', 'name'] : ['rarity', 'power', 'name']; return [...on.map((k) => ({ k, d: 1, on: true })), ...SORTK.filter((q) => !on.includes(q[0])).map((q) => ({ k: q[0], d: 1, on: false }))]; };
@@ -1073,6 +1082,7 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
       ${sx('Group vault weapons by', '', opt('vgroup', [['none', 'None'], ['type', 'Type'], ['rarity', 'Rarity'], ['element', 'Element'], ['tag', 'Tag']]))}
       ${sx('Separate armor on different lines by class', '', tgl('armorsep'))}
       ${sx('Show vaulted items under equipped items', 'Puts the vault below the characters instead of beside them.', tgl('vaultunder'))}
+      ${sx('Keep characters packed together', 'The vault gets its own column, so a full vault no longer opens gaps between Kinetic, Energy, Power and armor on your characters. Only when the vault is beside the characters.', tgl('vaultsep'))}
       ${sx('Sort items by', 'Tick the rules to use and drag them into order. The arrow flips a rule.', sortList, true)}
       ${sx('Character inventory width', '', opt('invw', [[3, '3 items'], [4, '4 items'], [5, '5 items'], [6, '6 items']]))}
       ${sx('Hide the Collect Postmaster button', '', tgl('hidecollect'))}
@@ -1081,7 +1091,7 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
     </div>
     <div class="card sc"><h2>Appearance</h2>
       <div class="thh">Interface style</div>
-      <div class="uis">${[['pf', 'Pathfinder', 'The current look.'], ['d2', 'In-game', 'Looks like the Destiny 2 menus.'], ['dim', 'DIM', 'Looks like Destiny Item Manager.'], ['beta', 'Beta', 'Trail map: Pathfinder\'s own look. Still changing.']].map(([k, n, d]) => `<div class="uic u-${k}${(SET.ui || 'pf') === k ? ' on' : ''}" data-uis="${k}"><i></i><b>${n}</b><small>${d}</small></div>`).join('')}</div>
+      <div class="uis">${[['pf', 'Pathfinder', 'The current look.'], ['d2', 'In-game', 'Looks like the Destiny 2 menus.'], ['dim', 'DIM', 'Looks like Destiny Item Manager.'], ['beta', 'Beta', 'Night shift: clean, modern, Pathfinder\'s own look. Still changing.']].map(([k, n, d]) => `<div class="uic u-${k}${(SET.ui || 'pf') === k ? ' on' : ''}" data-uis="${k}"><i></i><b>${n}</b><small>${d}</small></div>`).join('')}</div>
       <div class="sg">${themeGrid()}</div>
       ${sx('Background picture dimming', 'For themes with a picture or glow. Higher is darker and easier to read.', rng('bgdim', 25, 90, '%'))}
       ${sx('Accent color', '', `<input type="color" data-sk="accent" value="${esc(SET.accent)}">`)}
@@ -1909,7 +1919,14 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
     if (old.getAttribute('style') !== nu.getAttribute('style')) old.setAttribute('style', nu.getAttribute('style') || '');
     const a = old.children, b = nu.children;
     if (a.length !== b.length) { el.replaceChildren(t.content); return; }
-    for (let i = a.length - 1; i >= 0; i--) if (!a[i].isEqualNode(b[i])) a[i].replaceWith(b[i]);
+    for (let i = a.length - 1; i >= 0; i--) {
+      if (a[i].isEqualNode(b[i])) continue;
+      // The two columns of "Keep characters packed together": patch inside them so a move only redraws the cells it touched.
+      if ((a[i].className === 'dsl' || a[i].className === 'dsr') && a[i].className === b[i].className && a[i].children.length === b[i].children.length) {
+        const ca = a[i].children, cb = b[i].children;
+        for (let j = ca.length - 1; j >= 0; j--) if (!ca[j].isEqualNode(cb[j])) ca[j].replaceWith(cb[j]);
+      } else a[i].replaceWith(b[i]);
+    }
   }
   let gridDirty = false;
   new MutationObserver(() => { if (gridDirty && sec.classList.contains('on')) { gridDirty = false; renderGrid(); } }).observe(sec, { attributes: true, attributeFilter: ['class'] });
@@ -1918,7 +1935,12 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
     if (!sec.classList.contains('on') && g('vgrid') && g('vgrid').firstChild) { gridDirty = true; return; } // hidden: rebuilt when shown
     const y = window.scrollY, el = g('vgrid'); if (!el || !D) return;
     const vc = D.items.filter((x) => x.loc === 'vault').length, vis = visChars(), under = SET.vaultunder || PHONE.matches;
-    let h = `<div class="dgrid${under ? ' under' : ''}${PHONE.matches ? ' phone' : ''}" style="--n:${vis.length};--iw:${SET.invw}">`;
+    // Keep characters packed together (Settings): characters and the vault become two separate columns, so a long vault
+    // section no longer stretches the matching character row and leaves gaps between the slots.
+    const sep = !!SET.vaultsep && !under;
+    let L = '', R = '';
+    const add = (left, right) => { if (sep) { L += left; R += right || ''; } else h += left + (right || ''); };
+    let h = `<div class="dgrid${under ? ' under' : ''}${sep ? ' sep' : ''}${PHONE.matches ? ' phone' : ''}" style="--n:${vis.length};--iw:${SET.invw}">`;
     if (PHONE.matches) { const all = sortedChars(), on = vis[0] && vis[0].id; h += `<div class="phsw" role="tablist">${all.map((c) => `<button type="button" role="tab" data-act="phch" data-c="${esc(c.id)}" class="${c.id === on ? 'on' : ''}" style="--cc:${CC[c.cls] || '#3a3d43'}"><b>${esc(CL[c.cls] || 'Guardian')}</b><span>${SV_LIGHT}${c.light}</span></button>`).join('')}</div>`; }
     const curAll = (D.cur || []).slice(), cell = (c) => `<span title="${esc(c.n)}"><img src="${esc(icon(c.i))}" alt="">${Number(c.q).toLocaleString()}</span>`;
     const pick = (re) => { const k = curAll.findIndex((c) => re.test(c.n)); return k < 0 ? null : curAll.splice(k, 1)[0]; };
@@ -1931,17 +1953,19 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
     const vgrid = top3.map(cell).join('') + vcell + `<span class="vcm" title="Consumables and materials">${SV_TRI}${kinds.size}/50<div class="mpop"><h4>Material counts</h4><div class="mpg">${mpop}</div></div></span><span title="Modifications">${SV_MODS}${modsN}/50</span>`;
     const maxAll = Math.max(0, ...vis.map(maxPow));
     const lastP = D.chars.reduce((m, c) => Math.max(m, c.dp || 0), 0);
-    h += vis.map((c) => `<div class="ch${SET.emblems && c.em ? ' em' : ''}" style="--cc:${CC[c.cls] || '#3a3d43'}"><div class="chb"><div class="cht" style="${SET.emblems && c.em ? `background-image:linear-gradient(90deg,rgba(0,0,0,.05),rgba(0,0,0,.45)),url(${esc(icon(c.em))})` : ''}">${lastP && c.dp === lastP ? '<i class="chn" title="Last played"></i>' : ''}<div class="chnm"><b>${esc(CL[c.cls] || 'Guardian')}</b>${c.tt ? `<small class="ttl${c.gl ? ' gld' : ''}">${esc(c.tt)}${c.gl ? SV_SEAL : ''}</small>` : ''}</div><span class="chp" title="Light level">${SV_LIGHT}${c.light}</span></div><button class="chm" data-act="chmenu" data-c="${esc(c.id)}" title="Character menu">&#8942;</button></div><div class="chr"><span class="chx" title="Highest power level you could reach with the gear you own">${SV_HELM}${maxPow(c)}</span><span class="chs">${(c.sb || []).map((q) => `<span class="cbn" title="${esc((q.sn ? q.sn + ' - ' : '') + q.n + (q.d ? '\n' + q.d : ''))}"><img src="${esc(icon(q.i))}" alt="" draggable="false"></span>`).join('')}</span></div>${armorStats(c)}</div>`).join('') + `<div class="ch vlt"><div class="chb"><div class="cht vh"><svg class="vlg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2"><circle cx="16" cy="16" r="12"/><circle cx="16" cy="16" r="6"/><path d="M16 4v6M16 22v6M4 16h6M22 16h6" stroke-linecap="round"/></svg><div class="chnm"><b>Vault</b></div><span class="chp" title="Highest power level you could reach">${SV_LIGHT}${maxAll}</span><button class="vrf${qload ? ' spin' : ''}" data-act="qrefresh" title="Reload your vault from Bungie (R)"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button></div></div><div class="vcg">${vgrid}</div></div>`;
+    const chH = vis.map((c) => `<div class="ch${SET.emblems && c.em ? ' em' : ''}" style="--cc:${CC[c.cls] || '#3a3d43'}"><div class="chb"><div class="cht" style="${SET.emblems && c.em ? `background-image:linear-gradient(90deg,rgba(0,0,0,.05),rgba(0,0,0,.45)),url(${esc(icon(c.em))})` : ''}">${lastP && c.dp === lastP ? '<i class="chn" title="Last played"></i>' : ''}<div class="chnm"><b>${esc(CL[c.cls] || 'Guardian')}</b>${c.tt ? `<small class="ttl${c.gl ? ' gld' : ''}">${esc(c.tt)}${c.gl ? SV_SEAL : ''}</small>` : ''}</div><span class="chp" title="Light level">${SV_LIGHT}${c.light}</span></div><button class="chm" data-act="chmenu" data-c="${esc(c.id)}" title="Character menu">&#8942;</button></div><div class="chr"><span class="chx" title="Highest power level you could reach with the gear you own">${SV_HELM}${maxPow(c)}</span><span class="chs">${(c.sb || []).map((q) => `<span class="cbn" title="${esc((q.sn ? q.sn + ' - ' : '') + q.n + (q.d ? '\n' + q.d : ''))}"><img src="${esc(icon(q.i))}" alt="" draggable="false"></span>`).join('')}</span></div>${armorStats(c)}</div>`).join(''), vH = `<div class="ch vlt"><div class="chb"><div class="cht vh"><svg class="vlg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2"><circle cx="16" cy="16" r="12"/><circle cx="16" cy="16" r="6"/><path d="M16 4v6M16 22v6M4 16h6M22 16h6" stroke-linecap="round"/></svg><div class="chnm"><b>Vault</b></div><span class="chp" title="Highest power level you could reach">${SV_LIGHT}${maxAll}</span><button class="vrf${qload ? ' spin' : ''}" data-act="qrefresh" title="Reload your vault from Bungie (R)"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button></div></div><div class="vcg">${vgrid}</div></div>`;
+    add(chH, vH);
     if (SET.postmaster) {
-      h += vis.map((c, k) => { const n = D.items.filter((x) => x.loc === c.id && x.pm).length; return `<div class="pmh">${k === 0 ? `<span class="dsec tg" data-tg="1">${pmOpen ? '&#9662;' : '&#9656;'} Postmaster</span>` : ''}<span class="pmn">(${n}/21)</span></div>`; }).join('') + (under ? '' : '<div></div>');
-      if (pmOpen) h += vis.map(pmCell).join('') + (under ? '' : '<div></div>');
+      add(vis.map((c, k) => { const n = D.items.filter((x) => x.loc === c.id && x.pm).length; return `<div class="pmh">${k === 0 ? `<span class="dsec tg" data-tg="1">${pmOpen ? '&#9662;' : '&#9656;'} Postmaster</span>` : ''}<span class="pmn">(${n}/21)</span></div>`; }).join(''), under || sep ? '' : '<div></div>');
+      if (pmOpen) add(vis.map(pmCell).join(''), under || sep ? '' : '<div></div>');
     }
     const owned = new Set(allI().map((x) => x.b));
     GROUPS.forEach(([label, ids]) => {
-      h += `<div class="dsec">${label}</div>`;
+      add(`<div class="dsec">${label}</div>`, sep ? `<div class="dsec">${label}</div>` : '');
       if (label === 'General') ids = [3284755031, ...ids, ...XROWS.slice(1).map((r) => r[0])].filter((b) => SL.some((s) => s[0] === b) || owned.has(b));
-      ids.forEach((b) => { h += vis.map((c) => charCell(c, b)).join('') + vaultCell(b); });
+      ids.forEach((b) => add(vis.map((c) => charCell(c, b)).join(''), (sep ? `<div class="vsl">${esc(slotName(b))}</div>` : '') + vaultCell(b)));
     });
+    if (sep) h += `<div class="dsl">${L}</div><div class="dsr">${R}</div>`;
     // Inventory: engrams per character, then the account-wide stacks (consumables, mods, shaders, materials).
     const gen = D.gen || [];
     if (gen.length) {
