@@ -2976,6 +2976,8 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
   function fetchDet(x) {
     const id = x.id; if (DET[id]) return Promise.resolve(DET[id]);
     if (!PEND[id]) PEND[id] = Promise.race([gt.itemDetail({ id, h: x.h }), new Promise((_, no) => setTimeout(() => no(new Error('Bungie is taking too long to answer. Close and open the item to try again.')), 15000))]).then((d) => (DET[id] = d), (e) => (DET[id] = { err: clean(e) })).finally(() => { delete PEND[id]; });
+    // The pop-up opens from the vault data straight away; kill trackers and crafted levels arrive a moment later.
+    PEND[id].then((d) => { if (d && d.more && !d.obj && gt.itemCounters) { d.more = 0; gt.itemCounters({ id }).then((o) => { if (DET[id] === d && o && o.length) { d.obj = o; if (sel === id) renderPop(); } }).catch(() => {}); } });
     return PEND[id];
   }
   // Point at an item for a moment and its details start loading, so the pop-up usually opens complete instead of filling in a second later.

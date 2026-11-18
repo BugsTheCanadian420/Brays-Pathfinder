@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.18-beta.3: preload.js for the browser */
+/* Pathfinder 0.3.18-beta.4: preload.js for the browser */
 (function (require) {
 const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('gt', {
@@ -17,6 +17,7 @@ contextBridge.exposeInMainWorld('gt', {
   loClear: (v) => ipcRenderer.invoke('lo:clear', v),
   pmPull: (v) => ipcRenderer.invoke('pm:pull', v),
   itemDetail: (v) => ipcRenderer.invoke('item:detail', v),
+  itemCounters: (v) => ipcRenderer.invoke('item:counters', v),
   actPgcr: (v) => ipcRenderer.invoke('act:pgcr', v),
   itemInfo: (v) => ipcRenderer.invoke('item:info', v),
   moveStack: (v) => ipcRenderer.invoke('item:stack', v),
