@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.18-beta.1: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.18-beta.2: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -500,9 +500,9 @@ const WCR = globalThis.crypto && globalThis.crypto.subtle ? globalThis.crypto : 
 const pfaUrl = () => (preset && preset.tokenUrl && /^https:\/\//i.test(preset.tokenUrl) ? preset.tokenUrl.replace(/\/+$/, '') + '/acct' : '');
 const pb64 = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 const pun64 = (t) => Uint8Array.from(atob(String(t).replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((String(t).length + 3) % 4)), (ch) => ch.charCodeAt(0));
-async function pfaKeys(email, pw) {
+async function pfaKeys(name, pw) {
   const k = await WCR.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveBits']);
-  const bits = new Uint8Array(await WCR.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: new TextEncoder().encode('pathfinder-account-v1:' + email.trim().toLowerCase()), iterations: 310000 }, k, 512));
+  const bits = new Uint8Array(await WCR.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: new TextEncoder().encode('pathfinder-account-v1:' + name.trim().toLowerCase()), iterations: 310000 }, k, 512));
   return { auth: pb64(bits.slice(0, 32)), key: pb64(bits.slice(32)) };
 }
 async function pfaSeal(obj, key) {
@@ -560,20 +560,33 @@ const pfaRun = (boxIn, verIn) => {
   PFA_BUSY = pfaSync(boxIn, verIn).catch((e) => { PFA_ERR = e.message; if (e.code === 'signed_out') { const c = rd(); if (c.pfa) { delete c.pfa.sess; wr(c); } } throw e; }).finally(() => { PFA_BUSY = null; });
   return PFA_BUSY;
 };
-const pfaStatus = () => { const c = rd(), p = c.pfa || {}; return { avail: !!pfaUrl(), on: !!p.sess, email: p.email || '', at: p.at || 0, n: p.n || 0, err: PFA_ERR, out: !!(p.email && !p.sess) }; };
+// A Pathfinder account is an account name and a password. Accounts made earlier with an email address still sign in with that
+// email typed as the account name (both are matched the same way: trimmed, any capitals ignored).
+const pfaName = (p) => (p && (p.name || p.email)) || '';
+const pfaStatus = () => { const c = rd(), p = c.pfa || {}; return { avail: !!pfaUrl(), on: !!p.sess, name: pfaName(p), at: p.at || 0, n: p.n || 0, err: PFA_ERR, out: !!(pfaName(p) && !p.sess) }; };
 H('pfa:status', () => pfaStatus());
-const pfaCreds = (v) => { OBJ(v); const email = TXT(v.email, 200).trim(), pw = TXT(v.pw, 200); if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('Enter a valid email address.'); if (pw.length < 8) throw new Error('Use a password of at least 8 characters.'); return { email, pw }; };
+const pfaCreds = (v, isNew) => {
+  OBJ(v); const name = TXT(v.name, 200).trim(), pw = TXT(v.pw, 200);
+  if (!name) throw new Error('Enter your account name.');
+  if (isNew && !/^[A-Za-z0-9][A-Za-z0-9._-]{2,23}$/.test(name)) throw new Error('Account names are 3 to 24 letters or numbers (you can also use . _ and -), starting with a letter or number.');
+  if (!isNew && (name.length < 3 || /\s/.test(name))) throw new Error('That is not an account name. Account names have no spaces.');
+  if (pw.length < 8) throw new Error('Use a password of at least 8 characters.');
+  return { name, pw };
+};
+// The token service is asked with the name (and the same text as "email", which older copies of the token service expect).
+const pfaWho = (name, auth) => ({ name, email: name, auth });
+const pfaOld = (er) => { if (er && er.code === 'bad_request') er.message = 'Update the token service to use account names (step 2 of ACCOUNTS-SETUP.txt).'; throw er; };
 H('pfa:signup', async (e, v) => {
-  const { email, pw } = pfaCreds(v), k = await pfaKeys(email, pw);
-  const r = await pfaReq('POST', '/signup', { email, auth: k.auth });
-  const c = rd(); c.pfa = { email, sess: r.sess, key: k.key, skip: {} }; wr(c);
+  const { name, pw } = pfaCreds(v, true), k = await pfaKeys(name, pw);
+  const r = await pfaReq('POST', '/signup', pfaWho(name, k.auth)).catch(pfaOld);
+  const c = rd(); c.pfa = { name, sess: r.sess, key: k.key, skip: {} }; wr(c);
   await pfaRun(r.box, r.ver).catch(() => {});
   return pfaStatus();
 });
 H('pfa:login', async (e, v) => {
-  const { email, pw } = pfaCreds(v), k = await pfaKeys(email, pw);
-  const r = await pfaReq('POST', '/login', { email, auth: k.auth });
-  const c = rd(), hadTok = !!c.tok; c.pfa = { email, sess: r.sess, key: k.key, skip: (c.pfa && c.pfa.email === email && c.pfa.skip) || {} }; wr(c);
+  const { name, pw } = pfaCreds(v, false), k = await pfaKeys(name, pw);
+  const r = await pfaReq('POST', '/login', pfaWho(name, k.auth)).catch(pfaOld);
+  const c = rd(), hadTok = !!c.tok, same = c.pfa && pfaName(c.pfa).toLowerCase() === name.toLowerCase(); c.pfa = { name, sess: r.sess, key: k.key, skip: (same && c.pfa.skip) || {} }; wr(c);
   const s2 = await pfaRun(r.box, r.ver);
   if (!hadTok && rd().tok) { M = null; return { ...pfaStatus(), ...restartApp() }; }
   return { ...pfaStatus(), added: s2.added || 0 };

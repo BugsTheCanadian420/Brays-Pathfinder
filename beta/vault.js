@@ -943,6 +943,8 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
     r.style.setProperty('--g-accent-soft', 'rgba(' + rgb.join(',') + ',.16)');
   }
   applySet();
+  // Bray and Manta load their own lettering; when it arrives the tab bar measures again so tabs that no longer fit move into More.
+  try { if (document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', () => window.dispatchEvent(new Event('resize'))); } catch (e) { /* older browsers */ }
   let UPD = { state: 'idle', current: '', canUpdate: false };
   const toast = document.createElement('div'); toast.className = 'toast'; document.body.appendChild(toast);
   function drawToast() {
@@ -1056,7 +1058,7 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
     return ACL.list.map((a) => `<div class="acr${a.on ? ' on' : ''}"><b>${esc(a.n)}${a.code ? `<span>#${esc(a.code)}</span>` : ''}</b>${a.on ? '<em>Active</em>' : `<button class="g" data-acsw="${esc(a.mid)}">Switch</button>`}<button class="g" data-acrm="${esc(a.mid)}" title="Remove this account from ${GT_HERE}">Remove</button>${a.ok ? '' : '<small>Sign-in expired: switching asks you to sign in again</small>'}</div>`).join('');
   }
   // ---- Pathfinder account (optional): one login that brings all your Bungie accounts to every device and build ----
-  let PFA = null, pfaBusy = false, PFAMSG = '', PFAEM = '';
+  let PFA = null, pfaBusy = false, PFAMSG = '', PFANM = '';
   function pfaHTML() {
     if (!window.gt || !gt.pfaStatus) return '';
     if (!PFA) { if (!pfaBusy) { pfaBusy = true; gt.pfaStatus().then((r) => { PFA = r; pfaBusy = false; if (settingsSec.classList.contains('on')) drawSettings(); }).catch(() => { pfaBusy = false; }); } return ''; }
@@ -1064,16 +1066,16 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
     const msg = PFAMSG ? `<p class="pfam">${esc(PFAMSG)}</p>` : '';
     if (PFA.on) {
       const when = PFA.at ? new Date(PFA.at).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '';
-      return `<div class="pfa"><div class="pfah"><b>Pathfinder account</b><span class="pfaon">Signed in</span></div><p class="mute">${esc(PFA.email)} &middot; ${PFA.n} Bungie account${PFA.n === 1 ? '' : 's'} saved${when ? ' &middot; last synced ' + esc(when) : ''}.${PFA.err ? ' <span class="pfae">Last sync did not work: ' + esc(PFA.err) + '</span>' : ''}</p>${msg}<p><button class="g" data-pfa="sync">Sync now</button> <button class="g" data-pfa="logout">Sign out of Pathfinder account</button> <button class="g" data-pfa="del">Delete Pathfinder account</button></p><p class="mute pfan">Every Bungie account you add here is saved to your Pathfinder account, locked with your password before it leaves this device. Removing an account here only removes it from ${GT_HERE}.</p></div>`;
+      return `<div class="pfa"><div class="pfah"><b>Pathfinder account</b><span class="pfaon">Signed in</span></div><p class="mute">${esc(PFA.name)} &middot; ${PFA.n} Bungie account${PFA.n === 1 ? '' : 's'} saved${when ? ' &middot; last synced ' + esc(when) : ''}.${PFA.err ? ' <span class="pfae">Last sync did not work: ' + esc(PFA.err) + '</span>' : ''}</p>${msg}<p><button class="g" data-pfa="sync">Sync now</button> <button class="g" data-pfa="logout">Sign out of Pathfinder account</button> <button class="g" data-pfa="del">Delete Pathfinder account</button></p><p class="mute pfan">Every Bungie account you add here is saved to your Pathfinder account, locked with your password before it leaves this device. Removing an account here only removes it from ${GT_HERE}.</p></div>`;
     }
-    return `<div class="pfa"><div class="pfah"><b>Pathfinder account</b><span class="mute">Optional</span></div><p class="mute">Sign in once on another PC, the beta, the website or your phone and all your Bungie accounts (alts too) come with you. Everything works without one.</p>${PFA.out ? '<p class="pfae">Your Pathfinder account sign-in ended. Sign in again to keep syncing.</p>' : ''}<div class="pfaf"><input id="pfaem" type="email" placeholder="Email" autocomplete="username" value="${esc(PFAEM || PFA.email || '')}"><input id="pfapw" type="password" placeholder="Password (8+ characters)" autocomplete="current-password"><button class="b" data-pfa="login">Sign in</button><button class="g" data-pfa="signup">Create account</button></div>${msg}<p class="mute pfan">Your password never leaves this device. Your Bungie sign-ins are locked with it before they are saved, so nobody else can open them, including Pathfinder. If you forget it, you just sign in to Bungie again.</p></div>`;
+    return `<div class="pfa"><div class="pfah"><b>Pathfinder account</b><span class="mute">Optional</span></div><p class="mute">Sign in once on another PC, the beta, the website or your phone and all your Bungie accounts (alts too) come with you. Everything works without one.</p>${PFA.out ? '<p class="pfae">Your Pathfinder account sign-in ended. Sign in again to keep syncing.</p>' : ''}<div class="pfaf"><input id="pfanm" type="text" placeholder="Account name" autocomplete="username" autocapitalize="off" spellcheck="false" maxlength="200" value="${esc(PFANM || PFA.name || '')}"><input id="pfapw" type="password" placeholder="Password (8+ characters)" autocomplete="current-password"><button class="b" data-pfa="login">Sign in</button><button class="g" data-pfa="signup">Create account</button></div>${msg}<p class="mute pfan">Your password never leaves this device. Your Bungie sign-ins are locked with it before they are saved, so nobody else can open them, including Pathfinder. If you forget it, you just sign in to Bungie again.</p></div>`;
   }
   async function pfaAct(a) {
-    const em = (document.getElementById('pfaem') || {}).value || '', pw = (document.getElementById('pfapw') || {}).value || '';
-    if (em) PFAEM = em; // keep what you typed when the settings redraw
+    const nm = ((document.getElementById('pfanm') || {}).value || '').trim(), pw = (document.getElementById('pfapw') || {}).value || '';
+    if (nm) PFANM = nm; // keep what you typed when the settings redraw
     const run = async (label, fn) => { PFAMSG = label; drawSettings(); try { const r = await fn(); if (r && (r.reload || r.restart)) { afterAcct(r); return; } PFA = r && r.avail !== undefined ? r : await gt.pfaStatus(); PFAMSG = r && r.added ? `Added ${r.added} Bungie account${r.added === 1 ? '' : 's'} from your Pathfinder account. Switch to ${r.added === 1 ? 'it' : 'them'} above.` : a === 'sync' ? 'Synced.' : ''; ACL = null; } catch (er) { PFAMSG = clean(er); try { PFA = await gt.pfaStatus(); } catch (e2) { /* keep */ } } drawSettings(); };
-    if (a === 'login') return run('Signing in… (locking your key takes a second)', () => gt.pfaLogin({ email: em, pw }));
-    if (a === 'signup') { if (!confirm('Create a Pathfinder account for ' + em + '?\n\nYour password cannot be recovered. If you forget it, you just sign in to Bungie again on each device.')) return; return run('Creating your account…', () => gt.pfaSignup({ email: em, pw })); }
+    if (a === 'login') return run('Signing in… (locking your key takes a second)', () => gt.pfaLogin({ name: nm, pw }));
+    if (a === 'signup') { if (!confirm('Create the Pathfinder account "' + nm + '"?\n\nYour password cannot be recovered. If you forget it, you just sign in to Bungie again on each device.')) return; return run('Creating your account…', () => gt.pfaSignup({ name: nm, pw })); }
     if (a === 'sync') return run('Syncing…', () => gt.pfaSync());
     if (a === 'logout') { if (!confirm('Sign out of your Pathfinder account on ' + GT_HERE + '? Your Bungie accounts stay signed in here.')) return; return run('Signing out…', () => gt.pfaLogout()); }
     if (a === 'del') { if (!confirm('Delete your Pathfinder account and the sign-ins saved in it? This cannot be undone. Bungie accounts already on your devices stay signed in.')) return; return run('Deleting…', () => gt.pfaDelete()); }
