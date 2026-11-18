@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.18-beta.2: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.18-beta.3: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -528,7 +528,7 @@ let PFA_ERR = '', PFA_BUSY = null;
 async function pfaSync(boxIn, verIn) {
   const c = rd(); if (!c.pfa || !c.pfa.sess) return { off: 1 };
   let ver = verIn, box = boxIn;
-  if (box === undefined) { const g = await pfaReq('GET', '/box', null, c.pfa.sess); ver = g.ver; box = g.box; }
+  if (box === undefined) { const g = await pfaReq('GET', '/box', null, c.pfa.sess); ver = g.ver; box = g.box; if (typeof g.role === 'string' && (c.pfa.role || '') !== g.role) { c.pfa.role = g.role; wr(c); } }
   for (let round = 0; round < 3; round++) {
     let data; try { data = await pfaOpen(box, c.pfa.key); } catch (e) { throw new Error('Could not open your saved sign-ins with this password. If you changed it on another device, sign out and in again here.'); }
     const B = (data && data.accts) || {}, cid = String(c.clientId || ''), skip = c.pfa.skip || {}, now = Date.now();
@@ -563,7 +563,7 @@ const pfaRun = (boxIn, verIn) => {
 // A Pathfinder account is an account name and a password. Accounts made earlier with an email address still sign in with that
 // email typed as the account name (both are matched the same way: trimmed, any capitals ignored).
 const pfaName = (p) => (p && (p.name || p.email)) || '';
-const pfaStatus = () => { const c = rd(), p = c.pfa || {}; return { avail: !!pfaUrl(), on: !!p.sess, name: pfaName(p), at: p.at || 0, n: p.n || 0, err: PFA_ERR, out: !!(pfaName(p) && !p.sess) }; };
+const pfaStatus = () => { const c = rd(), p = c.pfa || {}; return { avail: !!pfaUrl(), on: !!p.sess, name: pfaName(p), at: p.at || 0, n: p.n || 0, err: PFA_ERR, out: !!(pfaName(p) && !p.sess), dev: !!(p.sess && p.role === 'dev') }; };
 H('pfa:status', () => pfaStatus());
 const pfaCreds = (v, isNew) => {
   OBJ(v); const name = TXT(v.name, 200).trim(), pw = TXT(v.pw, 200);
@@ -579,19 +579,43 @@ const pfaOld = (er) => { if (er && er.code === 'bad_request') er.message = 'Upda
 H('pfa:signup', async (e, v) => {
   const { name, pw } = pfaCreds(v, true), k = await pfaKeys(name, pw);
   const r = await pfaReq('POST', '/signup', pfaWho(name, k.auth)).catch(pfaOld);
-  const c = rd(); c.pfa = { name, sess: r.sess, key: k.key, skip: {} }; wr(c);
+  const c = rd(); c.pfa = { name, sess: r.sess, key: k.key, skip: {}, role: r.role || '' }; wr(c);
   await pfaRun(r.box, r.ver).catch(() => {});
   return pfaStatus();
 });
 H('pfa:login', async (e, v) => {
   const { name, pw } = pfaCreds(v, false), k = await pfaKeys(name, pw);
   const r = await pfaReq('POST', '/login', pfaWho(name, k.auth)).catch(pfaOld);
-  const c = rd(), hadTok = !!c.tok, same = c.pfa && pfaName(c.pfa).toLowerCase() === name.toLowerCase(); c.pfa = { name, sess: r.sess, key: k.key, skip: (same && c.pfa.skip) || {} }; wr(c);
+  const c = rd(), hadTok = !!c.tok, same = c.pfa && pfaName(c.pfa).toLowerCase() === name.toLowerCase(); c.pfa = { name, sess: r.sess, key: k.key, skip: (same && c.pfa.skip) || {}, role: r.role || '' }; wr(c);
   const s2 = await pfaRun(r.box, r.ver);
   if (!hadTok && rd().tok) { M = null; return { ...pfaStatus(), ...restartApp() }; }
   return { ...pfaStatus(), added: s2.added || 0 };
 });
 H('pfa:sync', async () => { const c = rd(), hadTok = !!c.tok, r = await pfaRun(); if (!hadTok && rd().tok) { M = null; return { ...pfaStatus(), ...restartApp() }; } return { ...pfaStatus(), added: r.added || 0 }; });
+// Forgot the password: the owner makes a one-time reset code on the admin page. The code plus a new password sets a new
+// password. What was locked with the old one cannot be opened, so the saved box starts empty and this device's Bungie sign-ins
+// are saved into it again; other devices are signed out of the Pathfinder account and sign in with the new password.
+H('pfa:reset', async (e, v) => {
+  OBJ(v); const code = TXT(v.code, 40).toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if (code.length !== 12) throw new Error('Reset codes are 12 letters and numbers, like ABCD-EFGH-JKLM.');
+  const { name, pw } = pfaCreds(v, false), k = await pfaKeys(name, pw);
+  const r = await pfaReq('POST', '/reset', { name, code, auth: k.auth }).catch(pfaOld);
+  const c = rd(), hadTok = !!c.tok; c.pfa = { name, sess: r.sess, key: k.key, skip: {}, role: r.role || '' }; wr(c);
+  await pfaRun(null, 0).catch(() => {});
+  if (!hadTok && rd().tok) { M = null; return { ...pfaStatus(), ...restartApp() }; }
+  return pfaStatus();
+});
+// Feature switches set on the admin page: 'on' (everyone), 'dev' (developer accounts only), 'off' (nobody). Checked every 10 minutes.
+let FLAGS = null, FLAGS_AT = 0;
+H('flags:get', async () => {
+  const base = preset && preset.tokenUrl && /^https:\/\//i.test(preset.tokenUrl) ? preset.tokenUrl.replace(/\/+$/, '') : '';
+  if (base && (!FLAGS || Date.now() - FLAGS_AT > 6e5)) {
+    try { const r = await fetch(base + '/flags', { headers: { Accept: 'application/json' }, signal: AbortSignal.timeout(8000) }); if (r.ok) { const j = await r.json(); FLAGS = j && j.flags && typeof j.flags === 'object' ? j.flags : {}; FLAGS_AT = Date.now(); } } catch (er) { /* keep the last ones */ }
+  }
+  return { flags: FLAGS || {}, dev: pfaStatus().dev };
+});
+// Developer tools (the PC app only, developer accounts only).
+H('dev:tools', () => { if (!pfaStatus().dev) throw new Error('Developer accounts only.'); if (win && !win.isDestroyed() && win.webContents && win.webContents.openDevTools) win.webContents.openDevTools({ mode: 'detach' }); return true; });
 H('pfa:logout', async () => { const c = rd(); if (c.pfa && c.pfa.sess) { try { await pfaReq('POST', '/logout', {}, c.pfa.sess); } catch (e) { /* signed out here anyway */ } } delete c.pfa; wr(c); PFA_ERR = ''; return pfaStatus(); });
 H('pfa:delete', async () => { const c = rd(); if (!c.pfa || !c.pfa.sess) throw new Error('Sign in to your Pathfinder account first.'); await pfaReq('DELETE', '', null, c.pfa.sess); delete c.pfa; wr(c); return pfaStatus(); });
 // Keep the box up to date: shortly after start, then every six hours.
