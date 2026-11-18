@@ -1125,7 +1125,7 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
     </div>
     <div class="card sc"><h2>Appearance</h2>
       <div class="thh">Interface style</div>
-      <div class="uis">${[['pf', 'Pathfinder', 'The classic Pathfinder look.'], ['beta', 'Beta', 'Night shift: clean and modern. Still changing.'], ['bray', 'Bray', 'Same as Beta for now. Will get its own look.'], ['manta', 'Manta', 'Same as Beta for now. Will get its own look.'], ['dim', 'DIM', 'Looks like Destiny Item Manager.']].map(([k, n, d]) => `<div class="uic u-${k === 'bray' || k === 'manta' ? 'beta' : k}${(SET.ui || 'pf') === k ? ' on' : ''}" data-uis="${k}"><i></i><b>${n}</b><small>${d}</small></div>`).join('')}</div>
+      <div class="uis">${[['pf', 'Pathfinder', 'The classic Pathfinder look.'], ['beta', 'Beta', 'Night shift: clean and modern. Still changing.'], ['bray', 'Bray', 'The founder\'s style. Bray created Pathfinder.'], ['manta', 'Manta', 'The dev and tester\'s style. Manta builds and tests Pathfinder.'], ['dim', 'DIM', 'Looks like Destiny Item Manager.']].map(([k, n, d]) => `<div class="uic u-${k}${(SET.ui || 'pf') === k ? ' on' : ''}" data-uis="${k}"><i></i><b>${n}</b><small>${d}</small></div>`).join('')}</div>
       <div class="thh">Colour</div>
       <p class="mute" style="margin:2px 0 6px">The tint of every panel. Mix it with any accent and any background picture.</p>
       <div class="sg">${themeGrid()}</div>
