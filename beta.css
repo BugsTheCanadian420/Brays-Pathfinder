@@ -153,3 +153,14 @@
 
 /* ---------- BETA THEME (base colours; picture-free) ---------- */
 :root[data-gt="beta"]{--g-bg:#06080c;--g-panel:rgba(16,20,27,.78);--g-col:transparent;--g-line:rgba(255,255,255,.075);--g-deep:rgba(0,0,0,.4);--g-btn:rgba(255,255,255,.045);--g-solid:#0f1319}
+
+/* ---------- BRAY: the founder's style. Beta's layout with Shantell Sans lettering everywhere ---------- */
+:root[data-uin="bray"]{--b-font:'Shantell Sans','Manrope','Segoe UI',system-ui,sans-serif}
+:root[data-uin="bray"] body,:root[data-uin="bray"] button,:root[data-uin="bray"] input,:root[data-uin="bray"] select,:root[data-uin="bray"] textarea{font-family:var(--b-font)!important}
+.uic.u-bray b{font-family:'Shantell Sans','Manrope',system-ui,sans-serif;font-weight:700}
+
+/* ---------- MANTA: the dev and tester's style. Exile on the main tabs (Home, Inventory, Loadouts...), Blinker for everything else ---------- */
+:root[data-uin="manta"]{--b-font:'Blinker','Manrope','Segoe UI',system-ui,sans-serif}
+:root[data-uin="manta"] body,:root[data-uin="manta"] button,:root[data-uin="manta"] input,:root[data-uin="manta"] select,:root[data-uin="manta"] textarea{font-family:var(--b-font)!important}
+:root[data-uin="manta"] header.gtbar nav#nav button[data-t]:not(.gtset),:root[data-uin="manta"] header.gtbar nav#nav #gtmore,:root[data-uin="manta"] #gtw-tabs button,:root[data-uin="manta"] #gtw-tabs [data-t]{font-family:'Exile','Blinker',system-ui,sans-serif!important;font-weight:400!important;letter-spacing:.02em!important}
+.uic.u-manta b{font-family:'Exile','Blinker',system-ui,sans-serif;font-weight:400}

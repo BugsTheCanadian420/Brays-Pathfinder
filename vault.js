@@ -629,7 +629,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 #settings .scols{display:flex;gap:16px;align-items:flex-start}#settings .scol{flex:1 1 0;min-width:0}
 #settings .sg{grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:6px}#settings .th{padding:6px 6px 7px;font-size:12.5px}#settings .th i{height:20px;margin-bottom:5px}
 #settings .uis{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
-#settings .setgrid{display:contents}#gtmp{background:var(--g-solid,#15171b)!important;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}#gtmp.open{box-shadow:0 0 0 100vmax rgba(0,0,0,.5),0 14px 36px rgba(0,0,0,.7)!important}#vqs{background:var(--g-solid,#15171b)!important}.sset{display:grid;grid-template-columns:240px minmax(0,1fr);gap:22px;align-items:start;max-width:1120px;margin:0 auto}.snav{position:sticky;top:64px;box-sizing:border-box;margin:0;display:flex;flex-direction:column;gap:2px;padding:8px;background:var(--g-solid,#15171b);border:1px solid var(--g-line,#2b2e33);border-radius:12px}#settings .snav .sni{display:flex;align-items:center;gap:12px;width:100%;box-sizing:border-box;margin:0;border-radius:8px;padding:9px 12px;color:#c3c7ce;font-size:13.5px;font-weight:600;line-height:1.2;letter-spacing:0;text-transform:none;cursor:pointer;user-select:none}#settings .snav .sni svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;opacity:.8}#settings .snav .sni:hover{background:rgba(255,255,255,.06);color:#fff}#settings .snav .sni.on{background:var(--g-accent-soft,rgba(122,184,232,.16));color:#fff;box-shadow:inset 3px 0 0 var(--g-accent,#7ab8e8)}#settings .snav .sni.on svg{opacity:1;color:var(--g-accent,#7ab8e8)}#settings .snav .sni:focus-visible{outline:2px solid var(--g-accent,#7ab8e8);outline-offset:1px}.spane{min-width:0}.spane>.card{display:none!important;margin:0!important}.spane>.card.son{display:block!important}@media (max-width:760px){.sset{grid-template-columns:1fr;gap:10px}.snav{position:static;flex-direction:row;overflow-x:auto;scrollbar-width:none;padding:5px}#settings .snav .sni{width:auto;flex:none;white-space:nowrap;padding:8px 11px}}
+#settings .setgrid{display:contents}.pfars{margin:10px 0 4px;padding:10px 12px;border:1px solid var(--g-line,#2b2e33);border-radius:10px}.pfars p{margin:4px 0 8px}#gtmp{background:var(--g-solid,#15171b)!important;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}#gtmp.open{box-shadow:0 0 0 100vmax rgba(0,0,0,.5),0 14px 36px rgba(0,0,0,.7)!important}#vqs{background:var(--g-solid,#15171b)!important}.sset{display:grid;grid-template-columns:240px minmax(0,1fr);gap:22px;align-items:start;max-width:1120px;margin:0 auto}.snav{position:sticky;top:64px;box-sizing:border-box;margin:0;display:flex;flex-direction:column;gap:2px;padding:8px;background:var(--g-solid,#15171b);border:1px solid var(--g-line,#2b2e33);border-radius:12px}#settings .snav .sni{display:flex;align-items:center;gap:12px;width:100%;box-sizing:border-box;margin:0;border-radius:8px;padding:9px 12px;color:#c3c7ce;font-size:13.5px;font-weight:600;line-height:1.2;letter-spacing:0;text-transform:none;cursor:pointer;user-select:none}#settings .snav .sni svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;opacity:.8}#settings .snav .sni:hover{background:rgba(255,255,255,.06);color:#fff}#settings .snav .sni.on{background:var(--g-accent-soft,rgba(122,184,232,.16));color:#fff;box-shadow:inset 3px 0 0 var(--g-accent,#7ab8e8)}#settings .snav .sni.on svg{opacity:1;color:var(--g-accent,#7ab8e8)}#settings .snav .sni:focus-visible{outline:2px solid var(--g-accent,#7ab8e8);outline-offset:1px}.spane{min-width:0}.spane>.card{display:none!important;margin:0!important}.spane>.card.son{display:block!important}@media (max-width:760px){.sset{grid-template-columns:1fr;gap:10px}.snav{position:static;flex-direction:row;overflow-x:auto;scrollbar-width:none;padding:5px}#settings .snav .sni{width:auto;flex:none;white-space:nowrap;padding:8px 11px}}
 #settings .card{max-width:none;margin:0 0 16px;break-inside:avoid;padding:14px 18px}
 #settings .card h2{padding-bottom:8px;margin-bottom:4px;border-bottom:1px solid var(--g-line)}
 /* saved sets: opened from the button in the top bar */
@@ -854,16 +854,32 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
     ['rose', 'Rose', 320, 26, '#ff7ad9', '#2a1626'],
   ].map(([id, n, h, s, a, sw]) => ({ id, n, h, s, a, sw }));
   // Background pictures. 'topo' is the contour-line drawing; the rest are Destiny 2 places.
-  const BGS = [['', 'None'], ['topo', 'Contour lines'], ['lantern-gate', 'Lantern Gate'], ['blossom-tower', 'Blossom Tower'], ['memorial-garden', 'Memorial Garden'], ['rust-yard', 'Rust Yard'], ['europa-frost', 'Lunar Frost'], ['crimson-spire', 'Crimson Spire'], ['cube-mist', 'Cube Mist'], ['aurora-grove', 'Aurora Grove'], ['vortex', 'Vortex'], ['emerald-lake', 'Emerald Lake'], ['hanging-gardens', 'Hanging Gardens']];
+  const BGS = [['', 'None'], ['topo', 'Contour lines'], ['blossom-tower', 'Blossom Tower'], ['memorial-garden', 'Memorial Garden'], ['rust-yard', 'Rust Yard'], ['europa-frost', 'Lunar Frost'], ['crimson-spire', 'Crimson Spire'], ['cube-mist', 'Cube Mist'], ['aurora-grove', 'Aurora Grove'], ['vortex', 'Vortex'], ['emerald-lake', 'Emerald Lake'], ['hanging-gardens', 'Hanging Gardens'], ['traveler', 'The Traveler'], ['lantern-gate', 'Lantern Gate']];
+  // Bray and Manta are fixed looks: their colour, accent and picture are set and cannot be changed. Their two pictures are shown last
+  // in the picture list, locked, so the Custom style cannot use them.
+  const LOCK = { bray: { theme: 'beta', accent: '#f2b441', bg: 'traveler', n: 'Bray' }, manta: { theme: 'gold', accent: '#35e3cf', bg: 'lantern-gate', n: 'Manta' } };
+  const LOCKBG = { traveler: 'bray', 'lantern-gate': 'manta' };
+  // The look in use: the locked one for Bray and Manta, otherwise your own picks (Pathfinder Classic and Custom each keep their own).
+  const look = () => LOCK[SET.ui] || { theme: SET.theme, accent: SET.accent, bg: SET.bg };
+  const EDIT = ['pf', 'beta'];
+  function switchUi(to) {
+    const from = SET.ui;
+    if (to === from) return;
+    SET.looks = SET.looks && typeof SET.looks === 'object' ? SET.looks : {};
+    if (EDIT.includes(from)) SET.looks[from] = { theme: SET.theme, accent: SET.accent, bg: SET.bg };
+    const sv = SET.looks[to];
+    if (EDIT.includes(to) && sv && typeof sv === 'object') { if (tById(sv.theme)) SET.theme = sv.theme; if (/^#[0-9a-f]{6}$/i.test(String(sv.accent))) SET.accent = sv.accent; SET.bg = typeof sv.bg === 'string' ? sv.bg : ''; }
+    SET.ui = to;
+  }
   // Themes from earlier versions (the gradient and shader-inspired ones are gone; the old picture themes are now a colour plus a picture).
   const MIG = { solar: 'ember', arc: 'blue', stasis: 'blue', strand: 'forest', prism: 'void', aurora: 'teal', nebula: 'rose', midnight: 'blue', synth: 'rose', dawning: 'blue', gilded: 'gold', legion: 'crimson', hive: 'forest', vex: 'slate', taken: 'teal', fallen: 'ember', dreaming: 'rose',
-    a_lantern: ['ember', 'lantern-gate'], a_blossom: ['rose', 'blossom-tower'], a_memorial: ['blue', 'memorial-garden'], a_rust: ['ember', 'rust-yard'], a_europa: ['blue', 'europa-frost'], a_spire: ['crimson', 'crimson-spire'], a_mist: ['slate', 'cube-mist'], a_grove: ['forest', 'aurora-grove'], a_vortex: ['blue', 'vortex'], a_lake: ['teal', 'emerald-lake'], a_gardens: ['forest', 'hanging-gardens'] };
+    a_lantern: ['ember', ''], a_blossom: ['rose', 'blossom-tower'], a_memorial: ['blue', 'memorial-garden'], a_rust: ['ember', 'rust-yard'], a_europa: ['blue', 'europa-frost'], a_spire: ['crimson', 'crimson-spire'], a_mist: ['slate', 'cube-mist'], a_grove: ['forest', 'aurora-grove'], a_vortex: ['blue', 'vortex'], a_lake: ['teal', 'emerald-lake'], a_gardens: ['forest', 'hanging-gardens'] };
   const tById = (id) => COLS.find((t) => t.id === id);
   function migTheme() {
     const m = MIG[SET.theme];
     if (m) { if (Array.isArray(m)) { SET.theme = m[0]; if (!SET.bg) SET.bg = m[1]; } else SET.theme = m; }
     if (!tById(SET.theme)) SET.theme = 'dim';
-    if (SET.bg === undefined || !BGS.some((b) => b[0] === SET.bg)) SET.bg = '';
+    if (SET.bg === undefined || !BGS.some((b) => b[0] === SET.bg) || LOCKBG[SET.bg]) SET.bg = '';
     if (SET.ui === 'd2') SET.ui = 'bray';
     if (SET.ui === 'dim') SET.ui = 'pf'; // the DIM style was removed
   }
@@ -892,25 +908,26 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
 .thh{grid-column:1/-1;margin:10px 0 0;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--mute)}.thh:first-child{margin-top:0}
 .th i.thc{position:relative}.th i.thc b{position:absolute;right:-3px;bottom:-3px;width:11px;height:11px;border-radius:50%;border:2px solid var(--g-solid,#15171b)}
 .acs{display:flex;flex-wrap:wrap;gap:7px;align-items:center}.acs .acw{box-sizing:border-box;width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid transparent;box-shadow:inset 0 0 0 1px rgba(0,0,0,.35);padding:0}.acs .acw.on{border-color:#fff}.acs .acw:focus-visible{outline:2px solid #fff;outline-offset:2px}.acs input[type=color]{width:34px;height:26px;padding:0;border:0;background:none;cursor:pointer}
-.bgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px;margin:6px 0 10px}.bgs .bgo{position:relative;height:64px;border-radius:9px;overflow:hidden;cursor:pointer;border:2px solid transparent;background:#0e1014 center/cover no-repeat;display:flex;align-items:flex-end;padding:6px 8px;font-size:12px;font-weight:600;color:#fff;text-shadow:0 1px 3px #000}.bgs .bgo::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 35%,rgba(0,0,0,.7))}.bgs .bgo span{position:relative}.bgs .bgo.on{border-color:var(--g-accent,#7ab8e8)}.bgs .bgo.none{background:repeating-linear-gradient(135deg,#15171b 0 8px,#1b1e23 8px 16px)}`;
+.bgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px;margin:6px 0 10px}.bgs .bgo{position:relative;height:64px;border-radius:9px;overflow:hidden;cursor:pointer;border:2px solid transparent;background:#0e1014 center/cover no-repeat;display:flex;align-items:flex-end;padding:6px 8px;font-size:12px;font-weight:600;color:#fff;text-shadow:0 1px 3px #000}.bgs .bgo::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 35%,rgba(0,0,0,.7))}.bgs .bgo span{position:relative}.bgs .bgo.on{border-color:var(--g-accent,#7ab8e8)}.bgs .bgo.lk{cursor:not-allowed}.bgs .bgo.lk::after{content:'';position:absolute;inset:0;background:rgba(0,0,0,.42)}.bgs .bgo.lk.on::after{background:rgba(0,0,0,.12)}.bgs .bgo .lki{position:absolute;top:6px;right:6px;z-index:2;width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;filter:drop-shadow(0 1px 2px #000)}.bgs .bgo span{z-index:2}.bgs .bgo small{display:block;font-size:10.5px;font-weight:600;opacity:.8}.lkw.on .sg,.lkw.on .acs,.lkw.on .bgo{pointer-events:none}.lkw.on .th:not(.on),.lkw.on .acw:not(.on),.lkw.on .bgo:not(.on){opacity:.35}.lkn{display:flex;gap:10px;align-items:flex-start;margin:10px 0 4px;padding:10px 12px;border-radius:10px;background:var(--g-accent-soft,rgba(122,184,232,.16));border:1px solid var(--g-line,#2b2e33);font-size:13px;line-height:1.4}.lkn .lki{flex:none;width:18px;height:18px;fill:none;stroke:var(--g-accent,#7ab8e8);stroke-width:2;stroke-linecap:round;margin-top:1px}.bgs .bgo.none{background:repeating-linear-gradient(135deg,#15171b 0 8px,#1b1e23 8px 16px)}`;
     document.head.appendChild(el);
   })();
   const ACCS = ['#f2b441', '#7ab8e8', '#6fc7ff', '#b38cff', '#ff8a3d', '#ff5a5a', '#f2c14e', '#5fd38a', '#35e3cf', '#ff7ad9', '#d8dde5'];
-  function bgLayers() {
-    const t = tById(SET.theme) || COLS[1], d = Math.max(.25, Math.min(.9, (+SET.bgdim || 45) / 100));
+  function bgLayers(L) {
+    const t = tById(L.theme) || COLS[1], d = Math.max(.25, Math.min(.9, (+SET.bgdim || 45) / 100));
     const veil = t.id === 'black' ? [`rgba(0,0,0,${(d - .12).toFixed(2)})`, `rgba(0,0,0,${Math.min(.97, d + .12).toFixed(2)})`] : t.id === 'beta' ? [`rgba(6,8,12,${(d - .12).toFixed(2)})`, `rgba(6,8,12,${Math.min(.97, d + .12).toFixed(2)})`] : [hs(t, 4, (d - .12).toFixed(2)), hs(t, 4, Math.min(.97, d + .12).toFixed(2))];
     const glow = `radial-gradient(1400px 800px at 50% -10%,hsl(${t.h} ${Math.max(t.s, 40)}% 45% / .22),transparent 70%)`;
-    if (SET.bg === 'topo') return `url(topo.svg),${glow},${t.id === 'beta' ? '#06080c' : t.id === 'black' ? '#000' : hs(t, 4)}`;
-    return `linear-gradient(180deg,${veil[0]},${veil[1]}),url("themes/${SET.bg}.jpg"),${glow},${hs(t, 4)}`;
+    if (L.bg === 'topo') return `url(topo.svg),${glow},${t.id === 'beta' ? '#06080c' : t.id === 'black' ? '#000' : hs(t, 4)}`;
+    return `linear-gradient(180deg,${veil[0]},${veil[1]}),url("themes/${L.bg}.jpg"),${glow},${hs(t, 4)}`;
   }
   function applySet() {
     migTheme();
     const r = document.documentElement;
-    if (SET.theme === 'dim') r.removeAttribute('data-gt'); else r.setAttribute('data-gt', SET.theme);
-    r.setAttribute('data-gx', SET.bg ? '1' : '0'); r.setAttribute('data-gan', '0'); r.setAttribute('data-gbg', SET.bg || 'none');
-    if (SET.bg) r.style.setProperty('--g-layers', bgLayers()); else r.style.removeProperty('--g-layers');
+    const L = look();
+    if (L.theme === 'dim') r.removeAttribute('data-gt'); else r.setAttribute('data-gt', L.theme);
+    r.setAttribute('data-gx', L.bg ? '1' : '0'); r.setAttribute('data-gan', '0'); r.setAttribute('data-gbg', L.bg || 'none');
+    if (L.bg) r.style.setProperty('--g-layers', bgLayers(L)); else r.style.removeProperty('--g-layers');
     r.style.setProperty('--g-dim', String(Math.max(.25, Math.min(.9, (+SET.bgdim || 45) / 100))));
-    // Bray and Manta are copies of the Beta style for now (each will get its own look); they share its rules and carry their own name.
+    // Custom, Bray and Manta share the Beta style's rules; data-uin carries which one (Bray has its own lettering).
     const ui = ['pf', 'beta', 'bray', 'manta'].includes(SET.ui) ? SET.ui : 'pf';
     r.setAttribute('data-ui', ui === 'bray' || ui === 'manta' ? 'beta' : ui); r.setAttribute('data-uin', ui);
     r.setAttribute('data-anim', ['off', 'subtle', 'full'].includes(SET.anim) ? SET.anim : 'subtle'); r.setAttribute('data-cardart', SET.cardart === false ? '0' : '1');
@@ -919,13 +936,15 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
     r.style.setProperty('--gt-t', SET.tile + 'px'); if (window.__gtfitscale) window.__gtfitscale(); else r.style.setProperty('--gt-z', SET.scale / 100); // polish.js lowers it if this page would not fit the window
     // The accent's dark partner (selected tabs, switches, chips). Mixing a light colour like yellow with black turns it olive,
     // so light accents are used as they are with dark text on top, and darker accents get a deeper shade of the same hue.
-    const ac = /^#[0-9a-f]{6}$/i.test(String(SET.accent)) ? SET.accent : '#7ab8e8', rgb = [1, 3, 5].map((i) => parseInt(ac.slice(i, i + 2), 16));
+    const ac = /^#[0-9a-f]{6}$/i.test(String(L.accent)) ? L.accent : '#7ab8e8', rgb = [1, 3, 5].map((i) => parseInt(ac.slice(i, i + 2), 16));
     const lin = (c) => { c /= 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }, lum = 0.2126 * lin(rgb[0]) + 0.7152 * lin(rgb[1]) + 0.0722 * lin(rgb[2]);
     const light = lum > 0.45, a2 = light ? ac : '#' + rgb.map((c) => Math.round(c * 0.62).toString(16).padStart(2, '0')).join('');
     r.style.setProperty('--g-accent', ac); r.style.setProperty('--g-accent2', a2); r.style.setProperty('--g-on-accent', light ? '#15171b' : '#ffffff');
     r.style.setProperty('--g-accent-soft', 'rgba(' + rgb.join(',') + ',.16)');
   }
   applySet();
+  // Bray and Manta load their own lettering; when it arrives the tab bar measures again so tabs that no longer fit move into More.
+  try { if (document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', () => window.dispatchEvent(new Event('resize'))); } catch (e) { /* older browsers */ }
   let UPD = { state: 'idle', current: '', canUpdate: false };
   const toast = document.createElement('div'); toast.className = 'toast'; document.body.appendChild(toast);
   function drawToast() {
@@ -936,7 +955,7 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
   }
   const settingsSec = document.createElement('section'); settingsSec.id = 'settings'; settingsSec.className = 'gdark';
   document.querySelector('main').appendChild(settingsSec);
-  const sBtn = document.createElement('button'); sBtn.textContent = 'Settings'; sBtn.dataset.t = 'settings'; sBtn.onclick = () => { const had = settingsSec.firstChild; if (!had) drawSettings(); show('settings'); if (had) requestAnimationFrame(() => setTimeout(drawSettings, 0)); }; nav.appendChild(sBtn);
+  const sBtn = document.createElement('button'); sBtn.textContent = 'Settings'; sBtn.dataset.t = 'settings'; sBtn.onclick = () => { if (window.gt && gt.pfaStatus && PFA) gt.pfaStatus().then((r) => { if (r && JSON.stringify(r) !== JSON.stringify(PFA)) { PFA = r; flagsLoad(); if (settingsSec.classList.contains('on')) drawSettings(); } }).catch(() => {}); const had = settingsSec.firstChild; if (!had) drawSettings(); show('settings'); if (had) requestAnimationFrame(() => setTimeout(drawSettings, 0)); }; nav.appendChild(sBtn);
   let WL = null, WLMSG = '', WLV = 0;
   const WLD = { wlurl: '', wltext: '' }; // what you typed or pasted, kept across redraws (update checks redraw this page)
   const WLPRE = [['Voltron (big community list)', 'https://raw.githubusercontent.com/48klocs/dim-wish-list-sources/master/voltron.txt'], ['Choosy Voltron (stricter)', 'https://raw.githubusercontent.com/48klocs/dim-wish-list-sources/master/choosy_voltron.txt']];
@@ -1007,26 +1026,30 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
   }
   const CSTN = ['Weapons', 'Health', 'Class', 'Grenade', 'Super', 'Melee'];
   const NUMK = new Set(['invw', 'farmspaces']);
+  const LKI = '<svg class="lki" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>';
   function themeGrid() {
-    return COLS.map((t) => `<div class="th${SET.theme === t.id ? ' on' : ''}" data-th="${t.id}"><i class="thc" style="background:${t.sw}"><b style="background:${t.a}"></b></i>${esc(t.n)}</div>`).join('');
+    const L = look();
+    return COLS.map((t) => `<div class="th${L.theme === t.id ? ' on' : ''}" data-th="${t.id}"><i class="thc" style="background:${t.sw}"><b style="background:${t.a}"></b></i>${esc(t.n)}</div>`).join('');
   }
-  const accGrid = () => `<div class="acs">${ACCS.map((c) => `<div role="button" tabindex="0" class="acw${String(SET.accent).toLowerCase() === c ? ' on' : ''}" data-acc="${c}" style="background:${c}" title="${c}" aria-label="Accent ${c}"></div>`).join('')}<input type="color" data-sk="accent" value="${esc(SET.accent)}" title="Any colour"></div>`;
-  const bgGrid = () => `<div class="bgs">${BGS.map(([id, n]) => `<div class="bgo${id ? '' : ' none'}${(SET.bg || '') === id ? ' on' : ''}" data-bg="${id}"${id === 'topo' ? ' style="background-image:url(topo.svg);background-color:#0b0e13;background-size:180%"' : id ? ` style="background-image:url(themes/${id}_t.jpg)"` : ''}><span>${esc(n)}</span></div>`).join('')}</div>`;
+  const accGrid = () => { const L = look(); return `<div class="acs">${ACCS.map((c) => `<div role="button" tabindex="0" class="acw${String(L.accent).toLowerCase() === c ? ' on' : ''}" data-acc="${c}" style="background:${c}" title="${c}" aria-label="Accent ${c}"></div>`).join('')}<input type="color" data-sk="accent" value="${esc(L.accent)}" title="Any colour"${LOCK[SET.ui] ? ' disabled' : ''}></div>`; };
+  const bgGrid = () => { const L = look(); return `<div class="bgs">${BGS.map(([id, n]) => { const lk = LOCKBG[id]; return `<div class="bgo${id ? '' : ' none'}${lk ? ' lk' : ''}${(L.bg || '') === id ? ' on' : ''}" data-bg="${id}"${lk ? ` title="Locked: only the ${LOCK[lk].n} style uses this picture"` : ''}${id === 'topo' ? ' style="background-image:url(topo.svg);background-color:#0b0e13;background-size:180%"' : id ? ` style="background-image:url(themes/${id}_t.jpg)"` : ''}>${lk ? LKI : ''}<span>${esc(n)}${lk ? `<small>${LOCK[lk].n} only</small>` : ''}</span></div>`; }).join('')}</div>`; };
+  const lockNote = () => LOCK[SET.ui] ? `<p class="lkn">${LKI}<span><b>${LOCK[SET.ui].n} has a fixed look.</b> Its colour, accent and background picture are locked. Pick Custom to make your own mix.</span></p>` : '';
   function markLook() {
-    settingsSec.querySelectorAll('[data-th]').forEach((n) => n.classList.toggle('on', n.dataset.th === SET.theme));
-    settingsSec.querySelectorAll('[data-bg]').forEach((n) => n.classList.toggle('on', n.dataset.bg === (SET.bg || '')));
-    settingsSec.querySelectorAll('[data-acc]').forEach((n) => n.classList.toggle('on', n.dataset.acc === String(SET.accent).toLowerCase()));
-    const ac = settingsSec.querySelector('input[data-sk="accent"]'); if (ac) ac.value = SET.accent;
+    const L = look();
+    settingsSec.querySelectorAll('[data-th]').forEach((n) => n.classList.toggle('on', n.dataset.th === L.theme));
+    settingsSec.querySelectorAll('[data-bg]').forEach((n) => n.classList.toggle('on', n.dataset.bg === (L.bg || '')));
+    settingsSec.querySelectorAll('[data-acc]').forEach((n) => n.classList.toggle('on', n.dataset.acc === String(L.accent).toLowerCase()));
+    const ac = settingsSec.querySelector('input[data-sk="accent"]'); if (ac) ac.value = L.accent;
   }
   function pickTheme(id) {
     const t = tById(id), prev = tById(SET.theme);
-    if (!t) return;
+    if (!t || LOCK[SET.ui]) return;
     // A colour brings its own accent, unless you picked a different accent yourself: that one stays, so any mix works.
     if (!prev || String(SET.accent).toLowerCase() === prev.a.toLowerCase() || SET.accent === DEFSET.accent) SET.accent = t.a;
     SET.theme = id; applySet(); saveSet(); markLook();
   }
-  function pickBg(id) { SET.bg = id; applySet(); saveSet(); markLook(); }
-  function pickAcc(c) { SET.accent = c; SET.accentUser = ''; applySet(); saveSet(); markLook(); }
+  function pickBg(id) { if (LOCK[SET.ui] || LOCKBG[id]) return; SET.bg = id; applySet(); saveSet(); markLook(); }
+  function pickAcc(c) { if (LOCK[SET.ui]) return; SET.accent = c; SET.accentUser = ''; applySet(); saveSet(); markLook(); }
   // ---- saved Bungie accounts ----
   let ACL = null, aclBusy = false;
   function aclHTML() {
@@ -1035,7 +1058,7 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
     return ACL.list.map((a) => `<div class="acr${a.on ? ' on' : ''}"><b>${esc(a.n)}${a.code ? `<span>#${esc(a.code)}</span>` : ''}</b>${a.on ? '<em>Active</em>' : `<button class="g" data-acsw="${esc(a.mid)}">Switch</button>`}<button class="g" data-acrm="${esc(a.mid)}" title="Remove this account from ${GT_HERE}">Remove</button>${a.ok ? '' : '<small>Sign-in expired: switching asks you to sign in again</small>'}</div>`).join('');
   }
   // ---- Pathfinder account (optional): one login that brings all your Bungie accounts to every device and build ----
-  let PFA = null, pfaBusy = false, PFAMSG = '', PFAEM = '';
+  let PFA = null, pfaBusy = false, PFAMSG = '', PFANM = '', PFARS = false;
   function pfaHTML() {
     if (!window.gt || !gt.pfaStatus) return '';
     if (!PFA) { if (!pfaBusy) { pfaBusy = true; gt.pfaStatus().then((r) => { PFA = r; pfaBusy = false; if (settingsSec.classList.contains('on')) drawSettings(); }).catch(() => { pfaBusy = false; }); } return ''; }
@@ -1043,20 +1066,62 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
     const msg = PFAMSG ? `<p class="pfam">${esc(PFAMSG)}</p>` : '';
     if (PFA.on) {
       const when = PFA.at ? new Date(PFA.at).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '';
-      return `<div class="pfa"><div class="pfah"><b>Pathfinder account</b><span class="pfaon">Signed in</span></div><p class="mute">${esc(PFA.email)} &middot; ${PFA.n} Bungie account${PFA.n === 1 ? '' : 's'} saved${when ? ' &middot; last synced ' + esc(when) : ''}.${PFA.err ? ' <span class="pfae">Last sync did not work: ' + esc(PFA.err) + '</span>' : ''}</p>${msg}<p><button class="g" data-pfa="sync">Sync now</button> <button class="g" data-pfa="logout">Sign out of Pathfinder account</button> <button class="g" data-pfa="del">Delete Pathfinder account</button></p><p class="mute pfan">Every Bungie account you add here is saved to your Pathfinder account, locked with your password before it leaves this device. Removing an account here only removes it from ${GT_HERE}.</p></div>`;
+      return `<div class="pfa"><div class="pfah"><b>Pathfinder account</b><span class="pfaon">Signed in</span></div><p class="mute">${esc(PFA.name)} &middot; ${PFA.n} Bungie account${PFA.n === 1 ? '' : 's'} saved${when ? ' &middot; last synced ' + esc(when) : ''}.${PFA.err ? ' <span class="pfae">Last sync did not work: ' + esc(PFA.err) + '</span>' : ''}</p>${msg}<p><button class="g" data-pfa="sync">Sync now</button> <button class="g" data-pfa="logout">Sign out of Pathfinder account</button> <button class="g" data-pfa="del">Delete Pathfinder account</button></p><p class="mute pfan">Every Bungie account you add here is saved to your Pathfinder account, locked with your password before it leaves this device. Removing an account here only removes it from ${GT_HERE}.</p></div>`;
     }
-    return `<div class="pfa"><div class="pfah"><b>Pathfinder account</b><span class="mute">Optional</span></div><p class="mute">Sign in once on another PC, the beta, the website or your phone and all your Bungie accounts (alts too) come with you. Everything works without one.</p>${PFA.out ? '<p class="pfae">Your Pathfinder account sign-in ended. Sign in again to keep syncing.</p>' : ''}<div class="pfaf"><input id="pfaem" type="email" placeholder="Email" autocomplete="username" value="${esc(PFAEM || PFA.email || '')}"><input id="pfapw" type="password" placeholder="Password (8+ characters)" autocomplete="current-password"><button class="b" data-pfa="login">Sign in</button><button class="g" data-pfa="signup">Create account</button></div>${msg}<p class="mute pfan">Your password never leaves this device. Your Bungie sign-ins are locked with it before they are saved, so nobody else can open them, including Pathfinder. If you forget it, you just sign in to Bungie again.</p></div>`;
+    return `<div class="pfa"><div class="pfah"><b>Pathfinder account</b><span class="mute">Optional</span></div><p class="mute">Sign in once on another PC, the beta, the website or your phone and all your Bungie accounts (alts too) come with you. Everything works without one.</p>${PFA.out ? '<p class="pfae">Your Pathfinder account sign-in ended. Sign in again to keep syncing.</p>' : ''}<div class="pfaf"><input id="pfanm" type="text" placeholder="Account name" autocomplete="username" autocapitalize="off" spellcheck="false" maxlength="200" value="${esc(PFANM || PFA.name || '')}"><input id="pfapw" type="password" placeholder="Password (8+ characters)" autocomplete="current-password"><button class="b" data-pfa="login">Sign in</button><button class="g" data-pfa="signup">Create account</button></div>${PFARS ? `<div class="pfars"><b>Reset your password with a code</b><p class="mute">Ask Bray for a reset code. Enter your account name above, then the code and a new password here. Bungie accounts saved in your Pathfinder account are cleared, so sign in to Bungie again on devices that are not signed in any more.</p><div class="pfaf"><input id="pfacode" type="text" placeholder="Reset code (ABCD-EFGH-JKLM)" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false" maxlength="20"><input id="pfanpw" type="password" placeholder="New password (8+ characters)" autocomplete="new-password"><button class="b" data-pfa="reset">Set new password</button><button class="g" data-pfa="rsoff">Cancel</button></div></div>` : '<p><button class="g pfalink" data-pfa="rson">Forgot your password? Reset it with a code</button></p>'}${msg}<p class="mute pfan">Your password never leaves this device. Your Bungie sign-ins are locked with it before they are saved, so nobody else can open them, including Pathfinder. If you forget it, you just sign in to Bungie again.</p></div>`;
   }
   async function pfaAct(a) {
-    const em = (document.getElementById('pfaem') || {}).value || '', pw = (document.getElementById('pfapw') || {}).value || '';
-    if (em) PFAEM = em; // keep what you typed when the settings redraw
-    const run = async (label, fn) => { PFAMSG = label; drawSettings(); try { const r = await fn(); if (r && (r.reload || r.restart)) { afterAcct(r); return; } PFA = r && r.avail !== undefined ? r : await gt.pfaStatus(); PFAMSG = r && r.added ? `Added ${r.added} Bungie account${r.added === 1 ? '' : 's'} from your Pathfinder account. Switch to ${r.added === 1 ? 'it' : 'them'} above.` : a === 'sync' ? 'Synced.' : ''; ACL = null; } catch (er) { PFAMSG = clean(er); try { PFA = await gt.pfaStatus(); } catch (e2) { /* keep */ } } drawSettings(); };
-    if (a === 'login') return run('Signing in… (locking your key takes a second)', () => gt.pfaLogin({ email: em, pw }));
-    if (a === 'signup') { if (!confirm('Create a Pathfinder account for ' + em + '?\n\nYour password cannot be recovered. If you forget it, you just sign in to Bungie again on each device.')) return; return run('Creating your account…', () => gt.pfaSignup({ email: em, pw })); }
+    const nm = ((document.getElementById('pfanm') || {}).value || '').trim(), pw = (document.getElementById('pfapw') || {}).value || '';
+    if (nm) PFANM = nm; // keep what you typed when the settings redraw
+    const run = async (label, fn) => { PFAMSG = label; drawSettings(); try { const r = await fn(); if (r && (r.reload || r.restart)) { afterAcct(r); return; } PFA = r && r.avail !== undefined ? r : await gt.pfaStatus(); flagsLoad(); PFAMSG = r && r.added ? `Added ${r.added} Bungie account${r.added === 1 ? '' : 's'} from your Pathfinder account. Switch to ${r.added === 1 ? 'it' : 'them'} above.` : a === 'sync' ? 'Synced.' : ''; ACL = null; } catch (er) { PFAMSG = clean(er); try { PFA = await gt.pfaStatus(); } catch (e2) { /* keep */ } } drawSettings(); };
+    if (a === 'login') return run('Signing in… (locking your key takes a second)', () => gt.pfaLogin({ name: nm, pw }));
+    if (a === 'signup') { if (!confirm('Create the Pathfinder account "' + nm + '"?\n\nYour password cannot be recovered. If you forget it, you just sign in to Bungie again on each device.')) return; return run('Creating your account…', () => gt.pfaSignup({ name: nm, pw })); }
+    if (a === 'rson' || a === 'rsoff') { PFARS = a === 'rson'; PFAMSG = ''; drawSettings(); return; }
+    if (a === 'reset') {
+      const code = (document.getElementById('pfacode') || {}).value || '', npw = (document.getElementById('pfanpw') || {}).value || '';
+      if (!confirm('Set a new password for "' + nm + '"?\n\nThe Bungie accounts saved in your Pathfinder account are cleared and saved again from this device. Other devices are signed out of your Pathfinder account.')) return;
+      return run('Setting your new password…', async () => { const r = await gt.pfaReset({ name: nm, code, pw: npw }); PFARS = false; return r; });
+    }
     if (a === 'sync') return run('Syncing…', () => gt.pfaSync());
     if (a === 'logout') { if (!confirm('Sign out of your Pathfinder account on ' + GT_HERE + '? Your Bungie accounts stay signed in here.')) return; return run('Signing out…', () => gt.pfaLogout()); }
     if (a === 'del') { if (!confirm('Delete your Pathfinder account and the sign-ins saved in it? This cannot be undone. Bungie accounts already on your devices stay signed in.')) return; return run('Deleting…', () => gt.pfaDelete()); }
   }
+  // ---- feature switches and the developer role ----
+  // window.__gtFlag('name') tells a feature whether to show. Switches are set on the admin page: 'on' (everyone), 'dev' (only
+  // Pathfinder accounts with the developer role) or 'off' (nobody, developers included). A switch the admin page has never set
+  // uses the default the feature passes (normally true, so nothing disappears if the token service cannot be reached).
+  // Developers can tick "See it as a player" on a 'dev' switch to check what everyone else sees.
+  let FLG = { flags: {}, dev: false };
+  const devOff = () => { try { const a = JSON.parse(localStorage.getItem('gt_devoff')); return Array.isArray(a) ? a : []; } catch (e) { return []; } };
+  window.__gtFlag = (name, dflt) => { const l = FLG.flags[name]; if (!l) return dflt === undefined ? true : !!dflt; if (l === 'on') return true; if (l === 'off') return false; return !!FLG.dev && !devOff().includes(name); };
+  window.__gtDev = () => !!FLG.dev;
+  const flagsLoad = () => { if (!window.gt || !gt.flagsGet) return; gt.flagsGet().then((r) => { const was = JSON.stringify(FLG); FLG = { flags: (r && r.flags) || {}, dev: !!(r && r.dev) }; if (JSON.stringify(FLG) !== was) { document.documentElement.toggleAttribute('data-gtdev', FLG.dev); window.dispatchEvent(new Event('gtflags')); if (settingsSec.classList.contains('on')) drawSettings(); if (window.__gtRender) window.__gtRender(); } }).catch(() => {}); };
+  setTimeout(flagsLoad, 1500); setInterval(flagsLoad, 6e5);
+  function devCard() {
+    if (!FLG.dev) return '';
+    const off = devOff(), names = Object.keys(FLG.flags).sort();
+    const lv = { on: 'On for everyone', dev: 'Developers only', off: 'Off for everyone' };
+    const rows = names.map((n) => `<div class="sx"><div class="sxt"><b>${esc(n)}</b><small>${lv[FLG.flags[n]] || esc(FLG.flags[n])}</small></div><div class="sxc">${FLG.flags[n] === 'dev' ? `<label class="mute" style="display:flex;gap:8px;align-items:center">See it as a player <label class="tgl"><input type="checkbox" data-devoff="${esc(n)}"${off.includes(n) ? ' checked' : ''}><i></i></label></label>` : ''}</div></div>`).join('');
+    const pc = !document.documentElement.classList.contains('gtweb');
+    return `<div class="card sc"><h2>Developer</h2><p class="mute">You are signed in with a developer account (${esc((PFA && PFA.name) || '')}). Switches are set on the admin page; changes reach the app within 10 minutes.</p>
+      <div class="thh">Feature switches</div>${rows || '<p class="mute">No switches yet. Add them on the admin page.</p>'}
+      <div class="thh">Tools</div><p>${pc ? '<button class="g" data-dev="tools">Open developer tools</button> ' : ''}<button class="g" data-dev="flags">Check switches now</button> <button class="g" data-dev="diag">Copy diagnostics</button></p></div>`;
+  }
+  settingsSec.addEventListener('change', (e) => {
+    const t = e.target.closest && e.target.closest('[data-devoff]'); if (!t) return;
+    const a = devOff().filter((x) => x !== t.dataset.devoff); if (t.checked) a.push(t.dataset.devoff);
+    try { localStorage.setItem('gt_devoff', JSON.stringify(a)); } catch (er) { /* storage off */ }
+    window.dispatchEvent(new Event('gtflags')); if (window.__gtRender) window.__gtRender();
+  });
+  settingsSec.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-dev]'); if (!b) return;
+    if (b.dataset.dev === 'tools') gt.devTools().catch((er) => alert(clean(er)));
+    if (b.dataset.dev === 'flags') { FLG = { flags: {}, dev: FLG.dev }; flagsLoad(); }
+    if (b.dataset.dev === 'diag') {
+      const d = ['Pathfinder ' + (window.__GT_VER__ || ''), 'Here: ' + GT_HERE, 'Style: ' + SET.ui + ' / ' + SET.theme + ' / ' + SET.bg, 'Screen: ' + innerWidth + 'x' + innerHeight + ' @' + devicePixelRatio, 'Switches: ' + JSON.stringify(FLG.flags), 'Player view: ' + JSON.stringify(devOff()), 'Browser: ' + navigator.userAgent].join('\n');
+      (navigator.clipboard ? navigator.clipboard.writeText(d) : Promise.reject()).then(() => { b.textContent = 'Copied'; setTimeout(() => { b.textContent = 'Copy diagnostics'; }, 1500); }).catch(() => prompt('Diagnostics', d));
+    }
+  });
   const acctNs = (mid, prim) => (prim && mid && String(mid) !== String(prim) ? '@' + mid : '');
   function afterAcct(r) {
     if (r && r.reload) { location.reload(); return; }
@@ -1126,14 +1191,15 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
     </div>
     <div class="card sc"><h2>Appearance</h2>
       <div class="thh">Interface style</div>
-      <div class="uis">${[['pf', 'Pathfinder', 'The classic Pathfinder look.'], ['beta', 'Beta', 'Night shift: clean and modern. Still changing.'], ['bray', 'Bray', 'The founder\'s style. Bray created Pathfinder and builds it.'], ['manta', 'Manta', 'The dev and tester\'s style. Manta builds and tests Pathfinder.']].map(([k, n, d]) => `<div class="uic u-${k}${(SET.ui || 'pf') === k ? ' on' : ''}" data-uis="${k}"><i></i><b>${n}</b><small>${d}</small></div>`).join('')}</div>
+      <div class="uis">${[['pf', 'Pathfinder Classic', 'The classic Pathfinder look.'], ['beta', 'Custom', 'Your own mix of colour, accent and background picture. Saved for this style.'], ['bray', 'Bray', 'The founder\'s style. Bray created Pathfinder and builds it.'], ['manta', 'Manta', 'The dev and tester\'s style. Manta builds and tests Pathfinder.']].map(([k, n, d]) => `<div class="uic u-${k}${(SET.ui || 'pf') === k ? ' on' : ''}" data-uis="${k}"><i></i><b>${n}</b><small>${d}</small></div>`).join('')}</div>
+      ${lockNote()}<div class="lkw${LOCK[SET.ui] ? ' on' : ''}">
       <div class="thh">Colour</div>
       <p class="mute" style="margin:2px 0 6px">The tint of every panel. Mix it with any accent and any background picture.</p>
       <div class="sg">${themeGrid()}</div>
       <div class="thh">Accent colour</div>
       ${accGrid()}
       <div class="thh">Background picture</div>
-      ${bgGrid()}
+      ${bgGrid()}</div>
       ${sx('Background picture dimming', 'Higher is darker and easier to read.', rng('bgdim', 25, 90, '%'))}
       <div class="thh">Motion and cards</div>
       ${sx('Animations', 'Page fades, cards easing in and hover lifts. Off turns every animation off.', opt('anim', [['off', 'Off'], ['subtle', 'Subtle'], ['full', 'Full']]))}
@@ -1148,11 +1214,11 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
       ${sx('Tighter spacing', 'Packs items, rows and sections closer together so more fits on screen.', tgl('compact'))}
       ${tabsCard}
       <p><button class="g" data-sa="reset">Reset display settings</button></p>
-    </div>${window.matchMedia && matchMedia('(pointer:coarse)').matches && innerWidth < 900 ? '' : keysCard()}${wlc}${acct}</div>`; void upd; // Updates now live in About & help (news.js)
+    </div>${window.matchMedia && matchMedia('(pointer:coarse)').matches && innerWidth < 900 ? '' : keysCard()}${wlc}${acct}${devCard()}</div>`; void upd; // Updates now live in About & help (news.js)
   }
   // Settings cards in even columns: each card, in a sensible order, goes into whichever column is shortest, so no side runs
   // far longer than the other. Re-done when cards are added (Farming, Reminders... come from another file) or the window resizes.
-  const SORD = ['Accounts', 'Item display', 'Inventory display', 'Appearance', 'Display', 'Wish lists', 'Farming', 'Reminders', 'Keyboard shortcuts', 'Backup', 'About & help'];
+  const SORD = ['Accounts', 'Item display', 'Inventory display', 'Appearance', 'Display', 'Wish lists', 'Farming', 'Reminders', 'Keyboard shortcuts', 'Backup', 'About & help', 'Developer'];
   // Settings as a menu (like a browser's settings page): the sections are listed on the left and only the one you pick is shown.
   // Cards come from several files (Farming, Reminders, About & help...), so this runs again whenever new cards show up.
   const SICO = {
@@ -1167,6 +1233,7 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
     'Keyboard shortcuts': '<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/>',
     'Backup': '<path d="M7 18a5 5 0 01-.6-10A6 6 0 0118 9a4.5 4.5 0 01-1 9z"/><path d="M12 11v6M9.5 13.5L12 11l2.5 2.5"/>',
     'About & help': '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/>',
+    'Developer': '<path d="M8 8l-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/>',
   };
   const sico = (t) => `<svg viewBox="0 0 24 24" aria-hidden="true">${SICO[t] || '<circle cx="12" cy="12" r="8"/>'}</svg>`;
   let balT = 0, SSEC = (() => { try { return localStorage.getItem('gt_setsec') || 'Accounts'; } catch (e) { return 'Accounts'; } })();
@@ -1242,7 +1309,7 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
     if (cs) { const [c, i] = cs.dataset.cst.split(':').map(Number); SET.cst[c][i] = SET.cst[c][i] ? 0 : 1; saveSet(); drawSettings(); if (window.__gtRender) window.__gtRender(); return; }
     const bgo = e.target.closest('[data-bg]'); if (bgo) { pickBg(bgo.dataset.bg); return; }
     const acw = e.target.closest('[data-acc]'); if (acw) { pickAcc(acw.dataset.acc); return; }
-    const uis = e.target.closest('[data-uis]'); if (uis) { SET.ui = uis.dataset.uis; applySet(); saveSet(); settingsSec.querySelectorAll('[data-uis]').forEach((n) => n.classList.toggle('on', n.dataset.uis === SET.ui)); return; }
+    const uis = e.target.closest('[data-uis]'); if (uis) { switchUi(uis.dataset.uis); applySet(); saveSet(); drawSettings(); return; }
     const th = e.target.closest('[data-th]'); if (th) { pickTheme(th.dataset.th); return; }
     const nt = e.target.closest('[data-navt]'); if (nt && window.__gtnav && !nt.disabled) { const cur = window.__gtnav.list().find((x) => x[0] === nt.dataset.navt); if (cur) window.__gtnav.set(cur[0], !cur[2]); drawSettings(); return; }
     const asw = e.target.closest('[data-acsw]');
@@ -1298,6 +1365,7 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
   settingsSec.addEventListener('input', (e) => {
     if (e.target.id === 'wlurl' || e.target.id === 'wltext') { WLD[e.target.id] = e.target.value; return; }
     const k = e.target.dataset.sk; if (!k) return;
+    if (k === 'accent' && LOCK[SET.ui]) { markLook(); return; } // Bray and Manta keep their accent
     SET[k] = e.target.type === 'checkbox' ? e.target.checked : e.target.type === 'range' ? +e.target.value : e.target.dataset.num ? +e.target.value : e.target.value;
     const o = e.target.nextElementSibling; if (o && o.tagName === 'OUTPUT') o.textContent = SET[k] + (k === 'tile' ? 'px' : '%');
     if (k === 'accent') SET.accentUser = SET.accent;
@@ -2908,6 +2976,8 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
   function fetchDet(x) {
     const id = x.id; if (DET[id]) return Promise.resolve(DET[id]);
     if (!PEND[id]) PEND[id] = Promise.race([gt.itemDetail({ id, h: x.h }), new Promise((_, no) => setTimeout(() => no(new Error('Bungie is taking too long to answer. Close and open the item to try again.')), 15000))]).then((d) => (DET[id] = d), (e) => (DET[id] = { err: clean(e) })).finally(() => { delete PEND[id]; });
+    // The pop-up opens from the vault data straight away; kill trackers and crafted levels arrive a moment later.
+    PEND[id].then((d) => { if (d && d.more && !d.obj && gt.itemCounters) { d.more = 0; gt.itemCounters({ id }).then((o) => { if (DET[id] === d && o && o.length) { d.obj = o; if (sel === id) renderPop(); } }).catch(() => {}); } });
     return PEND[id];
   }
   // Point at an item for a moment and its details start loading, so the pop-up usually opens complete instead of filling in a second later.

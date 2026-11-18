@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.17: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.18: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -500,9 +500,9 @@ const WCR = globalThis.crypto && globalThis.crypto.subtle ? globalThis.crypto : 
 const pfaUrl = () => (preset && preset.tokenUrl && /^https:\/\//i.test(preset.tokenUrl) ? preset.tokenUrl.replace(/\/+$/, '') + '/acct' : '');
 const pb64 = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 const pun64 = (t) => Uint8Array.from(atob(String(t).replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((String(t).length + 3) % 4)), (ch) => ch.charCodeAt(0));
-async function pfaKeys(email, pw) {
+async function pfaKeys(name, pw) {
   const k = await WCR.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveBits']);
-  const bits = new Uint8Array(await WCR.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: new TextEncoder().encode('pathfinder-account-v1:' + email.trim().toLowerCase()), iterations: 310000 }, k, 512));
+  const bits = new Uint8Array(await WCR.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: new TextEncoder().encode('pathfinder-account-v1:' + name.trim().toLowerCase()), iterations: 310000 }, k, 512));
   return { auth: pb64(bits.slice(0, 32)), key: pb64(bits.slice(32)) };
 }
 async function pfaSeal(obj, key) {
@@ -528,7 +528,7 @@ let PFA_ERR = '', PFA_BUSY = null;
 async function pfaSync(boxIn, verIn) {
   const c = rd(); if (!c.pfa || !c.pfa.sess) return { off: 1 };
   let ver = verIn, box = boxIn;
-  if (box === undefined) { const g = await pfaReq('GET', '/box', null, c.pfa.sess); ver = g.ver; box = g.box; }
+  if (box === undefined) { const g = await pfaReq('GET', '/box', null, c.pfa.sess); ver = g.ver; box = g.box; if (typeof g.role === 'string' && (c.pfa.role || '') !== g.role) { c.pfa.role = g.role; wr(c); } }
   for (let round = 0; round < 3; round++) {
     let data; try { data = await pfaOpen(box, c.pfa.key); } catch (e) { throw new Error('Could not open your saved sign-ins with this password. If you changed it on another device, sign out and in again here.'); }
     const B = (data && data.accts) || {}, cid = String(c.clientId || ''), skip = c.pfa.skip || {}, now = Date.now();
@@ -560,25 +560,62 @@ const pfaRun = (boxIn, verIn) => {
   PFA_BUSY = pfaSync(boxIn, verIn).catch((e) => { PFA_ERR = e.message; if (e.code === 'signed_out') { const c = rd(); if (c.pfa) { delete c.pfa.sess; wr(c); } } throw e; }).finally(() => { PFA_BUSY = null; });
   return PFA_BUSY;
 };
-const pfaStatus = () => { const c = rd(), p = c.pfa || {}; return { avail: !!pfaUrl(), on: !!p.sess, email: p.email || '', at: p.at || 0, n: p.n || 0, err: PFA_ERR, out: !!(p.email && !p.sess) }; };
+// A Pathfinder account is an account name and a password. Accounts made earlier with an email address still sign in with that
+// email typed as the account name (both are matched the same way: trimmed, any capitals ignored).
+const pfaName = (p) => (p && (p.name || p.email)) || '';
+const pfaStatus = () => { const c = rd(), p = c.pfa || {}; return { avail: !!pfaUrl(), on: !!p.sess, name: pfaName(p), at: p.at || 0, n: p.n || 0, err: PFA_ERR, out: !!(pfaName(p) && !p.sess), dev: !!(p.sess && p.role === 'dev') }; };
 H('pfa:status', () => pfaStatus());
-const pfaCreds = (v) => { OBJ(v); const email = TXT(v.email, 200).trim(), pw = TXT(v.pw, 200); if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('Enter a valid email address.'); if (pw.length < 8) throw new Error('Use a password of at least 8 characters.'); return { email, pw }; };
+const pfaCreds = (v, isNew) => {
+  OBJ(v); const name = TXT(v.name, 200).trim(), pw = TXT(v.pw, 200);
+  if (!name) throw new Error('Enter your account name.');
+  if (isNew && !/^[A-Za-z0-9][A-Za-z0-9._-]{2,23}$/.test(name)) throw new Error('Account names are 3 to 24 letters or numbers (you can also use . _ and -), starting with a letter or number.');
+  if (!isNew && (name.length < 3 || /\s/.test(name))) throw new Error('That is not an account name. Account names have no spaces.');
+  if (pw.length < 8) throw new Error('Use a password of at least 8 characters.');
+  return { name, pw };
+};
+// The token service is asked with the name (and the same text as "email", which older copies of the token service expect).
+const pfaWho = (name, auth) => ({ name, email: name, auth });
+const pfaOld = (er) => { if (er && er.code === 'bad_request') er.message = 'Update the token service to use account names (step 2 of ACCOUNTS-SETUP.txt).'; throw er; };
 H('pfa:signup', async (e, v) => {
-  const { email, pw } = pfaCreds(v), k = await pfaKeys(email, pw);
-  const r = await pfaReq('POST', '/signup', { email, auth: k.auth });
-  const c = rd(); c.pfa = { email, sess: r.sess, key: k.key, skip: {} }; wr(c);
+  const { name, pw } = pfaCreds(v, true), k = await pfaKeys(name, pw);
+  const r = await pfaReq('POST', '/signup', pfaWho(name, k.auth)).catch(pfaOld);
+  const c = rd(); c.pfa = { name, sess: r.sess, key: k.key, skip: {}, role: r.role || '' }; wr(c);
   await pfaRun(r.box, r.ver).catch(() => {});
   return pfaStatus();
 });
 H('pfa:login', async (e, v) => {
-  const { email, pw } = pfaCreds(v), k = await pfaKeys(email, pw);
-  const r = await pfaReq('POST', '/login', { email, auth: k.auth });
-  const c = rd(), hadTok = !!c.tok; c.pfa = { email, sess: r.sess, key: k.key, skip: (c.pfa && c.pfa.email === email && c.pfa.skip) || {} }; wr(c);
+  const { name, pw } = pfaCreds(v, false), k = await pfaKeys(name, pw);
+  const r = await pfaReq('POST', '/login', pfaWho(name, k.auth)).catch(pfaOld);
+  const c = rd(), hadTok = !!c.tok, same = c.pfa && pfaName(c.pfa).toLowerCase() === name.toLowerCase(); c.pfa = { name, sess: r.sess, key: k.key, skip: (same && c.pfa.skip) || {}, role: r.role || '' }; wr(c);
   const s2 = await pfaRun(r.box, r.ver);
   if (!hadTok && rd().tok) { M = null; return { ...pfaStatus(), ...restartApp() }; }
   return { ...pfaStatus(), added: s2.added || 0 };
 });
 H('pfa:sync', async () => { const c = rd(), hadTok = !!c.tok, r = await pfaRun(); if (!hadTok && rd().tok) { M = null; return { ...pfaStatus(), ...restartApp() }; } return { ...pfaStatus(), added: r.added || 0 }; });
+// Forgot the password: the owner makes a one-time reset code on the admin page. The code plus a new password sets a new
+// password. What was locked with the old one cannot be opened, so the saved box starts empty and this device's Bungie sign-ins
+// are saved into it again; other devices are signed out of the Pathfinder account and sign in with the new password.
+H('pfa:reset', async (e, v) => {
+  OBJ(v); const code = TXT(v.code, 40).toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if (code.length !== 12) throw new Error('Reset codes are 12 letters and numbers, like ABCD-EFGH-JKLM.');
+  const { name, pw } = pfaCreds(v, false), k = await pfaKeys(name, pw);
+  const r = await pfaReq('POST', '/reset', { name, code, auth: k.auth }).catch(pfaOld);
+  const c = rd(), hadTok = !!c.tok; c.pfa = { name, sess: r.sess, key: k.key, skip: {}, role: r.role || '' }; wr(c);
+  await pfaRun(null, 0).catch(() => {});
+  if (!hadTok && rd().tok) { M = null; return { ...pfaStatus(), ...restartApp() }; }
+  return pfaStatus();
+});
+// Feature switches set on the admin page: 'on' (everyone), 'dev' (developer accounts only), 'off' (nobody). Checked every 10 minutes.
+let FLAGS = null, FLAGS_AT = 0;
+H('flags:get', async () => {
+  const base = preset && preset.tokenUrl && /^https:\/\//i.test(preset.tokenUrl) ? preset.tokenUrl.replace(/\/+$/, '') : '';
+  if (base && (!FLAGS || Date.now() - FLAGS_AT > 6e5)) {
+    try { const r = await fetch(base + '/flags', { headers: { Accept: 'application/json' }, signal: AbortSignal.timeout(8000) }); if (r.ok) { const j = await r.json(); FLAGS = j && j.flags && typeof j.flags === 'object' ? j.flags : {}; FLAGS_AT = Date.now(); } } catch (er) { /* keep the last ones */ }
+  }
+  return { flags: FLAGS || {}, dev: pfaStatus().dev };
+});
+// Developer tools (the PC app only, developer accounts only).
+H('dev:tools', () => { if (!pfaStatus().dev) throw new Error('Developer accounts only.'); if (win && !win.isDestroyed() && win.webContents && win.webContents.openDevTools) win.webContents.openDevTools({ mode: 'detach' }); return true; });
 H('pfa:logout', async () => { const c = rd(); if (c.pfa && c.pfa.sess) { try { await pfaReq('POST', '/logout', {}, c.pfa.sess); } catch (e) { /* signed out here anyway */ } } delete c.pfa; wr(c); PFA_ERR = ''; return pfaStatus(); });
 H('pfa:delete', async () => { const c = rd(); if (!c.pfa || !c.pfa.sess) throw new Error('Sign in to your Pathfinder account first.'); await pfaReq('DELETE', '', null, c.pfa.sess); delete c.pfa; wr(c); return pfaStatus(); });
 // Keep the box up to date: shortly after start, then every six hours.
@@ -654,6 +691,8 @@ H('vault:load', async () => {
   const ldP = lodefs().catch(() => ({ names: {}, colors: {}, icons: {} })); // in parallel with the profile, not after it
   const [df, pr] = await Promise.all([defs(), api(`/Destiny2/${m.membershipType}/Profile/${m.membershipId}/?components=102,103,200,201,205,206,300,304,305,310,1000`)]);
   xdLoad(df);
+  // Every item's stats, perks and perk options came with this load; the item pop-up builds from them instantly instead of asking Bungie again.
+  ICMP = { mid: String(m.membershipId), ic: pr.itemComponents || {} }; IDIRTY = new Set();
   PLUGS = { p: (pr.profilePlugSets && pr.profilePlugSets.data && pr.profilePlugSets.data.plugs) || {}, c: (pr.characterPlugSets && pr.characterPlugSets.data) || {} };
   const d = df.d;
   const ld = await ldP; // names fall back to numbers
@@ -834,6 +873,23 @@ const entTrim = (tbl, o) => {
   return o;
 };
 const ENTP = {};
+let ICMP = null, IDIRTY = new Set();
+// Kill trackers, crafted levels and other counters on an item (components 301 and 309), turned into the pop-up's list.
+async function itemObjs(r, df) {
+  const od = async (oh) => { const o = await entDef('DestinyObjectiveDefinition', oh); return o ? { n: (o.progressDescription || (o.displayProperties && o.displayProperties.name) || '').slice(0, 80), cv: o.completionValue || 0 } : null; };
+  const obj = [];
+  const po = (r.plugObjectives && r.plugObjectives.data && r.plugObjectives.data.objectivesPerPlug) || {};
+  const io = (r.objectives && r.objectives.data && r.objectives.data.objectives) || [];
+  await Promise.all([...Object.keys(po).slice(0, 12).flatMap((ph) => po[ph].slice(0, 3)), ...io.slice(0, 8)].map((o) => entDef('DestinyObjectiveDefinition', o.objectiveHash)));
+  for (const ph of Object.keys(po).slice(0, 12)) {
+    const pd = df.p[ph];
+    for (const o of po[ph].slice(0, 3)) { const d = await od(o.objectiveHash); if (d) obj.push({ k: /tracker/i.test((pd && pd.c) || '') ? 'tr' : 'pl', pn: (pd && pd.n) || '', i: (pd && pd.i) || '', n: d.n, p: o.progress || 0, c: o.completionValue || d.cv }); }
+  }
+  for (const o of io.slice(0, 8)) { const d = await od(o.objectiveHash); if (d) obj.push({ k: 'it', pn: '', i: '', n: d.n, p: o.progress || 0, c: o.completionValue || d.cv }); }
+  return obj;
+}
+// The counters alone, asked for after the pop-up is already showing (a small request).
+H('item:counters', async (e, v) => { await ensureM(); OBJ(v); const id = ID(v.id); const df = await defs(); const r = await api(`/Destiny2/${M.membershipType}/Profile/${M.membershipId}/Item/${id}/?components=301,309`); return itemObjs(r, df); });
 const entDef = async (tbl, h) => {
   const k = tbl + h; if (ENTC[k] !== undefined) return ENTC[k];
   const disk = entLoad(); if (disk[k] !== undefined) return (ENTC[k] = disk[k]);
@@ -845,9 +901,17 @@ const ARCHN = new Set(['paragon', 'brawler', 'gunner', 'specialist', 'grenadier'
 H('item:detail', async (e, v) => { await ensureM();
   OBJ(v); const id = ID(v.id), h = v.h !== undefined ? HASH(v.h) : 0;
   const df = await defs();
-  // The live item and its definition are asked for at the same time (the definition is usually already on disk).
-  const [r, idf] = await Promise.all([api(`/Destiny2/${M.membershipType}/Profile/${M.membershipId}/Item/${id}/?components=300,301,304,305,309,310`), entDef('DestinyInventoryItemDefinition', h)]);
+  // From the last vault load when it has this item (instant), otherwise live from Bungie. After a perk or mod is changed the item
+  // is read live again. Counters (kill trackers, crafted level) are not in the vault load; the pop-up asks for them afterwards.
+  const ic = !v.live && ICMP && ICMP.mid === String(M.membershipId) && !IDIRTY.has(id) ? ICMP.ic : null;
+  const gi = (k) => (ic && ic[k] && ic[k].data && ic[k].data[id]) || undefined;
+  const cached = ic && gi('sockets') ? { stats: { data: gi('stats') }, instance: { data: gi('instances') }, sockets: { data: gi('sockets') }, reusablePlugs: { data: gi('reusablePlugs') } } : null;
+  // The item's own definition is normally on disk already; when it is not, the pop-up waits at most 2.5 seconds for it
+  // (perks are then grouped by their type instead) and it is saved for next time.
+  const idP = entDef('DestinyInventoryItemDefinition', h);
+  const [r, idf] = await Promise.all([cached || api(`/Destiny2/${M.membershipType}/Profile/${M.membershipId}/Item/${id}/?components=300,301,304,305,309,310`), Promise.race([idP, new Promise((ok) => setTimeout(() => ok(null), 2500))])]);
   const out = { stats: [], groups: [], cos: [] };
+  if (cached) out.more = 1;
   const sv = (r.stats && r.stats.data && r.stats.data.stats) || {};
   const inst = (r.instance && r.instance.data) || {};
   const isArmor = !!(idf && idf.itemType === 2);
@@ -914,20 +978,7 @@ H('item:detail', async (e, v) => { await ensureM();
     }
   } catch (er) { /* set bonus not shown */ }
   // Kill tracker, crafted weapon level and any other counters on the item.
-  try {
-    const od = async (oh) => { const o = await entDef('DestinyObjectiveDefinition', oh); return o ? { n: (o.progressDescription || (o.displayProperties && o.displayProperties.name) || '').slice(0, 80), cv: o.completionValue || 0 } : null; };
-    const obj = [];
-    const po = (r.plugObjectives && r.plugObjectives.data && r.plugObjectives.data.objectivesPerPlug) || {};
-    const io0 = (r.objectives && r.objectives.data && r.objectives.data.objectives) || [];
-    await Promise.all([...Object.keys(po).slice(0, 12).flatMap((ph) => po[ph].slice(0, 3)), ...io0.slice(0, 8)].map((o) => entDef('DestinyObjectiveDefinition', o.objectiveHash)));
-    for (const ph of Object.keys(po).slice(0, 12)) {
-      const pd = df.p[ph];
-      for (const o of po[ph].slice(0, 3)) { const d = await od(o.objectiveHash); if (d) obj.push({ k: /tracker/i.test((pd && pd.c) || '') ? 'tr' : 'pl', pn: (pd && pd.n) || '', i: (pd && pd.i) || '', n: d.n, p: o.progress || 0, c: o.completionValue || d.cv }); }
-    }
-    const io = (r.objectives && r.objectives.data && r.objectives.data.objectives) || [];
-    for (const o of io.slice(0, 8)) { const d = await od(o.objectiveHash); if (d) obj.push({ k: 'it', pn: '', i: '', n: d.n, p: o.progress || 0, c: o.completionValue || d.cv }); }
-    if (obj.length) out.obj = obj;
-  } catch (er) { /* counters not shown */ }
+  if (!cached) try { const obj = await itemObjs(r, df); if (obj.length) out.obj = obj; } catch (er) { /* counters not shown */ }
   return out;
 });
 
@@ -954,7 +1005,7 @@ H('item:stack', async (e, v) => {
 // Lock or unlock an item (the padlock in the game). Needs a character to act through, even for vault items.
 H('item:lock', async (e, v) => { OBJ(v); const id = ID(v.id), char = ID(v.char), state = v.state; await post('/Destiny2/Actions/Items/SetLockState/', { state: !!state, itemId: id, characterId: char }); return true; });
 // Put a perk into a socket for free. Bungie only allows this where the game does (crafted weapons, armor mods you own...).
-H('item:plug', async (e, v) => { await ensureM(); OBJ(v); const id = ID(v.id), char = ID(v.char), socket = INT(v.socket, 0, 200), plug = HASH(v.plug); await post('/Destiny2/Actions/Items/InsertSocketPlugFree/', { plug: { socketIndex: socket, socketArrayType: 0, plugItemHash: plug }, itemId: id, characterId: char }); return true; });
+H('item:plug', async (e, v) => { await ensureM(); OBJ(v); const id = ID(v.id), char = ID(v.char), socket = INT(v.socket, 0, 200), plug = HASH(v.plug); IDIRTY.add(id); await post('/Destiny2/Actions/Items/InsertSocketPlugFree/', { plug: { socketIndex: socket, socketArrayType: 0, plugItemHash: plug }, itemId: id, characterId: char }); return true; });
 // Every mod or catalyst a weapon socket can take: the ones this account has unlocked (can be put in right away) and the
 // ones it has not, with Bungie's own "Source:" line when there is one. Asked for only when the socket is clicked.
 H('item:modopts', async (e, v) => {
