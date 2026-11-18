@@ -841,7 +841,7 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
   // id, name, hue, saturation, starting accent, swatch
   const COLS = [
     ['beta', 'Night', 214, 30, '#f2b441', '#0b0e13'],
-    ['dim', 'DIM Dark', 220, 6, '#7ab8e8', '#1b1c1f'],
+    ['dim', 'Graphite', 220, 6, '#7ab8e8', '#1b1c1f'],
     ['black', 'Black', 0, 0, '#d8dde5', '#000'],
     ['slate', 'Slate', 215, 14, '#9fb0c4', '#1b2128'],
     ['blue', 'Destiny Blue', 214, 40, '#6fc7ff', '#121c2a'],
@@ -865,11 +865,12 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
     if (!tById(SET.theme)) SET.theme = 'dim';
     if (SET.bg === undefined || !BGS.some((b) => b[0] === SET.bg)) SET.bg = '';
     if (SET.ui === 'd2') SET.ui = 'bray';
+    if (SET.ui === 'dim') SET.ui = 'pf'; // the DIM style was removed
   }
   const hs = (t, l, a) => `hsl(${t.h} ${t.s}% ${l}%${a !== undefined && a !== '' ? ' / ' + a : ''})`;
   (() => {
     // Every colour gets the same set of surface shades. With a picture on, surfaces turn see-through so the picture shows.
-    // The classic colours (DIM Dark, Black, Destiny Blue, Ember, Void, Forest) keep their exact shades from the table near the top.
+    // The classic colours (Graphite, Black, Destiny Blue, Ember, Void, Forest) keep their exact shades from the table near the top.
     const CLASSIC = { dim: ['#0e0f11', '#1b1c1f', '#17181b', '#101113'], black: ['#000', '#0b0b0c', '#050506', '#000'], blue: ['#0a1018', '#121c2a', '#0e1622', '#0a121c'], ember: ['#120d0b', '#1f1713', '#19120f', '#120d0b'], void: ['#0f0a14', '#1b1424', '#150f1d', '#0f0a14'], forest: ['#0b110d', '#141f17', '#101a13', '#0b110d'] };
     const rgba = (hex, a) => { const x = hex.length === 4 ? hex.slice(1).split('').map((c) => c + c).join('') : hex.slice(1); return `rgba(${[0, 2, 4].map((i) => parseInt(x.slice(i, i + 2), 16)).join(',')},${a})`; };
     const cs = COLS.map((t) => {
@@ -910,7 +911,7 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
     if (SET.bg) r.style.setProperty('--g-layers', bgLayers()); else r.style.removeProperty('--g-layers');
     r.style.setProperty('--g-dim', String(Math.max(.25, Math.min(.9, (+SET.bgdim || 45) / 100))));
     // Bray and Manta are copies of the Beta style for now (each will get its own look); they share its rules and carry their own name.
-    const ui = ['pf', 'dim', 'beta', 'bray', 'manta'].includes(SET.ui) ? SET.ui : 'pf';
+    const ui = ['pf', 'beta', 'bray', 'manta'].includes(SET.ui) ? SET.ui : 'pf';
     r.setAttribute('data-ui', ui === 'bray' || ui === 'manta' ? 'beta' : ui); r.setAttribute('data-uin', ui);
     r.setAttribute('data-anim', ['off', 'subtle', 'full'].includes(SET.anim) ? SET.anim : 'subtle'); r.setAttribute('data-cardart', SET.cardart === false ? '0' : '1');
     r.style.setProperty('--gt-glow', String(Math.max(0, Math.min(100, SET.glow === undefined ? 55 : +SET.glow)) / 100));
@@ -1125,7 +1126,7 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
     </div>
     <div class="card sc"><h2>Appearance</h2>
       <div class="thh">Interface style</div>
-      <div class="uis">${[['pf', 'Pathfinder', 'The classic Pathfinder look.'], ['beta', 'Beta', 'Night shift: clean and modern. Still changing.'], ['bray', 'Bray', 'The founder\'s style. Bray created Pathfinder.'], ['manta', 'Manta', 'The dev and tester\'s style. Manta builds and tests Pathfinder.'], ['dim', 'DIM', 'Looks like Destiny Item Manager.']].map(([k, n, d]) => `<div class="uic u-${k}${(SET.ui || 'pf') === k ? ' on' : ''}" data-uis="${k}"><i></i><b>${n}</b><small>${d}</small></div>`).join('')}</div>
+      <div class="uis">${[['pf', 'Pathfinder', 'The classic Pathfinder look.'], ['beta', 'Beta', 'Night shift: clean and modern. Still changing.'], ['bray', 'Bray', 'The founder\'s style. Bray created Pathfinder and builds it.'], ['manta', 'Manta', 'The dev and tester\'s style. Manta builds and tests Pathfinder.']].map(([k, n, d]) => `<div class="uic u-${k}${(SET.ui || 'pf') === k ? ' on' : ''}" data-uis="${k}"><i></i><b>${n}</b><small>${d}</small></div>`).join('')}</div>
       <div class="thh">Colour</div>
       <p class="mute" style="margin:2px 0 6px">The tint of every panel. Mix it with any accent and any background picture.</p>
       <div class="sg">${themeGrid()}</div>
