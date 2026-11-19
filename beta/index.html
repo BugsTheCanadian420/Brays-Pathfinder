@@ -8,8 +8,8 @@
 <style id="gtpre">html:not(.gtready) body>*{visibility:hidden!important}html:not(.gtready) body{background:#0b0d12}</style>
 <script>setTimeout(function(){document.documentElement.classList.add('gtready')},4000);</script>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Open+Sans:wght@400;600;700&family=Barlow:wght@300;400;500;600&family=Manrope:wght@400;500;600;700;800&family=Inter+Tight:wght@400;500;600;700;800&family=Shantell+Sans:wght@400;500;600;700;800&family=Exile&family=Blinker:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="beta.css?v=0.3.22-beta.1">
-<link rel="stylesheet" href="guides.css?v=0.3.22-beta.1">
+<link rel="stylesheet" href="beta.css?v=0.3.23-beta.1">
+<link rel="stylesheet" href="guides.css?v=0.3.23-beta.1">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
 --bg:#eef0f3;--panel:#fff;--line:#d3d8e0;--text:#1b2230;--mute:#667085;--gold:#9a7416;--arc:#1b6aa5;--ok:#2e7d4f;--inp:#f5f7fa}
@@ -147,14 +147,157 @@ main{position:relative;z-index:2}
 <meta property="og:image" content="https://d2pathfinder.com/icon-512.png">
 <meta name="twitter:card" content="summary">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="web.css?v=0.3.22-beta.1">
-<script>window.__GT_VER__="0.3.22-beta.1";window.__GT_BETA__=1;</script>
-<script src="shims.js?v=0.3.22-beta.1"></script><script src="pako.min.js?v=0.3.22-beta.1"></script><script src="preload-web.js?v=0.3.22-beta.1"></script><script src="main-web.js?v=0.3.22-beta.1"></script>
+<link rel="stylesheet" href="web.css?v=0.3.23-beta.1">
+<script>window.__GT_VER__="0.3.23-beta.1";window.__GT_BETA__=1;</script>
+<script src="shims.js?v=0.3.23-beta.1"></script><script src="pako.min.js?v=0.3.23-beta.1"></script><script src="preload-web.js?v=0.3.23-beta.1"></script><script src="main-web.js?v=0.3.23-beta.1"></script>
 <script>window.__GT_WEB__.start();document.documentElement.classList.add('gtweb');</script>
-<script src="mobile.js?v=0.3.22-beta.1" defer></script>
+<script src="mobile.js?v=0.3.23-beta.1" defer></script>
 <script>window.__GT_DL__="/download";</script>
-<script src="install.js?v=0.3.22-beta.1" defer></script>
+<script src="install.js?v=0.3.23-beta.1" defer></script>
 </head><body>
+<!-- Pathfinder landing page (web only, added by web/build.js right after <body>). Shown to first-time visitors and search
+     engines; anyone who has used the app before (or is coming back from signing in or opening a share link) goes straight to
+     the app. "Open Pathfinder" hides it for good on this device. -->
+<script>(function(){try{var q=location.search+location.hash;if(/[?&#](code|s|state|error)=/.test(q)||localStorage.getItem('gt_settings')||localStorage.getItem('gt_seenapp'))document.documentElement.classList.add('pfl-off');}catch(e){document.documentElement.classList.add('pfl-off');}})();</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"SoftwareApplication","name":"Pathfinder","alternateName":"Pathfinder for Destiny 2","url":"https://d2pathfinder.com/","applicationCategory":"GameApplication","operatingSystem":"Windows, Web browser, iOS, Android","description":"A free Destiny 2 companion: vault and inventory manager, loadouts, god roll finder with wish lists, triumphs, weekly rotations and activity history, on PC, the web and your phone.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"image":"https://d2pathfinder.com/icon-512.png"},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Pathfinder free?","acceptedAnswer":{"@type":"Answer","text":"Yes. Pathfinder is free, with no ads and nothing to unlock."}},{"@type":"Question","name":"Is it safe to sign in with my Bungie account?","acceptedAnswer":{"@type":"Answer","text":"You sign in on Bungie.net itself, so Pathfinder never sees your password. It uses Bungie's official API, and only moves, equips or locks items when you ask."}},{"@type":"Question","name":"Does Pathfinder work on my phone?","acceptedAnswer":{"@type":"Answer","text":"Yes. The website works in any phone browser, and you can add it to your home screen so it opens like an app."}},{"@type":"Question","name":"Is Pathfinder made by Bungie?","acceptedAnswer":{"@type":"Answer","text":"No. Pathfinder is a fan-made Destiny 2 companion and is not made by or affiliated with Bungie."}}]}]}</script>
+<div id="pfl" role="main" aria-label="About Pathfinder">
+<style>
+html:not(.pfl-off),html:not(.pfl-off) body{overflow:hidden!important}
+html.pfl-off #pfl{display:none!important}
+#pfl{--bg:#090b10;--panel:#11141a;--panel2:#161a21;--line:#222831;--text:#d3d8df;--mute:#8a929d;--head:#fff;--gold:#f2b441;--purple:#8a5cf0;--teal:#35e3cf;position:fixed;inset:0;z-index:2147483000;overflow-y:auto;overflow-x:hidden;background:var(--bg);color:var(--text);font:16px/1.6 Manrope,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased;text-align:left;letter-spacing:normal;text-transform:none}
+#pfl *{box-sizing:border-box}
+#pfl h1,#pfl h2,#pfl h3{text-transform:none!important;font-family:inherit!important;text-shadow:none!important;background:none!important;padding:0!important;border:0!important}
+#pfl .btn{text-transform:none!important;letter-spacing:0!important;font-family:inherit!important}#pfl .btn.go{background:var(--gold)!important;color:#15171b!important}#pfl .btn.go:hover{background:#ffc75c!important}#pfl .btn.alt{background:transparent!important;color:var(--head)!important}
+#pfl .roll small{display:block}
+#pfl::before{content:"";position:absolute;left:0;right:0;top:0;height:760px;background:radial-gradient(70% 70% at 78% 18%,rgba(242,180,65,.13),transparent 60%),radial-gradient(50% 60% at 10% 0%,rgba(138,92,240,.12),transparent 65%);pointer-events:none}
+#pfl a{color:var(--gold);text-decoration:none}
+#pfl a:focus-visible,#pfl button:focus-visible,#pfl summary:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:8px}
+#pfl .w{position:relative;max-width:1120px;margin:0 auto;padding:0 20px}
+#pfl .top{display:flex;align-items:center;gap:12px;padding:18px 0}
+#pfl .brand{display:flex;align-items:center;gap:10px;color:var(--head);font-weight:800;font-size:18px}
+#pfl .brand img{width:32px;height:32px}
+#pfl .top .nv{margin-left:auto;display:flex;gap:4px;align-items:center}
+#pfl .top .nv a{color:var(--mute);font-weight:600;font-size:14px;padding:7px 11px;border-radius:9px}
+#pfl .top .nv a:hover{color:var(--head);background:rgba(255,255,255,.05)}
+#pfl .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:12px;padding:13px 22px;font:inherit;font-weight:800;font-size:16px;cursor:pointer;border:1px solid transparent;transition:transform .15s,background .15s,border-color .15s;text-transform:none;letter-spacing:0;height:auto;min-width:0;box-shadow:none}
+#pfl .btn.go{background:var(--gold);color:#15171b}#pfl .btn.go:hover{background:#ffc75c;transform:translateY(-1px)}
+#pfl .btn.alt{background:transparent;color:var(--head);border-color:#343b46}#pfl .btn.alt:hover{border-color:#56606e;background:rgba(255,255,255,.03)}
+#pfl .btn.sm{padding:8px 14px;font-size:14px;border-radius:10px}
+#pfl .hero{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:48px;align-items:center;padding:56px 0 70px}
+#pfl h1{margin:0;color:var(--head);font-size:clamp(36px,5.6vw,62px);line-height:1.04;font-weight:800;letter-spacing:-1.6px}
+#pfl .hero p.lede{margin:20px 0 0;font-size:clamp(17px,2vw,19px);color:#c2c8d0;max-width:540px}
+#pfl .cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
+#pfl .trust{display:flex;gap:18px;flex-wrap:wrap;margin-top:24px;color:var(--mute);font-size:14px}
+#pfl .trust span{display:inline-flex;align-items:center;gap:7px}#pfl .trust svg{width:16px;height:16px;color:var(--gold)}
+/* the picture: a vault, drawn in CSS, with a god roll card */
+#pfl .art{position:relative;aspect-ratio:1/0.92;max-width:520px;width:100%;justify-self:end}
+#pfl .vault{position:absolute;inset:6% 0 0 8%;background:linear-gradient(180deg,#151922,#0f1217);border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:0 30px 80px rgba(0,0,0,.55);display:grid;grid-template-columns:repeat(5,1fr);grid-auto-rows:1fr;gap:10px;transform:rotate(-2deg)}
+#pfl .vault i{border-radius:8px;background:linear-gradient(160deg,#5b3fa6,#352563);border:1px solid rgba(255,255,255,.08);position:relative}
+#pfl .vault i.ex{background:linear-gradient(160deg,#e9b448,#9a6a14)}#pfl .vault i.bl{background:linear-gradient(160deg,#3d6aa8,#22385c)}#pfl .vault i.gr{background:linear-gradient(160deg,#3e7a52,#234531)}
+#pfl .vault i.up::after{content:"";position:absolute;right:4px;top:4px;width:9px;height:9px;border-radius:50%;background:#4cd387;box-shadow:0 0 0 2px #0f1217}
+#pfl .vault i.dim{opacity:.35}
+#pfl .roll{position:absolute;left:0;bottom:4%;width:62%;background:rgba(17,20,26,.96);border:1px solid #3a3220;border-radius:16px;padding:16px 18px;box-shadow:0 24px 60px rgba(0,0,0,.6);backdrop-filter:blur(6px)}
+#pfl .roll b{display:block;color:var(--head);font-size:15px}#pfl .roll small{color:var(--mute);font-size:12.5px}
+#pfl .roll .tag{display:inline-flex;align-items:center;gap:6px;margin:10px 0 8px;padding:3px 10px;border-radius:999px;background:rgba(242,180,65,.14);color:var(--gold);font-size:12px;font-weight:800}
+#pfl .roll ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+#pfl .roll li{display:flex;align-items:center;gap:9px;font-size:13.5px;color:#dfe3e8}
+#pfl .roll li::before{content:"";width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#7fa7d9,#2c4a73);flex:none}
+#pfl .roll li em{margin-left:auto;font-style:normal;font-size:12px;color:var(--teal);font-weight:700}
+#pfl .sec{padding:70px 0;border-top:1px solid var(--line)}
+#pfl h2{margin:0 0 12px;color:var(--head);font-size:clamp(28px,3.6vw,40px);line-height:1.12;font-weight:800;letter-spacing:-.8px}
+#pfl .sub{margin:0 0 36px;color:var(--mute);font-size:17px;max-width:620px}
+#pfl .feat{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+#pfl .feat .fc{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:24px}
+#pfl .feat .ic{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:rgba(242,180,65,.10);color:var(--gold);margin-bottom:16px}
+#pfl .feat .ic svg{width:22px;height:22px}
+#pfl .feat h3{margin:0 0 6px;color:var(--head);font-size:18px;font-weight:800}
+#pfl .feat p{margin:0;color:#b5bcc6;font-size:15px}
+#pfl .steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;counter-reset:s}
+#pfl .steps div{position:relative;padding:22px 22px 22px 70px;border-radius:16px;background:var(--panel2);border:1px solid var(--line)}
+#pfl .steps div::before{counter-increment:s;content:counter(s);position:absolute;left:22px;top:20px;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--gold);color:#15171b;font-weight:800}
+#pfl .steps b{display:block;color:var(--head);font-size:16px;margin-bottom:2px}#pfl .steps span{color:#b5bcc6;font-size:14.5px}
+#pfl .faq{max-width:760px}
+#pfl details{border-bottom:1px solid var(--line);padding:4px 0}
+#pfl summary{cursor:pointer;list-style:none;padding:16px 36px 16px 0;color:var(--head);font-weight:700;font-size:17px;position:relative}
+#pfl summary::-webkit-details-marker{display:none}
+#pfl summary::after{content:"+";position:absolute;right:6px;top:12px;font-size:24px;color:var(--gold);font-weight:400;transition:transform .2s}
+#pfl details[open] summary::after{transform:rotate(45deg)}
+#pfl details p{margin:0 0 16px;color:#b5bcc6}
+#pfl .end{text-align:center;padding:80px 0}
+#pfl .end h2{margin-bottom:10px}#pfl .end .cta{justify-content:center}
+#pfl .ft{border-top:1px solid var(--line);padding:26px 0 40px;color:var(--mute);font-size:13.5px;display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+#pfl .ft .nv{display:flex;gap:16px;margin-left:auto}#pfl .ft a{color:var(--mute)}#pfl .ft a:hover{color:var(--head)}
+@media (max-width:900px){#pfl .hero{grid-template-columns:1fr;padding:30px 0 50px;gap:36px}#pfl .art{justify-self:center;max-width:440px}#pfl .feat{grid-template-columns:repeat(2,minmax(0,1fr))}#pfl .steps{grid-template-columns:1fr}}
+@media (max-width:600px){#pfl .feat{grid-template-columns:1fr}#pfl .top .nv a.hide-sm{display:none}#pfl .btn{width:100%}#pfl .cta{flex-direction:column}#pfl .sec{padding:52px 0}#pfl .ft .nv{margin-left:0}}
+@media (prefers-reduced-motion:reduce){#pfl .btn{transition:none}}
+</style>
+<div class="w">
+  <div class="top">
+    <a class="brand" href="./" data-pfl-open><img src="logo-s.png" alt="">Pathfinder</a>
+    <div class="nv"><a class="hide-sm" href="#pfl-features">Features</a><a class="hide-sm" href="#pfl-faq">FAQ</a><a class="hide-sm" href="status">Status</a><button class="btn go sm" type="button" data-pfl-open>Open Pathfinder</button></div>
+  </div>
+
+  <div class="hero">
+    <div>
+      <h1>Your Destiny 2 vault, loadouts and god rolls in one place</h1>
+      <p class="lede">Pathfinder is a free Destiny 2 companion. Move and equip gear across your Guardians, build and share loadouts, and find out which weapons are worth keeping, on your PC, in your browser or on your phone.</p>
+      <div class="cta"><button class="btn go" type="button" data-pfl-open>Open Pathfinder</button><a class="btn alt" href="/download">Get the PC app</a></div>
+      <div class="trust">
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Free, no ads</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Sign in on Bungie.net</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>PC, web and phone</span>
+      </div>
+    </div>
+    <div class="art" aria-hidden="true">
+      <div class="vault"><i class="ex"></i><i class="up"></i><i></i><i class="bl"></i><i class="dim"></i><i></i><i class="up"></i><i class="gr"></i><i class="ex"></i><i class="dim"></i><i class="bl"></i><i></i><i class="up"></i><i class="dim"></i><i></i><i></i><i class="gr dim"></i><i class="ex up"></i><i></i><i class="bl"></i></div>
+      <div class="roll"><b>Your hand cannon</b><small>Legendary &middot; Kinetic</small><div class="tag">&#9733; God roll</div><ul><li>Arrowhead Brake<em>41%</em></li><li>Accurized Rounds<em>36%</em></li><li>Rapid Hit<em>28%</em></li><li>Kill Clip<em>33%</em></li></ul></div>
+    </div>
+  </div>
+</div>
+
+<div class="sec" id="pfl-features"><div class="w">
+  <h2>Everything you open the director for, and more</h2>
+  <p class="sub">Pathfinder reads your account through Bungie's official API and keeps it up to date while you play.</p>
+  <div class="feat">
+    <div class="fc"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/></svg></div><h3>Vault and inventory manager</h3><p>Every Guardian and your vault on one screen. Drag to move, equip in a click, lock, tag and take notes, and search with filters like is:wishlist, is:duplicate or perk names.</p></div>
+    <div class="fc"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 7v6c0 4 3.4 7 8 8 4.6-1 8-4 8-8V7z"/><path d="M9 12l2 2 4-4"/></svg></div><h3>Loadouts</h3><p>Save whole builds with weapons, armor, subclass and mods, equip them in one go, and share any loadout as a link your friends can open.</p></div>
+    <div class="fc"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.6 6.1.6-4.6 4.1 1.3 6-5.4-3.1-5.4 3.1 1.3-6L3.3 9.2l6.1-.6z"/></svg></div><h3>God roll finder</h3><p>Grades every weapon you own against popular wish lists, so you can see your god rolls, your keepers and what is safe to dismantle, with community perk ratings for each perk.</p></div>
+    <div class="fc"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><h3>Rotations and activities</h3><p>Daily and weekly resets, featured raids and dungeons, Pantheon, Xûr, vendors, plus your clears, personal bests and play time.</p></div>
+    <div class="fc"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg></div><h3>Triumphs and farming</h3><p>Track triumphs and seals, set farming targets for the exact rolls and armor you want, and let Farming Mode keep space free while you play.</p></div>
+    <div class="fc"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="13" height="10" rx="1.5"/><rect x="16" y="8" width="6" height="12" rx="1.5"/><path d="M6 19h6"/></svg></div><h3>On every screen</h3><p>Use the Windows app, any browser or your phone. An optional Pathfinder account brings all your Bungie accounts, alts included, to every device.</p></div>
+  </div>
+</div></div>
+
+<div class="sec"><div class="w">
+  <h2>Up and running in a minute</h2>
+  <p class="sub">No download needed: Pathfinder works right here in your browser.</p>
+  <div class="steps">
+    <div><b>Sign in with Bungie</b><span>You sign in on Bungie.net. Pathfinder never sees your password.</span></div>
+    <div><b>Your Guardians load</b><span>Characters, vault, postmaster and progress, read straight from Bungie.</span></div>
+    <div><b>Sort out your gear</b><span>Move, equip, tag and build loadouts. Changes happen in the game right away.</span></div>
+  </div>
+</div></div>
+
+<div class="sec" id="pfl-faq"><div class="w faq">
+  <h2>Questions</h2>
+  <details><summary>Is Pathfinder free?</summary><p>Yes. Pathfinder is free, with no ads and nothing to unlock.</p></details>
+  <details><summary>Is it safe to sign in with my Bungie account?</summary><p>You sign in on Bungie.net itself, so Pathfinder never sees your password. It uses Bungie's official API, and only moves, equips or locks items when you ask. Read the <a href="privacy">privacy page</a> for exactly what is kept and where.</p></details>
+  <details><summary>Does it work on my phone?</summary><p>Yes. Open d2pathfinder.com in your phone's browser and add it to your home screen so it opens like an app.</p></details>
+  <details><summary>Do I need the PC app?</summary><p>No, the website does the same things. The Windows app runs in its own window, updates itself and can show your postmaster count on the taskbar.</p></details>
+  <details><summary>Can I use more than one Bungie account?</summary><p>Yes. Add your alts in Settings and switch between them. With a free Pathfinder account they come with you to every device.</p></details>
+  <details><summary>Is Pathfinder made by Bungie?</summary><p>No. Pathfinder is a fan-made Destiny 2 companion and is not made by or affiliated with Bungie.</p></details>
+</div></div>
+
+<div class="w end">
+  <h2>Made for Destiny players, by Destiny players</h2>
+  <p class="sub" style="margin:0 auto 26px">Built by Guardians who sort their vaults every reset too. Free, in your browser and on your phone.</p>
+  <div class="cta"><button class="btn go" type="button" data-pfl-open>Open Pathfinder</button><a class="btn alt" href="/download">Get the PC app</a></div>
+</div>
+
+<div class="w"><div class="ft"><span>Pathfinder is a fan-made Destiny 2 companion, not made by or affiliated with Bungie. Destiny is a trademark of Bungie.</span><div class="nv"><a href="status">Status</a><a href="privacy">Privacy</a><a href="mailto:help@d2pathfinder.com">Contact</a></div></div></div>
+</div>
+<script>(function(){var l=document.getElementById('pfl');if(!l)return;l.addEventListener('click',function(e){var h=e.target.closest('a[href^="#pfl-"]');if(h){e.preventDefault();var t=document.getElementById(h.getAttribute('href').slice(1));if(t)t.scrollIntoView({behavior:'smooth',block:'start'});return;}var o=e.target.closest('[data-pfl-open]');if(!o)return;e.preventDefault();try{localStorage.setItem('gt_seenapp','1');}catch(x){}document.documentElement.classList.add('pfl-off');window.scrollTo(0,0);});if(document.documentElement.classList.contains('pfl-off'))l.remove();})();</script>
+
 <header><img class="plogo" src="logo.png" alt="" aria-hidden="true"><h1>Pathfinder<small>Works without a Bungie API key. Your data stays in this browser.</small></h1></header>
 <nav id="nav"></nav>
 <main>
@@ -417,7 +560,7 @@ function rerender(){const y=window.scrollY;openGuide($('gpage').dataset.cur);win
 $('gchips').onclick=e=>{if(e.target.dataset.c){gcat=e.target.dataset.c;drawG()}};$('gsearch').oninput=drawG;drawG();
 {const t=ST.get('tab','vault');window.__gtLastTab=t;} /* the start tab is picked once by polish.js (Settings > Display > Open the app on), so no other page flashes first */
 </script>
-<script src="sync.js?v=0.3.22-beta.1"></script><script src="vault.js?v=0.3.22-beta.1"></script><script src="features.js?v=0.3.22-beta.1"></script><script src="news.js?v=0.3.22-beta.1"></script><script src="extras.js?v=0.3.22-beta.1"></script><script src="activity.js?v=0.3.22-beta.1"></script><script src="notes.js?v=0.3.22-beta.1"></script><script src="targets.js?v=0.3.22-beta.1"></script><script src="loadouts.js?v=0.3.22-beta.1"></script>
-<script src="home.js?v=0.3.22-beta.1"></script>
-<script src="devtabs.js?v=0.3.22-beta.1"></script><script src="layout.js?v=0.3.22-beta.1"></script><script src="lists.js?v=0.3.22-beta.1"></script><script src="polish.js?v=0.3.22-beta.1"></script>
-<script src="guides-data.js?v=0.3.22-beta.1"></script><script src="guides.js?v=0.3.22-beta.1"></script></body></html>
+<script src="sync.js?v=0.3.23-beta.1"></script><script src="vault.js?v=0.3.23-beta.1"></script><script src="features.js?v=0.3.23-beta.1"></script><script src="news.js?v=0.3.23-beta.1"></script><script src="extras.js?v=0.3.23-beta.1"></script><script src="activity.js?v=0.3.23-beta.1"></script><script src="notes.js?v=0.3.23-beta.1"></script><script src="targets.js?v=0.3.23-beta.1"></script><script src="loadouts.js?v=0.3.23-beta.1"></script>
+<script src="home.js?v=0.3.23-beta.1"></script>
+<script src="devtabs.js?v=0.3.23-beta.1"></script><script src="layout.js?v=0.3.23-beta.1"></script><script src="lists.js?v=0.3.23-beta.1"></script><script src="polish.js?v=0.3.23-beta.1"></script>
+<script src="guides-data.js?v=0.3.23-beta.1"></script><script src="guides.js?v=0.3.23-beta.1"></script></body></html>
