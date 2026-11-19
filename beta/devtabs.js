@@ -1,6 +1,6 @@
-// Developer tabs: "God rolls" (the god roll finder as its own page) and "Wish list maker" (build wish list rolls for any
-// weapon in the game). Both are for developer accounts only until the admin page opens them up:
-//   switch "godroll-tab" / "wishmaker-tab": none or Dev = developers only, On = everyone, Off = nobody.
+// "God rolls" (the god roll finder as its own page) and "Wish list maker" (build wish list rolls for any weapon in the game).
+// Both started as developer-only tabs behind admin-page switches; they are finished, so everyone has them now and there
+// are no switches for them any more. They can still be hidden like any tab in Settings > Appearance.
 (() => {
   const nav = document.getElementById('nav'), vsec = document.getElementById('vault');
   if (!nav || !vsec || !window.gt) return;
@@ -8,9 +8,9 @@
   const ICON = (p) => (p ? (/^https?:/.test(p) ? p : 'https://www.bungie.net' + p) : '');
   const V = () => window.__gtv;
   const SW = { godrolls: 'godroll-tab', wishmaker: 'wishmaker-tab' };
-  window.__gtDevFeatureNames = Object.values(SW); // listed in Settings > Developer even before the admin page has them
-  const allowed = (id) => !!(window.__gtDevFeature && window.__gtDevFeature(SW[id]));
-  window.__gtTabLocked = (id) => !!SW[id] && !allowed(id);
+  window.__gtDevFeatureNames = [];
+  const allowed = () => true;
+  window.__gtTabLocked = () => false;
 
   const mk = (id, label) => {
     const s = document.createElement('section'); s.id = id; s.className = 'gdark'; vsec.parentNode.appendChild(s);
