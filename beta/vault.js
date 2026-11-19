@@ -854,7 +854,9 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     ['rose', 'Rose', 320, 26, '#ff7ad9', '#2a1626'],
   ].map(([id, n, h, s, a, sw]) => ({ id, n, h, s, a, sw }));
   // Background pictures. 'topo' is the contour-line drawing; the rest are Destiny 2 places.
-  const BGS = [['', 'None'], ['topo', 'Contour lines'], ['blossom-tower', 'Blossom Tower'], ['memorial-garden', 'Memorial Garden'], ['rust-yard', 'Rust Yard'], ['europa-frost', 'Lunar Frost'], ['crimson-spire', 'Crimson Spire'], ['cube-mist', 'Cube Mist'], ['aurora-grove', 'Aurora Grove'], ['vortex', 'Vortex'], ['emerald-lake', 'Emerald Lake'], ['hanging-gardens', 'Hanging Gardens'], ['jupiter-rise', 'Jupiter Rise'], ['cosmodrome-wall', 'Cosmodrome Wall'], ['throne-marsh', 'Nessus'], ['traveler', 'The Traveler'], ['lantern-gate', 'Lantern Gate']];
+  // Pictures that were removed as duplicates: anyone who had one gets the one it duplicated.
+  const BGREN = { 'rust-yard': 'cosmodrome-wall' };
+  const BGS = [['', 'None'], ['topo', 'Contour lines'], ['blossom-tower', 'Blossom Tower'], ['memorial-garden', 'Memorial Garden'], ['europa-frost', 'Lunar Frost'], ['crimson-spire', 'Crimson Spire'], ['cube-mist', 'Cube Mist'], ['aurora-grove', 'Aurora Grove'], ['vortex', 'Vortex'], ['emerald-lake', 'Emerald Lake'], ['hanging-gardens', 'Hanging Gardens'], ['jupiter-rise', 'Jupiter Rise'], ['cosmodrome-wall', 'Cosmodrome Wall'], ['throne-marsh', 'Nessus'], ['traveler', 'The Traveler'], ['lantern-gate', 'Lantern Gate']];
   // Bray and Manta are fixed looks: their colour, accent and picture are set and cannot be changed. Their two pictures are shown last
   // in the picture list, locked, so the Custom style cannot use them.
   const LOCK = { bray: { theme: 'beta', accent: '#f2b441', bg: 'traveler', n: 'Bray' }, manta: { theme: 'gold', accent: '#35e3cf', bg: 'lantern-gate', n: 'Manta' } };
@@ -868,17 +870,18 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     SET.looks = SET.looks && typeof SET.looks === 'object' ? SET.looks : {};
     if (EDIT.includes(from)) SET.looks[from] = { theme: SET.theme, accent: SET.accent, bg: SET.bg };
     const sv = SET.looks[to];
-    if (EDIT.includes(to) && sv && typeof sv === 'object') { if (tById(sv.theme)) SET.theme = sv.theme; if (/^#[0-9a-f]{6}$/i.test(String(sv.accent))) SET.accent = sv.accent; SET.bg = typeof sv.bg === 'string' ? sv.bg : ''; }
+    if (EDIT.includes(to) && sv && typeof sv === 'object') { if (tById(sv.theme)) SET.theme = sv.theme; if (/^#[0-9a-f]{6}$/i.test(String(sv.accent))) SET.accent = sv.accent; SET.bg = typeof sv.bg === 'string' ? (BGREN[sv.bg] || sv.bg) : ''; }
     SET.ui = to;
   }
   // Themes from earlier versions (the gradient and shader-inspired ones are gone; the old picture themes are now a colour plus a picture).
   const MIG = { solar: 'ember', arc: 'blue', stasis: 'blue', strand: 'forest', prism: 'void', aurora: 'teal', nebula: 'rose', midnight: 'blue', synth: 'rose', dawning: 'blue', gilded: 'gold', legion: 'crimson', hive: 'forest', vex: 'slate', taken: 'teal', fallen: 'ember', dreaming: 'rose',
-    a_lantern: ['ember', ''], a_blossom: ['rose', 'blossom-tower'], a_memorial: ['blue', 'memorial-garden'], a_rust: ['ember', 'rust-yard'], a_europa: ['blue', 'europa-frost'], a_spire: ['crimson', 'crimson-spire'], a_mist: ['slate', 'cube-mist'], a_grove: ['forest', 'aurora-grove'], a_vortex: ['blue', 'vortex'], a_lake: ['teal', 'emerald-lake'], a_gardens: ['forest', 'hanging-gardens'] };
+    a_lantern: ['ember', ''], a_blossom: ['rose', 'blossom-tower'], a_memorial: ['blue', 'memorial-garden'], a_rust: ['ember', 'cosmodrome-wall'], a_europa: ['blue', 'europa-frost'], a_spire: ['crimson', 'crimson-spire'], a_mist: ['slate', 'cube-mist'], a_grove: ['forest', 'aurora-grove'], a_vortex: ['blue', 'vortex'], a_lake: ['teal', 'emerald-lake'], a_gardens: ['forest', 'hanging-gardens'] };
   const tById = (id) => COLS.find((t) => t.id === id);
   function migTheme() {
     const m = MIG[SET.theme];
     if (m) { if (Array.isArray(m)) { SET.theme = m[0]; if (!SET.bg) SET.bg = m[1]; } else SET.theme = m; }
     if (!tById(SET.theme)) SET.theme = 'dim';
+    if (BGREN[SET.bg]) SET.bg = BGREN[SET.bg];
     if (SET.bg === undefined || !BGS.some((b) => b[0] === SET.bg) || LOCKBG[SET.bg]) SET.bg = '';
     if (SET.ui === 'd2') SET.ui = 'bray';
     if (SET.ui === 'dim') SET.ui = 'pf'; // the DIM style was removed
