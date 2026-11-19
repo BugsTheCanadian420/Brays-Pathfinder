@@ -2016,6 +2016,7 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
     const by = { S: [], A: [], CD: [], '?': [] };
     ws.forEach((x) => { const gr = grade(x); (by[gr === 'C' || gr === 'D' ? 'CD' : gr]).push({ x, gr }); });
     Object.values(by).forEach((a) => a.sort((p, q2) => String(p.x.n).localeCompare(q2.x.n) || (q2.x.p || 0) - (p.x.p || 0)));
+    if (!GTABS.some((t) => t[0] === GTAB)) GTAB = 'S';
     const list = by[GTAB] || [], T = TAGS(), info = GTABS.find((t) => t[0] === GTAB);
     const whereTxt = (o) => { if (o.loc === 'vault') return 'Vault'; const c = D.chars.find((k) => k.id === o.loc); return c ? CL[c.cls] || 'Guardian' : ''; };
     const why = (o) => {
@@ -2034,7 +2035,8 @@ ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="
 ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="junk">Tag ${junkable.length} as junk</button> <span class="mute">Skips equipped items and anything tagged favorite or keep.</span></p>` : ''}` : `<p class="jke"><b>${GTAB === '?' ? 'Every weapon you own is rated.' : 'Nothing here.'}</b></p>`}</div>`;
     m.onclick = (e) => {
       if (!host && e.target === m) { m.remove(); return; }
-      const tb = e.target.closest('[data-gt]'); if (tb) { GTAB = tb.dataset.gt; redraw(); return; }
+      // Only the finder's own tab buttons: the page itself also carries data-gt (the colour theme), which every other click reached.
+      const tb = e.target.closest('button[data-gt]'); if (tb && m.contains(tb) && GTABS.some((t) => t[0] === tb.dataset.gt)) { GTAB = tb.dataset.gt; redraw(); return; }
       const b = e.target.closest('[data-gk]');
       if (b && b.dataset.gk === 'x') { close(); return; }
       if (b && b.dataset.gk === 'junk') { const o = TAGS(); junkable.forEach((q2) => { o[q2.x.id] = 'junk'; }); saveTAGS(o); renderGrid(); setNote(junkable.length + ' weapons tagged junk.'); redraw(); return; }
