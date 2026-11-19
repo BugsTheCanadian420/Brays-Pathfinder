@@ -643,6 +643,12 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 .hb.team{align-self:flex-end;background:color-mix(in srgb,var(--g-accent,#7ab8e8) 16%,transparent);border-color:color-mix(in srgb,var(--g-accent,#7ab8e8) 40%,transparent);border-radius:14px 14px 4px 14px}
 #hmsg,#hreply,#dreply{width:100%;box-sizing:border-box;resize:vertical;font:inherit;line-height:1.5;margin-top:8px}#hmsg{min-height:120px}
 #gtnewver{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:90;display:flex;gap:12px;align-items:center;padding:10px 12px 10px 16px;border-radius:12px;background:var(--g-panel,#1a1c20);border:1px solid var(--g-accent,#7ab8e8);box-shadow:0 10px 30px rgba(0,0,0,.5);color:#fff;font-size:14px;white-space:nowrap}#gtnewver button{background:var(--g-accent,#7ab8e8);color:var(--g-on-accent,#111);border:0;border-radius:8px;padding:6px 14px;font-weight:700;cursor:pointer}
+#gtmaint{position:fixed;left:50%;transform:translateX(-50%);top:calc(var(--gt-bar-h,56px) + 10px);z-index:80;display:flex;gap:12px;align-items:center;max-width:min(860px,calc(100vw - 24px));padding:10px 10px 10px 14px;border-radius:12px;background:#2a1717;border:1px solid #7a3b38;box-shadow:0 10px 30px rgba(0,0,0,.45);color:#f3dede;font-size:13.5px}
+#gtmaint .gmi{flex:none;width:22px;height:22px;border-radius:50%;background:#e0605c;color:#fff;font-weight:800;display:grid;place-items:center}
+#gtmaint .gmt{flex:1;min-width:0;line-height:1.45}#gtmaint .gmt b{color:#fff}#gtmaint .gmt span{margin-left:6px;color:#e9caca}
+#gtmaint a{flex:none;color:#fff;font-weight:700;border:1px solid #7a3b38;border-radius:8px;padding:5px 10px;text-decoration:none}#gtmaint a:hover{background:rgba(255,255,255,.06)}
+#gtmaint button{flex:none;background:none!important;border:0!important;color:#e9caca!important;font-size:20px;cursor:pointer;padding:0 6px!important;line-height:1}
+@media (max-width:640px){#gtmaint{top:auto;bottom:calc(84px + env(safe-area-inset-bottom,0px));flex-wrap:wrap}#gtmaint .gmt span{display:block;margin-left:0}}
 .hrep{font-size:12.5px;color:#9aa1ab;margin:6px 0}#settings .hrep>summary{font-size:13px!important;font-weight:600!important;padding:6px 10px!important;cursor:pointer}.hrep pre{white-space:pre-wrap;word-break:break-word;background:rgba(0,0,0,.3);border:1px solid var(--g-line,#2b2e33);padding:8px;max-height:220px;overflow:auto;font-size:11.5px}
 .hback{font-size:13px!important}
 .snb{margin-left:auto;font-style:normal;font-size:11px;font-weight:800;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--g-accent,#7ab8e8);color:var(--g-on-accent,#111);display:inline-flex;align-items:center;justify-content:center}
@@ -1849,9 +1855,38 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   const STN = ['weapons', 'health', 'class', 'grenade', 'super', 'melee'];
   const clean = (e) => String(e.message || e).replace(/^Error invoking remote method '[^']+': (Error: )?/, '');
   const noBar = () => { const sl = document.getElementById('gtsrch'); if (sl) sl.replaceChildren(); };
-  const msg = (t, err) => { noBar(); sec.innerHTML = `<div class="card"><h2>Vault</h2><p class="${err ? '' : 'mute'}">${esc(t)}</p>${err ? (/sign-?in|session expired|not signed|authoriz|token/i.test(t) ? '<button class="b" data-act="out">Sign in again</button> ' : '') + '<button class="g" data-act="retry">Try again</button>' : ''}</div>`; };
+  const msg = (t, err) => { if (t && err && MAINT_RE.test(t)) maintShow(); noBar(); sec.innerHTML = `<div class="card"><h2>Vault</h2><p class="${err ? '' : 'mute'}">${esc(t)}</p>${err ? (/sign-?in|session expired|not signed|authoriz|token/i.test(t) ? '<button class="b" data-act="out">Sign in again</button> ' : '') + '<button class="g" data-act="retry">Try again</button>' : ''}</div>`; };
   let noteT = 0;
-  const setNote = (t) => { if (t && /^(Failed|Could not|Error)/i.test(t) && window.__gtLog) window.__gtLog(t, 'inventory'); const n = g('vnote'); if (!n) return; n.textContent = t || ''; clearTimeout(noteT); if (t && !/^Working/.test(t)) noteT = setTimeout(() => { if (n.textContent === t) n.textContent = ''; }, /^Failed/.test(t) ? 9000 : 3500); };
+  // ---- Bungie maintenance banner ----
+  // When Bungie says it is down for maintenance, a bar under the tabs shows where its timeline is (what is happening now and
+  // what comes next, in your own time), from Bungie's Server and Update Status page. It goes away once the vault loads again.
+  const MAINT_RE = /maintenance|systemdisabled|temporarily disabled|offline for/i;
+  const BMON = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
+  function bWhen(title, time, tz) {
+    const d = /(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d{1,2}),?\s*(\d{4})/i.exec(title || ''), t = /(\d{1,2})(?::(\d{2}))?\s*(am|pm)/i.exec(time || '');
+    if (!d || !t) return null;
+    const off = /utc\s*([+\-\u2212])\s*(\d{1,2})/i.exec(tz || '') || /utc\s*([+\-\u2212])\s*(\d{1,2})/i.exec(time || '');
+    const o = off ? (off[1] === '+' ? 1 : -1) * +off[2] : /pdt/i.test(time) ? -7 : /pst/i.test(time) ? -8 : null; if (o === null) return null;
+    return Date.UTC(+d[3], BMON.indexOf(d[1].toLowerCase()), +d[2], (+t[1] % 12) + (/pm/i.test(t[3]) ? 12 : 0) - o, +(t[2] || 0));
+  }
+  let maintT = 0, maintOff = false;
+  async function maintShow() {
+    if (maintOff || !window.gt || !gt.bungieStatus) return;
+    clearTimeout(maintT); maintT = setTimeout(maintShow, 3e5); // keep it current while it lasts
+    const j = await gt.bungieStatus().catch(() => null); const now = Date.now();
+    const steps = []; ((j && j.events) || []).forEach((ev) => (ev.rows || []).forEach((r) => { const at = bWhen(ev.title, r.time, r.tz); if (at) steps.push({ at, r }); }));
+    steps.sort((a, b) => a.at - b.at);
+    const cur = steps.filter((x) => x.at <= now && x.at > now - 18 * 3600e3).pop(), next = steps.find((x) => x.at > now && x.at < now + 24 * 3600e3);
+    const lt = (x) => (/~/.test(x.r.time) ? '~' : '') + new Date(x.at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    const link = window.__GT_WEB__ ? 'status' : 'https://d2pathfinder.com/status';
+    let b = document.getElementById('gtmaint');
+    if (!b) { b = document.createElement('div'); b.id = 'gtmaint'; b.setAttribute('role', 'status'); document.body.appendChild(b); }
+    b.innerHTML = `<span class="gmi" aria-hidden="true">!</span><div class="gmt"><b>Bungie is down for maintenance.</b> ${cur ? `<span>Now: ${esc(cur.r.items[0] || '')}</span>` : ''}${next ? ` <span>Next, ${esc(lt(next))}: ${esc(next.r.items[0] || '')}</span>` : (!cur ? '<span>Your vault comes back by itself when Bungie is up.</span>' : '')}</div><a href="${link}" target="_blank" rel="noopener">Full timeline</a><button type="button" aria-label="Hide">&times;</button>`;
+    b.querySelector('button').onclick = () => { maintOff = true; maintHide(); };
+  }
+  function maintHide() { clearTimeout(maintT); const b = document.getElementById('gtmaint'); if (b) b.remove(); }
+  window.__gtMaint = { show: maintShow, hide: maintHide };
+  const setNote = (t) => { if (t && MAINT_RE.test(t)) maintShow(); else if (t && /up to date/i.test(t)) { maintOff = false; maintHide(); } if (t && /^(Failed|Could not|Error)/i.test(t) && window.__gtLog) window.__gtLog(t, 'inventory'); const n = g('vnote'); if (!n) return; n.textContent = t || ''; clearTimeout(noteT); if (t && !/^Working/.test(t)) noteT = setTimeout(() => { if (n.textContent === t) n.textContent = ''; }, /^Failed/.test(t) ? 9000 : 3500); };
   gt.onProgress((m) => { if (sec.dataset.busy) msg(m); });
 
   async function init() { const c = await gt.cfgGet(); try { localStorage.setItem('gt_acct_ns', acctNs(c.mid, c.prim)); } catch (e) { /* storage off */ } ACL = null; c.signedIn ? load() : setup(c); }

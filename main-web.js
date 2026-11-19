@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.23: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.24: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -694,6 +694,14 @@ H('flags:get', async (e, v) => {
   }
   const st = pfaStatus();
   return { flags: FLAGS || {}, dev: st.dev, role: st.role, on: st.on };
+});
+// Bungie's maintenance timeline (its Server and Update Status page), read through the token service; shown in the app while
+// Bungie is down for maintenance.
+H('bungie:status', async () => {
+  const base = preset && preset.tokenUrl && /^https:\/\//i.test(preset.tokenUrl) ? preset.tokenUrl.replace(/\/+$/, '') : '';
+  if (!base) return null;
+  const ac = new AbortController(), tm = setTimeout(() => ac.abort(), 8000);
+  try { const r = await fetch(base + '/bungie-status', { headers: { Accept: 'application/json' }, signal: ac.signal }); return r.ok ? await r.json() : null; } catch (er) { return null; } finally { clearTimeout(tm); }
 });
 // Developer tools (the PC app only, developer accounts only).
 // Admin from inside the app (founder accounts only). The admin key is typed in the app each time and only passed along;
