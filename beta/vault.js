@@ -629,7 +629,23 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 #settings .scols{display:flex;gap:16px;align-items:flex-start}#settings .scol{flex:1 1 0;min-width:0}
 #settings .sg{grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:6px}#settings .sg.wlps{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}#settings .th{padding:6px 6px 7px;font-size:12.5px}#settings .th i{height:20px;margin-bottom:5px}
 #settings .uis{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
-#settings .setgrid{display:contents}.adml{display:flex;flex-direction:column;margin:4px 0 10px}.admr{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--g-line,#2b2e33);flex-wrap:wrap}.admn{min-width:0;flex:1 1 220px}.admn b{display:block}.admn small{color:var(--mute,#9aa1ab);font-size:12px}.admn input{width:100%;margin-top:4px;box-sizing:border-box}.admc{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.admren{flex:1 1 100%;padding-top:4px}select{color-scheme:dark}select option,select optgroup{background-color:var(--g-panel,#1a1c20)!important;color:#eceef1!important}select option:checked{background-color:var(--g-accent,#7ab8e8)!important;color:#111!important}select option:disabled{color:#7d828b!important}.admren input{width:220px!important;flex:none}.admc select{width:auto}.admtag{padding:2px 10px;border-radius:999px;background:var(--g-accent,#e8b84a);color:#15171b;font-size:12px;font-weight:700}.admdel{color:#ff8a8a!important}.admmsg{margin:8px 0;color:#8fd19e}.admmsg.bad,.admn .bad{color:#ff8a8a}.admcode{margin:10px 0;padding:10px 12px;border:1px dashed var(--g-accent,#e8b84a);border-radius:10px}.admcode code{display:inline-block;font:700 20px/1.2 ui-monospace,Consolas,monospace;letter-spacing:2px;margin:4px 0;user-select:all}.pfars{margin:10px 0 4px;padding:10px 12px;border:1px solid var(--g-line,#2b2e33);border-radius:10px}.pfars p{margin:4px 0 8px}#gtmp{background:var(--g-solid,#15171b)!important;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}#gtmp.open{box-shadow:0 0 0 100vmax rgba(0,0,0,.5),0 14px 36px rgba(0,0,0,.7)!important}#vqs{background:var(--g-solid,#15171b)!important}.sset{display:grid;grid-template-columns:240px minmax(0,1fr);gap:22px;align-items:start;max-width:1120px;margin:0 auto}.snav{position:sticky;top:64px;box-sizing:border-box;margin:0;display:flex;flex-direction:column;gap:2px;padding:8px;background:var(--g-solid,#15171b);border:1px solid var(--g-line,#2b2e33);border-radius:12px}#settings .snav .sni{display:flex;align-items:center;gap:12px;width:100%;box-sizing:border-box;margin:0;border-radius:8px;padding:9px 12px;color:#c3c7ce;font-size:13.5px;font-weight:600;line-height:1.2;letter-spacing:0;text-transform:none;cursor:pointer;user-select:none}#settings .snav .sni svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;opacity:.8}#settings .snav .sni:hover{background:rgba(255,255,255,.06);color:#fff}#settings .snav .sni.on{background:var(--g-accent-soft,rgba(122,184,232,.16));color:#fff;box-shadow:inset 3px 0 0 var(--g-accent,#7ab8e8)}#settings .snav .sni.on svg{opacity:1;color:var(--g-accent,#7ab8e8)}#settings .snav .sni:focus-visible{outline:2px solid var(--g-accent,#7ab8e8);outline-offset:1px}.spane{min-width:0}.spane>.card{display:none!important;margin:0!important}.spane>.card.son{display:block!important}@media (max-width:760px){.sset{grid-template-columns:1fr;gap:10px}.snav{position:static;flex-direction:row;overflow-x:auto;scrollbar-width:none;padding:5px}#settings .snav .sni{width:auto;flex:none;white-space:nowrap;padding:8px 11px}}
+#settings .setgrid{display:contents}.adml{display:flex;flex-direction:column;margin:4px 0 10px}.admr{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--g-line,#2b2e33);flex-wrap:wrap}.admn{min-width:0;flex:1 1 220px}.admn b{display:block}.admn small{color:var(--mute,#9aa1ab);font-size:12px}.admn input{width:100%;margin-top:4px;box-sizing:border-box}.admc{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.admren{flex:1 1 100%;padding-top:4px}.fbk{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}#settings .fbk .chip{padding:5px 14px!important;border-radius:999px!important;border:1px solid var(--g-line,#3a3d43)!important;background:transparent!important;color:#cfd3da!important;font-weight:600}#settings .fbk .chip.on{background:var(--g-accent,#7ab8e8)!important;border-color:var(--g-accent,#7ab8e8)!important;color:var(--g-on-accent,#111)!important}#fbmsg{width:100%;box-sizing:border-box;min-height:120px;resize:vertical;font:inherit;line-height:1.5}.fbr{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:8px}.fbr #fbcon{flex:1 1 260px;min-width:0}.fbc{display:flex!important;gap:8px;align-items:center;cursor:pointer;white-space:nowrap;width:auto!important;margin:0!important;font-size:13.5px}.fbc input{width:16px!important;height:16px;margin:0!important}.fbb{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.fbn{font-size:13.5px;color:#8fd19e}.fbn.bad{color:#ff8a8a}
+.hnote{font-size:13.5px;color:#8fd19e;margin:6px 0}.hnote.bad{color:#ff8a8a}.hsm{font-size:12.5px;margin-top:10px}
+.hlist{display:flex;flex-direction:column;border:1px solid var(--g-line,#2b2e33);border-radius:10px;overflow:hidden;margin-top:6px}.hlist>p{padding:12px 14px;margin:0}
+.hrow{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"k f s" "k m s";column-gap:12px;align-items:center;padding:10px 14px;border-top:1px solid var(--g-line,#2b2e33);cursor:pointer}.hrow:first-child{border-top:0}.hrow:hover{background:rgba(255,255,255,.04)}.hrow:focus-visible{outline:2px solid var(--g-accent,#7ab8e8);outline-offset:-2px}
+.hrow .hk{grid-area:k;font-size:11.5px;font-weight:700;letter-spacing:.04em;color:#cfd3da;background:rgba(255,255,255,.07);border-radius:6px;padding:3px 8px}.hrow .hf{grid-area:f;color:#e9ebef;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.hrow small{grid-area:m;color:#9aa1ab;font-size:12px}.hrow .hst{grid-area:s}
+.hrow.new .hf{font-weight:700;color:#fff}.hrow.new .hst{background:var(--g-accent,#7ab8e8);color:var(--g-on-accent,#111);border-color:transparent}
+.hst{font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;border:1px solid transparent;white-space:nowrap}.hst.w{color:#f0c36a;background:rgba(240,164,58,.12);border-color:rgba(240,164,58,.3)}.hst.a{color:#7fd8a0;background:rgba(71,194,122,.12);border-color:rgba(71,194,122,.3)}.hst.c{color:#aab0b9;background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12)}
+.hth{border:1px solid var(--g-line,#2b2e33);border-radius:12px;padding:14px;background:rgba(0,0,0,.18)}.hthh{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px}.hthh b{color:#fff;font-size:15px}.hthh small{color:#9aa1ab;margin-left:auto}
+.hmsgs{display:flex;flex-direction:column;gap:10px;max-height:420px;overflow:auto;padding:2px 2px 10px}
+.hb{max-width:85%;align-self:flex-start;background:rgba(255,255,255,.06);border:1px solid var(--g-line,#2b2e33);border-radius:14px 14px 14px 4px;padding:9px 13px;color:#e9ebef;word-break:break-word;line-height:1.5}.hb small{display:block;color:#9aa1ab;font-size:11.5px;margin-bottom:3px}
+.hb.team{align-self:flex-end;background:color-mix(in srgb,var(--g-accent,#7ab8e8) 16%,transparent);border-color:color-mix(in srgb,var(--g-accent,#7ab8e8) 40%,transparent);border-radius:14px 14px 4px 14px}
+#hmsg,#hreply,#dreply{width:100%;box-sizing:border-box;resize:vertical;font:inherit;line-height:1.5;margin-top:8px}#hmsg{min-height:120px}
+.hrep{font-size:12.5px;color:#9aa1ab;margin:6px 0}#settings .hrep>summary{font-size:13px!important;font-weight:600!important;padding:6px 10px!important;cursor:pointer}.hrep pre{white-space:pre-wrap;word-break:break-word;background:rgba(0,0,0,.3);border:1px solid var(--g-line,#2b2e33);padding:8px;max-height:220px;overflow:auto;font-size:11.5px}
+.hback{font-size:13px!important}
+.snb{margin-left:auto;font-style:normal;font-size:11px;font-weight:800;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--g-accent,#7ab8e8);color:var(--g-on-accent,#111);display:inline-flex;align-items:center;justify-content:center}
+#nav button.gtdot::after{content:"";position:absolute;top:10px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--g-accent,#7ab8e8);box-shadow:0 0 0 2px var(--g-panel,#1a1c20)}
+@media (max-width:560px){.hrow{grid-template-areas:"k s" "f f" "m m";grid-template-columns:auto auto;justify-content:space-between;row-gap:4px}.hb{max-width:95%}}select{color-scheme:dark}select option,select optgroup{background-color:var(--g-panel,#1a1c20)!important;color:#eceef1!important}select option:checked{background-color:var(--g-accent,#7ab8e8)!important;color:#111!important}select option:disabled{color:#7d828b!important}.admren input{width:220px!important;flex:none}.admc select{width:auto}.admtag{padding:2px 10px;border-radius:999px;background:var(--g-accent,#e8b84a);color:#15171b;font-size:12px;font-weight:700}.admdel{color:#ff8a8a!important}.admmsg{margin:8px 0;color:#8fd19e}.admmsg.bad,.admn .bad{color:#ff8a8a}.admcode{margin:10px 0;padding:10px 12px;border:1px dashed var(--g-accent,#e8b84a);border-radius:10px}.admcode code{display:inline-block;font:700 20px/1.2 ui-monospace,Consolas,monospace;letter-spacing:2px;margin:4px 0;user-select:all}.pfars{margin:10px 0 4px;padding:10px 12px;border:1px solid var(--g-line,#2b2e33);border-radius:10px}.pfars p{margin:4px 0 8px}#gtmp{background:var(--g-solid,#15171b)!important;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}#gtmp.open{box-shadow:0 0 0 100vmax rgba(0,0,0,.5),0 14px 36px rgba(0,0,0,.7)!important}#vqs{background:var(--g-solid,#15171b)!important}.sset{display:grid;grid-template-columns:240px minmax(0,1fr);gap:22px;align-items:start;max-width:1120px;margin:0 auto}.snav{position:sticky;top:64px;box-sizing:border-box;margin:0;display:flex;flex-direction:column;gap:2px;padding:8px;background:var(--g-solid,#15171b);border:1px solid var(--g-line,#2b2e33);border-radius:12px}#settings .snav .sni{display:flex;align-items:center;gap:12px;width:100%;box-sizing:border-box;margin:0;border-radius:8px;padding:9px 12px;color:#c3c7ce;font-size:13.5px;font-weight:600;line-height:1.2;letter-spacing:0;text-transform:none;cursor:pointer;user-select:none}#settings .snav .sni svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;opacity:.8}#settings .snav .sni:hover{background:rgba(255,255,255,.06);color:#fff}#settings .snav .sni.on{background:var(--g-accent-soft,rgba(122,184,232,.16));color:#fff;box-shadow:inset 3px 0 0 var(--g-accent,#7ab8e8)}#settings .snav .sni.on svg{opacity:1;color:var(--g-accent,#7ab8e8)}#settings .snav .sni:focus-visible{outline:2px solid var(--g-accent,#7ab8e8);outline-offset:1px}.spane{min-width:0}.spane>.card{display:none!important;margin:0!important}.spane>.card.son{display:block!important}@media (max-width:760px){.sset{grid-template-columns:1fr;gap:10px}.snav{position:static;flex-direction:row;overflow-x:auto;scrollbar-width:none;padding:5px}#settings .snav .sni{width:auto;flex:none;white-space:nowrap;padding:8px 11px}}
 #settings .card{max-width:none;margin:0 0 16px;break-inside:avoid;padding:14px 18px}
 #settings .card h2{padding-bottom:8px;margin-bottom:4px;border-bottom:1px solid var(--g-line)}
 /* saved sets: opened from the button in the top bar */
@@ -1129,6 +1145,138 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   window.__gtDevFeature = (name) => { const l = FLG.flags[name]; if (l === 'on') return true; if (l === 'off') return false; return !!FLG.dev && !devOff().includes(name); };
   const flagsLoad = () => { if (!window.gt || !gt.flagsGet) return; gt.flagsGet().then((r) => { const was = JSON.stringify(FLG); FLG = { flags: (r && r.flags) || {}, dev: !!(r && r.dev) }; if (JSON.stringify(FLG) !== was) { document.documentElement.toggleAttribute('data-gtdev', FLG.dev); window.dispatchEvent(new Event('gtflags')); if (settingsSec.classList.contains('on')) drawSettings(); if (window.__gtRender) window.__gtRender(); } }).catch(() => {}); };
   setTimeout(flagsLoad, 1500); setInterval(flagsLoad, 6e5);
+  // ---- Help: ask the Pathfinder team, and read their answers here (Settings > Help) ----
+  // Requests opened on this device are kept by key on this device; signed in to a Pathfinder account they also show on every
+  // device. The team answers in the Help desk (developer and founder accounts) or on the admin page.
+  const HK = [['bug', 'Bug'], ['idea', 'Idea'], ['question', 'Question'], ['other', 'Other']], HKN = { bug: 'Bug', idea: 'Idea', question: 'Question', other: 'Other' };
+  const HLP = { view: 'list', list: null, loading: false, t: null, kind: 'bug', msg: '', contact: '', rep: true, reply: '', busy: false, note: '', bad: false, unread: 0 };
+  const HST = { open: ['Waiting for an answer', 'w'], answered: ['Answered', 'a'], closed: ['Solved', 'c'] };
+  const hWhen = (t) => (t ? new Date(t).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '');
+  const hText = (t) => esc(t).replace(/\n/g, '<br>');
+  function helpReport() {
+    let L = []; try { const a = JSON.parse(localStorage.getItem('gt_errlog')); if (Array.isArray(a)) L = a; } catch (e) { L = []; }
+    const lines = ['Pathfinder ' + (window.__GT_VER__ || ''), navigator.userAgent, 'Screen ' + innerWidth + 'x' + innerHeight + ' @' + (window.devicePixelRatio || 1), 'Style: ' + SET.ui + ' / ' + SET.theme + ' / ' + (SET.bg || 'none'), ''];
+    if (!L.length) lines.push('No problems logged.');
+    L.slice(-25).forEach((x) => lines.push(new Date(x.t).toISOString().replace('T', ' ').slice(0, 19) + '  ' + String(x.m || '').slice(0, 300) + (x.n > 1 ? '  (x' + x.n + ')' : '') + (x.w ? '  [' + x.w + ']' : '')));
+    return lines.join('\n').slice(0, 7900);
+  }
+  // A small dot on the Settings button and a count next to Help / Help desk when there is something new to read.
+  const SECN = {};
+  function secBadge(n) { const c = SECN[n] || 0; return c ? `<em class="snb" aria-label="${c} new">${c > 9 ? '9+' : c}</em>` : ''; }
+  function badges() {
+    const sb = document.querySelector('#nav button[data-t="settings"]'); if (sb) sb.classList.toggle('gtdot', !!((SECN.Help || 0) + (SECN['Help desk'] || 0)));
+    if (settingsSec.classList.contains('on')) balanceSettings(true);
+  }
+  async function helpLoad(quiet) {
+    if (!window.gt || !gt.helpMine || HLP.loading) return;
+    HLP.loading = true; if (!quiet && settingsSec.classList.contains('on')) drawSettings();
+    try { HLP.list = await gt.helpMine(); HLP.unread = HLP.list.filter((x) => x.unread).length; SECN.Help = HLP.unread; if (!quiet) HLP.note = ''; }
+    catch (er) { if (!quiet) { HLP.note = clean(er); HLP.bad = true; } if (!HLP.list) HLP.list = []; }
+    HLP.loading = false; badges(); if (settingsSec.classList.contains('on')) drawSettings();
+  }
+  function helpCard() {
+    if (!window.gt || !gt.helpNew) return '';
+    if (HLP.list === null && !HLP.loading) setTimeout(() => helpLoad(false), 0);
+    const note = HLP.note ? `<p class="hnote${HLP.bad ? ' bad' : ''}" role="status">${esc(HLP.note)}</p>` : '';
+    let body = '';
+    if (HLP.view === 'new') {
+      body = `<div class="hnew"><div class="fbk" role="radiogroup" aria-label="What is it about">${HK.map(([k, l]) => `<button class="chip${HLP.kind === k ? ' on' : ''}" data-hk="${k}" role="radio" aria-checked="${HLP.kind === k}" type="button">${l}</button>`).join('')}</div>
+        <textarea id="hmsg" maxlength="3000" rows="6" placeholder="${HLP.kind === 'bug' ? 'What happened, and what were you doing when it did?' : HLP.kind === 'idea' ? 'What would you like Pathfinder to do?' : 'Your question or message'}">${esc(HLP.msg)}</textarea>
+        <div class="fbr"><input id="hcon" type="text" maxlength="120" placeholder="Discord name or email (optional)" value="${esc(HLP.contact)}" autocomplete="off"><label class="fbc"><input type="checkbox" id="hrep"${HLP.rep ? ' checked' : ''}> Attach the problem report</label></div>
+        <p class="fbb"><button class="b" data-h="send" type="button"${HLP.busy ? ' disabled' : ''}>${HLP.busy ? 'Sending…' : 'Send'}</button><button class="g" data-h="list" type="button">Cancel</button></p>
+        <p class="mute hsm">You get the answer right here in Settings &gt; Help${PFA && PFA.on ? `, on every device signed in as ${esc(PFA.name)}` : ''}. A Discord name or email is only needed if you would also like an answer there. The problem report lists the errors Pathfinder ran into, your version and screen size; nothing about your Destiny account.</p></div>`;
+    } else if (HLP.view === 'ticket' && HLP.t) {
+      const t = HLP.t, st = HST[t.status] || HST.open;
+      body = `<p><button class="g hback" data-h="list" type="button">&larr; All requests</button></p>
+        <div class="hth"><div class="hthh"><b>${esc(HKN[t.kind] || 'Other')}</b><span class="hst ${st[1]}">${st[0]}</span><small>Opened ${esc(hWhen(t.at))}</small></div>
+        <div class="hmsgs">${t.msgs.map((m) => `<div class="hb${m.by === 'team' ? ' team' : ''}"><small>${m.by === 'team' ? esc(m.name || 'Pathfinder team') + ' &middot; Pathfinder team' : 'You'} &middot; ${esc(hWhen(m.at))}</small><div>${hText(m.text)}</div></div>`).join('')}</div>
+        <textarea id="hreply" maxlength="3000" rows="3" placeholder="${t.status === 'closed' ? 'Write to reopen this request' : 'Write a reply'}">${esc(HLP.reply)}</textarea>
+        <p class="fbb"><button class="b" data-h="reply" type="button"${HLP.busy ? ' disabled' : ''}>${HLP.busy ? 'Sending…' : 'Send reply'}</button>${t.status === 'closed' ? '<button class="g" data-h="reopen" type="button">Reopen</button>' : '<button class="g" data-h="solve" type="button">Mark as solved</button>'}</p></div>`;
+    } else {
+      const L = HLP.list || [];
+      body = `<p class="fbb"><button class="b" data-h="new" type="button">New request</button><button class="g" data-h="refresh" type="button">${HLP.loading ? 'Checking…' : 'Check for answers'}</button></p>
+        <div class="hlist">${L.map((x) => { const st = HST[x.status] || HST.open; return `<div class="hrow${x.unread ? ' new' : ''}" data-hid="${esc(x.id)}" role="button" tabindex="0"><span class="hk">${esc(HKN[x.kind] || 'Other')}</span><span class="hf">${esc(x.first)}</span><span class="hst ${st[1]}">${x.unread ? 'New answer' : st[0]}</span><small>${esc(hWhen(x.upd))}</small></div>`; }).join('') || (HLP.list === null ? '<p class="mute">Loading your requests…</p>' : '<p class="mute">You have not asked anything yet. Questions, bugs and ideas are all welcome.</p>')}</div>
+        ${PFA && PFA.on ? '' : '<p class="mute hsm">Requests are kept on this device. Sign in to a Pathfinder account (Settings &gt; Accounts) to see them on all your devices.</p>'}`;
+    }
+    return `<div class="card sc"><h2>Help</h2><p class="mute">Ask a question, report a bug or suggest an idea. The Pathfinder team answers right here, and you can write back.</p>${note}${body}</div>`;
+  }
+  async function helpOpen(id) {
+    HLP.view = 'ticket'; HLP.reply = ''; HLP.note = ''; HLP.t = (HLP.t && HLP.t.id === id) ? HLP.t : null;
+    try { HLP.t = await gt.helpGet({ id }); const r = (HLP.list || []).find((x) => x.id === id); if (r) r.unread = false; HLP.unread = (HLP.list || []).filter((x) => x.unread).length; SECN.Help = HLP.unread; badges(); }
+    catch (er) { HLP.note = clean(er); HLP.bad = true; HLP.view = 'list'; }
+    drawSettings(); const m = settingsSec.querySelector('.hmsgs'); if (m) m.scrollTop = m.scrollHeight;
+  }
+  const hSync = (t) => { HLP.t = t; const L = HLP.list || (HLP.list = []); const i = L.findIndex((x) => x.id === t.id); const sum = { id: t.id, at: t.at, upd: t.upd, kind: t.kind, status: t.status, first: t.first, n: t.n, unread: false }; if (i >= 0) L[i] = sum; else L.unshift(sum); L.sort((a, b) => b.upd - a.upd); };
+  settingsSec.addEventListener('input', (e) => { const id = e.target.id; if (id === 'hmsg') HLP.msg = e.target.value; if (id === 'hcon') HLP.contact = e.target.value; if (id === 'hreply') HLP.reply = e.target.value; if (id === 'dreply') DSK.reply = e.target.value; });
+  settingsSec.addEventListener('change', (e) => { if (e.target.id === 'hrep') HLP.rep = e.target.checked; });
+  settingsSec.addEventListener('click', (e) => {
+    const k = e.target.closest('[data-hk]'); if (k) { HLP.kind = k.dataset.hk; drawSettings(); return; }
+    const row = e.target.closest('[data-hid]'); if (row) { helpOpen(row.dataset.hid); return; }
+    const b = e.target.closest('[data-h]'); if (!b || HLP.busy) return;
+    const a = b.dataset.h, act = (fn, ok) => { HLP.busy = true; HLP.note = ''; drawSettings(); fn().then((t) => { if (t) hSync(t); HLP.note = ok || ''; HLP.bad = false; }).catch((er) => { HLP.note = clean(er); HLP.bad = true; }).finally(() => { HLP.busy = false; drawSettings(); const m = settingsSec.querySelector('.hmsgs'); if (m) m.scrollTop = m.scrollHeight; }); };
+    if (a === 'new') { HLP.view = 'new'; HLP.note = ''; drawSettings(); setTimeout(() => { const t = document.getElementById('hmsg'); if (t) t.focus(); }, 0); return; }
+    if (a === 'list') { HLP.view = 'list'; HLP.note = ''; drawSettings(); return; }
+    if (a === 'refresh') { helpLoad(false); return; }
+    if (a === 'send') {
+      if (HLP.msg.trim().length < 3) { HLP.note = 'Write a message first.'; HLP.bad = true; drawSettings(); return; }
+      return act(async () => { const t = await gt.helpNew({ kind: HLP.kind, msg: HLP.msg.trim(), contact: HLP.contact.trim(), report: HLP.rep ? helpReport() : '' }); HLP.msg = ''; HLP.view = 'ticket'; return t; }, 'Sent. You will see the answer here, and a dot on Settings when it arrives.');
+    }
+    if (a === 'reply' && HLP.t) { if (!HLP.reply.trim()) return; return act(async () => { const t = await gt.helpReply({ id: HLP.t.id, text: HLP.reply.trim() }); HLP.reply = ''; return t; }, ''); }
+    if ((a === 'solve' || a === 'reopen') && HLP.t) return act(() => gt.helpClose({ id: HLP.t.id, open: a === 'reopen' }), a === 'solve' ? 'Marked as solved. Write again any time to reopen it.' : '');
+  });
+  settingsSec.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('[data-hid],[data-did]')) { e.preventDefault(); e.target.click(); } });
+
+  // ---- Help desk: every help request, for developer and founder accounts (Settings > Help desk) ----
+  const DSK = { list: null, loading: false, f: 'open', t: null, reply: '', busy: false, note: '', bad: false };
+  async function deskLoad(quiet) {
+    if (!FLG.dev || !window.gt || !gt.deskList || DSK.loading) return;
+    DSK.loading = true; if (!quiet && settingsSec.classList.contains('on')) drawSettings();
+    try { DSK.list = await gt.deskList(); SECN['Help desk'] = DSK.list.filter((x) => x.unread).length; if (!quiet) DSK.note = ''; }
+    catch (er) { if (!quiet) { DSK.note = clean(er); DSK.bad = true; } if (!DSK.list) DSK.list = []; }
+    DSK.loading = false; badges(); if (settingsSec.classList.contains('on')) drawSettings();
+  }
+  function deskCard() {
+    if (!FLG.dev || !window.gt || !gt.deskList) return '';
+    if (DSK.list === null && !DSK.loading) setTimeout(() => deskLoad(false), 0);
+    const L = DSK.list || [], cnt = { open: 0, answered: 0, closed: 0 }; L.forEach((x) => { cnt[x.status] = (cnt[x.status] || 0) + 1; });
+    const note = DSK.note ? `<p class="hnote${DSK.bad ? ' bad' : ''}" role="status">${esc(DSK.note)}</p>` : '';
+    let body;
+    if (DSK.t) {
+      const t = DSK.t, st = HST[t.status] || HST.open;
+      body = `<p><button class="g hback" data-d="back" type="button">&larr; All requests</button></p>
+        <div class="hth"><div class="hthh"><b>${esc(HKN[t.kind] || 'Other')}</b><span class="hst ${st[1]}">${t.status === 'open' ? 'Waiting for us' : st[0]}</span><small>Opened ${esc(hWhen(t.at))}</small></div>
+        <p class="mute hsm">${t.acct ? 'Pathfinder account <b>' + esc(t.acct) + '</b>' : 'Not signed in to a Pathfinder account'}${t.contact ? ' &middot; reply to <b>' + esc(t.contact) + '</b>' : ''} &middot; ${esc(t.where || '')} ${esc(t.ver || '')}</p>
+        <div class="hmsgs">${t.msgs.map((m) => `<div class="hb${m.by === 'team' ? ' team' : ''}"><small>${m.by === 'team' ? esc(m.name || 'Pathfinder team') : 'Player'} &middot; ${esc(hWhen(m.at))}</small><div>${hText(m.text)}</div></div>`).join('')}</div>
+        ${t.report ? `<details class="hrep"><summary>Problem report</summary><pre>${esc(t.report)}</pre></details>` : ''}
+        <textarea id="dreply" maxlength="3000" rows="4" placeholder="Write a reply. The player sees it in Settings > Help.">${esc(DSK.reply)}</textarea>
+        <p class="fbb"><button class="b" data-d="reply" type="button"${DSK.busy ? ' disabled' : ''}>${DSK.busy ? 'Sending…' : 'Send reply'}</button><button class="g" data-d="replyclose" type="button"${DSK.busy ? ' disabled' : ''}>Send and close</button>${t.status === 'closed' ? '<button class="g" data-d="reopen" type="button">Reopen</button>' : '<button class="g" data-d="close" type="button">Close without reply</button>'}${PFA && PFA.founder ? '<button class="g admdel" data-d="del" type="button">Delete</button>' : ''}</p></div>`;
+    } else {
+      const list = L.filter((x) => DSK.f === 'all' || x.status === DSK.f);
+      body = `<div class="fbk">${[['open', 'Waiting'], ['answered', 'Answered'], ['closed', 'Closed'], ['all', 'All']].map(([k, l]) => `<button class="chip${DSK.f === k ? ' on' : ''}" data-df="${k}" type="button">${l} ${k === 'all' ? L.length : cnt[k]}</button>`).join('')}<button class="g" data-d="refresh" type="button">${DSK.loading ? 'Loading…' : 'Reload'}</button></div>
+        <div class="hlist">${list.map((x) => { const st = HST[x.status] || HST.open; return `<div class="hrow${x.unread ? ' new' : ''}" data-did="${esc(x.id)}" role="button" tabindex="0"><span class="hk">${esc(HKN[x.kind] || 'Other')}</span><span class="hf">${esc(x.first)}</span><span class="hst ${st[1]}">${x.unread ? 'New message' : x.status === 'open' ? 'Waiting for us' : st[0]}</span><small>${esc(x.acct || 'no account')} &middot; ${esc(hWhen(x.upd))}</small></div>`; }).join('') || `<p class="mute">${DSK.list === null ? 'Loading…' : 'Nothing here.'}</p>`}</div>`;
+    }
+    return `<div class="card sc"><h2>Help desk</h2><p class="mute">Help requests from players. Your reply shows in their Settings &gt; Help, signed with your account name (${esc((PFA && PFA.name) || '')}).</p>${note}${body}</div>`;
+  }
+  settingsSec.addEventListener('click', (e) => {
+    const f = e.target.closest('[data-df]'); if (f) { DSK.f = f.dataset.df; drawSettings(); return; }
+    const row = e.target.closest('[data-did]');
+    if (row) { const id = row.dataset.did; DSK.reply = ''; DSK.note = ''; gt.deskGet({ id }).then((t) => { DSK.t = t; const r = (DSK.list || []).find((x) => x.id === id); if (r) r.unread = false; SECN['Help desk'] = (DSK.list || []).filter((x) => x.unread).length; badges(); drawSettings(); const m = settingsSec.querySelector('.hmsgs'); if (m) m.scrollTop = m.scrollHeight; }).catch((er) => { DSK.note = clean(er); DSK.bad = true; drawSettings(); }); return; }
+    const b = e.target.closest('[data-d]'); if (!b || DSK.busy) return;
+    const a = b.dataset.d, sync = (t) => { DSK.t = t; const r = (DSK.list || []).find((x) => x.id === t.id); if (r) Object.assign(r, { status: t.status, upd: t.upd, unread: false, n: t.n }); };
+    const act = (fn, ok) => { DSK.busy = true; DSK.note = ''; drawSettings(); fn().then((t) => { if (t && t.id) sync(t); DSK.note = ok || ''; DSK.bad = false; }).catch((er) => { DSK.note = clean(er); DSK.bad = true; }).finally(() => { DSK.busy = false; drawSettings(); }); };
+    if (a === 'back') { DSK.t = null; DSK.note = ''; drawSettings(); return; }
+    if (a === 'refresh') { deskLoad(false); return; }
+    if (!DSK.t) return;
+    if (a === 'reply' || a === 'replyclose') { if (!DSK.reply.trim()) { DSK.note = 'Write a reply first.'; DSK.bad = true; drawSettings(); return; } return act(async () => { const t = await gt.deskReply({ id: DSK.t.id, text: DSK.reply.trim(), close: a === 'replyclose' }); DSK.reply = ''; return t; }, 'Reply sent. The player sees it in Settings > Help.'); }
+    if (a === 'close' || a === 'reopen') return act(() => gt.deskStatus({ id: DSK.t.id, status: a === 'close' ? 'closed' : 'open' }), a === 'close' ? 'Closed.' : 'Reopened.');
+    if (a === 'del') { if (!confirm('Delete this help request for good? The player will no longer see it.')) return; const id = DSK.t.id; return act(async () => { await gt.deskDelete({ id }); DSK.list = (DSK.list || []).filter((x) => x.id !== id); DSK.t = null; return null; }, 'Deleted.'); }
+  });
+  // Opening Help or Help desk (or Settings itself) checks again, so what you see is current.
+  settingsSec.addEventListener('click', (e) => { const n = e.target.closest('[data-ssec]'); if (!n) return; if (n.dataset.ssec === 'Help') helpLoad(true); if (n.dataset.ssec === 'Help desk') deskLoad(true); });
+  { const sb = document.querySelector('#nav button[data-t="settings"]'); if (sb) sb.addEventListener('click', () => { if (SSEC === 'Help') helpLoad(true); if (SSEC === 'Help desk') deskLoad(true); }); }
+  // Check for new answers (players) and new requests (the team) shortly after start, then every 10 minutes.
+  setTimeout(() => { helpLoad(true); deskLoad(true); setInterval(() => { helpLoad(true); deskLoad(true); }, 6e5); }, 6000);
+  window.addEventListener('gtflags', () => { if (FLG.dev && DSK.list === null) deskLoad(true); });
   const DEVRN = { from: '', to: '', msg: '', bad: false, busy: false };
   function devCard() {
     if (!FLG.dev) return '';
@@ -1330,11 +1478,11 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
       ${tabsCard}
       <div class="thh">Start over</div>
       <p><button class="g" data-sa="reset">Reset all settings</button> <span class="mute">Puts every setting on this page back to its default. Your accounts, tags, notes, loadouts and wish lists stay.</span></p>
-    </div>${window.matchMedia && matchMedia('(pointer:coarse)').matches && innerWidth < 900 ? '' : keysCard()}${wlc}${acct}${devCard()}${admCard()}</div>`; void upd; // Updates now live in About & help (news.js)
+    </div>${window.matchMedia && matchMedia('(pointer:coarse)').matches && innerWidth < 900 ? '' : keysCard()}${wlc}${acct}${helpCard()}${devCard()}${deskCard()}${admCard()}</div>`; void upd; // Updates now live in About & help (news.js)
   }
   // Settings cards in even columns: each card, in a sensible order, goes into whichever column is shortest, so no side runs
   // far longer than the other. Re-done when cards are added (Farming, Reminders... come from another file) or the window resizes.
-  const SORD = ['Accounts', 'Item display', 'Inventory display', 'Appearance', 'Wish lists', 'Farming', 'Reminders', 'Keyboard shortcuts', 'Backup', 'About & help', 'Developer', 'Admin'];
+  const SORD = ['Accounts', 'Item display', 'Inventory display', 'Appearance', 'Wish lists', 'Farming', 'Reminders', 'Keyboard shortcuts', 'Backup', 'About & help', 'Help', 'Developer', 'Help desk', 'Admin'];
   // Settings as a menu (like a browser's settings page): the sections are listed on the left and only the one you pick is shown.
   // Cards come from several files (Farming, Reminders, About & help...), so this runs again whenever new cards show up.
   const SICO = {
@@ -1349,6 +1497,8 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     'Keyboard shortcuts': '<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/>',
     'Backup': '<path d="M7 18a5 5 0 01-.6-10A6 6 0 0118 9a4.5 4.5 0 01-1 9z"/><path d="M12 11v6M9.5 13.5L12 11l2.5 2.5"/>',
     'About & help': '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/>',
+    'Help': '<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/>',
+    'Help desk': '<path d="M4 13a8 8 0 0 1 16 0"/><rect x="3" y="13" width="4" height="6" rx="1.5"/><rect x="17" y="13" width="4" height="6" rx="1.5"/><path d="M20 19c0 1.5-2 2.5-5 2.5"/>',
     'Developer': '<path d="M8 8l-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/>',
     'Admin': '<path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
   };
@@ -1370,7 +1520,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     const names = cards.map(title).filter(Boolean);
     if (!names.includes(SSEC)) SSEC = names[0] || 'Accounts';
     cards.forEach((c) => { c.classList.toggle('son', title(c) === SSEC); });
-    const navH = names.map((n) => `<div role="button" tabindex="0" class="sni${n === SSEC ? ' on' : ''}" data-ssec="${esc(n)}"${n === SSEC ? ' aria-current="page"' : ''}>${sico(n)}<span>${esc(n)}</span></div>`).join('');
+    const navH = names.map((n) => `<div role="button" tabindex="0" class="sni${n === SSEC ? ' on' : ''}" data-ssec="${esc(n)}"${n === SSEC ? ' aria-current="page"' : ''}>${sico(n)}<span>${esc(n)}</span>${secBadge(n)}</div>`).join('');
     if (nav.dataset.h !== navH) {
       nav.innerHTML = navH; nav.dataset.h = navH;
       const on = nav.querySelector('.sni.on'); if (on && nav.scrollWidth > nav.clientWidth + 2) nav.scrollLeft = Math.max(0, on.offsetLeft - 12); // phones: the row scrolls, keep the open section in view
