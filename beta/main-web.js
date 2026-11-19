@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.19-beta.1: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.19-beta.2: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -2763,6 +2763,43 @@ H('item:slots', async (e, v) => { await ensureM();
   const socks = (r.sockets && r.sockets.data && r.sockets.data.sockets) || [];
   return socks.map((s, si) => { const p = s.plugHash && df.p[s.plugHash]; return { si, cur: s.plugHash || 0, cat: p ? p.c || '' : '', vis: s.isVisible !== false }; })
     .filter((q) => q.vis && /enhancement/i.test(q.cat) && !/masterwork|tuning|catalyst|shader|ornament|fashion|cosmetic/i.test(q.cat));
+});
+// ---- Wish list maker tab ----
+// Search every legendary and exotic weapon in the game by name or type (not only the ones you own).
+H('wm:find', async (e, v) => {
+  OBJ(v); const q = TXT(v.q, 60).trim().toLowerCase(); if (q.length < 2) return [];
+  const df = await defs(), out = [], words = q.split(/\s+/).filter(Boolean);
+  for (const k in df.d) {
+    const d = df.d[k]; if (!TF_WB0.has(d.b) || !/legendary|exotic/i.test(d.r || '') || !d.n) continue;
+    const hay = (d.n + ' ' + (d.t || '')).toLowerCase();
+    if (!words.every((w) => hay.includes(w))) continue;
+    const wl = d.wl ? d.wl[d.wl.length - 1] : d.w, wm = wl !== undefined && wl >= 0 ? df.W[wl] : '';
+    out.push({ h: +k, n: d.n, i: d.i || '', t: d.t || '', r: d.r || '', wm: wm || '', st: d.n.toLowerCase().startsWith(q) ? 0 : 1 });
+  }
+  return out.sort((a, b) => a.st - b.st || a.n.localeCompare(b.n) || b.h - a.h).slice(0, 60);
+});
+// Every perk a weapon can roll with, column by column (barrel, magazine, the two traits, origin), from the game's data.
+const WMPOOL = {};
+H('wm:pool', async (e, v) => {
+  OBJ(v); const h = HASH(v.h); if (WMPOOL[h]) return WMPOOL[h];
+  const df = await defs(), idf = await entDef('DestinyInventoryItemDefinition', h);
+  if (!idf || !idf.sockets) throw new Error('Could not read that weapon from Bungie. Try again in a moment.');
+  const ents = idf.sockets.socketEntries || [], cats = idf.sockets.socketCategories || [];
+  const PERKS = 4241085061, perkIdx = ((cats.find((c) => c.socketCategoryHash === PERKS) || {}).socketIndexes) || [];
+  const sets = await Promise.all(perkIdx.map((si) => { const en = ents[si] || {}, ph = en.randomizedPlugSetHash || en.reusablePlugSetHash; return ph ? entDef('DestinyPlugSetDefinition', ph) : null; }));
+  const cols = [];
+  perkIdx.forEach((si, n) => {
+    const en = ents[si] || {}, hs = [];
+    ((sets[n] && sets[n].reusablePlugItems) || []).forEach((q) => { if (!hs.includes(q.plugItemHash)) hs.push(q.plugItemHash); });
+    if (!hs.length && en.singleInitialItemHash) hs.push(en.singleInitialItemHash);
+    const opts = hs.map((x) => { const p = df.p[x]; return p && p.n ? { h: x, n: p.n, i: p.i || '', d: String(p.d || '').slice(0, 300), c: p.c || '', en: /enhanced/i.test(p.c || '') ? 1 : 0 } : null; })
+      .filter((o) => o && !/tracker|shader|ornament|memento|intrinsic/i.test(o.c));
+    if (!opts.length) return;
+    const c0 = (opts.find((o) => !o.en) || opts[0]).c.replace(/^Enhanced\s+/i, '');
+    cols.push({ si, label: c0 || 'Perk', opts: opts.slice(0, 40) });
+  });
+  const d = df.d[h] || {};
+  return (WMPOOL[h] = { h, n: d.n || (idf.displayProperties && idf.displayProperties.name) || '', i: d.i || '', t: d.t || '', cols });
 });
 // Every option the game offers for each subclass socket (super, abilities, aspects, fragments), taken from the item data.
 const SUBO = {};

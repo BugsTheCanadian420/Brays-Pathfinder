@@ -709,7 +709,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 #vault .phsw button{flex:1 1 0!important;width:auto!important;height:auto!important;min-height:48px;display:flex!important;flex-direction:column;align-items:flex-start;gap:2px;padding:8px 10px!important;border-radius:10px!important;background:linear-gradient(90deg,var(--cc),rgba(0,0,0,.25))!important;border:1px solid rgba(255,255,255,.12)!important;color:#fff!important;text-transform:none!important;letter-spacing:0!important;opacity:.6;min-width:0}
 .phsw button b{font-size:14px;font-weight:700;line-height:1.1}.phsw button span{display:inline-flex;align-items:center;gap:3px;color:#f3d97a;font-size:13px}.phsw button span svg{width:11px;height:11px}
 #vault .phsw button.on{opacity:1;border-color:var(--g-accent,#7ab8e8)!important;box-shadow:0 0 0 1px var(--g-accent,#7ab8e8)}
-.vgrf{margin-left:6px!important}.vt.gtflash{outline:3px solid var(--g-accent,#7ab8e8);outline-offset:2px;border-radius:4px}.vrf{margin-left:10px;flex:none;width:30px;height:30px;padding:0!important;display:inline-flex!important;align-items:center;justify-content:center;border-radius:50%!important;background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.14)!important;color:#d6d9de!important;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
+.vgrf{margin-left:6px!important}#godrolls .jk.grfp{background:var(--g-panel,#1a1c20);border:1px solid var(--g-line,#2b2e33);border-radius:12px;max-width:920px;margin:0 auto 24px;padding:16px 20px}#godrolls .jkr{grid-template-columns:26px 48px 1fr auto}#godrolls .grb{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:20px;padding:0 4px;border-radius:4px;font:800 12px/1 'Open Sans',system-ui,sans-serif;font-style:normal;color:#111;background:var(--gc)}#godrolls .jkt .grb{min-width:18px;height:16px;font-size:10.5px;margin-right:2px}#godrolls .jkr{grid-template-columns:26px 44px 1fr}#godrolls .jkh{display:flex;align-items:baseline;gap:12px}#godrolls .jkh b{font-size:16px;color:#fff}#godrolls .jkh button{margin-left:auto}#godrolls .jkl{display:flex;flex-direction:column;gap:4px;margin:8px 0}#godrolls .jkr{display:grid;grid-template-columns:48px 1fr auto;gap:10px;align-items:center;padding:4px;border:1px solid transparent;cursor:pointer}#godrolls .jkr:hover{border-color:var(--g-line,#3a3d43);background:rgba(255,255,255,.03)}#godrolls .jkr .vt{--t:48px;width:48px;height:48px;pointer-events:none}#godrolls .jkr small{display:block;color:#b9bec6;font-size:12px}#godrolls .jkb{position:sticky;bottom:-14px;background:var(--g-panel,#1a1c20);padding:10px 0;margin:0}#godrolls .jkb{position:static}#godrolls .jkr{grid-template-columns:22px 48px 1fr auto}#godrolls .jkr input{width:16px;height:16px;margin:0;cursor:pointer}#godrolls .jkr.sel{background:rgba(255,255,255,.04);border-color:var(--g-line,#3a3d43)}#godrolls .jkt{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}#godrolls .jkt button{background:transparent;border:1px solid var(--g-line,#3a3d43);color:#cfd3da;padding:5px 10px;font:inherit;font-size:12.5px;cursor:pointer}#godrolls .jkt button.on{border-color:var(--acc,#e8b84a);color:#fff;background:rgba(255,255,255,.06)}#godrolls .jkt i{font-style:normal;opacity:.7;margin-left:4px}#godrolls .jkd{margin:6px 0}#godrolls .jks{display:flex;gap:12px;align-items:center;font-size:12.5px;margin:4px 0}#godrolls .jks label{display:flex!important;gap:6px;align-items:center;cursor:pointer;white-space:nowrap;width:auto!important;margin:0!important;padding:0!important}#godrolls .jkb button[disabled]{opacity:.4!important;cursor:default;pointer-events:none}#godrolls .jke{margin:16px 0}#godrolls .jkr{grid-template-columns:22px 44px 1fr}#godrolls .jkr>.mute{display:none}#godrolls, #dlmod, #dled, #apm, #gtnews')) { const nb = document.querySelector('#nav button[data-t="' + ka + '"]'); if (nb) { e.preventDefault(); nb.click(); }.vt.gtflash{outline:3px solid var(--g-accent,#7ab8e8);outline-offset:2px;border-radius:4px}.vrf{margin-left:10px;flex:none;width:30px;height:30px;padding:0!important;display:inline-flex!important;align-items:center;justify-content:center;border-radius:50%!important;background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.14)!important;color:#d6d9de!important;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
 .vrf:hover{background:rgba(255,255,255,.14)!important;color:#fff!important;border-color:var(--g-accent,#7ab8e8)!important}
 .vrf.spin svg{animation:vrfspin .8s linear infinite}@keyframes vrfspin{to{transform:rotate(360deg)}}
 .chp .lg{width:11px;height:14px;margin-top:2px}
@@ -1111,6 +1111,9 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   const devOff = () => { try { const a = JSON.parse(localStorage.getItem('gt_devoff')); return Array.isArray(a) ? a : []; } catch (e) { return []; } };
   window.__gtFlag = (name, dflt) => { const l = FLG.flags[name]; if (!l) return dflt === undefined ? true : !!dflt; if (l === 'on') return true; if (l === 'off') return false; return !!FLG.dev && !devOff().includes(name); };
   window.__gtDev = () => !!FLG.dev;
+  // A feature that is for developers until the admin page says otherwise: no switch (or 'dev') = developer accounts only,
+  // 'on' = everyone, 'off' = nobody. "See it as a player" in Settings > Developer hides it for you too.
+  window.__gtDevFeature = (name) => { const l = FLG.flags[name]; if (l === 'on') return true; if (l === 'off') return false; return !!FLG.dev && !devOff().includes(name); };
   const flagsLoad = () => { if (!window.gt || !gt.flagsGet) return; gt.flagsGet().then((r) => { const was = JSON.stringify(FLG); FLG = { flags: (r && r.flags) || {}, dev: !!(r && r.dev) }; if (JSON.stringify(FLG) !== was) { document.documentElement.toggleAttribute('data-gtdev', FLG.dev); window.dispatchEvent(new Event('gtflags')); if (settingsSec.classList.contains('on')) drawSettings(); if (window.__gtRender) window.__gtRender(); } }).catch(() => {}); };
   setTimeout(flagsLoad, 1500); setInterval(flagsLoad, 6e5);
   function devCard() {
@@ -1896,9 +1899,12 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
   // and so do Esc, the X and clicking outside it. While it is open the page behind it does not scroll.
   const grfClose = () => { const m = g('junkm'); if (m) m.remove(); };
   const grfToggle = () => { const m = g('junkm'); if (m && m.classList.contains('grf')) { m.remove(); return; } if (sel) { sel = null; renderPop(); } grfOpen(); };
-  function grfOpen() {
-    let m = g('junkm'); const had = !!m; if (m) m.remove();
-    if (!WL) { setNote('Add a wish list first (Settings, Wish lists): the god roll finder grades your weapons with it.'); return; }
+  function grfOpen() { grfRender(null); }
+  // The finder draws as a window over the page (host = null) or inside the God rolls tab (host = that page).
+  function grfRender(host) {
+    let m = host ? null : g('junkm'); const had = !!m; if (m) m.remove();
+    if (host && !D) { host.innerHTML = '<div class="jk grfp"><div class="jkh"><b>God rolls</b></div><p class="mute">Sign in on the Inventory tab first.</p></div>'; return; }
+    if (!WL) { if (host) host.innerHTML = '<div class="jk grfp"><div class="jkh"><b>God rolls</b></div><p class="mute">Add a wish list first (Settings, Wish lists): every weapon you own is graded with your wish lists.</p></div>'; else setNote('Add a wish list first (Settings, Wish lists): the god roll finder grades your weapons with it.'); return; }
     const ws = D.items.filter((x) => WEAPON.has(x.b) && x.r === 'Legendary' && x.pk && !x.pm);
     const by = { S: [], A: [], CD: [], '?': [] };
     ws.forEach((x) => { const gr = grade(x); (by[gr === 'C' || gr === 'D' ? 'CD' : gr]).push({ x, gr }); });
@@ -1912,22 +1918,24 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
       return o.gr === 'D' ? 'Trash roll on your wish list' : o.gr === '?' ? 'No wish list has this weapon yet' : 'Not one of the wish list rolls for this weapon';
     };
     const junkable = list.filter((o) => !['favorite', 'keep', 'junk'].includes(T[o.x.id]) && !o.x.e);
-    m = document.createElement('div'); m.id = 'junkm'; m.className = 'grf' + (had ? ' noan' : '');
-    m.innerHTML = `<div class="jk"><div class="jkh"><b>God roll finder</b><span class="mute">${ws.length} legendary weapons graded with your wish lists</span><button class="g" data-gk="x" title="Close">&#10005;</button></div>
+    m = host || document.createElement('div'); if (!host) { m.id = 'junkm'; m.className = 'grf' + (had ? ' noan' : ''); }
+    const redraw = () => (host ? grfRender(host) : grfOpen()), close = () => { if (!host) m.remove(); };
+    m.innerHTML = `<div class="jk${host ? ' grfp' : ''}"><div class="jkh"><b>${host ? 'God rolls' : 'God roll finder'}</b><span class="mute">${ws.length} legendary weapons graded with your wish lists</span>${host ? '' : '<button class="g" data-gk="x" title="Close">&#10005;</button>'}</div>
 <div class="jkt">${GTABS.map(([k, lbl]) => `<button data-gt="${k}" class="${k === GTAB ? 'on' : ''}"><em class="grb" style="--gc:${GCOL[k[0]]}">${k === 'CD' ? 'C/D' : k}</em> ${esc(lbl)} <i>${by[k].length}</i></button>`).join('')}</div>
 <p class="mute jkd">${esc(info[2])} Click a weapon to see its perks; <b>Apply Perks</b> in its pop-up puts the wish list perks in.</p>
 ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="${esc(o.x.id)}"><em class="grb" style="--gc:${GCOL[o.gr]}">${o.gr}</em>${tile(o.x)}<div><b>${esc(o.x.n)}</b><small>${esc(why(o))}</small></div><span class="mute">${esc(whereTxt(o.x))}</span></div>`).join('')}</div>
 ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="junk">Tag ${junkable.length} as junk</button> <span class="mute">Skips equipped items and anything tagged favorite or keep.</span></p>` : ''}` : `<p class="jke"><b>${GTAB === '?' ? 'Every weapon you own is rated.' : 'Nothing here.'}</b></p>`}</div>`;
     m.onclick = (e) => {
-      if (e.target === m) { m.remove(); return; }
-      const tb = e.target.closest('[data-gt]'); if (tb) { GTAB = tb.dataset.gt; grfOpen(); return; }
+      if (!host && e.target === m) { m.remove(); return; }
+      const tb = e.target.closest('[data-gt]'); if (tb) { GTAB = tb.dataset.gt; redraw(); return; }
       const b = e.target.closest('[data-gk]');
-      if (b && b.dataset.gk === 'x') { m.remove(); return; }
-      if (b && b.dataset.gk === 'junk') { const o = TAGS(); junkable.forEach((q2) => { o[q2.x.id] = 'junk'; }); saveTAGS(o); renderGrid(); setNote(junkable.length + ' weapons tagged junk.'); grfOpen(); return; }
-      const r = e.target.closest('[data-jid]'); if (r) { e.stopPropagation(); m.remove(); goItem(r.dataset.jid); }
+      if (b && b.dataset.gk === 'x') { close(); return; }
+      if (b && b.dataset.gk === 'junk') { const o = TAGS(); junkable.forEach((q2) => { o[q2.x.id] = 'junk'; }); saveTAGS(o); renderGrid(); setNote(junkable.length + ' weapons tagged junk.'); redraw(); return; }
+      const r = e.target.closest('[data-jid]'); if (r) { e.stopPropagation(); close(); goItem(r.dataset.jid); }
     };
-    document.body.appendChild(m);
+    if (!host) document.body.appendChild(m);
   }
+  window.__gtGrfInto = (host) => grfRender(host);
   // Shows a weapon picked in a list (god roll finder, junk finder): its tile is scrolled into view and its pop-up opens beside it.
   function goItem(id) {
     if (!sec.classList.contains('on')) show('vault');

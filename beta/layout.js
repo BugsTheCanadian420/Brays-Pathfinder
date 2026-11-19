@@ -8,8 +8,8 @@
   const NAME = { home: 'Home', vault: 'Inventory', loadouts: 'Loadouts', organizer: 'Organizer', optimizer: 'Optimizer', triumphs: 'Triumphs', activity: 'Activity', targets: 'Farming', check: 'Checklist', notes: 'Notes', wish: 'Roll Tracker', guides: 'Helpful', hub: 'Hub', settings: 'Settings' };
   const TIP = { home: 'Resets, goals and season at a glance', vault: 'Your characters and vault', loadouts: 'Save and equip sets of gear', organizer: 'Sort and compare every weapon and armor piece', optimizer: 'Find the best armor for a build', triumphs: 'Records, seals and titles', activity: 'What you have played lately', targets: 'Farm for the exact rolls and armor you want', reset: 'Daily and weekly reset timers, Xur', check: 'Weekly and daily to-do list', notes: 'Your own notes', wish: 'Track the weapon rolls you are hunting', guides: 'How-to guides for activities', hub: 'Light.gg, DIM and other Destiny sites inside the app' };
   const PRIMARY = ['home', 'vault', 'loadouts', 'triumphs', 'activity', 'targets'];
-  const GROUPS = [['Gear', ['home', 'vault', 'loadouts']], ['Progress', ['triumphs', 'activity', 'targets']], ['Learn', ['guides', 'hub']], ['Weekly', ['check']], ['Your lists', ['notes']], ['Gear tools', ['organizer', 'optimizer']]];
-  const EXTRA = ['guides', 'hub', 'check', 'notes', 'organizer', 'optimizer']; // join the bar one by one as the window gets wider
+  const GROUPS = [['Gear', ['home', 'vault', 'loadouts']], ['Progress', ['triumphs', 'activity', 'targets']], ['Learn', ['guides', 'hub']], ['Weekly', ['check']], ['Your lists', ['notes']], ['Gear tools', ['organizer', 'optimizer', 'godrolls', 'wishmaker']]];
+  const EXTRA = ['guides', 'hub', 'check', 'notes', 'organizer', 'optimizer', 'godrolls', 'wishmaker']; // join the bar one by one as the window gets wider
 
   // The old hamburger menu is replaced by the one below.
   ['gtmenu', 'gtmenup', 'gtcur'].forEach((id) => { const n = document.getElementById(id); if (n) n.remove(); });
@@ -48,7 +48,8 @@
   const HIDK = 'gt.nav.hide';
   const hidSet = () => { try { const a = JSON.parse(localStorage.getItem(HIDK)); return new Set(Array.isArray(a) ? a : []); } catch (e) { return new Set(); } };
   let HID = hidSet();
-  const hidden = (id) => HID.has(id) && id !== 'vault' && id !== 'settings';
+  // Also gone: tabs locked to developer accounts (devtabs.js) for everyone else.
+  const hidden = (id) => (HID.has(id) && id !== 'vault' && id !== 'settings') || !!(window.__gtTabLocked && window.__gtTabLocked(id));
   function applyHide() { nav.querySelectorAll('button[data-t]').forEach((b) => b.classList.toggle('gthide', hidden(b.dataset.t))); }
   applyHide();
   let nProm = 0;
