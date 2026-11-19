@@ -57,25 +57,37 @@
     for (const a of cols) { const nx = []; for (const pre of out) for (const h of a) nx.push(pre.concat(h)); out = nx; if (out.length > 64) break; }
     return out;
   };
+  // Your rolls for every version of this weapon, shown once each (the same roll is saved for each version of the gun).
+  function mineRows() {
+    const P = st.pool; if (!P) return [];
+    const pn = {}; P.cols.forEach((c) => c.opts.forEach((o) => { pn[o.h] = o.n; Object.values(o.hm || {}).forEach((x) => { pn[x] = o.n; }); }));
+    const rows = [], by = {};
+    (P.hs || [P.h]).forEach((vh) => (st.mine[vh] || []).forEach((r, i) => {
+      const names = r[0].map((h) => pn[h] || '#' + h).join(' + '), key = names + '|' + (r[2] ? 1 : 0) + '|' + (r[1] || '') + '|' + (r[3] || '');
+      let row = by[key]; if (!row) { row = by[key] = { names, trash: !!r[2], note: r[1] || '', tags: r[3] || '', at: [] }; rows.push(row); }
+      row.at.push([vh, i]);
+    }));
+    return rows;
+  }
   async function loadMine() { try { st.mine = (await gt.wlMine()).rolls || {}; } catch (e) { st.mine = {}; } }
 
   function drawWm() {
     if (!allowed('wishmaker')) { window.show('vault'); return; }
     const own = owned(), P = st.pool;
-    const results = st.res.map((w) => `<div class="wmr${P && P.h === w.h ? ' on' : ''}" data-wh="${w.h}" role="button" tabindex="0"><span class="wmi">${w.i ? `<img src="${esc(ICON(w.i))}" alt="" loading="lazy">` : ''}${w.wm ? `<img class="wmw" src="${esc(ICON(w.wm))}" alt="">` : ''}</span><span><b>${esc(w.n)}</b><small>${esc(w.t)}${w.r === 'Exotic' ? ' &middot; Exotic' : ''}${own[w.h] ? ` &middot; you own ${own[w.h]}` : ''}</small></span></div>`).join('');
-    const pn = {}; if (P) P.cols.forEach((c) => c.opts.forEach((o) => { pn[o.h] = o.n; }));
-    const mine = P ? (st.mine[P.h] || []) : [];
+    const ownN = (w) => (w.hs || [w.h]).reduce((a, x) => a + (own[x] || 0), 0);
+    const results = st.res.map((w) => `<div class="wmr${P && P.h === w.h ? ' on' : ''}" data-wh="${w.h}" role="button" tabindex="0"><span class="wmi">${w.i ? `<img src="${esc(ICON(w.i))}" alt="" loading="lazy">` : ''}${w.wm ? `<img class="wmw" src="${esc(ICON(w.wm))}" alt="">` : ''}</span><span><b>${esc(w.n)}</b><small>${esc(w.t)}${w.r === 'Exotic' ? ' &middot; Exotic' : ''}${ownN(w) ? ` &middot; you own ${ownN(w)}` : ''}</small></span></div>`).join('');
+    const mine = mineRows();
     const n = combos().length;
     const right = !P ? `<div class="wmempty">${st.poolErr ? esc(st.poolErr) : 'Search for a weapon on the left, then pick its perks here.'}</div>` : `
-      <div class="wmh">${P.i ? `<img src="${esc(ICON(P.i))}" alt="">` : ''}<div><b>${esc(P.n)}</b><small>${esc(P.t)}${own[P.h] ? ` &middot; you own ${own[P.h]}` : ''}</small></div></div>
+      <div class="wmh">${P.i ? `<img src="${esc(ICON(P.i))}" alt="">` : ''}<div><b>${esc(P.n)}</b><small>${esc(P.t)}${ownN(P) ? ` &middot; you own ${ownN(P)}` : ''}</small></div></div>
       <p class="mute">Pick the perks that make this roll. Pick more than one in a column to accept any of them; leave a column empty if it does not matter.</p>
-      <div class="wmcols">${P.cols.map((c, ci) => `<div class="wmcol"><div class="wmcl">${esc(c.label)}${(st.sel[ci] && st.sel[ci].size) ? ` <button class="wmclr" data-wclr="${ci}" type="button">Clear</button>` : ''}</div>${c.opts.map((o) => `<div class="wmp${st.sel[ci] && st.sel[ci].has(o.h) ? ' on' : ''}${o.en ? ' en' : ''}" data-wc="${ci}" data-wp="${o.h}" role="checkbox" aria-checked="${!!(st.sel[ci] && st.sel[ci].has(o.h))}" tabindex="0" title="${esc(o.d)}">${o.i ? `<img src="${esc(ICON(o.i))}" alt="">` : ''}<span>${esc(o.n)}</span></div>`).join('')}</div>`).join('') || '<p class="mute">This weapon has no random perks to pick.</p>'}</div>
+      <div class="wmcols" style="--wmn:${P.cols.length}">${P.cols.map((c, ci) => `<div class="wmcol"><div class="wmcl">${esc(c.label)}${(st.sel[ci] && st.sel[ci].size) ? ` <button class="wmclr" data-wclr="${ci}" type="button">Clear</button>` : ''}</div>${c.opts.map((o) => `<div class="wmp${st.sel[ci] && st.sel[ci].has(o.h) ? ' on' : ''}" data-wc="${ci}" data-wp="${o.h}" role="checkbox" aria-checked="${!!(st.sel[ci] && st.sel[ci].has(o.h))}" tabindex="0" title="${esc(o.d)}">${o.i ? `<img src="${esc(ICON(o.i))}" alt="">` : ''}<span>${esc(o.n)}</span></div>`).join('')}</div>`).join('') || '<p class="mute">This weapon has no random perks to pick.</p>'}</div>
       <div class="wmf"><input type="text" id="wmnote" maxlength="200" placeholder="Note (optional), e.g. PvE add clear" value="${esc(st.note)}">
         <div class="wmt">${TAGS.map(([k, l]) => `<label><input type="checkbox" data-wt="${k}"${st.tags.has(k) ? ' checked' : ''}> ${l}</label>`).join('')}</div>
         <div class="wmb"><button class="b" data-wadd="0" type="button"${n ? '' : ' disabled'}>&#128077; Add as wish list roll</button><button class="g" data-wadd="1" type="button"${n ? '' : ' disabled'}>&#128078; Add as trash roll</button>
         <span class="mute">${n ? (n > 64 ? 'Too many combinations (more than 64): pick fewer perks.' : `Adds ${n} roll${n === 1 ? '' : 's'}.`) : 'Pick at least one perk.'}</span></div>
         ${st.msg ? `<div class="wmmsg${/^Could not/.test(st.msg) ? ' bad' : ''}">${esc(st.msg)}</div>` : ''}</div>
-      <div class="wmmine"><div class="wmcl">Your rolls for this weapon (${mine.length})</div>${mine.map((r, i) => `<div class="wmmr"><span>${r[2] ? '&#128078;' : '&#128077;'} ${esc(r[0].map((h) => pn[h] || '#' + h).join(' + '))}${r[1] ? ` <small>${esc(r[1])}</small>` : ''}${r[3] ? ` <small>${esc(r[3])}</small>` : ''}</span><button class="g" data-wdel="${i}" type="button">Remove</button></div>`).join('') || '<p class="mute">None yet.</p>'}</div>`;
+      <div class="wmmine"><div class="wmcl">Your rolls for this weapon (${mine.length})</div>${mine.map((r, i) => `<div class="wmmr"><span>${r.trash ? '&#128078;' : '&#128077;'} ${esc(r.names)}${r.note ? ` <small>${esc(r.note)}</small>` : ''}${r.tags ? ` <small>${esc(r.tags)}</small>` : ''}</span><button class="g" data-wdel="${i}" type="button">Remove</button></div>`).join('') || '<p class="mute">None yet.</p>'}</div>`;
     wm.s.innerHTML = `<div class="wmw2"><div class="wml"><div class="wmcl">Weapon</div><input type="search" id="wmq" placeholder="Search every weapon, e.g. fatebringer or pulse rifle" value="${esc(st.q)}" autocomplete="off">
       <div class="wmres">${st.busy ? '<p class="mute">Searching…</p>' : results || (st.q.length >= 2 ? '<p class="mute">No weapons found.</p>' : '<p class="mute">Type at least 2 letters.</p>')}</div></div><div class="wmrt">${right}</div></div>`;
   }
@@ -90,15 +102,24 @@
     if (id) { const el = document.getElementById(id); if (el) { el.focus(); try { el.setSelectionRange(pos, pos); } catch (e) { /* not text */ } } }
   }
   async function pick(h) {
+    const w = st.res.find((x) => x.h === h), hs = (w && w.hs) || [h];
     st.pool = null; st.poolErr = ''; st.sel = {}; st.msg = ''; drawWm();
-    try { st.pool = await gt.wmPool({ h }); } catch (e) { st.poolErr = 'Could not load that weapon: ' + String((e && e.message) || e).replace(/^Error invoking remote method '[^']*': (Error: )?/, ''); }
+    try { st.pool = await gt.wmPool({ h, hs }); } catch (e) { st.poolErr = 'Could not load that weapon: ' + String((e && e.message) || e).replace(/^Error invoking remote method '[^']*': (Error: )?/, ''); }
     await loadMine(); drawWm();
   }
   async function add(trash) {
     const cs = combos(); if (!cs.length || cs.length > 64 || !st.pool) return;
     const tags = [...st.tags].join(',');
     try {
-      for (const perks of cs) await gt.wlAddRoll({ h: st.pool.h, perks, note: st.note, tags, trash: !!trash, name: st.pool.n });
+      // Save the roll for every version of the weapon, with that version's own perk hashes.
+      const byH = {}; st.pool.cols.forEach((c) => c.opts.forEach((o) => { byH[o.h] = o; }));
+      for (const vh of (st.pool.hs || [st.pool.h])) {
+        for (const combo of cs) {
+          const perks = combo.map((x) => { const o = byH[x]; return o && o.hm ? o.hm[vh] : (vh === st.pool.h ? x : 0); });
+          if (perks.some((x) => !x)) continue; // that version cannot roll one of these perks
+          await gt.wlAddRoll({ h: vh, perks, note: st.note, tags, trash: !!trash, name: st.pool.n });
+        }
+      }
       st.msg = `Added ${cs.length} ${trash ? 'trash' : 'wish list'} roll${cs.length === 1 ? '' : 's'} to My wish list.`;
       if (V() && V().wlReload) V().wlReload(); window.dispatchEvent(new Event('gtwl'));
     } catch (e) { st.msg = 'Could not add: ' + String((e && e.message) || e).replace(/^Error invoking remote method '[^']*': (Error: )?/, ''); }
@@ -115,7 +136,9 @@
     const p = e.target.closest('[data-wp]'); if (p) { const ci = +p.dataset.wc, h = +p.dataset.wp; const set = st.sel[ci] || (st.sel[ci] = new Set()); if (set.has(h)) set.delete(h); else set.add(h); st.msg = ''; drawWm(); return true; }
     const c = e.target.closest('[data-wclr]'); if (c) { delete st.sel[+c.dataset.wclr]; drawWm(); return true; }
     const a = e.target.closest('[data-wadd]'); if (a) { add(a.dataset.wadd === '1'); return true; }
-    const d = e.target.closest('[data-wdel]'); if (d && st.pool) { gt.wlDelRoll({ h: st.pool.h, i: +d.dataset.wdel }).then(async () => { if (V() && V().wlReload) V().wlReload(); window.dispatchEvent(new Event('gtwl')); await loadMine(); drawWm(); }).catch(() => {}); return true; }
+    const d = e.target.closest('[data-wdel]'); if (d && st.pool) { const row = mineRows()[+d.dataset.wdel]; if (!row) return true;
+      // Remove the copy saved for each version, highest index first so the others do not shift.
+      row.at.slice().sort((a, b) => b[1] - a[1]).reduce((pr, [vh, i]) => pr.then(() => gt.wlDelRoll({ h: vh, i })), Promise.resolve()).then(async () => { if (V() && V().wlReload) V().wlReload(); window.dispatchEvent(new Event('gtwl')); await loadMine(); drawWm(); }).catch(() => {}); return true; }
     return false;
   };
   wm.s.addEventListener('click', act);
@@ -138,13 +161,12 @@
 #wishmaker .wmempty{color:var(--mute,#9aa1ab);padding:40px 10px;text-align:center}
 #wishmaker .wmh{display:flex;gap:12px;align-items:center;margin-bottom:6px}#wishmaker .wmh img{width:56px;height:56px;border-radius:4px}
 #wishmaker .wmh b{font-size:18px;color:#fff;display:block}#wishmaker .wmh small{color:#aab0b9}
-#wishmaker .wmcols{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:10px 0 14px}
+#wishmaker .wmcols{display:grid;grid-template-columns:repeat(var(--wmn,4),minmax(150px,1fr));gap:12px;margin:10px 0 14px;overflow-x:auto;padding-bottom:4px}
 #wishmaker .wmcol{display:flex;flex-direction:column;gap:4px}
 #wishmaker .wmp{display:flex;align-items:center;gap:8px;padding:5px 8px;border:1px solid var(--g-line,#2b2e33);border-radius:8px;cursor:pointer;font-size:13px;user-select:none}
 #wishmaker .wmp img{width:26px;height:26px;border-radius:50%;flex:none}
 #wishmaker .wmp:hover{background:rgba(255,255,255,.05)}
 #wishmaker .wmp.on{border-color:var(--g-accent,#7ab8e8);background:var(--g-accent-soft,rgba(122,184,232,.16));color:#fff}
-#wishmaker .wmp.en span::after{content:' (enhanced)';color:#e8c46a;font-size:11px}
 #wishmaker .wmp:focus-visible,#wishmaker .wmr:focus-visible{outline:2px solid var(--g-accent,#7ab8e8);outline-offset:1px}
 #wishmaker .wmclr{font-size:11px;padding:1px 8px;text-transform:none;letter-spacing:0}
 #wishmaker .wmf{border-top:1px solid var(--g-line,#2b2e33);padding-top:12px;display:flex;flex-direction:column;gap:10px}

@@ -5,8 +5,8 @@
   const nav = document.getElementById('nav'), hd = document.querySelector('header');
   if (!nav || !hd) return;
   const html = document.documentElement;
-  const NAME = { home: 'Home', vault: 'Inventory', loadouts: 'Loadouts', organizer: 'Organizer', optimizer: 'Optimizer', triumphs: 'Triumphs', activity: 'Activity', targets: 'Farming', check: 'Checklist', notes: 'Notes', wish: 'Roll Tracker', guides: 'Helpful', hub: 'Hub', settings: 'Settings' };
-  const TIP = { home: 'Resets, goals and season at a glance', vault: 'Your characters and vault', loadouts: 'Save and equip sets of gear', organizer: 'Sort and compare every weapon and armor piece', optimizer: 'Find the best armor for a build', triumphs: 'Records, seals and titles', activity: 'What you have played lately', targets: 'Farm for the exact rolls and armor you want', reset: 'Daily and weekly reset timers, Xur', check: 'Weekly and daily to-do list', notes: 'Your own notes', wish: 'Track the weapon rolls you are hunting', guides: 'How-to guides for activities', hub: 'Light.gg, DIM and other Destiny sites inside the app' };
+  const NAME = { home: 'Home', vault: 'Inventory', loadouts: 'Loadouts', organizer: 'Organizer', optimizer: 'Optimizer', triumphs: 'Triumphs', activity: 'Activity', targets: 'Farming', check: 'Checklist', notes: 'Notes', wish: 'Roll Tracker', guides: 'Helpful', hub: 'Hub', godrolls: 'God rolls', wishmaker: 'Wish list maker', settings: 'Settings' };
+  const TIP = { home: 'Resets, goals and season at a glance', vault: 'Your characters and vault', loadouts: 'Save and equip sets of gear', organizer: 'Sort and compare every weapon and armor piece', optimizer: 'Find the best armor for a build', triumphs: 'Records, seals and titles', activity: 'What you have played lately', targets: 'Farm for the exact rolls and armor you want', reset: 'Daily and weekly reset timers, Xur', check: 'Weekly and daily to-do list', notes: 'Your own notes', wish: 'Track the weapon rolls you are hunting', guides: 'How-to guides for activities', hub: 'Light.gg, DIM and other Destiny sites inside the app', godrolls: 'Your weapons graded with your wish lists', wishmaker: 'Make wish list rolls for any weapon' };
   const PRIMARY = ['home', 'vault', 'loadouts', 'triumphs', 'activity', 'targets'];
   const GROUPS = [['Gear', ['home', 'vault', 'loadouts']], ['Progress', ['triumphs', 'activity', 'targets']], ['Learn', ['guides', 'hub']], ['Weekly', ['check']], ['Your lists', ['notes']], ['Gear tools', ['organizer', 'optimizer', 'godrolls', 'wishmaker']]];
   const EXTRA = ['guides', 'hub', 'check', 'notes', 'organizer', 'optimizer', 'godrolls', 'wishmaker']; // join the bar one by one as the window gets wider
@@ -54,7 +54,18 @@
   applyHide();
   let nProm = 0;
   // Bar order: the main tabs, then the extras. Inventory is always on the bar; the rest join one by one while they fit.
-  const shownAll = () => [...PRIMARY, ...EXTRA].filter((id) => !hidden(id) && btn(id));
+  // Tab order (Settings > Appearance > Tabs). Tabs added in a later version slot in where they sit by default.
+  const ORDK = 'gt.nav.order', DEF = [...PRIMARY, ...EXTRA];
+  const order = () => {
+    let a = []; try { const o = JSON.parse(localStorage.getItem(ORDK)); if (Array.isArray(o)) a = o.filter((id, i) => DEF.includes(id) && o.indexOf(id) === i); } catch (e) { a = []; }
+    DEF.forEach((id, i) => { if (a.includes(id)) return; const prev = DEF.slice(0, i).reverse().find((x) => a.includes(x)); a.splice(prev ? a.indexOf(prev) + 1 : 0, 0, id); });
+    return a;
+  };
+  let ORD = order();
+  // The buttons themselves follow the order too, so the bar, More and the phone menu all match.
+  function applyOrder() { const ref = more.isConnected ? more : null; ORD.forEach((id) => { const b = btn(id); if (b) nav.insertBefore(b, ref); }); }
+  applyOrder();
+  const shownAll = () => ORD.filter((id) => !hidden(id) && btn(id));
   const onBar = (n) => { const l = shownAll().slice(0, n); if (!l.includes('vault')) l.push('vault'); return new Set(l); };
   const barIds = () => (narrow.matches ? new Set() : onBar(nProm));
   function applyProm(n) {
@@ -98,7 +109,9 @@
   const close = () => { pan.classList.remove('open'); more.classList.remove('open'); more.setAttribute('aria-expanded', 'false'); };
   function open() {
     const bar = barIds(), a = active();
-    const gs = GROUPS.map(([label, ids]) => [label, ids.filter((id) => btn(id) && !bar.has(id) && !hidden(id))]).filter(([, ids]) => ids.length);
+    // With your own tab order, More lists the tabs in that order; otherwise in the usual groups.
+    const own = !!localStorage.getItem(ORDK);
+    const gs = (own ? [['More tabs', ORD]] : GROUPS).map(([label, ids]) => [label, ORD.filter((id) => ids.includes(id) && btn(id) && !bar.has(id) && !hidden(id))]).filter(([, ids]) => ids.length);
     pan.innerHTML = gs.map(([label, ids]) => `<div class="gl">${label}</div>` + ids.map((id) => `<div class="gi${a && a.dataset.t === id ? ' on' : ''}" role="menuitem" data-go="${id}"><b>${NAME[id]}</b>${TIP[id] ? `<small>${TIP[id]}</small>` : ''}</div>`).join('')).join('') + (narrow.matches ? '<div class="gl"></div><div class="gi" role="menuitem" data-go="settings"><b>Settings</b><small>Display, inventory and wish list options</small></div>' : '');
     const r = more.getBoundingClientRect();
     pan.style.top = Math.round(r.bottom + 4) + 'px';
@@ -112,7 +125,17 @@
   window.addEventListener('resize', () => { close(); fitSoon(); });
   if (window.ResizeObserver) new ResizeObserver(fitSoon).observe(hd);
   window.__gtnav = {
-    list: () => [...nav.querySelectorAll('button[data-t]')].map((b) => b.dataset.t).filter((id) => NAME[id] && id !== 'settings').map((id) => [id, NAME[id], hidden(id), id === 'vault']),
+    // [id, name, hidden, always shown], in tab order. Tabs locked to developer accounts are left out for everyone else.
+    list: () => ORD.filter((id) => btn(id) && NAME[id] && !(window.__gtTabLocked && window.__gtTabLocked(id))).map((id) => [id, NAME[id], hidden(id), id === 'vault']),
+    // Move a tab to just before another one (or to the end), or reset to the usual order.
+    move(id, before) {
+      if (!DEF.includes(id)) return; const a = ORD.filter((x) => x !== id), i = before ? a.indexOf(before) : -1;
+      a.splice(i < 0 ? a.length : i, 0, id); ORD = a;
+      try { localStorage.setItem(ORDK, JSON.stringify(a)); } catch (e) { /* storage off */ }
+      applyOrder(); fit(); window.dispatchEvent(new Event('gtnavchange'));
+    },
+    resetOrder() { try { localStorage.removeItem(ORDK); } catch (e) { /* storage off */ } ORD = order(); applyOrder(); fit(); window.dispatchEvent(new Event('gtnavchange')); },
+    custom: () => { try { return !!localStorage.getItem(ORDK); } catch (e) { return false; } },
     set(id, hide) {
       const a = hidSet(); if (hide) a.add(id); else a.delete(id);
       try { localStorage.setItem(HIDK, JSON.stringify([...a])); } catch (e) { /* storage off */ }
