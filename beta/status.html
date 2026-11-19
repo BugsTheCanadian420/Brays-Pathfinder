@@ -52,15 +52,17 @@ header nav a.cta{color:#15171b;background:var(--gold)}header nav a.cta:hover{bac
 .tlh{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-bottom:6px}.tlh h3{margin:0;color:var(--head);font-size:17px}.tlh p{margin:2px 0 0;color:var(--mute);font-size:13px}
 .tlh .lk{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}.tlh .lk a{font-size:13px;font-weight:700;padding:6px 11px;border-radius:9px;border:1px solid var(--line);color:var(--text)}.tlh .lk a:hover{border-color:#3a414c;text-decoration:none;color:var(--head)}
 .ev{margin:14px 0 4px;color:var(--head);font-weight:700;font-size:15px}
-.st2{position:relative;display:grid;grid-template-columns:156px 1fr;gap:14px;padding:0 0 14px 22px}
-.st2::before{content:"";position:absolute;left:5px;top:6px;width:10px;height:10px;border-radius:50%;background:var(--panel);border:2px solid #4b525d;z-index:1}
-.st2::after{content:"";position:absolute;left:10px;top:18px;bottom:-4px;width:2px;background:var(--line)}.st2:last-child::after{display:none}
+.st2{position:relative;display:grid;grid-template-columns:176px 1fr;gap:14px;padding:12px 0 12px 22px;background:linear-gradient(var(--line),var(--line)) 22px 0/calc(100% - 22px) 1px no-repeat}
+.ev+.st2{background:none;padding-top:2px}
+.st2::before{content:"";position:absolute;left:5px;top:18px;width:10px;height:10px;border-radius:50%;background:var(--panel);border:2px solid #4b525d;z-index:1}.ev+.st2::before{top:8px}
+.st2::after{content:"";position:absolute;left:10px;top:0;bottom:0;width:2px;background:var(--line)}.ev+.st2::after{top:20px}
+.st2:last-child::after,.st2:has(+.ev)::after{bottom:auto;height:20px}.ev+.st2:last-child::after,.ev+.st2:has(+.ev)::after{display:none}
 .st2.done::before{background:#4b525d}.st2.done{color:var(--mute)}.st2.done .t b{color:var(--mute)}
 .st2.now::before{background:var(--gold);border-color:var(--gold);box-shadow:0 0 0 4px rgba(242,180,65,.2)}.st2.now .t b{color:var(--gold)}
-.st2 .t b{display:block;color:var(--head);font-size:15px;font-variant-numeric:tabular-nums}.st2 .t small{color:var(--mute);font-size:12px}
+.st2 .t b{display:block;color:var(--head);font-size:15px;font-variant-numeric:tabular-nums}.st2 .t small{display:block;color:var(--mute);font-size:12px;white-space:nowrap}
 .st2 ul{margin:0;padding-left:16px;font-size:14px}.st2 li{margin:1px 0}
 .st2 .nowtag{display:inline-block;margin-left:6px;font-size:11px;font-weight:800;color:#15171b;background:var(--gold);border-radius:999px;padding:0 7px;vertical-align:1px}
-@media (max-width:560px){.st2{grid-template-columns:1fr;gap:4px}.tlh .lk{margin-left:0}}
+@media (max-width:560px){.st2{grid-template-columns:1fr;gap:4px}.st2 .t small{white-space:normal}.tlh .lk{margin-left:0}}
 .help h3{margin:0 0 4px;color:var(--head);font-size:15px}
 .help p{margin:0;font-size:14px}
 .bar{display:flex;align-items:center;gap:12px;margin:18px 0 0;flex-wrap:wrap}
@@ -198,7 +200,7 @@ footer p{margin:0 0 8px}
     steps.filter(function (s) { return !s.at || s.at > now - 30 * 3600e3; }).forEach(function (s) {
       if (s.ev !== lastEv) { html += '<div class="ev">' + esc(s.ev.title || 'Maintenance') + '</div>'; lastEv = s.ev; }
       var cls = s === cur ? 'now' : s.at && s.at < now ? 'done' : '';
-      html += '<div class="st2 ' + cls + '"><div class="t"><b>' + (s.at ? (/~/.test(s.r.time) ? '~' : '') + esc(lt(s.at)) : esc(s.r.time)) + (s === cur ? '<span class="nowtag">Now</span>' : '') + '</b><small>Bungie posted ' + esc(s.r.time) + '</small></div><ul>' + s.r.items.map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('') + '</ul></div>';
+      html += '<div class="st2 ' + cls + '"><div class="t"><b>' + (s.at ? (/~/.test(s.r.time) ? '~' : '') + esc(lt(s.at)) : esc(s.r.time)) + (s === cur ? '<span class="nowtag">Now</span>' : '') + '</b><small>Bungie posted ' + esc(s.r.time.replace(/\s*\(utc[^)]*\)/i, '')) + '</small></div><ul>' + s.r.items.map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('') + '</ul></div>';
     });
     $('tlB').innerHTML = html || '<p style="color:var(--mute);margin:8px 0 12px">Bungie has not posted a timeline yet. Check the links for the latest.</p>';
     $('tlT').textContent = down ? 'Bungie\u2019s maintenance timeline' : 'Maintenance coming up';
