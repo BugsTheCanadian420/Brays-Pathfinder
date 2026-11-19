@@ -641,6 +641,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 .hb{max-width:85%;align-self:flex-start;background:rgba(255,255,255,.06);border:1px solid var(--g-line,#2b2e33);border-radius:14px 14px 14px 4px;padding:9px 13px;color:#e9ebef;word-break:break-word;line-height:1.5}.hb small{display:block;color:#9aa1ab;font-size:11.5px;margin-bottom:3px}
 .hb.team{align-self:flex-end;background:color-mix(in srgb,var(--g-accent,#7ab8e8) 16%,transparent);border-color:color-mix(in srgb,var(--g-accent,#7ab8e8) 40%,transparent);border-radius:14px 14px 4px 14px}
 #hmsg,#hreply,#dreply{width:100%;box-sizing:border-box;resize:vertical;font:inherit;line-height:1.5;margin-top:8px}#hmsg{min-height:120px}
+#gtnewver{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:90;display:flex;gap:12px;align-items:center;padding:10px 12px 10px 16px;border-radius:12px;background:var(--g-panel,#1a1c20);border:1px solid var(--g-accent,#7ab8e8);box-shadow:0 10px 30px rgba(0,0,0,.5);color:#fff;font-size:14px;white-space:nowrap}#gtnewver button{background:var(--g-accent,#7ab8e8);color:var(--g-on-accent,#111);border:0;border-radius:8px;padding:6px 14px;font-weight:700;cursor:pointer}
 .hrep{font-size:12.5px;color:#9aa1ab;margin:6px 0}#settings .hrep>summary{font-size:13px!important;font-weight:600!important;padding:6px 10px!important;cursor:pointer}.hrep pre{white-space:pre-wrap;word-break:break-word;background:rgba(0,0,0,.3);border:1px solid var(--g-line,#2b2e33);padding:8px;max-height:220px;overflow:auto;font-size:11.5px}
 .hback{font-size:13px!important}
 .snb{margin-left:auto;font-style:normal;font-size:11px;font-weight:800;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--g-accent,#7ab8e8);color:var(--g-on-accent,#111);display:inline-flex;align-items:center;justify-content:center}
@@ -1153,6 +1154,8 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   const HST = { open: ['Waiting for an answer', 'w'], answered: ['Answered', 'a'], closed: ['Solved', 'c'] };
   const hWhen = (t) => (t ? new Date(t).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '');
   const hText = (t) => esc(t).replace(/\n/g, '<br>');
+  // Never leave a button on "Sending…": after 25 s say so (the message may still have arrived; the list is checked again).
+  const hTimed = (p) => Promise.race([p, new Promise((_, no) => setTimeout(() => { no(new Error('This is taking too long. Check your connection; it may already have gone through, so look at your requests before sending again.')); setTimeout(() => { helpLoad(true); deskLoad(true); }, 3000); }, 25000))]);
   function helpReport() {
     let L = []; try { const a = JSON.parse(localStorage.getItem('gt_errlog')); if (Array.isArray(a)) L = a; } catch (e) { L = []; }
     const lines = ['Pathfinder ' + (window.__GT_VER__ || ''), navigator.userAgent, 'Screen ' + innerWidth + 'x' + innerHeight + ' @' + (window.devicePixelRatio || 1), 'Style: ' + SET.ui + ' / ' + SET.theme + ' / ' + (SET.bg || 'none'), ''];
@@ -1213,7 +1216,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     const k = e.target.closest('[data-hk]'); if (k) { HLP.kind = k.dataset.hk; drawSettings(); return; }
     const row = e.target.closest('[data-hid]'); if (row) { helpOpen(row.dataset.hid); return; }
     const b = e.target.closest('[data-h]'); if (!b || HLP.busy) return;
-    const a = b.dataset.h, act = (fn, ok) => { HLP.busy = true; HLP.note = ''; drawSettings(); fn().then((t) => { if (t) hSync(t); HLP.note = ok || ''; HLP.bad = false; }).catch((er) => { HLP.note = clean(er); HLP.bad = true; }).finally(() => { HLP.busy = false; drawSettings(); const m = settingsSec.querySelector('.hmsgs'); if (m) m.scrollTop = m.scrollHeight; }); };
+    const a = b.dataset.h, act = (fn, ok) => { HLP.busy = true; HLP.note = ''; drawSettings(); hTimed(fn()).then((t) => { if (t) hSync(t); HLP.note = ok || ''; HLP.bad = false; }).catch((er) => { HLP.note = clean(er); HLP.bad = true; }).finally(() => { HLP.busy = false; drawSettings(); const m = settingsSec.querySelector('.hmsgs'); if (m) m.scrollTop = m.scrollHeight; }); };
     if (a === 'new') { HLP.view = 'new'; HLP.note = ''; drawSettings(); setTimeout(() => { const t = document.getElementById('hmsg'); if (t) t.focus(); }, 0); return; }
     if (a === 'list') { HLP.view = 'list'; HLP.note = ''; drawSettings(); return; }
     if (a === 'refresh') { helpLoad(false); return; }
@@ -1263,7 +1266,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     if (row) { const id = row.dataset.did; DSK.reply = ''; DSK.note = ''; gt.deskGet({ id }).then((t) => { DSK.t = t; const r = (DSK.list || []).find((x) => x.id === id); if (r) r.unread = false; SECN['Help desk'] = (DSK.list || []).filter((x) => x.unread).length; badges(); drawSettings(); const m = settingsSec.querySelector('.hmsgs'); if (m) m.scrollTop = m.scrollHeight; }).catch((er) => { DSK.note = clean(er); DSK.bad = true; drawSettings(); }); return; }
     const b = e.target.closest('[data-d]'); if (!b || DSK.busy) return;
     const a = b.dataset.d, sync = (t) => { DSK.t = t; const r = (DSK.list || []).find((x) => x.id === t.id); if (r) Object.assign(r, { status: t.status, upd: t.upd, unread: false, n: t.n }); };
-    const act = (fn, ok) => { DSK.busy = true; DSK.note = ''; drawSettings(); fn().then((t) => { if (t && t.id) sync(t); DSK.note = ok || ''; DSK.bad = false; }).catch((er) => { DSK.note = clean(er); DSK.bad = true; }).finally(() => { DSK.busy = false; drawSettings(); }); };
+    const act = (fn, ok) => { DSK.busy = true; DSK.note = ''; drawSettings(); hTimed(fn()).then((t) => { if (t && t.id) sync(t); DSK.note = ok || ''; DSK.bad = false; }).catch((er) => { DSK.note = clean(er); DSK.bad = true; }).finally(() => { DSK.busy = false; drawSettings(); }); };
     if (a === 'back') { DSK.t = null; DSK.note = ''; drawSettings(); return; }
     if (a === 'refresh') { deskLoad(false); return; }
     if (!DSK.t) return;
@@ -1271,6 +1274,32 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     if (a === 'close' || a === 'reopen') return act(() => gt.deskStatus({ id: DSK.t.id, status: a === 'close' ? 'closed' : 'open' }), a === 'close' ? 'Closed.' : 'Reopened.');
     if (a === 'del') { if (!confirm('Delete this help request for good? The player will no longer see it.')) return; const id = DSK.t.id; return act(async () => { await gt.deskDelete({ id }); DSK.list = (DSK.list || []).filter((x) => x.id !== id); DSK.t = null; return null; }, 'Deleted.'); }
   });
+  // Coming back to Pathfinder (a phone app switched back to, a laptop woken up, a tab clicked again): bring everything up to
+  // date, because a phone can keep the page asleep for hours. The Pathfinder account (your Bungie accounts) syncs if it has not
+  // for 5 minutes, help answers and switches are checked, and the website reloads itself if a newer version came out.
+  let awayAt = 0, verAt = 0;
+  async function resumeCheck(away) {
+    try {
+      if (PFA && PFA.on && window.gt && gt.pfaSync && Date.now() - (PFA.at || 0) > 3e5) {
+        const r = await gt.pfaSync().catch(() => null);
+        if (r && (r.reload || r.restart)) { afterAcct(r); return; }
+        if (r && r.avail !== undefined) { PFA = r; ACL = null; if (r.added) PFAMSG = `Added ${r.added} Bungie account${r.added === 1 ? '' : 's'} from your Pathfinder account. Switch to ${r.added === 1 ? 'it' : 'them'} above.`; if (settingsSec.classList.contains('on')) drawSettings(); }
+      }
+      helpLoad(true); deskLoad(true); flagsLoad();
+      if (window.__GT_WEB__ && Date.now() - verAt > 6e4) {
+        verAt = Date.now();
+        const v = await fetch('version.json', { cache: 'no-store' }).then((x) => (x.ok ? x.json() : null)).catch(() => null);
+        if (v && v.v && window.__GT_VER__ && v.v !== window.__GT_VER__) {
+          const typing = document.activeElement && /^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName) && document.activeElement.value;
+          if (away >= 6e5 && !typing) { location.reload(); return; }
+          if (!document.getElementById('gtnewver')) { const d = document.createElement('div'); d.id = 'gtnewver'; d.setAttribute('role', 'status'); d.innerHTML = '<span>Pathfinder was updated.</span><button type="button">Reload</button>'; d.querySelector('button').onclick = () => location.reload(); document.body.appendChild(d); }
+        }
+      }
+    } catch (e) { /* tried again next time */ }
+  }
+  document.addEventListener('visibilitychange', () => { if (document.hidden) { awayAt = Date.now(); return; } const away = awayAt ? Date.now() - awayAt : 0; awayAt = 0; if (away > 6e4) resumeCheck(away); });
+  window.addEventListener('pageshow', (e) => { if (e.persisted) resumeCheck(6e5); });
+  setInterval(() => { if (!document.hidden) resumeCheck(0); }, 18e5);
   // Opening Help or Help desk (or Settings itself) checks again, so what you see is current.
   settingsSec.addEventListener('click', (e) => { const n = e.target.closest('[data-ssec]'); if (!n) return; if (n.dataset.ssec === 'Help') helpLoad(true); if (n.dataset.ssec === 'Help desk') deskLoad(true); });
   { const sb = document.querySelector('#nav button[data-t="settings"]'); if (sb) sb.addEventListener('click', () => { if (SSEC === 'Help') helpLoad(true); if (SSEC === 'Help desk') deskLoad(true); }); }

@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.21-beta.1: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.22-beta.1: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -638,7 +638,11 @@ async function helpReq(p, body, staff) {
   const base = helpBase(); if (!base) throw new Error('Help is not set up on this copy. Email help@d2pathfinder.com instead.');
   const c = rd(), sess = c.pfa && c.pfa.sess;
   if (staff && !sess) throw new Error('Sign in to your Pathfinder account first.');
-  const r = await fetch(base + p, { method: body ? 'POST' : 'GET', headers: { 'Content-Type': 'application/json', Accept: 'application/json', ...(sess ? { Authorization: 'Bearer ' + sess } : {}) }, body: body ? JSON.stringify(body) : undefined, signal: AbortSignal.timeout(15000) });
+  // A plain timer rather than AbortSignal.timeout, which older phones do not have: a request never hangs for more than 15 s.
+  const ac = new AbortController(), tm = setTimeout(() => ac.abort(), 15000);
+  let r; try { r = await fetch(base + p, { method: body ? 'POST' : 'GET', headers: { 'Content-Type': 'application/json', Accept: 'application/json', ...(sess ? { Authorization: 'Bearer ' + sess } : {}) }, body: body ? JSON.stringify(body) : undefined, signal: ac.signal }); }
+  catch (er) { throw new Error(ac.signal.aborted ? 'Pathfinder did not answer in time. Check your connection and try again.' : 'Could not reach Pathfinder. Check your connection and try again.'); }
+  finally { clearTimeout(tm); }
   let j = {}; try { j = await r.json(); } catch (er) { j = {}; }
   if (!r.ok) { const er = new Error(j.message || (r.status === 404 || r.status === 501 ? 'Help is not switched on in the token service yet. Email help@d2pathfinder.com instead.' : 'Could not reach Pathfinder (HTTP ' + r.status + '). Try again in a moment.')); er.code = j.error || r.status; throw er; }
   return j;
