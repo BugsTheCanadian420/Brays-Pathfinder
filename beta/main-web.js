@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.23-beta.1: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.23-beta.2: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -565,7 +565,7 @@ const pfaRun = (boxIn, verIn) => {
 // A Pathfinder account is an account name and a password. Accounts made earlier with an email address still sign in with that
 // email typed as the account name (both are matched the same way: trimmed, any capitals ignored).
 const pfaName = (p) => (p && (p.name || p.email)) || '';
-const pfaStatus = () => { const c = rd(), p = c.pfa || {}; return { avail: !!pfaUrl(), on: !!p.sess, tmp: !!(p.sess && p.tmp), name: pfaName(p), at: p.at || 0, n: p.n || 0, err: PFA_ERR, out: !!(pfaName(p) && !p.sess), dev: !!(p.sess && (p.role === 'dev' || p.role === 'founder')), founder: !!(p.sess && p.role === 'founder') }; };
+const pfaStatus = () => { const c = rd(), p = c.pfa || {}; return { avail: !!pfaUrl(), on: !!p.sess, tmp: !!(p.sess && p.tmp), name: pfaName(p), at: p.at || 0, n: p.n || 0, err: PFA_ERR, out: !!(pfaName(p) && !p.sess), dev: !!(p.sess && ['dev', 'founder', 'owner'].includes(p.role)), founder: !!(p.sess && ['founder', 'owner'].includes(p.role)), owner: !!(p.sess && p.role === 'owner'), role: p.sess ? p.role || '' : '' }; };
 H('pfa:status', () => pfaStatus());
 const pfaCreds = (v, isNew) => {
   OBJ(v); const name = TXT(v.name, 200).trim(), pw = TXT(v.pw, 200);
@@ -671,21 +671,38 @@ H('desk:status', async (e, v) => { staffOnly(); OBJ(v); const st = TXT(v.status,
 H('desk:delete', async (e, v) => { staffOnly(); OBJ(v); return helpReq('/acct/help/delete', { id: HID(v.id) }, true); });
 // Feature switches set on the admin page: 'on' (everyone), 'dev' (developer accounts only), 'off' (nobody). Checked every 10 minutes.
 let FLAGS = null, FLAGS_AT = 0;
-H('flags:get', async () => {
+H('flags:get', async (e, v) => {
   const base = preset && preset.tokenUrl && /^https:\/\//i.test(preset.tokenUrl) ? preset.tokenUrl.replace(/\/+$/, '') : '';
-  if (base && (!FLAGS || Date.now() - FLAGS_AT > 6e5)) {
-    try { const r = await fetch(base + '/flags', { headers: { Accept: 'application/json' }, signal: AbortSignal.timeout(8000) }); if (r.ok) { const j = await r.json(); FLAGS = j && j.flags && typeof j.flags === 'object' ? j.flags : {}; FLAGS_AT = Date.now(); } } catch (er) { /* keep the last ones */ }
+  const force = !!(v && typeof v === 'object' && v.force);
+  if (base && (force || !FLAGS || Date.now() - FLAGS_AT > 6e5)) {
+    const c = rd(), sess = c.pfa && c.pfa.sess;
+    const ac = new AbortController(), tm = setTimeout(() => ac.abort(), 8000);
+    try {
+      const r = await fetch(base + '/flags', { headers: { Accept: 'application/json', ...(sess ? { Authorization: 'Bearer ' + sess } : {}) }, signal: ac.signal });
+      if (r.ok) {
+        const j = await r.json(); FLAGS = j && j.flags && typeof j.flags === 'object' ? j.flags : {}; FLAGS_AT = Date.now();
+        // The account's current role comes along: a role changed on the admin page (or in Admin) takes effect here by itself.
+        if (sess && j && 'me' in j) {
+          const c2 = rd();
+          if (c2.pfa && c2.pfa.sess === sess) {
+            if (j.me === null) { delete c2.pfa.sess; wr(c2); PFA_ERR = 'Your Pathfinder account sign-in ended. Sign in again.'; }
+            else if (typeof j.me.role === 'string' && (c2.pfa.role || '') !== j.me.role) { c2.pfa.role = j.me.role; wr(c2); }
+          }
+        }
+      }
+    } catch (er) { /* keep the last ones */ } finally { clearTimeout(tm); }
   }
-  return { flags: FLAGS || {}, dev: pfaStatus().dev };
+  const st = pfaStatus();
+  return { flags: FLAGS || {}, dev: st.dev, role: st.role, on: st.on };
 });
 // Developer tools (the PC app only, developer accounts only).
 // Admin from inside the app (founder accounts only). The admin key is typed in the app each time and only passed along;
 // the token service checks both the founder role and the key.
-const ADMP = { 'GET /accounts': 1, 'POST /find': 1, 'POST /reset': 1, 'POST /quickreset': 1, 'POST /rename': 1, 'POST /cancelreset': 1, 'POST /role': 1, 'POST /unlock': 1, 'POST /delete': 1, 'GET /flags': 1, 'PUT /flags': 1 };
+const ADMP = { 'GET /ping': 1, 'GET /keys': 1, 'POST /keys': 1, 'POST /keyrevoke': 1, 'GET /accounts': 1, 'POST /find': 1, 'POST /reset': 1, 'POST /quickreset': 1, 'POST /rename': 1, 'POST /cancelreset': 1, 'POST /role': 1, 'POST /unlock': 1, 'POST /delete': 1, 'GET /flags': 1, 'PUT /flags': 1 };
 H('adm:call', async (e, v) => {
   OBJ(v); const method = TXT(v.method, 6).toUpperCase(), p = TXT(v.path, 30), key = TXT(v.key, 200);
   if (!ADMP[method + ' ' + p]) throw bad();
-  const c = rd(); if (!c.pfa || !c.pfa.sess || c.pfa.role !== 'founder') throw new Error('Only founder accounts can use admin.');
+  const c = rd(); if (!c.pfa || !c.pfa.sess || !['founder', 'owner'].includes(c.pfa.role)) throw new Error('Only founder and owner accounts can use admin.');
   let body = method === 'GET' ? null : (v.body && typeof v.body === 'object' ? { ...v.body } : {});
   // Quick reset and rename set the password to 123456: the login check for it is worked out here, from the (new) name.
   if (p === '/quickreset') { const n = typeof body.name === 'string' ? body.name.slice(0, 200).trim() : ''; if (!n) throw new Error('This account has no saved name yet: find it by name first.'); body = { id: TXT(body.id, 80), auth: (await pfaKeys(n, PFA_TMP)).auth }; }

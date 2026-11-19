@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.23-beta.1: preload.js for the browser */
+/* Pathfinder 0.3.23-beta.2: preload.js for the browser */
 (function (require) {
 const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('gt', {
@@ -48,7 +48,7 @@ contextBridge.exposeInMainWorld('gt', {
   pfaLogout: () => ipcRenderer.invoke('pfa:logout'),
   pfaDelete: () => ipcRenderer.invoke('pfa:delete'),
   pfaReset: (v) => ipcRenderer.invoke('pfa:reset', v),
-  flagsGet: () => ipcRenderer.invoke('flags:get'),
+  flagsGet: (v) => ipcRenderer.invoke('flags:get', v),
   devTools: () => ipcRenderer.invoke('dev:tools'),
   admCall: (v) => ipcRenderer.invoke('adm:call', v),
   writeClipboard: (t) => ipcRenderer.invoke('clip:write', t),
