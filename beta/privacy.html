@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Privacy · Pathfinder</title>
+<meta name="description" content="What Pathfinder keeps, where it keeps it, and what it never does.">
+<link rel="icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0d10;--panel:#13161b;--panel2:#181c22;--line:#232830;--text:#cfd4db;--mute:#8b939e;--head:#fff;--gold:#f2b441}
+*{box-sizing:border-box}
+html{color-scheme:dark;scroll-behavior:smooth;scroll-padding-top:24px}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.7 Manrope,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:420px;background:radial-gradient(60% 100% at 50% 0%,rgba(242,180,65,.09),transparent 70%);pointer-events:none}
+a{color:var(--gold);text-decoration:none}a:hover{text-decoration:underline}
+a:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:4px}
+.wrap{position:relative;max-width:1040px;margin:0 auto;padding:0 16px}
+header{display:flex;align-items:center;gap:12px;padding:20px 0}
+header .brand{display:flex;align-items:center;gap:10px;color:var(--head);font-weight:800;font-size:17px}
+header .brand img{width:30px;height:30px}header .brand:hover{text-decoration:none}
+header nav{margin-left:auto;display:flex;gap:6px;align-items:center}
+header nav a{color:var(--mute);font-weight:600;font-size:14px;padding:6px 10px;border-radius:8px}
+header nav a:hover{color:var(--head);background:rgba(255,255,255,.05);text-decoration:none}
+header nav a.cta{color:#15171b;background:var(--gold)}header nav a.cta:hover{background:#ffc75c}
+.hero{padding:30px 0 8px;max-width:720px}
+.hero h1{margin:0;color:var(--head);font-size:clamp(30px,6vw,44px);line-height:1.1;font-weight:800;letter-spacing:-.6px}
+.hero p{margin:12px 0 0;font-size:17px;color:var(--text)}
+.hero small{display:block;margin-top:10px;color:var(--mute);font-size:13px}
+.short{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:28px 0 8px}
+.short div{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+.short svg{width:22px;height:22px;color:var(--gold);display:block;margin-bottom:10px}
+.short b{display:block;color:var(--head);font-size:15px;line-height:1.35;margin-bottom:4px}
+.short span{display:block;color:var(--mute);font-size:13.5px;line-height:1.5}
+.cols{display:grid;grid-template-columns:220px minmax(0,1fr);gap:48px;margin-top:36px;align-items:start}
+.toc{position:sticky;top:24px;font-size:14px}
+.toc p{margin:0 0 8px;color:var(--mute);font-weight:700;font-size:13px}
+.toc a{display:block;color:var(--mute);padding:5px 0 5px 12px;border-left:2px solid var(--line);line-height:1.4}
+.toc a:hover{color:var(--head);text-decoration:none;border-left-color:#3a414c}
+.toc a.on{color:var(--head);border-left-color:var(--gold)}
+article{max-width:680px}
+section{padding:4px 0 26px;border-bottom:1px solid var(--line);margin-bottom:26px}
+section:last-child{border-bottom:0}
+h2{margin:0 0 8px;color:var(--head);font-size:21px;font-weight:800;letter-spacing:-.2px}
+p{margin:0 0 12px}
+ul{margin:0 0 12px;padding-left:20px}li{margin:6px 0}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;margin:4px 0 14px;padding:14px 16px;background:var(--panel);border:1px solid var(--line);border-radius:12px;font-size:14.5px}
+.kv dt{color:var(--head);font-weight:700}.kv dd{margin:0;color:var(--text)}
+.note{font-size:14px;color:var(--mute)}
+.contact{display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding:18px;background:var(--panel);border:1px solid var(--line);border-radius:14px}
+.contact b{color:var(--head);display:block}
+.contact a.btn{margin-left:auto;background:var(--gold);color:#15171b;font-weight:700;padding:9px 16px;border-radius:10px}
+.contact a.btn:hover{background:#ffc75c;text-decoration:none}
+footer{margin:10px 0 40px;padding-top:18px;border-top:1px solid var(--line);color:var(--mute);font-size:13px}
+@media (max-width:900px){.short{grid-template-columns:repeat(2,minmax(0,1fr))}.cols{grid-template-columns:1fr;gap:0}.toc{display:none}}
+@media (max-width:520px){.short{grid-template-columns:1fr}header nav a:not(.cta){display:none}.kv{grid-template-columns:1fr;gap:2px}.kv dd{margin-bottom:8px}.contact a.btn{margin-left:0}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <a class="brand" href="./"><img src="logo-s.png" alt="">Pathfinder</a>
+  <nav><a href="status">Status</a><a class="cta" href="./">Open Pathfinder</a></nav>
+</header>
+
+<div class="hero">
+  <h1>Privacy</h1>
+  <p>Pathfinder keeps as little as it can, keeps most of it on your own device, and never sells or shares anything.</p>
+  <small>Last updated November 18, 2026. Pathfinder is a fan-made Destiny 2 companion, not made by or affiliated with Bungie.</small>
+</div>
+
+<div class="short" aria-label="The short version">
+  <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><b>We never see your passwords</b><span>Bungie's stays on Bungie.net. Your Pathfinder password never leaves your device.</span></div>
+  <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v12H4z"/><path d="M4 9h16"/><circle cx="8" cy="14" r="1.2"/></svg><b>Your data stays with you</b><span>Your vault, tags and loadouts are kept on your device unless you turn on Sync.</span></div>
+  <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg><b>No ads, no trackers</b><span>Nothing is sold, and there are no tracking or advertising cookies.</span></div>
+  <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.2-2.9 7.7-7 9-4.1-1.3-7-4.8-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg><b>Extras are opt-in</b><span>Sync, Pathfinder accounts and sharing your rolls are all off until you turn them on.</span></div>
+</div>
+
+<div class="cols">
+<nav class="toc" aria-label="On this page"><p>On this page</p>
+  <a href="#signin">Signing in with Bungie</a><a href="#destiny">Your Destiny data</a><a href="#accounts">Pathfinder accounts</a><a href="#sync">Sync</a><a href="#share">Share links</a><a href="#ratings">Community perk ratings</a><a href="#services">Services we use</a><a href="#not">What we never do</a><a href="#rights">Removing your data</a><a href="#contact">Contact</a>
+</nav>
+<article>
+<section id="signin"><h2>Signing in with Bungie</h2>
+<p>You sign in on Bungie.net itself, so Pathfinder never sees your Bungie password. Bungie hands back sign-in keys, which stay on your device: encrypted by Windows in the PC app, and in your browser's storage on the website.</p>
+<p>The keys are exchanged through Pathfinder's small sign-in service on Cloudflare. It holds Pathfinder's own Bungie app secret, so that secret never has to ship inside the app. It passes your keys along and does not keep them.</p></section>
+
+<section id="destiny"><h2>Your Destiny data</h2>
+<p>Your characters, inventory, triumphs and activity history are read from Bungie's official API while you use Pathfinder, and a copy is kept on your device so it opens faster next time. Items are only moved, equipped, locked or changed when you ask.</p>
+<p>Tags, notes, loadouts, wish lists and settings live on your device too, unless you turn on Sync.</p></section>
+
+<section id="accounts"><h2>Pathfinder accounts <span class="note">(optional)</span></h2>
+<p>A Pathfinder account is an account name and a password that bring all your Bungie accounts to every device you use. Everything works without one.</p>
+<dl class="kv">
+  <dt>Your password</dt><dd>Never leaves your device. It is turned into two keys there: one proves it is you, the other locks your data.</dd>
+  <dt>Your Bungie sign-ins</dt><dd>Locked on your device with your password before they are sent. Our service stores only the locked copy and cannot open it.</dd>
+  <dt>What we store</dt><dd>Your account name, a one-way check of your password, when the account was made and last used, and whether it is a player, developer or founder account.</dd>
+</dl>
+<p>If you forget your password, Pathfinder's owner can give you a one-time reset code, or set a temporary password that you have to change when you sign in. Neither lets anyone see your password. Because your saved sign-ins were locked with the old password, they are cleared and saved again from your device. The owner and developers can also rename an account whose name breaks the rules; that resets the password the same way.</p>
+<p>You can sign out on one device or on all of them, and delete your account at any time in Settings &gt; Accounts.</p></section>
+
+<section id="sync"><h2>Sync <span class="note">(optional)</span></h2>
+<p>If you turn on Sync, your loadouts, tags, notes, settings, tracked triumphs and wish lists are stored on Cloudflare under your Bungie.net account number, so your PC and phone match. Only a signed-in session for that account can read or change them. Turn Sync off to stop sending them.</p></section>
+
+<section id="share"><h2>Share links</h2>
+<p>When you make a share link, the loadout, its name, a short summary of the gear and a preview picture are stored so anyone with the link can open it. Your Bungie name is not shown. Your account number is stored with it, so sharing the same loadout again gives the same link, but it is never shown to anyone. Share links do not expire at the moment; to have one removed, email us.</p></section>
+
+<section id="ratings"><h2>Community perk ratings</h2>
+<p>The perk percentages in item pop-ups come from two places:</p>
+<ul>
+  <li><b>Public games.</b> Every ten minutes Pathfinder reads a few recent public post-game reports from Bungie, then the weapons those players have equipped, which Bungie makes public for every account. Only weapon and perk numbers are counted. To count each player at most once a week, their Destiny account number and the time they were counted are kept.</li>
+  <li><b>Pathfinder players who opt in.</b> "Share my kept rolls anonymously" is off unless you turn it on. It sends only the weapon and perk numbers of weapons you keep, nothing about you or your account. A scrambled form of your internet address is kept for the day, only to cap how much one address can send.</li>
+</ul></section>
+
+<section id="services"><h2>Services we use</h2>
+<ul>
+  <li><b>Bungie</b>: your Destiny data and sign-in. Covered by <a href="https://www.bungie.net/7/en/Legal/PrivacyPolicy" rel="noopener">Bungie's privacy policy</a>.</li>
+  <li><b>Cloudflare</b>: hosts the website and Pathfinder's services, and keeps its own standard request logs.</li>
+  <li><b>GitHub</b>: hosts the PC app downloads.</li>
+  <li><b>Google Fonts</b>: serves some of the typefaces, so Google sees a request from your browser like any website would.</li>
+  <li><b>Sites in the Hub tab</b> (light.gg, DIM and others) are run by other people under their own policies, and open only when you choose them.</li>
+</ul></section>
+
+<section id="not"><h2>What we never do</h2>
+<ul>
+  <li>Show ads, or sell or rent any data.</li>
+  <li>Use tracking cookies or advertising trackers.</li>
+  <li>Move, delete or change your items without you asking.</li>
+  <li>Send the problem log in Settings anywhere. It stays on your device unless you copy it and send it yourself.</li>
+</ul></section>
+
+<section id="rights"><h2>Removing your data</h2>
+<ul>
+  <li><b>On your device</b>: sign out in Settings &gt; Accounts, or clear the app's or site's data.</li>
+  <li><b>Pathfinder account</b>: Settings &gt; Accounts &gt; Delete Pathfinder account removes it and the sign-ins saved in it.</li>
+  <li><b>Sync, share links or anything else</b>: email us and we will remove it.</li>
+</ul></section>
+
+<section id="contact"><h2>Contact</h2>
+<div class="contact"><div><b>Questions about your data?</b>Email us any time.</div><a class="btn" href="mailto:help@d2pathfinder.com">help@d2pathfinder.com</a></div></section>
+</article>
+</div>
+
+<footer>Pathfinder is a fan-made Destiny 2 companion. Destiny is a trademark of Bungie. Not made by or affiliated with Bungie.</footer>
+</div>
+<script>
+(function () {
+  var links = [].slice.call(document.querySelectorAll('.toc a')), secs = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
+  if (!('IntersectionObserver' in window)) return;
+  var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { links.forEach(function (a) { a.classList.toggle('on', a.getAttribute('href') === '#' + e.target.id); }); } }); }, { rootMargin: '-20% 0px -70% 0px' });
+  secs.forEach(function (s) { if (s) io.observe(s); });
+})();
+</script>
+</body>
+</html>
