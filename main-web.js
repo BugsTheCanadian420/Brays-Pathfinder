@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.18: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.19: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -514,9 +514,9 @@ async function pfaOpen(box, key) {
   const k = await WCR.subtle.importKey('raw', pun64(key), 'AES-GCM', false, ['decrypt']);
   return JSON.parse(new TextDecoder().decode(await WCR.subtle.decrypt({ name: 'AES-GCM', iv: pun64(box.iv) }, k, pun64(box.ct))));
 }
-async function pfaReq(method, p, body, sess) {
+async function pfaReq(method, p, body, sess, extra) {
   const u = pfaUrl(); if (!u) throw new Error('Pathfinder accounts are not set up on this copy yet.');
-  const r = await fetch(u + p, { method, headers: { 'Content-Type': 'application/json', Accept: 'application/json', ...(sess ? { Authorization: 'Bearer ' + sess } : {}) }, body: body ? JSON.stringify(body) : undefined });
+  const r = await fetch(u + p, { method, headers: { 'Content-Type': 'application/json', Accept: 'application/json', ...(sess ? { Authorization: 'Bearer ' + sess } : {}), ...(extra || {}) }, body: body ? JSON.stringify(body) : undefined });
   let j = {}; try { j = await r.json(); } catch (e) { j = {}; }
   if (!r.ok && !(r.status === 409 && j.error === 'changed')) { const er = new Error(j.message || (r.status === 404 || r.status === 501 ? 'Pathfinder accounts are not switched on in the token service yet (see ACCOUNTS-SETUP.txt).' : 'Pathfinder account error (HTTP ' + r.status + ')')); er.code = j.error || r.status; throw er; }
   return { ...j, status: r.status };
@@ -528,7 +528,9 @@ let PFA_ERR = '', PFA_BUSY = null;
 async function pfaSync(boxIn, verIn) {
   const c = rd(); if (!c.pfa || !c.pfa.sess) return { off: 1 };
   let ver = verIn, box = boxIn;
-  if (box === undefined) { const g = await pfaReq('GET', '/box', null, c.pfa.sess); ver = g.ver; box = g.box; if (typeof g.role === 'string' && (c.pfa.role || '') !== g.role) { c.pfa.role = g.role; wr(c); } }
+  // Temporary password (123456): nothing is saved into the account until a new password is picked.
+  if (c.pfa.tmp && box !== undefined) return { tmp: 1, added: 0 };
+  if (box === undefined) { const g = await pfaReq('GET', '/box', null, c.pfa.sess); ver = g.ver; box = g.box; if (typeof g.role === 'string' && (c.pfa.role || '') !== g.role) { c.pfa.role = g.role; wr(c); } if (!!g.tmp !== !!c.pfa.tmp) { if (g.tmp) c.pfa.tmp = 1; else delete c.pfa.tmp; wr(c); } if (g.tmp) return { tmp: 1, added: 0 }; }
   for (let round = 0; round < 3; round++) {
     let data; try { data = await pfaOpen(box, c.pfa.key); } catch (e) { throw new Error('Could not open your saved sign-ins with this password. If you changed it on another device, sign out and in again here.'); }
     const B = (data && data.accts) || {}, cid = String(c.clientId || ''), skip = c.pfa.skip || {}, now = Date.now();
@@ -563,16 +565,19 @@ const pfaRun = (boxIn, verIn) => {
 // A Pathfinder account is an account name and a password. Accounts made earlier with an email address still sign in with that
 // email typed as the account name (both are matched the same way: trimmed, any capitals ignored).
 const pfaName = (p) => (p && (p.name || p.email)) || '';
-const pfaStatus = () => { const c = rd(), p = c.pfa || {}; return { avail: !!pfaUrl(), on: !!p.sess, name: pfaName(p), at: p.at || 0, n: p.n || 0, err: PFA_ERR, out: !!(pfaName(p) && !p.sess), dev: !!(p.sess && p.role === 'dev') }; };
+const pfaStatus = () => { const c = rd(), p = c.pfa || {}; return { avail: !!pfaUrl(), on: !!p.sess, tmp: !!(p.sess && p.tmp), name: pfaName(p), at: p.at || 0, n: p.n || 0, err: PFA_ERR, out: !!(pfaName(p) && !p.sess), dev: !!(p.sess && (p.role === 'dev' || p.role === 'founder')), founder: !!(p.sess && p.role === 'founder') }; };
 H('pfa:status', () => pfaStatus());
 const pfaCreds = (v, isNew) => {
   OBJ(v); const name = TXT(v.name, 200).trim(), pw = TXT(v.pw, 200);
   if (!name) throw new Error('Enter your account name.');
   if (isNew && !/^[A-Za-z0-9][A-Za-z0-9._-]{2,23}$/.test(name)) throw new Error('Account names are 3 to 24 letters or numbers (you can also use . _ and -), starting with a letter or number.');
   if (!isNew && (name.length < 3 || /\s/.test(name))) throw new Error('That is not an account name. Account names have no spaces.');
-  if (pw.length < 8) throw new Error('Use a password of at least 8 characters.');
+  // Signing in also accepts the temporary 123456 that a quick reset or a rename sets; new passwords are at least 8 characters.
+  if (pw.length < (isNew ? 8 : 6)) throw new Error(isNew ? 'Use a password of at least 8 characters.' : 'Enter your password.');
   return { name, pw };
 };
+const pfaNewPw = (v) => { const pw = TXT(v.pw, 200); if (pw.length < 8) throw new Error('Use a password of at least 8 characters.'); if (/^(123456)+\d*$/.test(pw) || /^(.)\1+$/.test(pw)) throw new Error('Pick a password that is harder to guess.'); return pw; };
+const PFA_TMP = '123456';
 // The token service is asked with the name (and the same text as "email", which older copies of the token service expect).
 const pfaWho = (name, auth) => ({ name, email: name, auth });
 const pfaOld = (er) => { if (er && er.code === 'bad_request') er.message = 'Update the token service to use account names (step 2 of ACCOUNTS-SETUP.txt).'; throw er; };
@@ -586,7 +591,8 @@ H('pfa:signup', async (e, v) => {
 H('pfa:login', async (e, v) => {
   const { name, pw } = pfaCreds(v, false), k = await pfaKeys(name, pw);
   const r = await pfaReq('POST', '/login', pfaWho(name, k.auth)).catch(pfaOld);
-  const c = rd(), hadTok = !!c.tok, same = c.pfa && pfaName(c.pfa).toLowerCase() === name.toLowerCase(); c.pfa = { name, sess: r.sess, key: k.key, skip: (same && c.pfa.skip) || {}, role: r.role || '' }; wr(c);
+  const c = rd(), hadTok = !!c.tok, same = c.pfa && pfaName(c.pfa).toLowerCase() === name.toLowerCase(); c.pfa = { name, sess: r.sess, key: k.key, skip: (same && c.pfa.skip) || {}, role: r.role || '', ...(r.tmp ? { tmp: 1 } : {}) }; wr(c);
+  if (r.tmp) return pfaStatus(); // the Accounts page now asks for a new password
   const s2 = await pfaRun(r.box, r.ver);
   if (!hadTok && rd().tok) { M = null; return { ...pfaStatus(), ...restartApp() }; }
   return { ...pfaStatus(), added: s2.added || 0 };
@@ -605,6 +611,25 @@ H('pfa:reset', async (e, v) => {
   if (!hadTok && rd().tok) { M = null; return { ...pfaStatus(), ...restartApp() }; }
   return pfaStatus();
 });
+// After a quick reset or a rename the password is 123456 until the player picks a new one here.
+H('pfa:setpw', async (e, v) => {
+  OBJ(v); const c = rd(); if (!c.pfa || !c.pfa.sess) throw new Error('Sign in to your Pathfinder account first.');
+  if (!c.pfa.tmp) throw new Error('Your password is not a temporary one.');
+  const pw = pfaNewPw(v), name = pfaName(c.pfa), k = await pfaKeys(name, pw);
+  const r = await pfaReq('POST', '/password', { auth: k.auth }, c.pfa.sess);
+  const c2 = rd(), hadTok = !!c2.tok; c2.pfa = { name, sess: r.sess, key: k.key, skip: {}, role: r.role || '' }; wr(c2);
+  await pfaRun(null, 0).catch(() => {});
+  if (!hadTok && rd().tok) { M = null; return { ...pfaStatus(), ...restartApp() }; }
+  return pfaStatus();
+});
+// Developer and founder accounts can rename a player's Pathfinder account (an offensive name, say). The name is part of how the
+// password becomes a key, so a rename also sets the password to 123456; the player picks a new one when they sign in.
+const pfaTo = (v) => { const to = TXT(v.to, 40).trim(); if (!/^[A-Za-z0-9][A-Za-z0-9._-]{2,23}$/.test(to)) throw new Error('Account names are 3 to 24 letters or numbers (you can also use . _ and -), starting with a letter or number.'); return to; };
+H('dev:rename', async (e, v) => {
+  OBJ(v); const c = rd(); if (!pfaStatus().dev) throw new Error('Developer accounts only.');
+  const name = TXT(v.name, 200).trim(), to = pfaTo(v); if (!name) throw new Error('Enter the account name to change.');
+  return pfaReq('POST', '/dev/rename', { name, to, auth: (await pfaKeys(to, PFA_TMP)).auth }, c.pfa.sess);
+});
 // Feature switches set on the admin page: 'on' (everyone), 'dev' (developer accounts only), 'off' (nobody). Checked every 10 minutes.
 let FLAGS = null, FLAGS_AT = 0;
 H('flags:get', async () => {
@@ -615,8 +640,22 @@ H('flags:get', async () => {
   return { flags: FLAGS || {}, dev: pfaStatus().dev };
 });
 // Developer tools (the PC app only, developer accounts only).
+// Admin from inside the app (founder accounts only). The admin key is typed in the app each time and only passed along;
+// the token service checks both the founder role and the key.
+const ADMP = { 'GET /accounts': 1, 'POST /find': 1, 'POST /reset': 1, 'POST /quickreset': 1, 'POST /rename': 1, 'POST /cancelreset': 1, 'POST /role': 1, 'POST /unlock': 1, 'POST /delete': 1, 'GET /flags': 1, 'PUT /flags': 1 };
+H('adm:call', async (e, v) => {
+  OBJ(v); const method = TXT(v.method, 6).toUpperCase(), p = TXT(v.path, 30), key = TXT(v.key, 200);
+  if (!ADMP[method + ' ' + p]) throw bad();
+  const c = rd(); if (!c.pfa || !c.pfa.sess || c.pfa.role !== 'founder') throw new Error('Only founder accounts can use admin.');
+  let body = method === 'GET' ? null : (v.body && typeof v.body === 'object' ? { ...v.body } : {});
+  // Quick reset and rename set the password to 123456: the login check for it is worked out here, from the (new) name.
+  if (p === '/quickreset') { const n = typeof body.name === 'string' ? body.name.slice(0, 200).trim() : ''; if (!n) throw new Error('This account has no saved name yet: find it by name first.'); body = { id: TXT(body.id, 80), auth: (await pfaKeys(n, PFA_TMP)).auth }; }
+  if (p === '/rename') { const to = pfaTo(body); body = { id: TXT(body.id, 80), to, auth: (await pfaKeys(to, PFA_TMP)).auth }; }
+  return pfaReq(method, '/admin' + p, body, c.pfa.sess, { 'X-Admin-Key': key });
+});
 H('dev:tools', () => { if (!pfaStatus().dev) throw new Error('Developer accounts only.'); if (win && !win.isDestroyed() && win.webContents && win.webContents.openDevTools) win.webContents.openDevTools({ mode: 'detach' }); return true; });
 H('pfa:logout', async () => { const c = rd(); if (c.pfa && c.pfa.sess) { try { await pfaReq('POST', '/logout', {}, c.pfa.sess); } catch (e) { /* signed out here anyway */ } } delete c.pfa; wr(c); PFA_ERR = ''; return pfaStatus(); });
+H('pfa:logoutall', async () => { const c = rd(); if (!c.pfa || !c.pfa.sess) throw new Error('Sign in to your Pathfinder account first.'); await pfaReq('POST', '/logoutall', {}, c.pfa.sess); delete c.pfa; wr(c); PFA_ERR = ''; return pfaStatus(); });
 H('pfa:delete', async () => { const c = rd(); if (!c.pfa || !c.pfa.sess) throw new Error('Sign in to your Pathfinder account first.'); await pfaReq('DELETE', '', null, c.pfa.sess); delete c.pfa; wr(c); return pfaStatus(); });
 // Keep the box up to date: shortly after start, then every six hours.
 setTimeout(() => { if (rd().pfa) pfaRun().catch(() => {}); setInterval(() => { if (rd().pfa) pfaRun().catch(() => {}); }, 6 * 3600e3); }, 8000);
@@ -2089,14 +2128,17 @@ H('act:rot', async (e, v) => {
   const featAll = Object.keys(sv.f).map((k) => ({ ...sv.f[k], dn: 0 }));
   // Pantheon: the week's featured Reprise and Encore bosses (the game lists them as "Featured Reprise: <boss>" / "Featured Encore: <boss>").
   try {
-    const ad = await actsDefs(), seenP = new Set(), pan = {};
+    // Names look like "Featured Encore: Insurrection Prime: The Pantheon". Older copies named "...: Atraks Sovereign" stay in the
+    // list every week, so they only count when nothing named "The Pantheon" is offered for that slot. One Reprise and one Encore.
+    const ad = await actsDefs(), seenP = new Set(), cand = { Reprise: [], Encore: [] };
     allAv.concat(av).forEach((a) => {
       const h = String(a.activityHash || ''); if (!h || seenP.has(h)) return; seenP.add(h);
-      const d = ad.a[h], mt = d && /featured\s+(reprise|encore)\s*[:\-]\s*(.+)$/i.exec(d.n); if (!mt) return;
-      const nm = baseName(mt[2]), sub = mt[1].charAt(0).toUpperCase() + mt[1].slice(1).toLowerCase(), k = 'pan|' + nm.toLowerCase();
-      if (!pan[k]) pan[k] = { k: 'Pantheon', n: nm, s: sub, img: d.img || '', dn: 0 };
+      const d = (ad.p && ad.p[h]) || ad.a[h], mt = d && /^featured\s+(reprise|encore)\s*[:\-]\s*([^:]+?)\s*(?::\s*(.+))?$/i.exec(d.n); if (!mt) return;
+      const sub = mt[1].charAt(0).toUpperCase() + mt[1].slice(1).toLowerCase();
+      const score = (/^the pantheon$/i.test(mt[3] || '') ? 4 : /atraks/i.test(mt[3] || '') ? 0 : 2) + (a.canJoin ? 1 : 0) + (a.isVisible === false ? -1 : 0);
+      cand[sub].push({ k: 'Pantheon', n: baseName(mt[2]), s: sub, img: d.img || '', dn: 0, score });
     });
-    featAll.push(...Object.values(pan));
+    for (const sub of ['Reprise', 'Encore']) { const best = cand[sub].sort((x, y) => y.score - x.score)[0]; if (best) { delete best.score; featAll.push(best); } }
   } catch (e) { /* Pantheon is optional: the raids and dungeons above still show */ }
   return { rot: out, feat: featAll };
 });
@@ -2390,15 +2432,17 @@ H('act:totals', async () => {
 // Raid and dungeon clears. Activity names come from the manifest, downloaded once and kept.
 let ACTS = null;
 async function actsDefs() {
-  const mf = await manifest(), v = mf.version + '.a1';
+  const mf = await manifest(), v = mf.version + '.a2';
   if (ACTS && ACTS.v === v) return ACTS;
   const f = path.join(app.getPath('userData'), 'acts.json');
   try { const o = JSON.parse(fs.readFileSync(f, 'utf8')); if (o.v === v) return (ACTS = o); } catch (e) { /* download below */ }
   send('Downloading raid and dungeon data. This only happens on the first run and after game updates.');
-  const o = { v, a: {} };
+  const o = { v, a: {}, p: {} };
   await table(mf.jsonWorldComponentContentPaths.en.DestinyActivityDefinition, (k, x) => {
-    const t = x.activityTypeHash; if (t !== 2043403989 && t !== 608898761) return;
     const n = x.displayProperties && x.displayProperties.name; if (!n) return;
+    // Pantheon's weekly bosses ("Featured Reprise: Calus: The Pantheon") are not all filed as raids, so they are kept apart, by name.
+    if (/^featured\s+(reprise|encore)\b/i.test(n)) o.p[k] = { n, img: x.pgcrImage || '' };
+    const t = x.activityTypeHash; if (t !== 2043403989 && t !== 608898761) return;
     o.a[k] = { n, t: t === 2043403989 ? 'raid' : 'dungeon', img: x.pgcrImage || '', l: x.activityLightLevel || 0 };
   });
   fs.writeFileSync(f, JSON.stringify(o));
@@ -2763,6 +2807,79 @@ H('item:slots', async (e, v) => { await ensureM();
   const socks = (r.sockets && r.sockets.data && r.sockets.data.sockets) || [];
   return socks.map((s, si) => { const p = s.plugHash && df.p[s.plugHash]; return { si, cur: s.plugHash || 0, cat: p ? p.c || '' : '', vis: s.isVisible !== false }; })
     .filter((q) => q.vis && /enhancement/i.test(q.cat) && !/masterwork|tuning|catalyst|shader|ornament|fashion|cosmetic/i.test(q.cat));
+});
+// ---- Wish list maker tab ----
+// Search every legendary and exotic weapon in the game by name or type (not only the ones you own).
+H('wm:find', async (e, v) => {
+  OBJ(v); const q = TXT(v.q, 60).trim().toLowerCase(); if (q.length < 2) return [];
+  const df = await defs(), by = {}, words = q.split(/\s+/).filter(Boolean);
+  for (const k in df.d) {
+    const d = df.d[k]; if (!TF_WB0.has(d.b) || !/legendary|exotic/i.test(d.r || '') || !d.n) continue;
+    const hay = (d.n + ' ' + (d.t || '')).toLowerCase();
+    if (!words.every((w) => hay.includes(w))) continue;
+    // The game keeps several copies of many weapons (reissues, craftable and old versions) under one name: show each name once.
+    const key = d.n + '|' + (d.t || '') + '|' + (d.r || ''), wl = d.wl ? d.wl[d.wl.length - 1] : d.w;
+    const g = by[key] || (by[key] = { h: +k, n: d.n, i: d.i || '', t: d.t || '', r: d.r || '', wm: '', wi: -1, hs: [], st: d.n.toLowerCase().startsWith(q) ? 0 : 1 });
+    g.hs.push(+k);
+    // The newest version (latest watermark) is the one shown.
+    const wi = wl !== undefined && wl >= 0 ? wl : -1;
+    if (wi > g.wi) { g.wi = wi; g.h = +k; g.i = d.i || g.i; g.wm = wi >= 0 ? (df.W[wi] || '') : ''; }
+  }
+  return Object.values(by).map((g) => { delete g.wi; g.hs = g.hs.slice(0, 8); return g; })
+    .sort((a, b) => a.st - b.st || a.n.localeCompare(b.n) || b.h - a.h).slice(0, 60);
+});
+// Every perk a weapon can roll with, column by column (barrel, magazine, the two traits, origin), from the game's data.
+// Several versions of one weapon (hs) are merged: each perk shows once, with the matching perk of every version (hm).
+const WMPOOL = {};
+const WMLBL = { barrels: 'Barrel', magazines: 'Magazine', magazines_gl: 'Magazine', frames: 'Trait', origins: 'Origin trait', scopes: 'Sight', arrows: 'Arrow', blades: 'Blade', guards: 'Guard', batteries: 'Battery', grips: 'Grip', stocks: 'Stock', tubes: 'Launcher barrel', hafts: 'Haft' };
+async function wmPoolOne(h, df) {
+  if (WMPOOL[h]) return WMPOOL[h];
+  const idf = await entDef('DestinyInventoryItemDefinition', h);
+  if (!idf || !idf.sockets) return null;
+  const ents = idf.sockets.socketEntries || [], cats = idf.sockets.socketCategories || [];
+  const PERKS = 4241085061, perkIdx = ((cats.find((c) => c.socketCategoryHash === PERKS) || {}).socketIndexes) || [];
+  const sets = await Promise.all(perkIdx.map((si) => { const en = ents[si] || {}, ph = en.randomizedPlugSetHash || en.reusablePlugSetHash; return ph ? entDef('DestinyPlugSetDefinition', ph) : null; }));
+  const cols = [];
+  perkIdx.forEach((si, n) => {
+    const en = ents[si] || {}, hs = [];
+    ((sets[n] && sets[n].reusablePlugItems) || []).forEach((q) => { if (!hs.includes(q.plugItemHash)) hs.push(q.plugItemHash); });
+    if (!hs.length && en.singleInitialItemHash) hs.push(en.singleInitialItemHash);
+    // A plug set lists each perk more than once (enhanced and craftable copies have their own hashes): keep one per name.
+    const seen = new Set(), opts = [];
+    hs.forEach((x) => {
+      const p = df.p[x]; if (!p || !p.n || /tracker|shader|ornament|memento|intrinsic/i.test(p.c || '')) return;
+      const k = p.n.toLowerCase(); if (seen.has(k)) return; seen.add(k);
+      opts.push({ h: x, n: p.n, i: p.i || '', d: String(p.d || '').slice(0, 300), c: p.c || '' });
+    });
+    if (!opts.length) return;
+    cols.push({ si, c: opts[0].c, opts: opts.slice(0, 40) });
+  });
+  return (WMPOOL[h] = { h, n: (df.d[h] && df.d[h].n) || (idf.displayProperties && idf.displayProperties.name) || '', cols });
+}
+H('wm:pool', async (e, v) => {
+  OBJ(v); const h = HASH(v.h), hs = [h].concat(v.hs === undefined ? [] : ARR(v.hs, 8).map(HASH)).filter((x, i, a) => x > 0 && a.indexOf(x) === i);
+  const df = await defs(), pools = (await Promise.all(hs.map((x) => wmPoolOne(x, df).catch(() => null)))).filter(Boolean);
+  if (!pools.length) throw new Error('Could not read that weapon from Bungie. Try again in a moment.');
+  // The version with the most perk columns sets the columns; the others merge into the column with the same kind (Nth trait to Nth trait).
+  const base = pools.find((p) => p.h === h && p.cols.length) || pools.slice().sort((a, b) => b.cols.length - a.cols.length)[0];
+  const cols = base.cols.map((c) => ({ c: c.c, opts: [] }));
+  const kindIdx = (pc) => { const cnt = {}; return pc.cols.map((c) => { cnt[c.c] = (cnt[c.c] || 0) + 1; return c.c + '#' + cnt[c.c]; }); };
+  const bk = kindIdx(base);
+  pools.forEach((pl) => {
+    kindIdx(pl).forEach((k, ci) => {
+      const ti = bk.indexOf(k); if (ti < 0) return;
+      const col = cols[ti];
+      pl.cols[ci].opts.forEach((o) => {
+        let t = col.opts.find((x) => x.n.toLowerCase() === o.n.toLowerCase());
+        if (!t) { t = { h: o.h, n: o.n, i: o.i, d: o.d, hm: {} }; col.opts.push(t); }
+        t.hm[pl.h] = o.h;
+      });
+    });
+  });
+  const tot = {}, cnt = {}; cols.forEach((c) => { tot[c.c] = (tot[c.c] || 0) + 1; });
+  cols.forEach((c) => { cnt[c.c] = (cnt[c.c] || 0) + 1; const l = WMLBL[c.c] || (c.c ? c.c.replace(/[_-]+/g, ' ').replace(/^./, (m) => m.toUpperCase()).replace(/s$/, '') : 'Perk'); c.label = tot[c.c] > 1 ? l + ' ' + cnt[c.c] : l; c.opts = c.opts.slice(0, 40); });
+  const d = df.d[h] || {};
+  return { h, hs: pools.filter((p) => p.cols.length).map((p) => p.h), n: d.n || base.n, i: d.i || '', t: d.t || '', cols: cols.filter((c) => c.opts.length) };
 });
 // Every option the game offers for each subclass socket (super, abilities, aspects, fragments), taken from the item data.
 const SUBO = {};

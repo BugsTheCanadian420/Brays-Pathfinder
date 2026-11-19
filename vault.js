@@ -627,9 +627,9 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 :root[data-gsec="settings"] main{max-width:none!important;padding:14px 16px 40px!important}
 #settings.on{max-width:1240px!important;width:100%;box-sizing:border-box;margin:0 auto}#settings .card{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}#settings .sxtabs{margin-top:10px;border-top:1px solid var(--g-line,#2b2e33);padding-top:8px}#settings .fxsub{margin-top:14px;border-top:1px solid var(--g-line,#2b2e33);padding-top:10px}
 #settings .scols{display:flex;gap:16px;align-items:flex-start}#settings .scol{flex:1 1 0;min-width:0}
-#settings .sg{grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:6px}#settings .th{padding:6px 6px 7px;font-size:12.5px}#settings .th i{height:20px;margin-bottom:5px}
+#settings .sg{grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:6px}#settings .sg.wlps{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}#settings .th{padding:6px 6px 7px;font-size:12.5px}#settings .th i{height:20px;margin-bottom:5px}
 #settings .uis{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
-#settings .setgrid{display:contents}.pfars{margin:10px 0 4px;padding:10px 12px;border:1px solid var(--g-line,#2b2e33);border-radius:10px}.pfars p{margin:4px 0 8px}#gtmp{background:var(--g-solid,#15171b)!important;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}#gtmp.open{box-shadow:0 0 0 100vmax rgba(0,0,0,.5),0 14px 36px rgba(0,0,0,.7)!important}#vqs{background:var(--g-solid,#15171b)!important}.sset{display:grid;grid-template-columns:240px minmax(0,1fr);gap:22px;align-items:start;max-width:1120px;margin:0 auto}.snav{position:sticky;top:64px;box-sizing:border-box;margin:0;display:flex;flex-direction:column;gap:2px;padding:8px;background:var(--g-solid,#15171b);border:1px solid var(--g-line,#2b2e33);border-radius:12px}#settings .snav .sni{display:flex;align-items:center;gap:12px;width:100%;box-sizing:border-box;margin:0;border-radius:8px;padding:9px 12px;color:#c3c7ce;font-size:13.5px;font-weight:600;line-height:1.2;letter-spacing:0;text-transform:none;cursor:pointer;user-select:none}#settings .snav .sni svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;opacity:.8}#settings .snav .sni:hover{background:rgba(255,255,255,.06);color:#fff}#settings .snav .sni.on{background:var(--g-accent-soft,rgba(122,184,232,.16));color:#fff;box-shadow:inset 3px 0 0 var(--g-accent,#7ab8e8)}#settings .snav .sni.on svg{opacity:1;color:var(--g-accent,#7ab8e8)}#settings .snav .sni:focus-visible{outline:2px solid var(--g-accent,#7ab8e8);outline-offset:1px}.spane{min-width:0}.spane>.card{display:none!important;margin:0!important}.spane>.card.son{display:block!important}@media (max-width:760px){.sset{grid-template-columns:1fr;gap:10px}.snav{position:static;flex-direction:row;overflow-x:auto;scrollbar-width:none;padding:5px}#settings .snav .sni{width:auto;flex:none;white-space:nowrap;padding:8px 11px}}
+#settings .setgrid{display:contents}.adml{display:flex;flex-direction:column;margin:4px 0 10px}.admr{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--g-line,#2b2e33);flex-wrap:wrap}.admn{min-width:0;flex:1 1 220px}.admn b{display:block}.admn small{color:var(--mute,#9aa1ab);font-size:12px}.admn input{width:100%;margin-top:4px;box-sizing:border-box}.admc{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.admren{flex:1 1 100%;padding-top:4px}select{color-scheme:dark}select option,select optgroup{background-color:var(--g-panel,#1a1c20)!important;color:#eceef1!important}select option:checked{background-color:var(--g-accent,#7ab8e8)!important;color:#111!important}select option:disabled{color:#7d828b!important}.admren input{width:220px!important;flex:none}.admc select{width:auto}.admtag{padding:2px 10px;border-radius:999px;background:var(--g-accent,#e8b84a);color:#15171b;font-size:12px;font-weight:700}.admdel{color:#ff8a8a!important}.admmsg{margin:8px 0;color:#8fd19e}.admmsg.bad,.admn .bad{color:#ff8a8a}.admcode{margin:10px 0;padding:10px 12px;border:1px dashed var(--g-accent,#e8b84a);border-radius:10px}.admcode code{display:inline-block;font:700 20px/1.2 ui-monospace,Consolas,monospace;letter-spacing:2px;margin:4px 0;user-select:all}.pfars{margin:10px 0 4px;padding:10px 12px;border:1px solid var(--g-line,#2b2e33);border-radius:10px}.pfars p{margin:4px 0 8px}#gtmp{background:var(--g-solid,#15171b)!important;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}#gtmp.open{box-shadow:0 0 0 100vmax rgba(0,0,0,.5),0 14px 36px rgba(0,0,0,.7)!important}#vqs{background:var(--g-solid,#15171b)!important}.sset{display:grid;grid-template-columns:240px minmax(0,1fr);gap:22px;align-items:start;max-width:1120px;margin:0 auto}.snav{position:sticky;top:64px;box-sizing:border-box;margin:0;display:flex;flex-direction:column;gap:2px;padding:8px;background:var(--g-solid,#15171b);border:1px solid var(--g-line,#2b2e33);border-radius:12px}#settings .snav .sni{display:flex;align-items:center;gap:12px;width:100%;box-sizing:border-box;margin:0;border-radius:8px;padding:9px 12px;color:#c3c7ce;font-size:13.5px;font-weight:600;line-height:1.2;letter-spacing:0;text-transform:none;cursor:pointer;user-select:none}#settings .snav .sni svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;opacity:.8}#settings .snav .sni:hover{background:rgba(255,255,255,.06);color:#fff}#settings .snav .sni.on{background:var(--g-accent-soft,rgba(122,184,232,.16));color:#fff;box-shadow:inset 3px 0 0 var(--g-accent,#7ab8e8)}#settings .snav .sni.on svg{opacity:1;color:var(--g-accent,#7ab8e8)}#settings .snav .sni:focus-visible{outline:2px solid var(--g-accent,#7ab8e8);outline-offset:1px}.spane{min-width:0}.spane>.card{display:none!important;margin:0!important}.spane>.card.son{display:block!important}@media (max-width:760px){.sset{grid-template-columns:1fr;gap:10px}.snav{position:static;flex-direction:row;overflow-x:auto;scrollbar-width:none;padding:5px}#settings .snav .sni{width:auto;flex:none;white-space:nowrap;padding:8px 11px}}
 #settings .card{max-width:none;margin:0 0 16px;break-inside:avoid;padding:14px 18px}
 #settings .card h2{padding-bottom:8px;margin-bottom:4px;border-bottom:1px solid var(--g-line)}
 /* saved sets: opened from the button in the top bar */
@@ -667,7 +667,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 .sri .grip{color:#5f636b;letter-spacing:-3px;font-size:13px;user-select:none}
 .sri label{flex:1;display:flex;align-items:center;gap:8px;cursor:pointer}
 .sri input{width:16px;height:16px;margin:0;accent-color:var(--g-accent)}
-.sri button{padding:0 8px!important;font-size:11px;height:22px}
+.sri button{padding:0 8px!important;font-size:11px;height:22px}.navl .sri button[disabled]{opacity:.28;pointer-events:none}.navl .sri input[disabled]{opacity:.5}
 .cstr{display:flex;flex-wrap:wrap;align-items:center;gap:5px}
 .cstr .chip{padding:2px 7px;font-size:11.5px}.cstr{flex-wrap:nowrap!important}@media (max-width:520px){.cstr{flex-wrap:wrap!important}.cstr b{width:100%}}.cstr b{width:72px;flex:none;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#cfd2d8}
 .chip{padding:3px 9px;font-size:12px;border:1px solid #3a3d43;background:var(--g-btn);color:#9da1a8;border-radius:11px;cursor:pointer;font-family:inherit}
@@ -709,7 +709,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 #vault .phsw button{flex:1 1 0!important;width:auto!important;height:auto!important;min-height:48px;display:flex!important;flex-direction:column;align-items:flex-start;gap:2px;padding:8px 10px!important;border-radius:10px!important;background:linear-gradient(90deg,var(--cc),rgba(0,0,0,.25))!important;border:1px solid rgba(255,255,255,.12)!important;color:#fff!important;text-transform:none!important;letter-spacing:0!important;opacity:.6;min-width:0}
 .phsw button b{font-size:14px;font-weight:700;line-height:1.1}.phsw button span{display:inline-flex;align-items:center;gap:3px;color:#f3d97a;font-size:13px}.phsw button span svg{width:11px;height:11px}
 #vault .phsw button.on{opacity:1;border-color:var(--g-accent,#7ab8e8)!important;box-shadow:0 0 0 1px var(--g-accent,#7ab8e8)}
-.vrf{margin-left:10px;flex:none;width:30px;height:30px;padding:0!important;display:inline-flex!important;align-items:center;justify-content:center;border-radius:50%!important;background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.14)!important;color:#d6d9de!important;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
+.vgrf{margin-left:6px!important}#godrolls .jk.grfp{background:var(--g-panel,#1a1c20);border:1px solid var(--g-line,#2b2e33);border-radius:12px;max-width:920px;margin:0 auto 24px;padding:16px 20px}#godrolls .jkr{grid-template-columns:26px 48px 1fr auto}#godrolls .grb{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:20px;padding:0 4px;border-radius:4px;font:800 12px/1 'Open Sans',system-ui,sans-serif;font-style:normal;color:#111;background:var(--gc)}#godrolls .jkt .grb{min-width:18px;height:16px;font-size:10.5px;margin-right:2px}#godrolls .jkr{grid-template-columns:26px 44px 1fr}#godrolls .jkh{display:flex;align-items:baseline;gap:12px}#godrolls .jkh b{font-size:16px;color:#fff}#godrolls .jkh button{margin-left:auto}#godrolls .jkl{display:flex;flex-direction:column;gap:4px;margin:8px 0}#godrolls .jkr{display:grid;grid-template-columns:48px 1fr auto;gap:10px;align-items:center;padding:4px;border:1px solid transparent;cursor:pointer}#godrolls .jkr:hover{border-color:var(--g-line,#3a3d43);background:rgba(255,255,255,.03)}#godrolls .jkr .vt{--t:48px;width:48px;height:48px;pointer-events:none}#godrolls .jkr small{display:block;color:#b9bec6;font-size:12px}#godrolls .jkb{position:sticky;bottom:-14px;background:var(--g-panel,#1a1c20);padding:10px 0;margin:0}#godrolls .jkb{position:static}#godrolls .jkr{grid-template-columns:22px 48px 1fr auto}#godrolls .jkr input{width:16px;height:16px;margin:0;cursor:pointer}#godrolls .jkr.sel{background:rgba(255,255,255,.04);border-color:var(--g-line,#3a3d43)}#godrolls .jkt{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}#godrolls .jkt button{background:transparent;border:1px solid var(--g-line,#3a3d43);color:#cfd3da;padding:5px 10px;font:inherit;font-size:12.5px;cursor:pointer}#godrolls .jkt button.on{border-color:var(--acc,#e8b84a);color:#fff;background:rgba(255,255,255,.06)}#godrolls .jkt i{font-style:normal;opacity:.7;margin-left:4px}#godrolls .jkd{margin:6px 0}#godrolls .jks{display:flex;gap:12px;align-items:center;font-size:12.5px;margin:4px 0}#godrolls .jks label{display:flex!important;gap:6px;align-items:center;cursor:pointer;white-space:nowrap;width:auto!important;margin:0!important;padding:0!important}#godrolls .jkb button[disabled]{opacity:.4!important;cursor:default;pointer-events:none}#godrolls .jke{margin:16px 0}#godrolls .jkr{grid-template-columns:22px 44px 1fr}#godrolls .jkr>.mute{display:none}.vt.gtflash{outline:3px solid var(--g-accent,#7ab8e8);outline-offset:2px;border-radius:4px}.vrf{margin-left:10px;flex:none;width:30px;height:30px;padding:0!important;display:inline-flex!important;align-items:center;justify-content:center;border-radius:50%!important;background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.14)!important;color:#d6d9de!important;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
 .vrf:hover{background:rgba(255,255,255,.14)!important;color:#fff!important;border-color:var(--g-accent,#7ab8e8)!important}
 .vrf.spin svg{animation:vrfspin .8s linear infinite}@keyframes vrfspin{to{transform:rotate(360deg)}}
 .chp .lg{width:11px;height:14px;margin-top:2px}
@@ -758,7 +758,7 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
 .gtdrop .dx{flex:none;align-self:flex-start;background:none;border:0;color:#8b8f97;font-size:18px;line-height:1;padding:0 2px;cursor:pointer}
 @media (max-width:760px){#gtdrops{left:12px;right:12px;width:auto;top:calc(env(safe-area-inset-top,0px) + 56px);bottom:auto}}
 #junkm.grf .jkr{grid-template-columns:26px 48px 1fr auto}#junkm .grb{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:20px;padding:0 4px;border-radius:4px;font:800 12px/1 'Open Sans',system-ui,sans-serif;font-style:normal;color:#111;background:var(--gc)}#junkm .jkt .grb{min-width:18px;height:16px;font-size:10.5px;margin-right:2px}@media (max-width:640px){#junkm.grf .jkr{grid-template-columns:26px 44px 1fr}}
-#junkm{position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.55);display:flex;align-items:flex-start;justify-content:center;padding:6vh 16px}#junkm .jk{background:var(--g-panel,#1a1c20);border:1px solid var(--g-line,#2b2e33);width:min(720px,100%);max-height:86vh;overflow:auto;padding:14px 18px;box-shadow:0 10px 40px rgba(0,0,0,.6)}#junkm .jkh{display:flex;align-items:baseline;gap:12px}#junkm .jkh b{font-size:16px;color:#fff}#junkm .jkh button{margin-left:auto}#junkm .jkl{display:flex;flex-direction:column;gap:4px;margin:8px 0}#junkm .jkr{display:grid;grid-template-columns:48px 1fr auto;gap:10px;align-items:center;padding:4px;border:1px solid transparent;cursor:pointer}#junkm .jkr:hover{border-color:var(--g-line,#3a3d43);background:rgba(255,255,255,.03)}#junkm .jkr .vt{--t:48px;width:48px;height:48px;pointer-events:none}#junkm .jkr small{display:block;color:#b9bec6;font-size:12px}#junkm .jkb{position:sticky;bottom:-14px;background:var(--g-panel,#1a1c20);padding:10px 0;margin:0}#junkm .jk{display:flex;flex-direction:column;overflow:hidden}#junkm .jkl{overflow:auto;min-height:0;flex:1}#junkm .jkb{position:static}#junkm .jkr{grid-template-columns:22px 48px 1fr auto}#junkm .jkr input{width:16px;height:16px;margin:0;cursor:pointer}#junkm .jkr.sel{background:rgba(255,255,255,.04);border-color:var(--g-line,#3a3d43)}#junkm .jkt{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}#junkm .jkt button{background:transparent;border:1px solid var(--g-line,#3a3d43);color:#cfd3da;padding:5px 10px;font:inherit;font-size:12.5px;cursor:pointer}#junkm .jkt button.on{border-color:var(--acc,#e8b84a);color:#fff;background:rgba(255,255,255,.06)}#junkm .jkt i{font-style:normal;opacity:.7;margin-left:4px}#junkm .jkd{margin:6px 0}#junkm .jks{display:flex;gap:12px;align-items:center;font-size:12.5px;margin:4px 0}#junkm .jks label{display:flex!important;gap:6px;align-items:center;cursor:pointer;white-space:nowrap;width:auto!important;margin:0!important;padding:0!important}#junkm .jkb button[disabled]{opacity:.4!important;cursor:default;pointer-events:none}#junkm .jke{margin:16px 0}@media (max-width:640px){#junkm{padding:8px}#junkm .jk{max-height:calc(100dvh - 90px);padding:12px}#junkm .jkr{grid-template-columns:22px 44px 1fr}#junkm .jkr>.mute{display:none}}
+html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscroll-behavior:contain;position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.55);display:flex;align-items:flex-start;justify-content:center;padding:6vh 16px}#junkm .jk{background:var(--g-panel,#1a1c20);border:1px solid var(--g-line,#2b2e33);width:min(720px,100%);max-height:86vh;overflow:auto;padding:14px 18px;box-shadow:0 10px 40px rgba(0,0,0,.6)}#junkm .jkh{display:flex;align-items:baseline;gap:12px}#junkm .jkh b{font-size:16px;color:#fff}#junkm .jkh button{margin-left:auto}#junkm .jkl{display:flex;flex-direction:column;gap:4px;margin:8px 0}#junkm .jkr{display:grid;grid-template-columns:48px 1fr auto;gap:10px;align-items:center;padding:4px;border:1px solid transparent;cursor:pointer}#junkm .jkr:hover{border-color:var(--g-line,#3a3d43);background:rgba(255,255,255,.03)}#junkm .jkr .vt{--t:48px;width:48px;height:48px;pointer-events:none}#junkm .jkr small{display:block;color:#b9bec6;font-size:12px}#junkm .jkb{position:sticky;bottom:-14px;background:var(--g-panel,#1a1c20);padding:10px 0;margin:0}#junkm .jk{display:flex;flex-direction:column;overflow:hidden}#junkm .jkl{overflow:auto;min-height:0;flex:1}#junkm .jkb{position:static}#junkm .jkr{grid-template-columns:22px 48px 1fr auto}#junkm .jkr input{width:16px;height:16px;margin:0;cursor:pointer}#junkm .jkr.sel{background:rgba(255,255,255,.04);border-color:var(--g-line,#3a3d43)}#junkm .jkt{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}#junkm .jkt button{background:transparent;border:1px solid var(--g-line,#3a3d43);color:#cfd3da;padding:5px 10px;font:inherit;font-size:12.5px;cursor:pointer}#junkm .jkt button.on{border-color:var(--acc,#e8b84a);color:#fff;background:rgba(255,255,255,.06)}#junkm .jkt i{font-style:normal;opacity:.7;margin-left:4px}#junkm .jkd{margin:6px 0}#junkm .jks{display:flex;gap:12px;align-items:center;font-size:12.5px;margin:4px 0}#junkm .jks label{display:flex!important;gap:6px;align-items:center;cursor:pointer;white-space:nowrap;width:auto!important;margin:0!important;padding:0!important}#junkm .jkb button[disabled]{opacity:.4!important;cursor:default;pointer-events:none}#junkm .jke{margin:16px 0}@media (max-width:640px){#junkm{padding:8px}#junkm .jk{max-height:calc(100dvh - 90px);padding:12px}#junkm .jkr{grid-template-columns:22px 44px 1fr}#junkm .jkr>.mute{display:none}}
 .pmh{display:flex;align-items:baseline;gap:6px;margin:16px 0 0;min-height:18px}
 .pmh .dsec{display:inline-flex;grid-column:auto;margin:0;font-size:13px;letter-spacing:1.5px;color:#d9dce1}
 .pmh .pmn{font-size:13px;letter-spacing:.5px;color:#d9dce1}
@@ -854,7 +854,9 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
     ['rose', 'Rose', 320, 26, '#ff7ad9', '#2a1626'],
   ].map(([id, n, h, s, a, sw]) => ({ id, n, h, s, a, sw }));
   // Background pictures. 'topo' is the contour-line drawing; the rest are Destiny 2 places.
-  const BGS = [['', 'None'], ['topo', 'Contour lines'], ['blossom-tower', 'Blossom Tower'], ['memorial-garden', 'Memorial Garden'], ['rust-yard', 'Rust Yard'], ['europa-frost', 'Lunar Frost'], ['crimson-spire', 'Crimson Spire'], ['cube-mist', 'Cube Mist'], ['aurora-grove', 'Aurora Grove'], ['vortex', 'Vortex'], ['emerald-lake', 'Emerald Lake'], ['hanging-gardens', 'Hanging Gardens'], ['traveler', 'The Traveler'], ['lantern-gate', 'Lantern Gate']];
+  // Pictures that were removed as duplicates: anyone who had one gets the one it duplicated.
+  const BGREN = { 'rust-yard': 'cosmodrome-wall' };
+  const BGS = [['', 'None'], ['topo', 'Contour lines'], ['blossom-tower', 'Blossom Tower'], ['memorial-garden', 'Memorial Garden'], ['europa-frost', 'Lunar Frost'], ['crimson-spire', 'Crimson Spire'], ['cube-mist', 'Cube Mist'], ['aurora-grove', 'Aurora Grove'], ['vortex', 'Vortex'], ['emerald-lake', 'Emerald Lake'], ['hanging-gardens', 'Hanging Gardens'], ['jupiter-rise', 'Jupiter Rise'], ['cosmodrome-wall', 'Cosmodrome Wall'], ['throne-marsh', 'Nessus'], ['traveler', 'The Traveler'], ['lantern-gate', 'Lantern Gate']];
   // Bray and Manta are fixed looks: their colour, accent and picture are set and cannot be changed. Their two pictures are shown last
   // in the picture list, locked, so the Custom style cannot use them.
   const LOCK = { bray: { theme: 'beta', accent: '#f2b441', bg: 'traveler', n: 'Bray' }, manta: { theme: 'gold', accent: '#35e3cf', bg: 'lantern-gate', n: 'Manta' } };
@@ -868,17 +870,18 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
     SET.looks = SET.looks && typeof SET.looks === 'object' ? SET.looks : {};
     if (EDIT.includes(from)) SET.looks[from] = { theme: SET.theme, accent: SET.accent, bg: SET.bg };
     const sv = SET.looks[to];
-    if (EDIT.includes(to) && sv && typeof sv === 'object') { if (tById(sv.theme)) SET.theme = sv.theme; if (/^#[0-9a-f]{6}$/i.test(String(sv.accent))) SET.accent = sv.accent; SET.bg = typeof sv.bg === 'string' ? sv.bg : ''; }
+    if (EDIT.includes(to) && sv && typeof sv === 'object') { if (tById(sv.theme)) SET.theme = sv.theme; if (/^#[0-9a-f]{6}$/i.test(String(sv.accent))) SET.accent = sv.accent; SET.bg = typeof sv.bg === 'string' ? (BGREN[sv.bg] || sv.bg) : ''; }
     SET.ui = to;
   }
   // Themes from earlier versions (the gradient and shader-inspired ones are gone; the old picture themes are now a colour plus a picture).
   const MIG = { solar: 'ember', arc: 'blue', stasis: 'blue', strand: 'forest', prism: 'void', aurora: 'teal', nebula: 'rose', midnight: 'blue', synth: 'rose', dawning: 'blue', gilded: 'gold', legion: 'crimson', hive: 'forest', vex: 'slate', taken: 'teal', fallen: 'ember', dreaming: 'rose',
-    a_lantern: ['ember', ''], a_blossom: ['rose', 'blossom-tower'], a_memorial: ['blue', 'memorial-garden'], a_rust: ['ember', 'rust-yard'], a_europa: ['blue', 'europa-frost'], a_spire: ['crimson', 'crimson-spire'], a_mist: ['slate', 'cube-mist'], a_grove: ['forest', 'aurora-grove'], a_vortex: ['blue', 'vortex'], a_lake: ['teal', 'emerald-lake'], a_gardens: ['forest', 'hanging-gardens'] };
+    a_lantern: ['ember', ''], a_blossom: ['rose', 'blossom-tower'], a_memorial: ['blue', 'memorial-garden'], a_rust: ['ember', 'cosmodrome-wall'], a_europa: ['blue', 'europa-frost'], a_spire: ['crimson', 'crimson-spire'], a_mist: ['slate', 'cube-mist'], a_grove: ['forest', 'aurora-grove'], a_vortex: ['blue', 'vortex'], a_lake: ['teal', 'emerald-lake'], a_gardens: ['forest', 'hanging-gardens'] };
   const tById = (id) => COLS.find((t) => t.id === id);
   function migTheme() {
     const m = MIG[SET.theme];
     if (m) { if (Array.isArray(m)) { SET.theme = m[0]; if (!SET.bg) SET.bg = m[1]; } else SET.theme = m; }
     if (!tById(SET.theme)) SET.theme = 'dim';
+    if (BGREN[SET.bg]) SET.bg = BGREN[SET.bg];
     if (SET.bg === undefined || !BGS.some((b) => b[0] === SET.bg) || LOCKBG[SET.bg]) SET.bg = '';
     if (SET.ui === 'd2') SET.ui = 'bray';
     if (SET.ui === 'dim') SET.ui = 'pf'; // the DIM style was removed
@@ -958,9 +961,24 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
   const sBtn = document.createElement('button'); sBtn.textContent = 'Settings'; sBtn.dataset.t = 'settings'; sBtn.onclick = () => { if (window.gt && gt.pfaStatus && PFA) gt.pfaStatus().then((r) => { if (r && JSON.stringify(r) !== JSON.stringify(PFA)) { PFA = r; flagsLoad(); if (settingsSec.classList.contains('on')) drawSettings(); } }).catch(() => {}); const had = settingsSec.firstChild; if (!had) drawSettings(); show('settings'); if (had) requestAnimationFrame(() => setTimeout(drawSettings, 0)); }; nav.appendChild(sBtn);
   let WL = null, WLMSG = '', WLV = 0;
   const WLD = { wlurl: '', wltext: '' }; // what you typed or pasted, kept across redraws (update checks redraw this page)
-  const WLPRE = [['Voltron (big community list)', 'https://raw.githubusercontent.com/48klocs/dim-wish-list-sources/master/voltron.txt'], ['Choosy Voltron (stricter)', 'https://raw.githubusercontent.com/48klocs/dim-wish-list-sources/master/choosy_voltron.txt']];
+  // Ready-made lists: click to turn one on, click again to turn it off. The four Aegis lists (MrCharles, from Aegis's endgame
+  // weapon grades) are turned on the first time Pathfinder runs; the 4th field marks those.
+  const AEG = (f) => 'https://raw.githubusercontent.com/charlesxcaliber/DIMAegisWeaponWishlist/main/MrCharlesWishlist_' + f + '.txt';
+  const WLPRE = [['Voltron (big community list)', 'https://raw.githubusercontent.com/48klocs/dim-wish-list-sources/master/voltron.txt'], ['Choosy Voltron (stricter)', 'https://raw.githubusercontent.com/48klocs/dim-wish-list-sources/master/choosy_voltron.txt'],
+    ['Aegis S grade, 1 perk per column', AEG('MRS_PPC1'), 'aeg', 1], ['Aegis A grade, 2 perks per column', AEG('MRA_PPC2'), 'aeg', 1], ['Aegis S grade, 2 perks per column', AEG('MRS_PPC2'), 'aeg', 1], ['Aegis S grade, 3 perks per column', AEG('MRS_PPC3'), 'aeg', 1]];
+  // The same list can be linked in different ways (raw link, github.com/.../blob, ?token...): lists are matched by file name.
+  const wlKey = (u) => String(u || '').split('?')[0].split('/').pop().toLowerCase();
+  // First run: turn on the default lists once (they can be turned off; they are not added back after that).
+  let wlDefBusy = false;
+  async function wlDefaults() {
+    if (SET.wlDef || wlDefBusy || !window.gt || !gt.wlSet) return;
+    wlDefBusy = true; SET.wlDef = 1; saveSet();
+    const have = new Set(((WL && WL.lists) || []).map((l) => wlKey(l.url)));
+    for (const p of WLPRE.filter((q) => q[3] && !have.has(wlKey(q[1])))) { try { const o = await gt.wlSet({ url: p[1] }); WL = o && o.lists && o.lists.length ? o : WL; } catch (er) { /* skipped; can be turned on in Settings */ } }
+    wlDefBusy = false; WLV++; window.dispatchEvent(new Event('gtwl')); drawSettings(); if (window.__gtRender) window.__gtRender();
+  }
   const wlClean = (er) => String((er && er.message) || er).replace(/^Error invoking remote method '[^']*': (Error: )?/, '');
-  const wlLoad = () => { if (window.gt && window.gt.wlGet) window.gt.wlGet().then((o) => { WL = o && o.lists && o.lists.length ? o : null; WLV++; drawSettings(); if (window.__gtRender) window.__gtRender(); }).catch(() => {}); };
+  const wlLoad = () => { if (window.gt && window.gt.wlGet) window.gt.wlGet().then((o) => { WL = o && o.lists && o.lists.length ? o : null; WLV++; drawSettings(); if (window.__gtRender) window.__gtRender(); wlDefaults(); }).catch(() => {}); };
   const wcache = {};
   // 1 = wish list roll (thumbs up), -1 = trash roll (thumbs down), 0 = no opinion.
   // Also keeps the notes, tags and the perks that appear in a wish list roll for this weapon.
@@ -1010,12 +1028,13 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
   const WL_BAD = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#e0a030" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v9M12 18.5v.5"/></svg>';
   function wlCard() {
     const lists = (WL && WL.lists) || [];
-    const have = new Set(lists.map((l) => l.url).filter(Boolean));
+    const have = new Set(lists.map((l) => wlKey(l.url)).filter(Boolean));
     const rows = lists.map((l) => `<div class="wlr${l.err ? ' bad' : ''}"><span class="wlk" title="${l.err ? esc(l.err) : 'Loaded'}">${l.err ? WL_BAD : WL_OK}</span><div class="wlt"><b>${esc(l.title || (l.url ? l.url.split('/').pop() : 'Wish list'))}</b>${l.desc ? `<span>${esc(l.desc)}</span>` : ''}<small>${l.n} rolls &middot; ${l.url ? 'updated ' + wlAgo(l.at) : 'pasted or uploaded'}${l.err ? ' &middot; <i class="er">' + esc(String(l.err).replace(/\.$/, '')) + '. Using the saved copy.</i>' : ''}</small></div><button class="g" data-sa="wlrm" data-id="${esc(l.id)}" title="Remove this list">Remove</button></div>`).join('');
     return `<div class="card"><h2>Wish lists</h2><p class="mute">Weapons with a roll from one of your lists get a thumbs up in the vault and in the weapon's perk list, like DIM. Trash rolls get a thumbs down. Search with <code>is:wishlist</code>, <code>is:trashlist</code> or <code>wishlistnotes:word</code>. Lists are saved on ${GT_HERE} and linked ones refresh on their own every few hours.</p>
     ${lists.length ? `<div class="wll">${rows}</div><p class="mute">${WL.n} rolls in total from ${lists.length} list${lists.length === 1 ? '' : 's'}.</p>` : '<p class="mute"><b>No wish lists yet.</b> Add one below.</p>'}
     ${WLMSG ? `<p class="wlmsg${/^(Could not|Enter|Paste|Nothing|No |That|The |Wish|Failed|https)/.test(WLMSG) ? ' bad' : ''}">${esc(WLMSG)}</p>` : ''}
-    <div class="sg">${WLPRE.map((p, i) => `<div class="th${have.has(p[1]) ? ' on' : ''}" data-wp="${i}">${have.has(p[1]) ? '&#10003; ' : '+ '}${esc(p[0])}</div>`).join('')}</div>
+    <div class="thh">Ready-made lists</div><p class="mute" style="margin:2px 0 6px">Click to turn a list on or off.</p>
+    <div class="sg wlps">${WLPRE.map((p, i) => { const on = have.has(wlKey(p[1])); return `<div class="th${on ? ' on' : ''}" data-wp="${i}" role="switch" aria-checked="${on}" tabindex="0">${on ? '&#10003; ' : '+ '}${esc(p[0])}</div>`; }).join('')}</div>
     <div class="sr"><label>Link</label><input id="wlurl" placeholder="https://.../wishlist.txt (one or several links)" value="${esc(WLD.wlurl)}" style="flex:1"><button class="g" data-sa="wlpl">Paste</button><button class="b" data-sa="wlload">Add list</button></div>
     <p><button class="g" data-sa="wlfile">Upload a file...</button> <button class="g" data-sa="wlrefresh">Refresh all</button> ${lists.length ? '<button class="g" data-sa="wlclear">Remove all</button>' : ''}<input type="file" id="wlfile" accept=".txt,text/plain" hidden></p>
     <div class="sx"><div class="sxt"><b>Mark weapons no list has rated yet</b><small>A small <b style="color:#ffd27a">?</b> on legendary weapons that none of your lists mention, so a blank tile always means "not a keeper". Search <code>is:unrated</code>.</small></div><div class="sxc"><label class="tgl"><input type="checkbox" data-sk="nrmark"${SET.nrmark !== false ? ' checked' : ''}><i></i></label></div></div>
@@ -1064,11 +1083,14 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
     if (!PFA) { if (!pfaBusy) { pfaBusy = true; gt.pfaStatus().then((r) => { PFA = r; pfaBusy = false; if (settingsSec.classList.contains('on')) drawSettings(); }).catch(() => { pfaBusy = false; }); } return ''; }
     if (!PFA.avail) return '';
     const msg = PFAMSG ? `<p class="pfam">${esc(PFAMSG)}</p>` : '';
+    if (PFA.on && PFA.tmp) {
+      return `<div class="pfa"><div class="pfah"><b>Pathfinder account</b><span class="pfaon">Signed in</span></div><p class="pfae">${esc(PFA.name)}: your password was reset to the temporary 123456. Pick a new password to keep using your account. Nothing is saved to your account until you do.</p><div class="pfaf"><input id="pfanpw" type="password" placeholder="New password (8+ characters)" autocomplete="new-password"><input id="pfanpw2" type="password" placeholder="New password again" autocomplete="new-password"><button class="b" data-pfa="setpw">Set new password</button><button class="g" data-pfa="logout">Sign out</button></div>${msg}</div>`;
+    }
     if (PFA.on) {
       const when = PFA.at ? new Date(PFA.at).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '';
-      return `<div class="pfa"><div class="pfah"><b>Pathfinder account</b><span class="pfaon">Signed in</span></div><p class="mute">${esc(PFA.name)} &middot; ${PFA.n} Bungie account${PFA.n === 1 ? '' : 's'} saved${when ? ' &middot; last synced ' + esc(when) : ''}.${PFA.err ? ' <span class="pfae">Last sync did not work: ' + esc(PFA.err) + '</span>' : ''}</p>${msg}<p><button class="g" data-pfa="sync">Sync now</button> <button class="g" data-pfa="logout">Sign out of Pathfinder account</button> <button class="g" data-pfa="del">Delete Pathfinder account</button></p><p class="mute pfan">Every Bungie account you add here is saved to your Pathfinder account, locked with your password before it leaves this device. Removing an account here only removes it from ${GT_HERE}.</p></div>`;
+      return `<div class="pfa"><div class="pfah"><b>Pathfinder account</b><span class="pfaon">Signed in</span></div><p class="mute">${esc(PFA.name)} &middot; ${PFA.n} Bungie account${PFA.n === 1 ? '' : 's'} saved${when ? ' &middot; last synced ' + esc(when) : ''}.${PFA.err ? ' <span class="pfae">Last sync did not work: ' + esc(PFA.err) + '</span>' : ''}</p>${msg}<p><button class="g" data-pfa="sync">Sync now</button> <button class="g" data-pfa="logout">Sign out</button> <button class="g" data-pfa="logoutall">Sign out on all devices</button> <button class="g" data-pfa="del">Delete Pathfinder account</button></p><p class="mute pfan">Every Bungie account you add here is saved to your Pathfinder account, locked with your password before it leaves this device. Removing an account here only removes it from ${GT_HERE}.</p></div>`;
     }
-    return `<div class="pfa"><div class="pfah"><b>Pathfinder account</b><span class="mute">Optional</span></div><p class="mute">Sign in once on another PC, the beta, the website or your phone and all your Bungie accounts (alts too) come with you. Everything works without one.</p>${PFA.out ? '<p class="pfae">Your Pathfinder account sign-in ended. Sign in again to keep syncing.</p>' : ''}<div class="pfaf"><input id="pfanm" type="text" placeholder="Account name" autocomplete="username" autocapitalize="off" spellcheck="false" maxlength="200" value="${esc(PFANM || PFA.name || '')}"><input id="pfapw" type="password" placeholder="Password (8+ characters)" autocomplete="current-password"><button class="b" data-pfa="login">Sign in</button><button class="g" data-pfa="signup">Create account</button></div>${PFARS ? `<div class="pfars"><b>Reset your password with a code</b><p class="mute">Ask Bray for a reset code. Enter your account name above, then the code and a new password here. Bungie accounts saved in your Pathfinder account are cleared, so sign in to Bungie again on devices that are not signed in any more.</p><div class="pfaf"><input id="pfacode" type="text" placeholder="Reset code (ABCD-EFGH-JKLM)" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false" maxlength="20"><input id="pfanpw" type="password" placeholder="New password (8+ characters)" autocomplete="new-password"><button class="b" data-pfa="reset">Set new password</button><button class="g" data-pfa="rsoff">Cancel</button></div></div>` : '<p><button class="g pfalink" data-pfa="rson">Forgot your password? Reset it with a code</button></p>'}${msg}<p class="mute pfan">Your password never leaves this device. Your Bungie sign-ins are locked with it before they are saved, so nobody else can open them, including Pathfinder. If you forget it, you just sign in to Bungie again.</p></div>`;
+    return `<div class="pfa"><div class="pfah"><b>Pathfinder account</b><span class="mute">Optional</span></div><p class="mute">Sign in once on another PC, the beta, the website or your phone and all your Bungie accounts (alts too) come with you. Everything works without one.</p>${PFA.out ? `<p class="pfae">Your Pathfinder account sign-in ended. Sign in again to keep syncing, or <button class="g pfalink" data-pfa="logout">forget ${esc(PFA.name)} on ${GT_HERE}</button>.</p>` : ''}<div class="pfaf"><input id="pfanm" type="text" placeholder="Account name" autocomplete="username" autocapitalize="off" spellcheck="false" maxlength="200" value="${esc(PFANM || PFA.name || '')}"><input id="pfapw" type="password" placeholder="Password (8+ characters)" autocomplete="current-password"><button class="b" data-pfa="login">Sign in</button><button class="g" data-pfa="signup">Create account</button></div>${PFARS ? `<div class="pfars"><b>Reset your password with a code</b><p class="mute">Ask Bray for a reset code. Enter your account name above, then the code and a new password here. Bungie accounts saved in your Pathfinder account are cleared, so sign in to Bungie again on devices that are not signed in any more.</p><div class="pfaf"><input id="pfacode" type="text" placeholder="Reset code (ABCD-EFGH-JKLM)" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false" maxlength="20"><input id="pfanpw" type="password" placeholder="New password (8+ characters)" autocomplete="new-password"><button class="b" data-pfa="reset">Set new password</button><button class="g" data-pfa="rsoff">Cancel</button></div></div>` : '<p><button class="g pfalink" data-pfa="rson">Forgot your password? Reset it with a code</button></p>'}${msg}<p class="mute pfan">Your password never leaves this device. Your Bungie sign-ins are locked with it before they are saved, so nobody else can open them, including Pathfinder. If you forget it, you just sign in to Bungie again.</p></div>`;
   }
   async function pfaAct(a) {
     const nm = ((document.getElementById('pfanm') || {}).value || '').trim(), pw = (document.getElementById('pfapw') || {}).value || '';
@@ -1082,7 +1104,14 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
       if (!confirm('Set a new password for "' + nm + '"?\n\nThe Bungie accounts saved in your Pathfinder account are cleared and saved again from this device. Other devices are signed out of your Pathfinder account.')) return;
       return run('Setting your new password…', async () => { const r = await gt.pfaReset({ name: nm, code, pw: npw }); PFARS = false; return r; });
     }
+    if (a === 'setpw') {
+      const n1 = (document.getElementById('pfanpw') || {}).value || '', n2 = (document.getElementById('pfanpw2') || {}).value || '';
+      if (n1 !== n2) { PFAMSG = 'The two passwords do not match.'; drawSettings(); return; }
+      return run('Setting your new password…', async () => { const r = await gt.pfaSetPw({ pw: n1 }); PFAMSG = ''; return r; });
+    }
     if (a === 'sync') return run('Syncing…', () => gt.pfaSync());
+    if (a === 'logoutall') { if (!confirm('Sign out of your Pathfinder account on every device, including ' + GT_HERE + '?\n\nUse this if you signed in somewhere you should not have. Your Bungie accounts stay signed in on each device, and your saved sign-ins and password stay the same.')) return; return run('Signing out everywhere…', () => gt.pfaLogoutAll()); }
+    if (a === 'logout' && PFA && PFA.out) { PFANM = ''; const i = document.getElementById('pfanm'); if (i) i.value = ''; return run('', () => gt.pfaLogout()); }
     if (a === 'logout') { if (!confirm('Sign out of your Pathfinder account on ' + GT_HERE + '? Your Bungie accounts stay signed in here.')) return; return run('Signing out…', () => gt.pfaLogout()); }
     if (a === 'del') { if (!confirm('Delete your Pathfinder account and the sign-ins saved in it? This cannot be undone. Bungie accounts already on your devices stay signed in.')) return; return run('Deleting…', () => gt.pfaDelete()); }
   }
@@ -1090,26 +1119,33 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
   // window.__gtFlag('name') tells a feature whether to show. Switches are set on the admin page: 'on' (everyone), 'dev' (only
   // Pathfinder accounts with the developer role) or 'off' (nobody, developers included). A switch the admin page has never set
   // uses the default the feature passes (normally true, so nothing disappears if the token service cannot be reached).
-  // Developers can tick "See it as a player" on a 'dev' switch to check what everyone else sees.
+  // Developers can turn off "Show for me" on a 'dev' switch to check what everyone else sees.
   let FLG = { flags: {}, dev: false };
   const devOff = () => { try { const a = JSON.parse(localStorage.getItem('gt_devoff')); return Array.isArray(a) ? a : []; } catch (e) { return []; } };
   window.__gtFlag = (name, dflt) => { const l = FLG.flags[name]; if (!l) return dflt === undefined ? true : !!dflt; if (l === 'on') return true; if (l === 'off') return false; return !!FLG.dev && !devOff().includes(name); };
   window.__gtDev = () => !!FLG.dev;
+  // A feature that is for developers until the admin page says otherwise: no switch (or 'dev') = developer accounts only,
+  // 'on' = everyone, 'off' = nobody. Turning off "Show for me" in Settings > Developer hides it for you too.
+  window.__gtDevFeature = (name) => { const l = FLG.flags[name]; if (l === 'on') return true; if (l === 'off') return false; return !!FLG.dev && !devOff().includes(name); };
   const flagsLoad = () => { if (!window.gt || !gt.flagsGet) return; gt.flagsGet().then((r) => { const was = JSON.stringify(FLG); FLG = { flags: (r && r.flags) || {}, dev: !!(r && r.dev) }; if (JSON.stringify(FLG) !== was) { document.documentElement.toggleAttribute('data-gtdev', FLG.dev); window.dispatchEvent(new Event('gtflags')); if (settingsSec.classList.contains('on')) drawSettings(); if (window.__gtRender) window.__gtRender(); } }).catch(() => {}); };
   setTimeout(flagsLoad, 1500); setInterval(flagsLoad, 6e5);
+  const DEVRN = { from: '', to: '', msg: '', bad: false, busy: false };
   function devCard() {
     if (!FLG.dev) return '';
-    const off = devOff(), names = Object.keys(FLG.flags).sort();
+    const off = devOff(), names = [...new Set([...Object.keys(FLG.flags), ...(window.__gtDevFeatureNames || [])])].sort();
     const lv = { on: 'On for everyone', dev: 'Developers only', off: 'Off for everyone' };
-    const rows = names.map((n) => `<div class="sx"><div class="sxt"><b>${esc(n)}</b><small>${lv[FLG.flags[n]] || esc(FLG.flags[n])}</small></div><div class="sxc">${FLG.flags[n] === 'dev' ? `<label class="mute" style="display:flex;gap:8px;align-items:center">See it as a player <label class="tgl"><input type="checkbox" data-devoff="${esc(n)}"${off.includes(n) ? ' checked' : ''}><i></i></label></label>` : ''}</div></div>`).join('');
+    // "Show for me" (on = you see it, like everyone it is switched on for). Turn it off to see the app the way players do.
+    const rows = names.map((n) => { const lvl = FLG.flags[n] || 'dev'; return `<div class="sx"><div class="sxt"><b>${esc(n)}</b><small>${lv[lvl] || esc(lvl)}${FLG.flags[n] ? '' : ' (not on the admin page yet)'}</small></div><div class="sxc">${lvl === 'dev' ? `<label class="mute" style="display:flex;gap:8px;align-items:center">Show for me <label class="tgl"><input type="checkbox" data-devoff="${esc(n)}"${off.includes(n) ? '' : ' checked'}><i></i></label></label>` : ''}</div></div>`; }).join('');
     const pc = !document.documentElement.classList.contains('gtweb');
     return `<div class="card sc"><h2>Developer</h2><p class="mute">You are signed in with a developer account (${esc((PFA && PFA.name) || '')}). Switches are set on the admin page; changes reach the app within 10 minutes.</p>
       <div class="thh">Feature switches</div>${rows || '<p class="mute">No switches yet. Add them on the admin page.</p>'}
-      <div class="thh">Tools</div><p>${pc ? '<button class="g" data-dev="tools">Open developer tools</button> ' : ''}<button class="g" data-dev="flags">Check switches now</button> <button class="g" data-dev="diag">Copy diagnostics</button></p></div>`;
+      <div class="thh">Tools</div><p>${pc ? '<button class="g" data-dev="tools">Open developer tools</button> ' : ''}<button class="g" data-dev="flags">Check switches now</button> <button class="g" data-dev="diag">Copy diagnostics</button></p>
+      <div class="thh">Rename an account</div><p class="mute">For a name that breaks the rules. The account's password becomes 123456 and they pick a new one when they sign in; their devices are signed out and the Bungie sign-ins saved in it are cleared. ${PFA && PFA.founder ? 'Founder accounts are renamed on the admin page.' : 'You can rename player accounts.'}</p>
+      <div class="pfaf"><input id="devrnf" type="text" placeholder="Current account name" autocapitalize="off" spellcheck="false" maxlength="200" value="${esc(DEVRN.from)}"><input id="devrnt" type="text" placeholder="New account name" autocapitalize="off" spellcheck="false" maxlength="24" value="${esc(DEVRN.to)}"><button class="b" data-dev="rename">${DEVRN.busy ? 'Renaming…' : 'Rename'}</button></div>${DEVRN.msg ? `<p class="admmsg${DEVRN.bad ? ' bad' : ''}">${esc(DEVRN.msg)}</p>` : ''}</div>`;
   }
   settingsSec.addEventListener('change', (e) => {
     const t = e.target.closest && e.target.closest('[data-devoff]'); if (!t) return;
-    const a = devOff().filter((x) => x !== t.dataset.devoff); if (t.checked) a.push(t.dataset.devoff);
+    const a = devOff().filter((x) => x !== t.dataset.devoff); if (!t.checked) a.push(t.dataset.devoff); // off = hidden for you
     try { localStorage.setItem('gt_devoff', JSON.stringify(a)); } catch (er) { /* storage off */ }
     window.dispatchEvent(new Event('gtflags')); if (window.__gtRender) window.__gtRender();
   });
@@ -1117,11 +1153,91 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
     const b = e.target.closest('[data-dev]'); if (!b) return;
     if (b.dataset.dev === 'tools') gt.devTools().catch((er) => alert(clean(er)));
     if (b.dataset.dev === 'flags') { FLG = { flags: {}, dev: FLG.dev }; flagsLoad(); }
+    if (b.dataset.dev === 'rename') {
+      DEVRN.from = ((document.getElementById('devrnf') || {}).value || '').trim(); DEVRN.to = ((document.getElementById('devrnt') || {}).value || '').trim();
+      if (!DEVRN.from || !DEVRN.to || DEVRN.busy) return;
+      if (!confirm('Rename "' + DEVRN.from + '" to "' + DEVRN.to + '"?\n\nTheir password becomes 123456 and they pick a new one when they sign in. Tell them the new name.')) return;
+      DEVRN.busy = true; DEVRN.msg = ''; drawSettings();
+      gt.devRename({ name: DEVRN.from, to: DEVRN.to }).then((r) => { DEVRN.msg = `${DEVRN.from} is now ${DEVRN.to}. ${r.note || ''}`; DEVRN.bad = false; DEVRN.from = ''; DEVRN.to = ''; })
+        .catch((er) => { DEVRN.msg = clean(er); DEVRN.bad = true; }).finally(() => { DEVRN.busy = false; drawSettings(); });
+    }
     if (b.dataset.dev === 'diag') {
       const d = ['Pathfinder ' + (window.__GT_VER__ || ''), 'Here: ' + GT_HERE, 'Style: ' + SET.ui + ' / ' + SET.theme + ' / ' + SET.bg, 'Screen: ' + innerWidth + 'x' + innerHeight + ' @' + devicePixelRatio, 'Switches: ' + JSON.stringify(FLG.flags), 'Player view: ' + JSON.stringify(devOff()), 'Browser: ' + navigator.userAgent].join('\n');
       (navigator.clipboard ? navigator.clipboard.writeText(d) : Promise.reject()).then(() => { b.textContent = 'Copied'; setTimeout(() => { b.textContent = 'Copy diagnostics'; }, 1500); }).catch(() => prompt('Diagnostics', d));
     }
   });
+  // ---- Admin (founder accounts only) ----
+  // The admin page's tools inside the app. Needs the founder role (set on the admin page) and the admin key, which is kept only
+  // in memory until Pathfinder closes. Founders cannot be made or changed from here: that stays on the admin page.
+  const ADM = { ren: '', key: '', on: false, acc: [], fl: {}, q: '', msg: '', code: '', codeFor: '', busy: false, newFl: '' };
+  const admWhen = (t) => (t ? new Date(t).toLocaleString([], { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }) : '-');
+  async function admCall(method, path, body) {
+    const r = await gt.admCall({ method, path, body, key: ADM.key });
+    return r;
+  }
+  async function admLoad() {
+    ADM.busy = true; drawSettings();
+    try { ADM.acc = (await admCall('GET', '/accounts')).accounts || []; ADM.fl = (await admCall('GET', '/flags')).flags || {}; ADM.on = true; ADM.msg = ''; }
+    catch (er) { ADM.msg = clean(er); if (/wrong admin key|too many/i.test(ADM.msg)) { ADM.on = false; ADM.key = ''; } }
+    ADM.busy = false; drawSettings();
+  }
+  function admCard() {
+    if (!PFA || !PFA.founder) return '';
+    if (!ADM.on) return `<div class="card sc"><h2>Admin</h2><p class="mute">Manage Pathfinder accounts and feature switches. Founder accounts only. Enter your admin key; it is kept only until you close Pathfinder.</p>
+      <div class="pfaf"><input id="admkey" type="password" placeholder="Admin key" autocomplete="off" spellcheck="false"><button class="b" data-adm="unlock">${ADM.busy ? 'Checking…' : 'Unlock'}</button></div>${ADM.msg ? `<p class="admmsg bad">${esc(ADM.msg)}</p>` : ''}</div>`;
+    const q = ADM.q.trim().toLowerCase(), RL = { '': 'Player', dev: 'Developer', founder: 'Founder' };
+    const rows = ADM.acc.filter((a) => !q || (a.name || '').toLowerCase().includes(q)).map((a) => `<div class="admr" data-aid="${esc(a.id)}">
+      <div class="admn"><b>${a.name ? esc(a.name) : '<span class="mute">(name not saved yet)</span>'}</b><small>Created ${esc(admWhen(a.created))} &middot; last sign-in ${esc(admWhen(a.lastLogin))}${a.locked ? ' &middot; <span class="bad">locked 15 min</span>' : ''}${a.codeWaiting ? ' &middot; reset code waiting' : ''}${a.tmp ? ' &middot; password 123456' : ''}</small></div>
+      <div class="admc">${a.role === 'founder' ? '<span class="admtag">Founder</span>' : `<select data-adm="role" aria-label="Role for ${esc(a.name || 'account')}"><option value=""${a.role ? '' : ' selected'}>Player</option><option value="dev"${a.role === 'dev' ? ' selected' : ''}>Developer</option></select>`}
+      <button class="g" data-adm="reset">Reset code</button>${a.role === 'founder' ? '' : '<button class="g" data-adm="quick" title="Set the password to 123456">Reset to 123456</button><button class="g" data-adm="rename">Rename</button>'}${a.locked ? '<button class="g" data-adm="unlockacc">Unlock</button>' : ''}${a.codeWaiting ? '<button class="g" data-adm="cancel">Cancel code</button>' : ''}${a.role === 'founder' ? '' : '<button class="g admdel" data-adm="del">Delete</button>'}</div>${ADM.ren === a.id ? `<div class="admc admren"><input type="text" id="admren" maxlength="24" value="${esc(a.name)}" aria-label="New account name" autocapitalize="off" spellcheck="false"><button class="b" data-adm="rensave">Save name</button><button class="g" data-adm="rencancel">Cancel</button><small class="mute">Renaming sets the password to 123456.</small></div>` : ''}</div>`).join('') || '<p class="mute">No accounts.</p>';
+    const fk = Object.keys(ADM.fl).sort();
+    const frows = fk.map((k) => `<div class="admr" data-fk="${esc(k)}"><div class="admn"><b>${esc(k)}</b><input type="text" data-adm="fnote" value="${esc(ADM.fl[k].note || '')}" placeholder="What it is" maxlength="200"></div><div class="admc"><select data-adm="flevel">${[['on', 'On (everyone)'], ['dev', 'Developers only'], ['off', 'Off (nobody)']].map(([v, l]) => `<option value="${v}"${ADM.fl[k].level === v ? ' selected' : ''}>${l}</option>`).join('')}</select><button class="g admdel" data-adm="frm">Remove</button></div></div>`).join('') || '<p class="mute">No switches yet.</p>';
+    return `<div class="card sc"><h2>Admin</h2><p class="mute">Signed in as founder ${esc(PFA.name || '')}. Passwords are never shown here. Founders can only be added or changed on the admin page.</p>
+      ${ADM.msg ? `<p class="admmsg${/^(Could|Wrong|Too|No |Only)/.test(ADM.msg) ? ' bad' : ''}">${esc(ADM.msg)}</p>` : ''}
+      ${ADM.code ? `<div class="admcode"><p>Reset code for <b>${esc(ADM.codeFor)}</b>. It works once, for 48 hours. They enter it in Settings &gt; Accounts &gt; "Forgot your password? Reset it with a code".</p><code>${esc(ADM.code)}</code><p class="mute">Using it clears the Bungie accounts saved in their Pathfinder account and signs their other devices out.</p></div>` : ''}
+      <div class="thh">Accounts (${ADM.acc.length})</div>
+      <div class="pfaf"><input type="search" id="admq" placeholder="Filter by name" value="${esc(ADM.q)}"><input type="text" id="admfind" placeholder="Find by exact name"><button class="g" data-adm="find">Find</button><button class="g" data-adm="reload">${ADM.busy ? 'Loading…' : 'Reload'}</button></div>
+      <div class="adml">${rows}</div>
+      <div class="thh">Feature switches</div><div class="adml">${frows}</div>
+      <div class="pfaf"><input type="text" id="admnewfl" placeholder="new-switch-name" value="${esc(ADM.newFl)}"><button class="g" data-adm="fadd">Add switch</button><button class="b" data-adm="fsave">Save switches</button></div>
+      <p><button class="g" data-adm="lock">Lock admin</button></p></div>`;
+  }
+  settingsSec.addEventListener('click', async (e) => {
+    const b = e.target.closest('[data-adm]'); if (!b || b.tagName === 'SELECT' || b.tagName === 'INPUT') return;
+    const a = b.dataset.adm, row = b.closest('[data-aid]'), acc = row && ADM.acc.find((x) => x.id === row.dataset.aid), nm = (acc && acc.name) || 'this account';
+    const run = async (f, ok) => { try { await f(); if (ok) ADM.msg = ok; } catch (er) { ADM.msg = clean(er); if (/wrong admin key/i.test(ADM.msg)) { ADM.on = false; ADM.key = ''; } } drawSettings(); };
+    if (a === 'unlock') { ADM.key = (document.getElementById('admkey') || {}).value || ''; if (!ADM.key) return; ADM.msg = ''; admLoad(); return; }
+    if (a === 'lock') { ADM.key = ''; ADM.on = false; ADM.code = ''; ADM.msg = ''; drawSettings(); return; }
+    if (a === 'reload') { ADM.code = ''; admLoad(); return; }
+    if (a === 'find') { const n = ((document.getElementById('admfind') || {}).value || '').trim(); if (!n) return; return run(async () => { const r = await admCall('POST', '/find', { name: n }); const x = r.account; if (!x.name) x.name = n; if (!ADM.acc.some((y) => y.id === x.id)) ADM.acc.unshift(x); ADM.q = ''; }, 'Found it.'); }
+    if (a === 'reset' && acc) { if (!confirm('Make a one-time reset code for ' + nm + '?')) return; return run(async () => { const r = await admCall('POST', '/reset', { id: acc.id }); ADM.code = r.code; ADM.codeFor = nm; acc.codeWaiting = true; }, ''); }
+    if (a === 'quick' && acc) { if (!acc.name) { ADM.msg = 'Find this account by its name first.'; drawSettings(); return; } if (!confirm('Set the password for ' + nm + ' to 123456?\n\nTheir saved Bungie sign-ins are cleared, every device is signed out, and they must pick a new password when they sign in.')) return; ADM.msg = 'Working…'; drawSettings(); return run(async () => { const r = await admCall('POST', '/quickreset', { id: acc.id, name: acc.name }); Object.assign(acc, r.account); }, nm + ': the password is now 123456. They pick a new one when they sign in.'); }
+    if (a === 'rename' && acc) { if (!acc.name) { ADM.msg = 'Find this account by its name first.'; drawSettings(); return; } ADM.ren = acc.id; ADM.msg = ''; drawSettings(); setTimeout(() => { const i = document.getElementById('admren'); if (i) { i.focus(); i.select(); } }, 0); return; }
+    if (a === 'rencancel') { ADM.ren = ''; drawSettings(); return; }
+    if (a === 'rensave' && acc) { const to = ((document.getElementById('admren') || {}).value || '').trim(); if (!to || to === acc.name) { ADM.ren = ''; drawSettings(); return; } if (!confirm('Rename ' + nm + ' to ' + to + '?\n\nRenaming also sets the password to 123456; they pick a new one when they sign in.')) return; ADM.ren = ''; ADM.msg = 'Working…'; drawSettings(); return run(async () => { const r = await admCall('POST', '/rename', { id: acc.id, to }); ADM.acc = ADM.acc.filter((x) => x.id !== acc.id); ADM.acc.unshift(r.account); }, nm + ' is now ' + to + '. The password is 123456 until they pick a new one.'); }
+    if (a === 'cancel' && acc) return run(async () => { await admCall('POST', '/cancelreset', { id: acc.id }); acc.codeWaiting = false; if (ADM.codeFor === nm) ADM.code = ''; }, 'Reset code cancelled.');
+    if (a === 'unlockacc' && acc) return run(async () => { Object.assign(acc, (await admCall('POST', '/unlock', { id: acc.id })).account); }, nm + ' is unlocked.');
+    if (a === 'del' && acc) { if (!confirm('Delete ' + nm + ' and the Bungie sign-ins saved in it? This cannot be undone.')) return; return run(async () => { await admCall('POST', '/delete', { id: acc.id }); ADM.acc = ADM.acc.filter((x) => x.id !== acc.id); }, nm + ' was deleted.'); }
+    if (a === 'fadd') { const k = ((document.getElementById('admnewfl') || {}).value || '').trim().toLowerCase(); if (!/^[a-z0-9][a-z0-9_-]{0,39}$/.test(k)) { ADM.msg = 'Switch names are lowercase letters, numbers, - and _.'; drawSettings(); return; } if (!ADM.fl[k]) ADM.fl[k] = { level: 'dev', note: '' }; ADM.newFl = ''; ADM.msg = 'Added. Press Save switches to keep it.'; drawSettings(); return; }
+    if (a === 'frm') { const k = b.closest('[data-fk]').dataset.fk; delete ADM.fl[k]; ADM.msg = 'Removed. Press Save switches to keep it.'; drawSettings(); return; }
+    if (a === 'fsave') return run(async () => { ADM.fl = (await admCall('PUT', '/flags', { flags: ADM.fl })).flags || {}; FLG = { flags: {}, dev: FLG.dev }; flagsLoad(); }, 'Switches saved. Other copies of Pathfinder pick them up within 10 minutes.');
+  });
+  settingsSec.addEventListener('change', async (e) => {
+    const t = e.target; if (!t.dataset || !t.dataset.adm) return;
+    if (t.dataset.adm === 'role') {
+      const row = t.closest('[data-aid]'), acc = ADM.acc.find((x) => x.id === row.dataset.aid); if (!acc) return;
+      try { Object.assign(acc, (await admCall('POST', '/role', { id: acc.id, role: t.value })).account); ADM.msg = (acc.name || 'The account') + ' is now ' + (t.value === 'dev' ? 'a developer' : 'a player') + '.'; } catch (er) { ADM.msg = clean(er); }
+      drawSettings();
+    }
+    if (t.dataset.adm === 'flevel') { const k = t.closest('[data-fk]').dataset.fk; if (ADM.fl[k]) ADM.fl[k].level = t.value; }
+  });
+  settingsSec.addEventListener('input', (e) => {
+    const t = e.target;
+    if (t.id === 'admq') { ADM.q = t.value; const pos = t.selectionStart; drawSettings(); const n = document.getElementById('admq'); if (n) { n.focus(); n.setSelectionRange(pos, pos); } }
+    if (t.id === 'admnewfl') ADM.newFl = t.value;
+    if (t.dataset && t.dataset.adm === 'fnote') { const k = t.closest('[data-fk]').dataset.fk; if (ADM.fl[k]) ADM.fl[k].note = t.value; }
+  });
+  settingsSec.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.id === 'admkey') { e.preventDefault(); const b = settingsSec.querySelector('[data-adm=unlock]'); if (b) b.click(); } });
   const acctNs = (mid, prim) => (prim && mid && String(mid) !== String(prim) ? '@' + mid : '');
   function afterAcct(r) {
     if (r && r.reload) { location.reload(); return; }
@@ -1162,10 +1278,12 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
     const sortList = `<div class="sortl">${SET.sortkeys.map((q, i) => `<div class="sri${q.on ? ' on' : ''}" draggable="true" data-si="${i}"><span class="grip" title="Drag to reorder">&#8942;&#8942;</span><label><input type="checkbox" data-sc="${i}"${q.on ? ' checked' : ''}> ${esc((SORTK.find((z) => z[0] === q.k) || [0, q.k])[1])}</label><button class="g" data-sd="${i}" title="${q.d === 1 ? 'Default order. Click to flip it' : 'Flipped. Click to go back'}">${q.d === 1 ? '&#9650;' : '&#9660;'}</button></div>`).join('')}</div>`;
     const cst = [0, 1, 2].map((c) => `<div class="cstr"><b>${CL[c]}</b>${CSTN.map((n, i) => `<button class="chip${SET.cst[c][i] ? ' on' : ''}" data-cst="${c}:${i}">${n}</button>`).join('')}</div>`).join('');
     const navL = window.__gtnav ? window.__gtnav.list() : [];
-    const tabsCard = navL.length ? `<div class="sxtabs"><div class="thh">Tabs</div><p class="mute">Turn off the tabs you don't use. The bar re-fits the rest. Inventory and Settings always stay.</p><div class="navtg">${navL.map(([id, n, h, lock]) => `<button class="chip${h ? '' : ' on'}" data-navt="${esc(id)}"${lock ? ' disabled title="Always shown"' : ''}>${esc(n)}</button>`).join('')}</div></div>` : '';
+    // Tabs: tick the ones to show and put them in the order you like (drag, or the arrows). The bar fills from the top of the list.
+    const tabsCard = navL.length ? `<div class="sxtabs"><div class="thh">Tabs</div><p class="mute">Untick the tabs you don't use and drag them into the order you like. The bar shows them from the top of the list; any that don't fit go under More. Inventory and Settings always stay.</p><div class="sortl navl">${navL.map(([id, n, h, lock], i) => `<div class="sri${h ? '' : ' on'}" draggable="true" data-ni="${esc(id)}"><span class="grip" title="Drag to reorder">&#8942;&#8942;</span><label><input type="checkbox" data-navc="${esc(id)}"${h ? '' : ' checked'}${lock ? ' disabled title="Always shown"' : ''}> ${esc(n)}</label><button class="g" data-navm="${esc(id)}" data-d="-1"${i ? '' : ' disabled'} title="Move up" aria-label="Move ${esc(n)} up">&#9650;</button><button class="g" data-navm="${esc(id)}" data-d="1"${i < navL.length - 1 ? '' : ' disabled'} title="Move down" aria-label="Move ${esc(n)} down">&#9660;</button></div>`).join('')}</div>${window.__gtnav.custom && window.__gtnav.custom() ? '<p><button class="g" data-navreset="1">Reset tab order</button></p>' : ''}</div>` : '';
     const acct = `<div class="card sc"><h2>Accounts</h2><p class="mute">${D && D.name ? 'Signed in as <b>' + esc(D.name) + '</b>.' : 'Signed in with Bungie.'} Add your alts, or a friend's account if they sign in here themselves, and switch between them. Switching ${window.__GT_WEB__ ? 'reloads the page' : 'restarts the app'}. Tags and notes are shared; loadouts are kept per account.</p><div class="acl">${aclHTML()}</div>${pfaHTML()}${syncHTML(sx)}<p><button class="b" data-sa="addacct">Add another account</button> <button class="g" data-sa="out">Sign out of this account</button></p>${window.__GT_WEB__ ? '<p class="mute" style="font-size:12px">If Bungie signs you straight back in as the same account, sign out on bungie.net first, then press Add another account again.</p>' : ''}</div>`;
     settingsSec.innerHTML = `<div class="setgrid">
     <div class="card sc"><h2>Item display</h2>${pv}
+      ${sx('Interface scale', 'Makes everything bigger or smaller. A page that would not fit the window at that size is shown as large as fits.', rng('scale', 80, 140, '%'))}
       ${sx('Item size', 'An item size of 50px looks sharpest.', rng('tile', 32, 72, 'px'))}
       ${sx('Show power level on items', '', tgl('power'))}
       ${sx('Show ornaments on item tiles', 'Off shows the plain weapon or armor art instead of its ornament.', tgl('ornaments'))}
@@ -1174,6 +1292,10 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
       ${sx('Custom stat total', 'Pick the armor stats you care about for each class. The total shows in the item pop-up, and you can search customtotal:&gt;=60.', cst, true)}
     </div>
     <div class="card sc"><h2>Inventory display</h2>
+      ${sx('Open the app on', '', opt('starttab', [['vault', 'Inventory'], ['home', 'Home'], ['loadouts', 'Loadouts'], ['activity', 'Activity'], ['last', 'The last tab I used']]))}
+      ${sx('Show emblems on characters', '', tgl('emblems'))}
+      ${sx('Show postmaster', '', tgl('postmaster'))}
+      ${sx('Tighter spacing', 'Packs items, rows and sections closer together so more fits on screen.', tgl('compact'))}
       ${sx('Single-character view', 'Show only the most recently played character. Items held by the others appear with the vault if this character can use them.', tgl('single'))}
       ${sx('Sort characters by', '', csort + charList, true)}
       ${sx('Group vault weapons by', '', opt('vgroup', [['none', 'None'], ['type', 'Type'], ['rarity', 'Rarity'], ['element', 'Element'], ['tag', 'Tag']]))}
@@ -1205,20 +1327,14 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
       ${sx('Animations', 'Page fades, cards easing in and hover lifts. Off turns every animation off.', opt('anim', [['off', 'Off'], ['subtle', 'Subtle'], ['full', 'Full']]))}
       ${sx('Activity pictures on cards', 'The raid, dungeon and activity art behind cards on Home, Activity and Rotations.', tgl('cardart'))}
       ${sx('Glow strength', 'The soft colored glow around activity cards: purple for raids, bronze for dungeons, and so on.', rng('glow', 0, 100, '%'))}
-    </div>
-    <div class="card sc"><h2>Display</h2>
-      ${sx('Interface scale', 'Makes everything bigger or smaller. A page that would not fit the window at that size is shown as large as fits.', rng('scale', 80, 140, '%'))}
-      ${sx('Open the app on', '', opt('starttab', [['vault', 'Inventory'], ['home', 'Home'], ['loadouts', 'Loadouts'], ['activity', 'Activity'], ['last', 'The last tab I used']]))}
-      ${sx('Show emblems on characters', '', tgl('emblems'))}
-      ${sx('Show postmaster', '', tgl('postmaster'))}
-      ${sx('Tighter spacing', 'Packs items, rows and sections closer together so more fits on screen.', tgl('compact'))}
       ${tabsCard}
-      <p><button class="g" data-sa="reset">Reset display settings</button></p>
-    </div>${window.matchMedia && matchMedia('(pointer:coarse)').matches && innerWidth < 900 ? '' : keysCard()}${wlc}${acct}${devCard()}</div>`; void upd; // Updates now live in About & help (news.js)
+      <div class="thh">Start over</div>
+      <p><button class="g" data-sa="reset">Reset all settings</button> <span class="mute">Puts every setting on this page back to its default. Your accounts, tags, notes, loadouts and wish lists stay.</span></p>
+    </div>${window.matchMedia && matchMedia('(pointer:coarse)').matches && innerWidth < 900 ? '' : keysCard()}${wlc}${acct}${devCard()}${admCard()}</div>`; void upd; // Updates now live in About & help (news.js)
   }
   // Settings cards in even columns: each card, in a sensible order, goes into whichever column is shortest, so no side runs
   // far longer than the other. Re-done when cards are added (Farming, Reminders... come from another file) or the window resizes.
-  const SORD = ['Accounts', 'Item display', 'Inventory display', 'Appearance', 'Display', 'Wish lists', 'Farming', 'Reminders', 'Keyboard shortcuts', 'Backup', 'About & help', 'Developer'];
+  const SORD = ['Accounts', 'Item display', 'Inventory display', 'Appearance', 'Wish lists', 'Farming', 'Reminders', 'Keyboard shortcuts', 'Backup', 'About & help', 'Developer', 'Admin'];
   // Settings as a menu (like a browser's settings page): the sections are listed on the left and only the one you pick is shown.
   // Cards come from several files (Farming, Reminders, About & help...), so this runs again whenever new cards show up.
   const SICO = {
@@ -1234,6 +1350,7 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
     'Backup': '<path d="M7 18a5 5 0 01-.6-10A6 6 0 0118 9a4.5 4.5 0 01-1 9z"/><path d="M12 11v6M9.5 13.5L12 11l2.5 2.5"/>',
     'About & help': '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/>',
     'Developer': '<path d="M8 8l-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/>',
+    'Admin': '<path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
   };
   const sico = (t) => `<svg viewBox="0 0 24 24" aria-hidden="true">${SICO[t] || '<circle cx="12" cy="12" r="8"/>'}</svg>`;
   let balT = 0, SSEC = (() => { try { return localStorage.getItem('gt_setsec') || 'Accounts'; } catch (e) { return 'Accounts'; } })();
@@ -1259,7 +1376,7 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
       const on = nav.querySelector('.sni.on'); if (on && nav.scrollWidth > nav.clientWidth + 2) nav.scrollLeft = Math.max(0, on.offsetLeft - 12); // phones: the row scrolls, keep the open section in view
     }
   }
-  settingsSec.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('.sni,.acw')) { e.preventDefault(); e.target.click(); } });
+  settingsSec.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('.sni,.acw,[data-wp]')) { e.preventDefault(); e.target.click(); } });
   settingsSec.addEventListener('click', (e) => {
     const b = e.target.closest('[data-ssec]'); if (!b) return;
     SSEC = b.dataset.ssec; try { localStorage.setItem('gt_setsec', SSEC); } catch (er) { /* remembered for now */ }
@@ -1300,7 +1417,11 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
     const ky = e.target.closest('[data-ky]'); if (ky) { keyEdit = keyEdit === ky.dataset.ky ? '' : ky.dataset.ky; drawSettings(); return; }
     if (keyEdit) { keyEdit = ''; drawSettings(); }
     const wp = e.target.closest('[data-wp]');
-    if (wp) { const u = WLPRE[+wp.dataset.wp][1]; if ((WL && WL.lists || []).some((l) => l.url === u)) return; await wlDo({ url: u }); return; }
+    if (wp) {
+      const u = WLPRE[+wp.dataset.wp][1], on = ((WL && WL.lists) || []).find((l) => wlKey(l.url) === wlKey(u));
+      if (on) { try { const o = await gt.wlRemove({ id: on.id }); WL = o && o.lists && o.lists.length ? o : null; WLMSG = 'Turned off.'; window.dispatchEvent(new Event('gtwl')); } catch (er) { WLMSG = wlClean(er); } WLV++; drawSettings(); if (window.__gtRender) window.__gtRender(); return; }
+      await wlDo({ url: u }); return;
+    }
     const co = e.target.closest('[data-co]');
     if (co) { const ids = sortedChars().map((c) => c.id), i = ids.indexOf(co.dataset.co), j = i + +co.dataset.d; if (i >= 0 && j >= 0 && j < ids.length) { [ids[i], ids[j]] = [ids[j], ids[i]]; SET.charorder = ids; saveSet(); drawSettings(); if (window.__gtRender) window.__gtRender(); } return; }
     const sdb = e.target.closest('[data-sd]');
@@ -1311,7 +1432,8 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
     const acw = e.target.closest('[data-acc]'); if (acw) { pickAcc(acw.dataset.acc); return; }
     const uis = e.target.closest('[data-uis]'); if (uis) { switchUi(uis.dataset.uis); applySet(); saveSet(); drawSettings(); return; }
     const th = e.target.closest('[data-th]'); if (th) { pickTheme(th.dataset.th); return; }
-    const nt = e.target.closest('[data-navt]'); if (nt && window.__gtnav && !nt.disabled) { const cur = window.__gtnav.list().find((x) => x[0] === nt.dataset.navt); if (cur) window.__gtnav.set(cur[0], !cur[2]); drawSettings(); return; }
+    const nm = e.target.closest('[data-navm]'); if (nm && window.__gtnav && !nm.disabled) { const L = window.__gtnav.list().map((x) => x[0]), i = L.indexOf(nm.dataset.navm), d = +nm.dataset.d, j = i + d; if (i >= 0 && j >= 0 && j < L.length) { window.__gtnav.move(L[i], d < 0 ? L[j] : L[j + 1] || null); drawSettings(); const b = settingsSec.querySelector(`[data-navm="${CSS.escape(L[i])}"][data-d="${d}"]`); if (b && !b.disabled) b.focus(); } return; }
+    if (e.target.closest('[data-navreset]') && window.__gtnav) { window.__gtnav.resetOrder(); drawSettings(); return; }
     const asw = e.target.closest('[data-acsw]');
     if (asw) { try { localStorage.setItem('gt_acct_ns', acctNs(asw.dataset.acsw, ACL && ACL.prim)); } catch (er) { /* storage off */ } try { afterAcct(await gt.acctSwitch({ mid: asw.dataset.acsw })); } catch (er) { alert(clean(er)); } return; }
     const arm = e.target.closest('[data-acrm]');
@@ -1342,12 +1464,13 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
       } catch (er) { WLMSG = wlClean(er); }
       WLV++; drawSettings(); if (window.__gtRender) window.__gtRender(); return;
     }
-    if (a === 'reset') { SET = fresh(); fixSort(); applySet(); saveSet(); drawSettings(); if (window.__gtRender) window.__gtRender(); if (window.gt && gt.farmSet) gt.farmSet({ spaces: SET.farmspaces }).catch(() => {}); }
+    if (a === 'reset') { if (!confirm('Put every setting back to its default? Your accounts, tags, notes, loadouts and wish lists stay.')) return; SET = fresh(); fixSort(); applySet(); saveSet(); drawSettings(); if (window.__gtRender) window.__gtRender(); if (window.gt && gt.farmSet) gt.farmSet({ spaces: SET.farmspaces }).catch(() => {}); }
     else if (a === 'upd') window.gt.updCheck();
     else if (a === 'inst') window.gt.updInstall();
   });
   settingsSec.addEventListener('change', (e) => {
     if (e.target.matches && e.target.matches('[data-syncon]') && window.__gtsync) { window.__gtsync.set(e.target.checked); return; }
+    if (e.target.dataset && e.target.dataset.navc && window.__gtnav) { window.__gtnav.set(e.target.dataset.navc, !e.target.checked); drawSettings(); return; }
     const c = e.target.dataset && e.target.dataset.sc;
     if (c !== undefined) { SET.sortkeys[+c].on = e.target.checked; saveSet(); drawSettings(); if (window.__gtRender) window.__gtRender(); }
   });
@@ -1359,7 +1482,17 @@ body:has(#vsheet .dp) #gtnfab{visibility:hidden}
     const to = +r.dataset.si, from = sdrag; sdrag = -1;
     if (to !== from) { const [m] = SET.sortkeys.splice(from, 1); SET.sortkeys.splice(to, 0, m); saveSet(); drawSettings(); if (window.__gtRender) window.__gtRender(); }
   });
-  settingsSec.addEventListener('dragend', () => { sdrag = -1; });
+  settingsSec.addEventListener('dragend', () => { sdrag = -1; ndrag = ''; });
+  // Dragging tabs in Settings > Appearance > Tabs: drop on a tab to put the dragged one there.
+  let ndrag = '';
+  settingsSec.addEventListener('dragstart', (e) => { const r = e.target.closest && e.target.closest('[data-ni]'); if (!r) return; ndrag = r.dataset.ni; try { e.dataTransfer.setData('text/plain', 'tab'); e.dataTransfer.effectAllowed = 'move'; } catch (er) { /* ignore */ } });
+  settingsSec.addEventListener('dragover', (e) => { if (ndrag && e.target.closest('[data-ni]')) e.preventDefault(); });
+  settingsSec.addEventListener('drop', (e) => {
+    const r = e.target.closest('[data-ni]'); if (!r || !ndrag || !window.__gtnav) return; e.preventDefault();
+    const L = window.__gtnav.list().map((x) => x[0]), from = L.indexOf(ndrag), to = L.indexOf(r.dataset.ni), id = ndrag; ndrag = '';
+    if (from < 0 || to < 0 || from === to) return;
+    window.__gtnav.move(id, from < to ? L[to + 1] || null : L[to]); drawSettings();
+  });
   const CSSONLY = new Set(['accent', 'bgdim', 'tile', 'scale', 'glow']);
   let cssRaf = 0, cssSave = 0;
   settingsSec.addEventListener('input', (e) => {
@@ -1843,7 +1976,7 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
       const tb = e.target.closest('[data-jt]'); if (tb) { JTAB = tb.dataset.jt; junkOpen(); return; }
       const cb = e.target.closest('[data-jc]'); if (cb) { if (cb.checked) JSEL.add(cb.dataset.jc); else JSEL.delete(cb.dataset.jc); junkOpen(true); return; }
       const b = e.target.closest('[data-jk]'), r = e.target.closest('[data-jid]');
-      if (r && !b) { m.remove(); openPop(r.dataset.jid); return; }
+      if (r && !b) { e.stopPropagation(); m.remove(); goItem(r.dataset.jid); return; }
       if (!b || b.disabled) return;
       const k = b.dataset.jk;
       if (k === 'x') { m.remove(); return; }
@@ -1872,13 +2005,21 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
   let GTAB = 'S';
   const GTABS = [['S', 'God rolls', 'Rolls your wish lists call a god roll. Keep these.'], ['A', 'Keepers', 'Rolls on your wish lists (thumbs up). Keep these.'], ['CD', 'Not keepers', 'Your lists rate these weapons and this copy is not one of their rolls (or is a trash roll). Safe to dismantle unless you use it.'], ['?', 'Not yet rated', 'No wish list mentions these weapons yet, so keep them until you check them.']];
   const GCOL = { S: '#e8b84a', A: '#4caf50', C: '#8b8f97', D: '#d9534f', '?': '#ffd27a' };
-  function grfOpen() {
-    let m = g('junkm'); const had = !!m; if (m) m.remove();
-    if (!WL) { setNote('Add a wish list first (Settings, Wish lists): the god roll finder grades your weapons with it.'); return; }
+  // Opened from the magnifying glass next to the vault refresh, the G key, or Settings. The button and G also close it,
+  // and so do Esc, the X and clicking outside it. While it is open the page behind it does not scroll.
+  const grfClose = () => { const m = g('junkm'); if (m) m.remove(); };
+  const grfToggle = () => { const m = g('junkm'); if (m && m.classList.contains('grf')) { m.remove(); return; } if (sel) { sel = null; renderPop(); } grfOpen(); };
+  function grfOpen() { grfRender(null); }
+  // The finder draws as a window over the page (host = null) or inside the God rolls tab (host = that page).
+  function grfRender(host) {
+    let m = host ? null : g('junkm'); const had = !!m; if (m) m.remove();
+    if (host && !D) { host.innerHTML = '<div class="jk grfp"><div class="jkh"><b>God rolls</b></div><p class="mute">Sign in on the Inventory tab first.</p></div>'; return; }
+    if (!WL) { if (host) host.innerHTML = '<div class="jk grfp"><div class="jkh"><b>God rolls</b></div><p class="mute">Add a wish list first (Settings, Wish lists): every weapon you own is graded with your wish lists.</p></div>'; else setNote('Add a wish list first (Settings, Wish lists): the god roll finder grades your weapons with it.'); return; }
     const ws = D.items.filter((x) => WEAPON.has(x.b) && x.r === 'Legendary' && x.pk && !x.pm);
     const by = { S: [], A: [], CD: [], '?': [] };
     ws.forEach((x) => { const gr = grade(x); (by[gr === 'C' || gr === 'D' ? 'CD' : gr]).push({ x, gr }); });
     Object.values(by).forEach((a) => a.sort((p, q2) => String(p.x.n).localeCompare(q2.x.n) || (q2.x.p || 0) - (p.x.p || 0)));
+    if (!GTABS.some((t) => t[0] === GTAB)) GTAB = 'S';
     const list = by[GTAB] || [], T = TAGS(), info = GTABS.find((t) => t[0] === GTAB);
     const whereTxt = (o) => { if (o.loc === 'vault') return 'Vault'; const c = D.chars.find((k) => k.id === o.loc); return c ? CL[c.cls] || 'Guardian' : ''; };
     const why = (o) => {
@@ -1888,21 +2029,32 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
       return o.gr === 'D' ? 'Trash roll on your wish list' : o.gr === '?' ? 'No wish list has this weapon yet' : 'Not one of the wish list rolls for this weapon';
     };
     const junkable = list.filter((o) => !['favorite', 'keep', 'junk'].includes(T[o.x.id]) && !o.x.e);
-    m = document.createElement('div'); m.id = 'junkm'; m.className = 'grf' + (had ? ' noan' : '');
-    m.innerHTML = `<div class="jk"><div class="jkh"><b>God roll finder</b><span class="mute">${ws.length} legendary weapons graded with your wish lists</span><button class="g" data-gk="x" title="Close">&#10005;</button></div>
+    m = host || document.createElement('div'); if (!host) { m.id = 'junkm'; m.className = 'grf' + (had ? ' noan' : ''); }
+    const redraw = () => (host ? grfRender(host) : grfOpen()), close = () => { if (!host) m.remove(); };
+    m.innerHTML = `<div class="jk${host ? ' grfp' : ''}"><div class="jkh"><b>${host ? 'God rolls' : 'God roll finder'}</b><span class="mute">${ws.length} legendary weapons graded with your wish lists</span>${host ? '' : '<button class="g" data-gk="x" title="Close">&#10005;</button>'}</div>
 <div class="jkt">${GTABS.map(([k, lbl]) => `<button data-gt="${k}" class="${k === GTAB ? 'on' : ''}"><em class="grb" style="--gc:${GCOL[k[0]]}">${k === 'CD' ? 'C/D' : k}</em> ${esc(lbl)} <i>${by[k].length}</i></button>`).join('')}</div>
 <p class="mute jkd">${esc(info[2])} Click a weapon to see its perks; <b>Apply Perks</b> in its pop-up puts the wish list perks in.</p>
 ${list.length ? `<div class="jkl">${list.map((o) => `<div class="jkr" data-jid="${esc(o.x.id)}"><em class="grb" style="--gc:${GCOL[o.gr]}">${o.gr}</em>${tile(o.x)}<div><b>${esc(o.x.n)}</b><small>${esc(why(o))}</small></div><span class="mute">${esc(whereTxt(o.x))}</span></div>`).join('')}</div>
 ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="junk">Tag ${junkable.length} as junk</button> <span class="mute">Skips equipped items and anything tagged favorite or keep.</span></p>` : ''}` : `<p class="jke"><b>${GTAB === '?' ? 'Every weapon you own is rated.' : 'Nothing here.'}</b></p>`}</div>`;
     m.onclick = (e) => {
-      if (e.target === m) { m.remove(); return; }
-      const tb = e.target.closest('[data-gt]'); if (tb) { GTAB = tb.dataset.gt; grfOpen(); return; }
+      if (!host && e.target === m) { m.remove(); return; }
+      // Only the finder's own tab buttons: the page itself also carries data-gt (the colour theme), which every other click reached.
+      const tb = e.target.closest('button[data-gt]'); if (tb && m.contains(tb) && GTABS.some((t) => t[0] === tb.dataset.gt)) { GTAB = tb.dataset.gt; redraw(); return; }
       const b = e.target.closest('[data-gk]');
-      if (b && b.dataset.gk === 'x') { m.remove(); return; }
-      if (b && b.dataset.gk === 'junk') { const o = TAGS(); junkable.forEach((q2) => { o[q2.x.id] = 'junk'; }); saveTAGS(o); renderGrid(); setNote(junkable.length + ' weapons tagged junk.'); grfOpen(); return; }
-      const r = e.target.closest('[data-jid]'); if (r) { m.remove(); openPop(r.dataset.jid); }
+      if (b && b.dataset.gk === 'x') { close(); return; }
+      if (b && b.dataset.gk === 'junk') { const o = TAGS(); junkable.forEach((q2) => { o[q2.x.id] = 'junk'; }); saveTAGS(o); renderGrid(); setNote(junkable.length + ' weapons tagged junk.'); redraw(); return; }
+      // In the God rolls tab the weapon's pop-up opens right there, beside it; from the finder window it opens in the Inventory.
+      const r = e.target.closest('[data-jid]'); if (r) { e.stopPropagation(); if (host && window.__gtx && window.__gtx.openHere) window.__gtx.openHere(r.dataset.jid, r.querySelector('.vt') || r); else { close(); goItem(r.dataset.jid); } }
     };
-    document.body.appendChild(m);
+    if (!host) document.body.appendChild(m);
+  }
+  window.__gtGrfInto = (host) => grfRender(host);
+  // Shows a weapon picked in a list (god roll finder, junk finder): its tile is scrolled into view and its pop-up opens beside it.
+  function goItem(id) {
+    if (!sec.classList.contains('on')) show('vault');
+    const t = sec.querySelector('.vt[data-id="' + CSS.escape(id) + '"]');
+    if (t) { const r = t.getBoundingClientRect(); if (r.top < 70 || r.bottom > innerHeight - 20) t.scrollIntoView({ block: 'center' }); t.classList.add('gtflash'); setTimeout(() => t.classList.remove('gtflash'), 1400); }
+    setTimeout(() => openPop(id, t || undefined), 40);
   }
   window.__gtgrf = () => { if (D) grfOpen(); };
   const SV_UP = '<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.3l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>';
@@ -2132,7 +2284,7 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
     const vgrid = top3.map(cell).join('') + vcell + `<span class="vcm" title="Consumables and materials">${SV_TRI}${kinds.size}/50<div class="mpop"><h4>Material counts</h4><div class="mpg">${mpop}</div></div></span><span title="Modifications">${SV_MODS}${modsN}/50</span>`;
     const maxAll = Math.max(0, ...vis.map(maxPow));
     const lastP = D.chars.reduce((m, c) => Math.max(m, c.dp || 0), 0);
-    const chH = vis.map((c) => `<div class="ch${SET.emblems && c.em ? ' em' : ''}" style="--cc:${CC[c.cls] || '#3a3d43'}"><div class="chb"><div class="cht" style="${SET.emblems && c.em ? `background-image:linear-gradient(90deg,rgba(0,0,0,.05),rgba(0,0,0,.45)),url(${esc(icon(c.em))})` : ''}">${lastP && c.dp === lastP ? '<i class="chn" title="Last played"></i>' : ''}<div class="chnm"><b>${esc(CL[c.cls] || 'Guardian')}</b>${c.tt ? `<small class="ttl${c.gl ? ' gld' : ''}">${esc(c.tt)}${c.gl ? SV_SEAL : ''}</small>` : ''}</div><span class="chp" title="Light level">${SV_LIGHT}${c.light}</span></div><button class="chm" data-act="chmenu" data-c="${esc(c.id)}" title="Character menu">&#8942;</button></div><div class="chr"><span class="chx" title="Highest power level you could reach with the gear you own">${SV_HELM}${maxPow(c)}</span><span class="chs">${(c.sb || []).map((q) => `<span class="cbn" title="${esc((q.sn ? q.sn + ' - ' : '') + q.n + (q.d ? '\n' + q.d : ''))}"><img src="${esc(icon(q.i))}" alt="" draggable="false"></span>`).join('')}</span></div>${armorStats(c)}</div>`).join(''), vH = `<div class="ch vlt"><div class="chb"><div class="cht vh"><svg class="vlg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2"><circle cx="16" cy="16" r="12"/><circle cx="16" cy="16" r="6"/><path d="M16 4v6M16 22v6M4 16h6M22 16h6" stroke-linecap="round"/></svg><div class="chnm"><b>Vault</b></div><span class="chp" title="Highest power level you could reach">${SV_LIGHT}${maxAll}</span><button class="vrf${qload ? ' spin' : ''}" data-act="qrefresh" title="Reload your vault from Bungie (R)"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button></div></div><div class="vcg">${vgrid}</div></div>`;
+    const chH = vis.map((c) => `<div class="ch${SET.emblems && c.em ? ' em' : ''}" style="--cc:${CC[c.cls] || '#3a3d43'}"><div class="chb"><div class="cht" style="${SET.emblems && c.em ? `background-image:linear-gradient(90deg,rgba(0,0,0,.05),rgba(0,0,0,.45)),url(${esc(icon(c.em))})` : ''}">${lastP && c.dp === lastP ? '<i class="chn" title="Last played"></i>' : ''}<div class="chnm"><b>${esc(CL[c.cls] || 'Guardian')}</b>${c.tt ? `<small class="ttl${c.gl ? ' gld' : ''}">${esc(c.tt)}${c.gl ? SV_SEAL : ''}</small>` : ''}</div><span class="chp" title="Light level">${SV_LIGHT}${c.light}</span></div><button class="chm" data-act="chmenu" data-c="${esc(c.id)}" title="Character menu">&#8942;</button></div><div class="chr"><span class="chx" title="Highest power level you could reach with the gear you own">${SV_HELM}${maxPow(c)}</span><span class="chs">${(c.sb || []).map((q) => `<span class="cbn" title="${esc((q.sn ? q.sn + ' - ' : '') + q.n + (q.d ? '\n' + q.d : ''))}"><img src="${esc(icon(q.i))}" alt="" draggable="false"></span>`).join('')}</span></div>${armorStats(c)}</div>`).join(''), vH = `<div class="ch vlt"><div class="chb"><div class="cht vh"><svg class="vlg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2"><circle cx="16" cy="16" r="12"/><circle cx="16" cy="16" r="6"/><path d="M16 4v6M16 22v6M4 16h6M22 16h6" stroke-linecap="round"/></svg><div class="chnm"><b>Vault</b></div><span class="chp" title="Highest power level you could reach">${SV_LIGHT}${maxAll}</span><button class="vrf${qload ? ' spin' : ''}" data-act="qrefresh" title="Reload your vault from Bungie (R)"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button><button class="vrf vgrf" data-act="grf" title="God roll finder: every weapon graded with your wish lists (G)" aria-label="God roll finder"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg></button></div></div><div class="vcg">${vgrid}</div></div>`;
     add(chH, vH);
     if (SET.postmaster) {
       add(vis.map((c, k) => { const n = D.items.filter((x) => x.loc === c.id && x.pm).length; return `<div class="pmh">${k === 0 ? `<span class="dsec tg" data-tg="1">${pmOpen ? '&#9662;' : '&#9656;'} Postmaster</span>` : ''}<span class="pmn">(${n}/21)</span></div>`; }).join(''), under || sep ? '' : '<div></div>');
@@ -2190,7 +2342,7 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
     const hp = '<b>Search</b> works like DIM. Plain words match names, types and every perk (weapon perks and their options, armor perks and mods, subclass aspects and fragments). Words are all required; <code>or</code> between words means either; a leading <code>-</code> excludes; use quotes for phrases. Suggestions appear as you type (Tab or Enter to use one).<br>'
       + '<b>is:</b> <code>is:exotic</code> <code>is:handcannon</code> <code>is:smg</code> <code>is:sword</code> <code>is:solar</code> <code>is:strand</code> <code>is:prismatic</code> <code>is:primary</code> <code>is:heavy</code> <code>is:barrier</code> <code>is:crafted</code> <code>is:deepsight</code> <code>is:adept</code> <code>is:masterwork</code> <code>is:locked</code> <code>is:equipped</code> <code>is:inloadout</code> <code>is:duplicate</code> <code>is:wishlist</code> <code>is:trashlist</code> <code>is:tagged</code> <code>is:hasnotes</code> <code>is:subclass</code> <code>is:titan</code> <code>not:locked</code><br>'
       + '<b>Filters:</b> <code>perk:rampage</code> <code>perk:\"kill clip\"</code> <code>exactperk:\"firefly\"</code> <code>name:ace</code> <code>notes:pvp</code> <code>tag:junk</code> <code>element:void</code> <code>slot:kinetic</code> <code>ammo:special</code> <code>breaker:overload</code> <code>power:&gt;=550</code> <code>stat:health:&gt;=30</code> <code>total:&gt;=65</code> <code>customtotal:&gt;=60</code> <code>energy:&gt;=10</code> <code>tier:5</code> <code>class:titan</code> <code>is:shotgun or is:sniper</code><br><b>Mouse:</b> click an item for details and perks, right-click for the item menu, drag to move or equip. <b>Keys:</b> <code>/</code> search, <code>Esc</code> close, <code>L</code> lock (item open), <code>Shift+1..5</code> tags (item open).';
-    const bar = `<div class="vbar"><span class="vnm" title="Signed in as ${esc(D.name || '')}">${esc(D.name || '')}</span><input id="vq" placeholder="Search names, perks, subclasses, is:handcannon, perk:rampage, is:solar..." value="${esc(q)}" autocomplete="off" spellcheck="false"><span class="vtg"><button class="g ib" data-act="savq" title="Saved searches"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z"/></svg></button></span><span class="vtg"><button class="g ib${FARM.on ? ' on' : ''}" data-act="farm" title="${FARM.on ? 'Farming mode is on: unequipped weapons and armor go to the vault so your inventory never fills. Click to stop.' : 'Farming mode: keep moving unequipped weapons and armor to the vault while you play'}"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v10M8 10.5l4 4 4-4M4.5 15.5V19a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1v-3.5"/></svg></button><button class="g ib" data-act="grf" title="God roll finder: every weapon graded with your wish lists"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.3l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg></button><button class="g ib" data-act="junk" title="Vault cleanup: trash rolls, duplicates and low-stat gear you could dismantle"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7h15M9.5 7V4.8a.8.8 0 0 1 .8-.8h3.4a.8.8 0 0 1 .8.8V7M6.5 7l.8 12a1 1 0 0 0 1 .9h7.4a1 1 0 0 0 1-.9l.8-12M10 11v5.5M14 11v5.5"/></svg></button><button class="g ib" data-f="bulk" title="Select several items at once (Ctrl+click works any time)"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2.5"/><path d="M8.5 12.2l2.4 2.4 4.6-5"/></svg></button></span><span class="vtg"><button class="g ib" data-act="sets" title="Loadouts"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 7h11M8 12h11M8 17h11"/><circle cx="4.6" cy="7" r=".6" fill="currentColor"/><circle cx="4.6" cy="12" r=".6" fill="currentColor"/><circle cx="4.6" cy="17" r=".6" fill="currentColor"/></svg></button><button class="g ib" data-act="help" title="Search and shortcut help"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.4a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2.2-2.4 3.7M12 16.9v.2"/></svg></button><button class="g ib" data-act="refresh" title="Reload from Bungie"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3M19.5 4.5v4h-4"/></svg></button></span></div>`;
+    const bar = `<div class="vbar"><span class="vnm" title="Signed in as ${esc(D.name || '')}">${esc(D.name || '')}</span><input id="vq" placeholder="Search names, perks, subclasses, is:handcannon, perk:rampage, is:solar..." value="${esc(q)}" autocomplete="off" spellcheck="false"><span class="vtg"><button class="g ib" data-act="savq" title="Saved searches"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z"/></svg></button></span><span class="vtg"><button class="g ib${FARM.on ? ' on' : ''}" data-act="farm" title="${FARM.on ? 'Farming mode is on: unequipped weapons and armor go to the vault so your inventory never fills. Click to stop.' : 'Farming mode: keep moving unequipped weapons and armor to the vault while you play'}"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v10M8 10.5l4 4 4-4M4.5 15.5V19a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1v-3.5"/></svg></button><button class="g ib" data-act="junk" title="Vault cleanup: trash rolls, duplicates and low-stat gear you could dismantle"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7h15M9.5 7V4.8a.8.8 0 0 1 .8-.8h3.4a.8.8 0 0 1 .8.8V7M6.5 7l.8 12a1 1 0 0 0 1 .9h7.4a1 1 0 0 0 1-.9l.8-12M10 11v5.5M14 11v5.5"/></svg></button><button class="g ib" data-f="bulk" title="Select several items at once (Ctrl+click works any time)"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2.5"/><path d="M8.5 12.2l2.4 2.4 4.6-5"/></svg></button></span><span class="vtg"><button class="g ib" data-act="sets" title="Loadouts"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 7h11M8 12h11M8 17h11"/><circle cx="4.6" cy="7" r=".6" fill="currentColor"/><circle cx="4.6" cy="12" r=".6" fill="currentColor"/><circle cx="4.6" cy="17" r=".6" fill="currentColor"/></svg></button><button class="g ib" data-act="help" title="Search and shortcut help"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.4a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2.2-2.4 3.7M12 16.9v.2"/></svg></button><button class="g ib" data-act="refresh" title="Reload from Bungie"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3M19.5 4.5v4h-4"/></svg></button></span></div>`;
     const slot = document.getElementById('gtsrch');
     sec.innerHTML = `${slot ? '' : '<div class="card vcard">' + bar + '</div>'}<div id="vfx"></div><div id="vhelp" class="card">${hp}</div><p id="vnote" class="mute"></p><div id="vgrid"></div><div id="vpop"></div>`;
     if (slot) { slot.replaceChildren(); slot.insertAdjacentHTML('beforeend', bar); slot.querySelector('.vbar').onclick = (e) => sec.onclick(e); }
@@ -3102,7 +3254,7 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
     if (a === 'sets') { show('loadouts'); renderLoTab(); return; }
     if (a === 'savq') { savqMenu(t); return; }
     if (a === 'junk') { junkOpen(); return; }
-    if (a === 'grf') { grfOpen(); return; }
+    if (a === 'grf') { grfToggle(); return; }
     if (a === 'farm') { if (!gt.farmSet) return; gt.farmSet({ on: !FARM.on }).then((m) => { FARM = m || FARM; t.classList.toggle('on', !!FARM.on); setNote(FARM.on ? 'Farming mode on: unequipped weapons and armor will go to the vault every 20 seconds.' : 'Farming mode off.'); renderGrid(); }).catch((e) => setNote(clean(e))); return; }
     if (a === 'chmenu') {
       const old = document.getElementById('chpop'); if (old) { const same = old.dataset.c === t.dataset.c; old.remove(); if (same) return; }
@@ -3201,13 +3353,13 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
   }
   const TAGKEYS = ['favorite', 'keep', 'infuse', 'junk', 'archive'];
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') { ctxClose(); if (sel) { sel = null; renderPop(); } return; }
+    if (e.key === 'Escape') { const jm = g('junkm'); if (jm) { jm.remove(); return; } ctxClose(); if (sel) { sel = null; renderPop(); } return; }
     const t = e.target; if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT') || e.ctrlKey || e.metaKey || e.altKey || !D) return;
     if (keyEdit || (t && t.isContentEditable)) return;
     const ka = keyAct(e); if (!ka) return;
     if (ka === 'search' && sec.classList.contains('on')) { const q1 = g('vq'); if (q1) { e.preventDefault(); q1.focus(); q1.select(); } return; }
     if (['home', 'vault', 'loadouts', 'activity'].includes(ka) && !sel && !document.querySelector('#junkm, #dlmod, #dled, #apm, #gtnews')) { const nb = document.querySelector('#nav button[data-t="' + ka + '"]'); if (nb) { e.preventDefault(); nb.click(); } return; }
-    if (ka === 'finder' && !sel) { e.preventDefault(); if (!sec.classList.contains('on')) show('vault'); grfOpen(); return; }
+    if (ka === 'finder') { e.preventDefault(); if (!sec.classList.contains('on')) show('vault'); grfToggle(); return; }
     const x = sel && byId(sel); if (!x) return;
     if (ka === 'lock' && !x.pm && !x.ro) { e.preventDefault(); toggleLock(x); }
     else if (TAGKEYS.includes(ka) && !x.pm && !x.ro) { e.preventDefault(); setTag(x, ka); }
@@ -3215,5 +3367,7 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
   drawSettings(); wlLoad();
   if (window.gt && gt.farmSet && SET.farmspaces !== 3) gt.farmSet({ spaces: SET.farmspaces }).catch(() => {});
   init();
-  show('vault');
+  // Straight to the page chosen in Settings > Display > Open the app on (polish.js finishes opening it), so the Inventory
+  // does not flash first.
+  { const st0 = SET.starttab === 'last' ? window.__gtLastTab : SET.starttab; show(st0 && /^[a-z]{2,20}$/.test(st0) ? st0 : 'vault'); }
 })();

@@ -641,7 +641,7 @@ ${quick.length ? `<div class="tcol" style="margin-top:14px">Quick wins: almost d
     { id: 'cp', g: 'look', c: '#4fb6c9', name: 'Checkpoints', url: 'https://d2checkpoint.com/', desc: 'Find checkpoint bots for raids, dungeons and Pantheon encounters. Copy the bot name and add it in game.' },
     { id: 'rr', g: 'look', c: 'var(--ak-raid)', name: 'Raid Report', url: 'https://raid.report/', desc: 'Look up any guardian for raid clears, fastest times and leaderboards.' },
     { id: 'dg', g: 'look', c: 'var(--ak-dungeon)', name: 'Dungeon Report', url: 'https://dungeon.report/', desc: 'Look up any guardian for dungeon clears, fastest times and leaderboards.' },
-    { id: 'dr', g: 'look', c: '#6aa6e0', name: 'Destiny Report', url: 'https://destiny.report/', desc: 'Guardian stats and activity history for any player.' },
+    { id: 'dr', g: 'look', c: '#6aa6e0', name: 'Destiny Report', url: 'https://destiny.report/', desc: 'Weapon database: search every weapon by perk, frame, element and where it drops, and find god rolls.' },
     { id: 'ls', g: 'look', c: 'var(--ak-lost)', name: 'Lost Sector Report', url: 'https://d2lostsector.report/', desc: 'Today\'s legend and master lost sectors, rewards, modifiers and the rotation ahead.' },
     { id: 'cal', g: 'look', c: '#d36b8f', name: 'Caldera Report', url: 'https://caldera.report/', desc: 'Caldera clears and stats for any guardian.' },
     { id: 'mob', g: 'build', c: '#e0a35a', name: 'Mobalytics', url: 'https://mobalytics.gg/destiny-2/builds', desc: 'Meta builds for every class and subclass, with the exotics, aspects, fragments and mods to run.' },

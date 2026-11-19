@@ -203,24 +203,32 @@
     return '';
   }
 
+  // The page is only replaced when something on it actually changed. It used to be rebuilt every time one more piece of data
+  // arrived (6 times while opening), which made it flash.
+  let lastH = '', opening = false;
+  const paint = (h) => { if (h === lastH) return; lastH = h; s.innerHTML = h; };
   function draw() {
     const D = V().D && V().D();
-    if (!D) { s.innerHTML = '<div class="hm-g"><div class="hm-c w12"><div class="hm-h">Home</div><div class="hm-sub">Sign in on the Inventory tab to fill this page.</div></div></div>'; return; }
+    if (!D) { paint(opening ? '<div class="hm-g"><div class="hm-c w12"><div class="hm-h">Home</div><div class="hm-sub">Loading your Guardians…</div></div></div>' : '<div class="hm-g"><div class="hm-c w12"><div class="hm-h">Home</div><div class="hm-sub">Sign in on the Inventory tab to fill this page.</div></div></div>'); return; }
     const pins = PINS();
-    s.innerHTML = `<div class="hm-hd"><h2>Home</h2><button class="g" data-hx="refresh">&#8635; Refresh</button><label><input type="checkbox" id="hstart"${lsGet('gt.home.start', false) ? ' checked' : ''}> Open the app on this page</label></div>
+    paint(`<div class="hm-hd"><h2>Home</h2><button class="g" data-hx="refresh">&#8635; Refresh</button><label><input type="checkbox" id="hstart"${(window.__gtget && window.__gtget('starttab')) === 'home' ? ' checked' : ''}> Open the app on this page</label></div>
 <div class="hm-g">${charsCard(D)}${resetsCard()}${timeCard()}${invCard(D)}
-<div class="hm-sec">Your pins</div>${pins.length ? pins.map((p) => pinCard(p, D)).join('') : '<div class="hm-empty">Use <b>+ Home</b> on vendors, items, loadouts, Activity pages, Hub sites and guides to add them here.</div>'}</div>`;
+<div class="hm-sec">Your pins</div>${pins.length ? pins.map((p) => pinCard(p, D)).join('') : '<div class="hm-empty">Use <b>+ Home</b> on vendors, items, loadouts, Activity pages, Hub sites and guides to add them here.</div>'}</div>`);
   }
+  let loadedOnce = false;
   async function load(force) {
-    if (busy) return; busy = true; draw();
-    const redraw = () => { if (s.classList.contains('on')) draw(); };
+    if (busy) return; busy = true;
+    // The first time, the page waits (up to 1.5 seconds) for everything and is drawn once, instead of growing piece by piece.
+    let hold = !loadedOnce; loadedOnce = true; const holdT = hold ? setTimeout(() => { hold = false; redraw(); }, 1500) : 0;
+    if (!hold) draw(); else if (!lastH) draw();
+    let rq = 0; const redraw = () => { if (hold || rq || !s.classList.contains('on')) return; rq = requestAnimationFrame(() => { rq = 0; draw(); }); }; // several answers in the same moment: one redraw
     const get = async (k) => { try { if (A().fetch) { H[k] = await A().fetch(k, force); H.err[k] = ''; } } catch (e) { H.err[k] = clean(e); } redraw(); };
     const pins = PINS();
     const jobs = [get('time')];
     pins.filter((p) => p.t === 'act' && ACT[p.id]).forEach((p) => jobs.push((async () => { try { H.act[p.id] = await A().fetch(p.id, force); H.err['a' + p.id] = ''; } catch (e) { H.err['a' + p.id] = clean(e); } redraw(); })()));
     pins.filter((p) => p.t === 'vendor').forEach((p) => jobs.push((async () => { try { H.ven[p.id] = await A().vendor(+p.id, force); H.err['v' + p.id] = ''; } catch (e) { H.err['v' + p.id] = clean(e); } redraw(); })()));
     await Promise.all(jobs);
-    busy = false; redraw();
+    clearTimeout(holdT); hold = false; busy = false; redraw();
   }
   s.addEventListener('click', (e) => {
     if (e.target.closest('[data-hx=refresh]')) { load(true); return; }
@@ -282,5 +290,7 @@
   b.onclick = () => { show('home'); load(false); };
   // Opening on Home is done by polish.js ("Open the app on" in Settings, or the checkbox above).
   window.addEventListener('gtreset', () => { if (s.classList.contains('on')) load(true); }); // a reset just happened: show the new rotations
-  window.__gthome = { open: () => { let n = 0; const t = setInterval(() => { const D = V().D && V().D(); if (D || ++n > 60) { clearInterval(t); if (D) { show('home'); load(false); } } }, 300); } };
+  // Opening on Home: Home shows straight away ("Loading your Guardians…") and fills in once your vault has loaded, instead of
+  // showing the Inventory first and switching over.
+  window.__gthome = { open: () => { opening = true; show('home'); draw(); let n = 0; const t = setInterval(() => { const D = V().D && V().D(); if (D || ++n > 60) { clearInterval(t); opening = false; if (s.classList.contains('on')) { if (D) load(false); else draw(); } } }, 300); } };
 })();
