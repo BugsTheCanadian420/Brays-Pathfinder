@@ -854,7 +854,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     ['rose', 'Rose', 320, 26, '#ff7ad9', '#2a1626'],
   ].map(([id, n, h, s, a, sw]) => ({ id, n, h, s, a, sw }));
   // Background pictures. 'topo' is the contour-line drawing; the rest are Destiny 2 places.
-  const BGS = [['', 'None'], ['topo', 'Contour lines'], ['blossom-tower', 'Blossom Tower'], ['memorial-garden', 'Memorial Garden'], ['rust-yard', 'Rust Yard'], ['europa-frost', 'Lunar Frost'], ['crimson-spire', 'Crimson Spire'], ['cube-mist', 'Cube Mist'], ['aurora-grove', 'Aurora Grove'], ['vortex', 'Vortex'], ['emerald-lake', 'Emerald Lake'], ['hanging-gardens', 'Hanging Gardens'], ['traveler', 'The Traveler'], ['lantern-gate', 'Lantern Gate']];
+  const BGS = [['', 'None'], ['topo', 'Contour lines'], ['blossom-tower', 'Blossom Tower'], ['memorial-garden', 'Memorial Garden'], ['rust-yard', 'Rust Yard'], ['europa-frost', 'Lunar Frost'], ['crimson-spire', 'Crimson Spire'], ['cube-mist', 'Cube Mist'], ['aurora-grove', 'Aurora Grove'], ['vortex', 'Vortex'], ['emerald-lake', 'Emerald Lake'], ['hanging-gardens', 'Hanging Gardens'], ['jupiter-rise', 'Jupiter Rise'], ['cosmodrome-wall', 'Cosmodrome Wall'], ['throne-marsh', 'Nessus'], ['traveler', 'The Traveler'], ['lantern-gate', 'Lantern Gate']];
   // Bray and Manta are fixed looks: their colour, accent and picture are set and cannot be changed. Their two pictures are shown last
   // in the picture list, locked, so the Custom style cannot use them.
   const LOCK = { bray: { theme: 'beta', accent: '#f2b441', bg: 'traveler', n: 'Bray' }, manta: { theme: 'gold', accent: '#35e3cf', bg: 'lantern-gate', n: 'Manta' } };
