@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.24-beta.2: preload.js for the browser */
+/* Pathfinder 0.3.24-beta.3: preload.js for the browser */
 (function (require) {
 const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('gt', {
