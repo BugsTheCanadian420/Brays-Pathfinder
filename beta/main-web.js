@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.19-beta.3: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.19-beta.4: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -514,9 +514,9 @@ async function pfaOpen(box, key) {
   const k = await WCR.subtle.importKey('raw', pun64(key), 'AES-GCM', false, ['decrypt']);
   return JSON.parse(new TextDecoder().decode(await WCR.subtle.decrypt({ name: 'AES-GCM', iv: pun64(box.iv) }, k, pun64(box.ct))));
 }
-async function pfaReq(method, p, body, sess) {
+async function pfaReq(method, p, body, sess, extra) {
   const u = pfaUrl(); if (!u) throw new Error('Pathfinder accounts are not set up on this copy yet.');
-  const r = await fetch(u + p, { method, headers: { 'Content-Type': 'application/json', Accept: 'application/json', ...(sess ? { Authorization: 'Bearer ' + sess } : {}) }, body: body ? JSON.stringify(body) : undefined });
+  const r = await fetch(u + p, { method, headers: { 'Content-Type': 'application/json', Accept: 'application/json', ...(sess ? { Authorization: 'Bearer ' + sess } : {}), ...(extra || {}) }, body: body ? JSON.stringify(body) : undefined });
   let j = {}; try { j = await r.json(); } catch (e) { j = {}; }
   if (!r.ok && !(r.status === 409 && j.error === 'changed')) { const er = new Error(j.message || (r.status === 404 || r.status === 501 ? 'Pathfinder accounts are not switched on in the token service yet (see ACCOUNTS-SETUP.txt).' : 'Pathfinder account error (HTTP ' + r.status + ')')); er.code = j.error || r.status; throw er; }
   return { ...j, status: r.status };
@@ -563,7 +563,7 @@ const pfaRun = (boxIn, verIn) => {
 // A Pathfinder account is an account name and a password. Accounts made earlier with an email address still sign in with that
 // email typed as the account name (both are matched the same way: trimmed, any capitals ignored).
 const pfaName = (p) => (p && (p.name || p.email)) || '';
-const pfaStatus = () => { const c = rd(), p = c.pfa || {}; return { avail: !!pfaUrl(), on: !!p.sess, name: pfaName(p), at: p.at || 0, n: p.n || 0, err: PFA_ERR, out: !!(pfaName(p) && !p.sess), dev: !!(p.sess && p.role === 'dev') }; };
+const pfaStatus = () => { const c = rd(), p = c.pfa || {}; return { avail: !!pfaUrl(), on: !!p.sess, name: pfaName(p), at: p.at || 0, n: p.n || 0, err: PFA_ERR, out: !!(pfaName(p) && !p.sess), dev: !!(p.sess && (p.role === 'dev' || p.role === 'founder')), founder: !!(p.sess && p.role === 'founder') }; };
 H('pfa:status', () => pfaStatus());
 const pfaCreds = (v, isNew) => {
   OBJ(v); const name = TXT(v.name, 200).trim(), pw = TXT(v.pw, 200);
@@ -615,6 +615,15 @@ H('flags:get', async () => {
   return { flags: FLAGS || {}, dev: pfaStatus().dev };
 });
 // Developer tools (the PC app only, developer accounts only).
+// Admin from inside the app (founder accounts only). The admin key is typed in the app each time and only passed along;
+// the token service checks both the founder role and the key.
+const ADMP = { 'GET /accounts': 1, 'POST /find': 1, 'POST /reset': 1, 'POST /cancelreset': 1, 'POST /role': 1, 'POST /unlock': 1, 'POST /delete': 1, 'GET /flags': 1, 'PUT /flags': 1 };
+H('adm:call', async (e, v) => {
+  OBJ(v); const method = TXT(v.method, 6).toUpperCase(), p = TXT(v.path, 30), key = TXT(v.key, 200);
+  if (!ADMP[method + ' ' + p]) throw bad();
+  const c = rd(); if (!c.pfa || !c.pfa.sess || c.pfa.role !== 'founder') throw new Error('Only founder accounts can use admin.');
+  return pfaReq(method, '/admin' + p, method === 'GET' ? null : (v.body && typeof v.body === 'object' ? v.body : {}), c.pfa.sess, { 'X-Admin-Key': key });
+});
 H('dev:tools', () => { if (!pfaStatus().dev) throw new Error('Developer accounts only.'); if (win && !win.isDestroyed() && win.webContents && win.webContents.openDevTools) win.webContents.openDevTools({ mode: 'detach' }); return true; });
 H('pfa:logout', async () => { const c = rd(); if (c.pfa && c.pfa.sess) { try { await pfaReq('POST', '/logout', {}, c.pfa.sess); } catch (e) { /* signed out here anyway */ } } delete c.pfa; wr(c); PFA_ERR = ''; return pfaStatus(); });
 H('pfa:delete', async () => { const c = rd(); if (!c.pfa || !c.pfa.sess) throw new Error('Sign in to your Pathfinder account first.'); await pfaReq('DELETE', '', null, c.pfa.sess); delete c.pfa; wr(c); return pfaStatus(); });

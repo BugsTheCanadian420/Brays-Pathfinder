@@ -8,6 +8,7 @@
   const ICON = (p) => (p ? (/^https?:/.test(p) ? p : 'https://www.bungie.net' + p) : '');
   const V = () => window.__gtv;
   const SW = { godrolls: 'godroll-tab', wishmaker: 'wishmaker-tab' };
+  window.__gtDevFeatureNames = Object.values(SW); // listed in Settings > Developer even before the admin page has them
   const allowed = (id) => !!(window.__gtDevFeature && window.__gtDevFeature(SW[id]));
   window.__gtTabLocked = (id) => !!SW[id] && !allowed(id);
 

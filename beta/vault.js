@@ -629,7 +629,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 #settings .scols{display:flex;gap:16px;align-items:flex-start}#settings .scol{flex:1 1 0;min-width:0}
 #settings .sg{grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:6px}#settings .sg.wlps{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}#settings .th{padding:6px 6px 7px;font-size:12.5px}#settings .th i{height:20px;margin-bottom:5px}
 #settings .uis{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
-#settings .setgrid{display:contents}.pfars{margin:10px 0 4px;padding:10px 12px;border:1px solid var(--g-line,#2b2e33);border-radius:10px}.pfars p{margin:4px 0 8px}#gtmp{background:var(--g-solid,#15171b)!important;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}#gtmp.open{box-shadow:0 0 0 100vmax rgba(0,0,0,.5),0 14px 36px rgba(0,0,0,.7)!important}#vqs{background:var(--g-solid,#15171b)!important}.sset{display:grid;grid-template-columns:240px minmax(0,1fr);gap:22px;align-items:start;max-width:1120px;margin:0 auto}.snav{position:sticky;top:64px;box-sizing:border-box;margin:0;display:flex;flex-direction:column;gap:2px;padding:8px;background:var(--g-solid,#15171b);border:1px solid var(--g-line,#2b2e33);border-radius:12px}#settings .snav .sni{display:flex;align-items:center;gap:12px;width:100%;box-sizing:border-box;margin:0;border-radius:8px;padding:9px 12px;color:#c3c7ce;font-size:13.5px;font-weight:600;line-height:1.2;letter-spacing:0;text-transform:none;cursor:pointer;user-select:none}#settings .snav .sni svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;opacity:.8}#settings .snav .sni:hover{background:rgba(255,255,255,.06);color:#fff}#settings .snav .sni.on{background:var(--g-accent-soft,rgba(122,184,232,.16));color:#fff;box-shadow:inset 3px 0 0 var(--g-accent,#7ab8e8)}#settings .snav .sni.on svg{opacity:1;color:var(--g-accent,#7ab8e8)}#settings .snav .sni:focus-visible{outline:2px solid var(--g-accent,#7ab8e8);outline-offset:1px}.spane{min-width:0}.spane>.card{display:none!important;margin:0!important}.spane>.card.son{display:block!important}@media (max-width:760px){.sset{grid-template-columns:1fr;gap:10px}.snav{position:static;flex-direction:row;overflow-x:auto;scrollbar-width:none;padding:5px}#settings .snav .sni{width:auto;flex:none;white-space:nowrap;padding:8px 11px}}
+#settings .setgrid{display:contents}.adml{display:flex;flex-direction:column;margin:4px 0 10px}.admr{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--g-line,#2b2e33);flex-wrap:wrap}.admn{min-width:0;flex:1 1 220px}.admn b{display:block}.admn small{color:var(--mute,#9aa1ab);font-size:12px}.admn input{width:100%;margin-top:4px;box-sizing:border-box}.admc{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.admc select{width:auto}.admtag{padding:2px 10px;border-radius:999px;background:var(--g-accent,#e8b84a);color:#15171b;font-size:12px;font-weight:700}.admdel{color:#ff8a8a!important}.admmsg{margin:8px 0;color:#8fd19e}.admmsg.bad,.admn .bad{color:#ff8a8a}.admcode{margin:10px 0;padding:10px 12px;border:1px dashed var(--g-accent,#e8b84a);border-radius:10px}.admcode code{display:inline-block;font:700 20px/1.2 ui-monospace,Consolas,monospace;letter-spacing:2px;margin:4px 0;user-select:all}.pfars{margin:10px 0 4px;padding:10px 12px;border:1px solid var(--g-line,#2b2e33);border-radius:10px}.pfars p{margin:4px 0 8px}#gtmp{background:var(--g-solid,#15171b)!important;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}#gtmp.open{box-shadow:0 0 0 100vmax rgba(0,0,0,.5),0 14px 36px rgba(0,0,0,.7)!important}#vqs{background:var(--g-solid,#15171b)!important}.sset{display:grid;grid-template-columns:240px minmax(0,1fr);gap:22px;align-items:start;max-width:1120px;margin:0 auto}.snav{position:sticky;top:64px;box-sizing:border-box;margin:0;display:flex;flex-direction:column;gap:2px;padding:8px;background:var(--g-solid,#15171b);border:1px solid var(--g-line,#2b2e33);border-radius:12px}#settings .snav .sni{display:flex;align-items:center;gap:12px;width:100%;box-sizing:border-box;margin:0;border-radius:8px;padding:9px 12px;color:#c3c7ce;font-size:13.5px;font-weight:600;line-height:1.2;letter-spacing:0;text-transform:none;cursor:pointer;user-select:none}#settings .snav .sni svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;opacity:.8}#settings .snav .sni:hover{background:rgba(255,255,255,.06);color:#fff}#settings .snav .sni.on{background:var(--g-accent-soft,rgba(122,184,232,.16));color:#fff;box-shadow:inset 3px 0 0 var(--g-accent,#7ab8e8)}#settings .snav .sni.on svg{opacity:1;color:var(--g-accent,#7ab8e8)}#settings .snav .sni:focus-visible{outline:2px solid var(--g-accent,#7ab8e8);outline-offset:1px}.spane{min-width:0}.spane>.card{display:none!important;margin:0!important}.spane>.card.son{display:block!important}@media (max-width:760px){.sset{grid-template-columns:1fr;gap:10px}.snav{position:static;flex-direction:row;overflow-x:auto;scrollbar-width:none;padding:5px}#settings .snav .sni{width:auto;flex:none;white-space:nowrap;padding:8px 11px}}
 #settings .card{max-width:none;margin:0 0 16px;break-inside:avoid;padding:14px 18px}
 #settings .card h2{padding-bottom:8px;margin-bottom:4px;border-bottom:1px solid var(--g-line)}
 /* saved sets: opened from the button in the top bar */
@@ -1106,21 +1106,22 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   // window.__gtFlag('name') tells a feature whether to show. Switches are set on the admin page: 'on' (everyone), 'dev' (only
   // Pathfinder accounts with the developer role) or 'off' (nobody, developers included). A switch the admin page has never set
   // uses the default the feature passes (normally true, so nothing disappears if the token service cannot be reached).
-  // Developers can tick "See it as a player" on a 'dev' switch to check what everyone else sees.
+  // Developers can turn off "Show for me" on a 'dev' switch to check what everyone else sees.
   let FLG = { flags: {}, dev: false };
   const devOff = () => { try { const a = JSON.parse(localStorage.getItem('gt_devoff')); return Array.isArray(a) ? a : []; } catch (e) { return []; } };
   window.__gtFlag = (name, dflt) => { const l = FLG.flags[name]; if (!l) return dflt === undefined ? true : !!dflt; if (l === 'on') return true; if (l === 'off') return false; return !!FLG.dev && !devOff().includes(name); };
   window.__gtDev = () => !!FLG.dev;
   // A feature that is for developers until the admin page says otherwise: no switch (or 'dev') = developer accounts only,
-  // 'on' = everyone, 'off' = nobody. "See it as a player" in Settings > Developer hides it for you too.
+  // 'on' = everyone, 'off' = nobody. Turning off "Show for me" in Settings > Developer hides it for you too.
   window.__gtDevFeature = (name) => { const l = FLG.flags[name]; if (l === 'on') return true; if (l === 'off') return false; return !!FLG.dev && !devOff().includes(name); };
   const flagsLoad = () => { if (!window.gt || !gt.flagsGet) return; gt.flagsGet().then((r) => { const was = JSON.stringify(FLG); FLG = { flags: (r && r.flags) || {}, dev: !!(r && r.dev) }; if (JSON.stringify(FLG) !== was) { document.documentElement.toggleAttribute('data-gtdev', FLG.dev); window.dispatchEvent(new Event('gtflags')); if (settingsSec.classList.contains('on')) drawSettings(); if (window.__gtRender) window.__gtRender(); } }).catch(() => {}); };
   setTimeout(flagsLoad, 1500); setInterval(flagsLoad, 6e5);
   function devCard() {
     if (!FLG.dev) return '';
-    const off = devOff(), names = Object.keys(FLG.flags).sort();
+    const off = devOff(), names = [...new Set([...Object.keys(FLG.flags), ...(window.__gtDevFeatureNames || [])])].sort();
     const lv = { on: 'On for everyone', dev: 'Developers only', off: 'Off for everyone' };
-    const rows = names.map((n) => `<div class="sx"><div class="sxt"><b>${esc(n)}</b><small>${lv[FLG.flags[n]] || esc(FLG.flags[n])}</small></div><div class="sxc">${FLG.flags[n] === 'dev' ? `<label class="mute" style="display:flex;gap:8px;align-items:center">See it as a player <label class="tgl"><input type="checkbox" data-devoff="${esc(n)}"${off.includes(n) ? ' checked' : ''}><i></i></label></label>` : ''}</div></div>`).join('');
+    // "Show for me" (on = you see it, like everyone it is switched on for). Turn it off to see the app the way players do.
+    const rows = names.map((n) => { const lvl = FLG.flags[n] || 'dev'; return `<div class="sx"><div class="sxt"><b>${esc(n)}</b><small>${lv[lvl] || esc(lvl)}${FLG.flags[n] ? '' : ' (not on the admin page yet)'}</small></div><div class="sxc">${lvl === 'dev' ? `<label class="mute" style="display:flex;gap:8px;align-items:center">Show for me <label class="tgl"><input type="checkbox" data-devoff="${esc(n)}"${off.includes(n) ? '' : ' checked'}><i></i></label></label>` : ''}</div></div>`; }).join('');
     const pc = !document.documentElement.classList.contains('gtweb');
     return `<div class="card sc"><h2>Developer</h2><p class="mute">You are signed in with a developer account (${esc((PFA && PFA.name) || '')}). Switches are set on the admin page; changes reach the app within 10 minutes.</p>
       <div class="thh">Feature switches</div>${rows || '<p class="mute">No switches yet. Add them on the admin page.</p>'}
@@ -1128,7 +1129,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   }
   settingsSec.addEventListener('change', (e) => {
     const t = e.target.closest && e.target.closest('[data-devoff]'); if (!t) return;
-    const a = devOff().filter((x) => x !== t.dataset.devoff); if (t.checked) a.push(t.dataset.devoff);
+    const a = devOff().filter((x) => x !== t.dataset.devoff); if (!t.checked) a.push(t.dataset.devoff); // off = hidden for you
     try { localStorage.setItem('gt_devoff', JSON.stringify(a)); } catch (er) { /* storage off */ }
     window.dispatchEvent(new Event('gtflags')); if (window.__gtRender) window.__gtRender();
   });
@@ -1141,6 +1142,74 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
       (navigator.clipboard ? navigator.clipboard.writeText(d) : Promise.reject()).then(() => { b.textContent = 'Copied'; setTimeout(() => { b.textContent = 'Copy diagnostics'; }, 1500); }).catch(() => prompt('Diagnostics', d));
     }
   });
+  // ---- Admin (founder accounts only) ----
+  // The admin page's tools inside the app. Needs the founder role (set on the admin page) and the admin key, which is kept only
+  // in memory until Pathfinder closes. Founders cannot be made or changed from here: that stays on the admin page.
+  const ADM = { key: '', on: false, acc: [], fl: {}, q: '', msg: '', code: '', codeFor: '', busy: false, newFl: '' };
+  const admWhen = (t) => (t ? new Date(t).toLocaleString([], { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }) : '-');
+  async function admCall(method, path, body) {
+    const r = await gt.admCall({ method, path, body, key: ADM.key });
+    return r;
+  }
+  async function admLoad() {
+    ADM.busy = true; drawSettings();
+    try { ADM.acc = (await admCall('GET', '/accounts')).accounts || []; ADM.fl = (await admCall('GET', '/flags')).flags || {}; ADM.on = true; ADM.msg = ''; }
+    catch (er) { ADM.msg = clean(er); if (/wrong admin key|too many/i.test(ADM.msg)) { ADM.on = false; ADM.key = ''; } }
+    ADM.busy = false; drawSettings();
+  }
+  function admCard() {
+    if (!PFA || !PFA.founder) return '';
+    if (!ADM.on) return `<div class="card sc"><h2>Admin</h2><p class="mute">Manage Pathfinder accounts and feature switches. Founder accounts only. Enter your admin key; it is kept only until you close Pathfinder.</p>
+      <div class="pfaf"><input id="admkey" type="password" placeholder="Admin key" autocomplete="off" spellcheck="false"><button class="b" data-adm="unlock">${ADM.busy ? 'Checking…' : 'Unlock'}</button></div>${ADM.msg ? `<p class="admmsg bad">${esc(ADM.msg)}</p>` : ''}</div>`;
+    const q = ADM.q.trim().toLowerCase(), RL = { '': 'Player', dev: 'Developer', founder: 'Founder' };
+    const rows = ADM.acc.filter((a) => !q || (a.name || '').toLowerCase().includes(q)).map((a) => `<div class="admr" data-aid="${esc(a.id)}">
+      <div class="admn"><b>${a.name ? esc(a.name) : '<span class="mute">(name not saved yet)</span>'}</b><small>Created ${esc(admWhen(a.created))} &middot; last sign-in ${esc(admWhen(a.lastLogin))}${a.locked ? ' &middot; <span class="bad">locked 15 min</span>' : ''}${a.codeWaiting ? ' &middot; reset code waiting' : ''}</small></div>
+      <div class="admc">${a.role === 'founder' ? '<span class="admtag">Founder</span>' : `<select data-adm="role" aria-label="Role for ${esc(a.name || 'account')}"><option value=""${a.role ? '' : ' selected'}>Player</option><option value="dev"${a.role === 'dev' ? ' selected' : ''}>Developer</option></select>`}
+      <button class="g" data-adm="reset">Reset code</button>${a.locked ? '<button class="g" data-adm="unlockacc">Unlock</button>' : ''}${a.codeWaiting ? '<button class="g" data-adm="cancel">Cancel code</button>' : ''}${a.role === 'founder' ? '' : '<button class="g admdel" data-adm="del">Delete</button>'}</div></div>`).join('') || '<p class="mute">No accounts.</p>';
+    const fk = Object.keys(ADM.fl).sort();
+    const frows = fk.map((k) => `<div class="admr" data-fk="${esc(k)}"><div class="admn"><b>${esc(k)}</b><input type="text" data-adm="fnote" value="${esc(ADM.fl[k].note || '')}" placeholder="What it is" maxlength="200"></div><div class="admc"><select data-adm="flevel">${[['on', 'On (everyone)'], ['dev', 'Developers only'], ['off', 'Off (nobody)']].map(([v, l]) => `<option value="${v}"${ADM.fl[k].level === v ? ' selected' : ''}>${l}</option>`).join('')}</select><button class="g admdel" data-adm="frm">Remove</button></div></div>`).join('') || '<p class="mute">No switches yet.</p>';
+    return `<div class="card sc"><h2>Admin</h2><p class="mute">Signed in as founder ${esc(PFA.name || '')}. Passwords are never shown here. Founders can only be added or changed on the admin page.</p>
+      ${ADM.msg ? `<p class="admmsg${/^(Could|Wrong|Too|No |Only)/.test(ADM.msg) ? ' bad' : ''}">${esc(ADM.msg)}</p>` : ''}
+      ${ADM.code ? `<div class="admcode"><p>Reset code for <b>${esc(ADM.codeFor)}</b>. It works once, for 48 hours. They enter it in Settings &gt; Accounts &gt; "Forgot your password? Reset it with a code".</p><code>${esc(ADM.code)}</code><p class="mute">Using it clears the Bungie accounts saved in their Pathfinder account and signs their other devices out.</p></div>` : ''}
+      <div class="thh">Accounts (${ADM.acc.length})</div>
+      <div class="pfaf"><input type="search" id="admq" placeholder="Filter by name" value="${esc(ADM.q)}"><input type="text" id="admfind" placeholder="Find by exact name"><button class="g" data-adm="find">Find</button><button class="g" data-adm="reload">${ADM.busy ? 'Loading…' : 'Reload'}</button></div>
+      <div class="adml">${rows}</div>
+      <div class="thh">Feature switches</div><div class="adml">${frows}</div>
+      <div class="pfaf"><input type="text" id="admnewfl" placeholder="new-switch-name" value="${esc(ADM.newFl)}"><button class="g" data-adm="fadd">Add switch</button><button class="b" data-adm="fsave">Save switches</button></div>
+      <p><button class="g" data-adm="lock">Lock admin</button></p></div>`;
+  }
+  settingsSec.addEventListener('click', async (e) => {
+    const b = e.target.closest('[data-adm]'); if (!b || b.tagName === 'SELECT' || b.tagName === 'INPUT') return;
+    const a = b.dataset.adm, row = b.closest('[data-aid]'), acc = row && ADM.acc.find((x) => x.id === row.dataset.aid), nm = (acc && acc.name) || 'this account';
+    const run = async (f, ok) => { try { await f(); if (ok) ADM.msg = ok; } catch (er) { ADM.msg = clean(er); if (/wrong admin key/i.test(ADM.msg)) { ADM.on = false; ADM.key = ''; } } drawSettings(); };
+    if (a === 'unlock') { ADM.key = (document.getElementById('admkey') || {}).value || ''; if (!ADM.key) return; ADM.msg = ''; admLoad(); return; }
+    if (a === 'lock') { ADM.key = ''; ADM.on = false; ADM.code = ''; ADM.msg = ''; drawSettings(); return; }
+    if (a === 'reload') { ADM.code = ''; admLoad(); return; }
+    if (a === 'find') { const n = ((document.getElementById('admfind') || {}).value || '').trim(); if (!n) return; return run(async () => { const r = await admCall('POST', '/find', { name: n }); const x = r.account; if (!x.name) x.name = n; if (!ADM.acc.some((y) => y.id === x.id)) ADM.acc.unshift(x); ADM.q = ''; }, 'Found it.'); }
+    if (a === 'reset' && acc) { if (!confirm('Make a one-time reset code for ' + nm + '?')) return; return run(async () => { const r = await admCall('POST', '/reset', { id: acc.id }); ADM.code = r.code; ADM.codeFor = nm; acc.codeWaiting = true; }, ''); }
+    if (a === 'cancel' && acc) return run(async () => { await admCall('POST', '/cancelreset', { id: acc.id }); acc.codeWaiting = false; if (ADM.codeFor === nm) ADM.code = ''; }, 'Reset code cancelled.');
+    if (a === 'unlockacc' && acc) return run(async () => { Object.assign(acc, (await admCall('POST', '/unlock', { id: acc.id })).account); }, nm + ' is unlocked.');
+    if (a === 'del' && acc) { if (!confirm('Delete ' + nm + ' and the Bungie sign-ins saved in it? This cannot be undone.')) return; return run(async () => { await admCall('POST', '/delete', { id: acc.id }); ADM.acc = ADM.acc.filter((x) => x.id !== acc.id); }, nm + ' was deleted.'); }
+    if (a === 'fadd') { const k = ((document.getElementById('admnewfl') || {}).value || '').trim().toLowerCase(); if (!/^[a-z0-9][a-z0-9_-]{0,39}$/.test(k)) { ADM.msg = 'Switch names are lowercase letters, numbers, - and _.'; drawSettings(); return; } if (!ADM.fl[k]) ADM.fl[k] = { level: 'dev', note: '' }; ADM.newFl = ''; ADM.msg = 'Added. Press Save switches to keep it.'; drawSettings(); return; }
+    if (a === 'frm') { const k = b.closest('[data-fk]').dataset.fk; delete ADM.fl[k]; ADM.msg = 'Removed. Press Save switches to keep it.'; drawSettings(); return; }
+    if (a === 'fsave') return run(async () => { ADM.fl = (await admCall('PUT', '/flags', { flags: ADM.fl })).flags || {}; FLG = { flags: {}, dev: FLG.dev }; flagsLoad(); }, 'Switches saved. Other copies of Pathfinder pick them up within 10 minutes.');
+  });
+  settingsSec.addEventListener('change', async (e) => {
+    const t = e.target; if (!t.dataset || !t.dataset.adm) return;
+    if (t.dataset.adm === 'role') {
+      const row = t.closest('[data-aid]'), acc = ADM.acc.find((x) => x.id === row.dataset.aid); if (!acc) return;
+      try { Object.assign(acc, (await admCall('POST', '/role', { id: acc.id, role: t.value })).account); ADM.msg = (acc.name || 'The account') + ' is now ' + (t.value === 'dev' ? 'a developer' : 'a player') + '.'; } catch (er) { ADM.msg = clean(er); }
+      drawSettings();
+    }
+    if (t.dataset.adm === 'flevel') { const k = t.closest('[data-fk]').dataset.fk; if (ADM.fl[k]) ADM.fl[k].level = t.value; }
+  });
+  settingsSec.addEventListener('input', (e) => {
+    const t = e.target;
+    if (t.id === 'admq') { ADM.q = t.value; const pos = t.selectionStart; drawSettings(); const n = document.getElementById('admq'); if (n) { n.focus(); n.setSelectionRange(pos, pos); } }
+    if (t.id === 'admnewfl') ADM.newFl = t.value;
+    if (t.dataset && t.dataset.adm === 'fnote') { const k = t.closest('[data-fk]').dataset.fk; if (ADM.fl[k]) ADM.fl[k].note = t.value; }
+  });
+  settingsSec.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.id === 'admkey') { e.preventDefault(); const b = settingsSec.querySelector('[data-adm=unlock]'); if (b) b.click(); } });
   const acctNs = (mid, prim) => (prim && mid && String(mid) !== String(prim) ? '@' + mid : '');
   function afterAcct(r) {
     if (r && r.reload) { location.reload(); return; }
@@ -1233,11 +1302,11 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
       ${sx('Tighter spacing', 'Packs items, rows and sections closer together so more fits on screen.', tgl('compact'))}
       ${tabsCard}
       <p><button class="g" data-sa="reset">Reset display settings</button></p>
-    </div>${window.matchMedia && matchMedia('(pointer:coarse)').matches && innerWidth < 900 ? '' : keysCard()}${wlc}${acct}${devCard()}</div>`; void upd; // Updates now live in About & help (news.js)
+    </div>${window.matchMedia && matchMedia('(pointer:coarse)').matches && innerWidth < 900 ? '' : keysCard()}${wlc}${acct}${devCard()}${admCard()}</div>`; void upd; // Updates now live in About & help (news.js)
   }
   // Settings cards in even columns: each card, in a sensible order, goes into whichever column is shortest, so no side runs
   // far longer than the other. Re-done when cards are added (Farming, Reminders... come from another file) or the window resizes.
-  const SORD = ['Accounts', 'Item display', 'Inventory display', 'Appearance', 'Display', 'Wish lists', 'Farming', 'Reminders', 'Keyboard shortcuts', 'Backup', 'About & help', 'Developer'];
+  const SORD = ['Accounts', 'Item display', 'Inventory display', 'Appearance', 'Display', 'Wish lists', 'Farming', 'Reminders', 'Keyboard shortcuts', 'Backup', 'About & help', 'Developer', 'Admin'];
   // Settings as a menu (like a browser's settings page): the sections are listed on the left and only the one you pick is shown.
   // Cards come from several files (Farming, Reminders, About & help...), so this runs again whenever new cards show up.
   const SICO = {
@@ -1253,6 +1322,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     'Backup': '<path d="M7 18a5 5 0 01-.6-10A6 6 0 0118 9a4.5 4.5 0 01-1 9z"/><path d="M12 11v6M9.5 13.5L12 11l2.5 2.5"/>',
     'About & help': '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/>',
     'Developer': '<path d="M8 8l-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/>',
+    'Admin': '<path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
   };
   const sico = (t) => `<svg viewBox="0 0 24 24" aria-hidden="true">${SICO[t] || '<circle cx="12" cy="12" r="8"/>'}</svg>`;
   let balT = 0, SSEC = (() => { try { return localStorage.getItem('gt_setsec') || 'Accounts'; } catch (e) { return 'Accounts'; } })();
