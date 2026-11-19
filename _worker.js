@@ -22,6 +22,8 @@ export default {
     const u0 = new URL(request.url), p0 = u0.pathname.replace(/\/+$/, '').toLowerCase();
     // status.<your domain> is a short way to the status page (it lives on the main address, where Bungie allows the checks)
     if (DOMAIN && u0.hostname.toLowerCase() === 'status.' + DOMAIN) return Response.redirect('https://' + DOMAIN + '/status', 302);
+    // www.<your domain> is the same site: send it to the main address for good (301), so Google keeps one copy of each page.
+    if (DOMAIN && u0.hostname.toLowerCase() === 'www.' + DOMAIN) return Response.redirect('https://' + DOMAIN + u0.pathname + u0.search, 301);
     if (DOMAIN && u0.hostname.toLowerCase() === 'beta.' + DOMAIN) return Response.redirect('https://' + DOMAIN + '/beta/', 302);
     if (p0 === '/beta' && !u0.pathname.endsWith('/')) return Response.redirect(u0.origin + '/beta/', 302);
     if (p0 === '/beta' || p0.startsWith('/beta/')) { // no beta published right now: the regular site

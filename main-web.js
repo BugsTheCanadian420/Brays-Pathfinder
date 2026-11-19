@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.22: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.23: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -565,7 +565,7 @@ const pfaRun = (boxIn, verIn) => {
 // A Pathfinder account is an account name and a password. Accounts made earlier with an email address still sign in with that
 // email typed as the account name (both are matched the same way: trimmed, any capitals ignored).
 const pfaName = (p) => (p && (p.name || p.email)) || '';
-const pfaStatus = () => { const c = rd(), p = c.pfa || {}; return { avail: !!pfaUrl(), on: !!p.sess, tmp: !!(p.sess && p.tmp), name: pfaName(p), at: p.at || 0, n: p.n || 0, err: PFA_ERR, out: !!(pfaName(p) && !p.sess), dev: !!(p.sess && (p.role === 'dev' || p.role === 'founder')), founder: !!(p.sess && p.role === 'founder') }; };
+const pfaStatus = () => { const c = rd(), p = c.pfa || {}; return { avail: !!pfaUrl(), on: !!p.sess, tmp: !!(p.sess && p.tmp), name: pfaName(p), at: p.at || 0, n: p.n || 0, err: PFA_ERR, out: !!(pfaName(p) && !p.sess), dev: !!(p.sess && ['dev', 'founder', 'owner'].includes(p.role)), founder: !!(p.sess && ['founder', 'owner'].includes(p.role)), owner: !!(p.sess && p.role === 'owner'), role: p.sess ? p.role || '' : '' }; };
 H('pfa:status', () => pfaStatus());
 const pfaCreds = (v, isNew) => {
   OBJ(v); const name = TXT(v.name, 200).trim(), pw = TXT(v.pw, 200);
@@ -630,23 +630,79 @@ H('dev:rename', async (e, v) => {
   const name = TXT(v.name, 200).trim(), to = pfaTo(v); if (!name) throw new Error('Enter the account name to change.');
   return pfaReq('POST', '/dev/rename', { name, to, auth: (await pfaKeys(to, PFA_TMP)).auth }, c.pfa.sess);
 });
+// ---- Help requests (Settings > Help) and the Help desk (developers and founders) ----
+// A request is opened from this device without signing in: the token service hands back a secret key for it, kept here
+// (c.tickets). Signed in to a Pathfinder account, requests also belong to the account and show on every device.
+const helpBase = () => (preset && preset.tokenUrl && /^https:\/\//i.test(preset.tokenUrl) ? preset.tokenUrl.replace(/\/+$/, '') : '');
+async function helpReq(p, body, staff) {
+  const base = helpBase(); if (!base) throw new Error('Help is not set up on this copy. Email help@d2pathfinder.com instead.');
+  const c = rd(), sess = c.pfa && c.pfa.sess;
+  if (staff && !sess) throw new Error('Sign in to your Pathfinder account first.');
+  // A plain timer rather than AbortSignal.timeout, which older phones do not have: a request never hangs for more than 15 s.
+  const ac = new AbortController(), tm = setTimeout(() => ac.abort(), 15000);
+  let r; try { r = await fetch(base + p, { method: body ? 'POST' : 'GET', headers: { 'Content-Type': 'application/json', Accept: 'application/json', ...(sess ? { Authorization: 'Bearer ' + sess } : {}) }, body: body ? JSON.stringify(body) : undefined, signal: ac.signal }); }
+  catch (er) { throw new Error(ac.signal.aborted ? 'Pathfinder did not answer in time. Check your connection and try again.' : 'Could not reach Pathfinder. Check your connection and try again.'); }
+  finally { clearTimeout(tm); }
+  let j = {}; try { j = await r.json(); } catch (er) { j = {}; }
+  if (!r.ok) { const er = new Error(j.message || (r.status === 404 || r.status === 501 ? 'Help is not switched on in the token service yet. Email help@d2pathfinder.com instead.' : 'Could not reach Pathfinder (HTTP ' + r.status + '). Try again in a moment.')); er.code = j.error || r.status; throw er; }
+  return j;
+}
+const myTickets = () => { const t = rd().tickets; return Array.isArray(t) ? t.filter((x) => x && typeof x.id === 'string' && typeof x.key === 'string').slice(0, 60) : []; };
+const tKey = (id) => { const t = myTickets().find((x) => x.id === id); return t ? t.key : undefined; };
+const HID = (v) => { const id = TXT(v, 40); if (!/^[0-9]{13}-[A-Za-z0-9_-]{6}$/.test(id)) throw bad(); return id; };
+H('help:new', async (e, v) => {
+  OBJ(v); const kind = TXT(v.kind, 12), msg = TXT(v.msg, 3000).trim(), contact = v.contact === undefined ? '' : TXT(v.contact, 120), report = v.report === undefined ? '' : TXT(v.report, 8000);
+  if (msg.length < 3) throw new Error('Write a message first.');
+  const where = WEB ? (globalThis.location && /^\/beta\b/.test(globalThis.location.pathname) ? 'beta website' : 'website') : (IS_BETA ? 'PC beta' : 'PC app');
+  const j = await helpReq('/help/new', { kind, msg, contact, report, ver: String(app.getVersion ? app.getVersion() : ''), where });
+  const c = rd(); c.tickets = [{ id: j.id, key: j.key }, ...myTickets().filter((x) => x.id !== j.id)].slice(0, 60); wr(c);
+  return j.ticket;
+});
+H('help:mine', async () => { const c = rd(); if (!myTickets().length && !(c.pfa && c.pfa.sess)) return []; return (await helpReq('/help/mine', { tickets: myTickets() })).tickets || []; });
+H('help:get', async (e, v) => { OBJ(v); const id = HID(v.id); return (await helpReq('/help/get', { id, key: tKey(id) })).ticket; });
+H('help:reply', async (e, v) => { OBJ(v); const id = HID(v.id), text = TXT(v.text, 3000).trim(); if (!text) throw new Error('Write a message first.'); return (await helpReq('/help/reply', { id, key: tKey(id), text })).ticket; });
+H('help:close', async (e, v) => { OBJ(v); const id = HID(v.id); return (await helpReq('/help/close', { id, key: tKey(id), open: !!v.open })).ticket; });
+// The team's side: developer and founder accounts (the token service checks the role).
+const staffOnly = () => { if (!pfaStatus().dev) throw new Error('Developer and founder accounts only.'); };
+H('desk:list', async () => { staffOnly(); return (await helpReq('/acct/help/list', null, true)).tickets || []; });
+H('desk:get', async (e, v) => { staffOnly(); OBJ(v); return (await helpReq('/acct/help/get', { id: HID(v.id) }, true)).ticket; });
+H('desk:reply', async (e, v) => { staffOnly(); OBJ(v); const text = TXT(v.text, 3000).trim(); if (!text) throw new Error('Write a reply first.'); return (await helpReq('/acct/help/reply', { id: HID(v.id), text, close: !!v.close }, true)).ticket; });
+H('desk:status', async (e, v) => { staffOnly(); OBJ(v); const st = TXT(v.status, 10); if (!['open', 'answered', 'closed'].includes(st)) throw bad(); return (await helpReq('/acct/help/status', { id: HID(v.id), status: st }, true)).ticket; });
+H('desk:delete', async (e, v) => { staffOnly(); OBJ(v); return helpReq('/acct/help/delete', { id: HID(v.id) }, true); });
 // Feature switches set on the admin page: 'on' (everyone), 'dev' (developer accounts only), 'off' (nobody). Checked every 10 minutes.
 let FLAGS = null, FLAGS_AT = 0;
-H('flags:get', async () => {
+H('flags:get', async (e, v) => {
   const base = preset && preset.tokenUrl && /^https:\/\//i.test(preset.tokenUrl) ? preset.tokenUrl.replace(/\/+$/, '') : '';
-  if (base && (!FLAGS || Date.now() - FLAGS_AT > 6e5)) {
-    try { const r = await fetch(base + '/flags', { headers: { Accept: 'application/json' }, signal: AbortSignal.timeout(8000) }); if (r.ok) { const j = await r.json(); FLAGS = j && j.flags && typeof j.flags === 'object' ? j.flags : {}; FLAGS_AT = Date.now(); } } catch (er) { /* keep the last ones */ }
+  const force = !!(v && typeof v === 'object' && v.force);
+  if (base && (force || !FLAGS || Date.now() - FLAGS_AT > 6e5)) {
+    const c = rd(), sess = c.pfa && c.pfa.sess;
+    const ac = new AbortController(), tm = setTimeout(() => ac.abort(), 8000);
+    try {
+      const r = await fetch(base + '/flags', { headers: { Accept: 'application/json', ...(sess ? { Authorization: 'Bearer ' + sess } : {}) }, signal: ac.signal });
+      if (r.ok) {
+        const j = await r.json(); FLAGS = j && j.flags && typeof j.flags === 'object' ? j.flags : {}; FLAGS_AT = Date.now();
+        // The account's current role comes along: a role changed on the admin page (or in Admin) takes effect here by itself.
+        if (sess && j && 'me' in j) {
+          const c2 = rd();
+          if (c2.pfa && c2.pfa.sess === sess) {
+            if (j.me === null) { delete c2.pfa.sess; wr(c2); PFA_ERR = 'Your Pathfinder account sign-in ended. Sign in again.'; }
+            else if (typeof j.me.role === 'string' && (c2.pfa.role || '') !== j.me.role) { c2.pfa.role = j.me.role; wr(c2); }
+          }
+        }
+      }
+    } catch (er) { /* keep the last ones */ } finally { clearTimeout(tm); }
   }
-  return { flags: FLAGS || {}, dev: pfaStatus().dev };
+  const st = pfaStatus();
+  return { flags: FLAGS || {}, dev: st.dev, role: st.role, on: st.on };
 });
 // Developer tools (the PC app only, developer accounts only).
 // Admin from inside the app (founder accounts only). The admin key is typed in the app each time and only passed along;
 // the token service checks both the founder role and the key.
-const ADMP = { 'GET /accounts': 1, 'POST /find': 1, 'POST /reset': 1, 'POST /quickreset': 1, 'POST /rename': 1, 'POST /cancelreset': 1, 'POST /role': 1, 'POST /unlock': 1, 'POST /delete': 1, 'GET /flags': 1, 'PUT /flags': 1 };
+const ADMP = { 'GET /ping': 1, 'GET /keys': 1, 'POST /keys': 1, 'POST /keyrevoke': 1, 'GET /accounts': 1, 'POST /find': 1, 'POST /reset': 1, 'POST /quickreset': 1, 'POST /rename': 1, 'POST /cancelreset': 1, 'POST /role': 1, 'POST /unlock': 1, 'POST /delete': 1, 'GET /flags': 1, 'PUT /flags': 1 };
 H('adm:call', async (e, v) => {
   OBJ(v); const method = TXT(v.method, 6).toUpperCase(), p = TXT(v.path, 30), key = TXT(v.key, 200);
   if (!ADMP[method + ' ' + p]) throw bad();
-  const c = rd(); if (!c.pfa || !c.pfa.sess || c.pfa.role !== 'founder') throw new Error('Only founder accounts can use admin.');
+  const c = rd(); if (!c.pfa || !c.pfa.sess || !['founder', 'owner'].includes(c.pfa.role)) throw new Error('Only founder and owner accounts can use admin.');
   let body = method === 'GET' ? null : (v.body && typeof v.body === 'object' ? { ...v.body } : {});
   // Quick reset and rename set the password to 123456: the login check for it is worked out here, from the (new) name.
   if (p === '/quickreset') { const n = typeof body.name === 'string' ? body.name.slice(0, 200).trim() : ''; if (!n) throw new Error('This account has no saved name yet: find it by name first.'); body = { id: TXT(body.id, 80), auth: (await pfaKeys(n, PFA_TMP)).auth }; }
