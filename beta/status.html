@@ -187,21 +187,22 @@ footer p{margin:0 0 8px}
     var j = null; try { var r = await timed(fetch(TOKEN + '/bungie-status', { cache: 'no-store' }), 10000); j = r.ok ? await r.json() : null; } catch (e) { j = null; }
     if (!j) { if (down) { box.hidden = false; $('tlS').textContent = 'Could not read Bungie\u2019s timeline right now. Check the links for the latest.'; $('tlB').innerHTML = ''; } else box.hidden = true; return; }
     var now = Date.now(), show = down, steps = [];
-    (j.events || []).forEach(function (ev) { (ev.rows || []).forEach(function (r) { var at = when(ev.title, r.time, r.tz); steps.push({ ev: ev, r: r, at: at }); if (at && at > now - 3 * 3600e3 && at < now + 48 * 3600e3) show = true; }); });
+    (j.events || []).forEach(function (ev) { (ev.rows || []).forEach(function (r) { var at = when(ev.title, r.time, r.tz); if (!at) return; steps.push({ ev: ev, r: r, at: at }); if (at && at > now - 3 * 3600e3 && at < now + 48 * 3600e3) show = true; }); });
     if (!show) { box.hidden = true; return; }
     var cur = null; steps.forEach(function (s) { if (s.at && s.at <= now && (!cur || s.at >= cur.at)) cur = s; });
     var esc = function (x) { return String(x).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
     var lt = function (ms) { return new Date(ms).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }); };
+    var zn = ''; try { zn = (new Intl.DateTimeFormat([], { timeZoneName: 'short' }).formatToParts(new Date()).find(function (p) { return p.type === 'timeZoneName'; }) || {}).value || ''; } catch (e) { zn = ''; }
     var html = '', lastEv = null;
     // Only events that are not long over: today's and later (or all of them when no date could be read).
     steps.filter(function (s) { return !s.at || s.at > now - 30 * 3600e3; }).forEach(function (s) {
       if (s.ev !== lastEv) { html += '<div class="ev">' + esc(s.ev.title || 'Maintenance') + '</div>'; lastEv = s.ev; }
       var cls = s === cur ? 'now' : s.at && s.at < now ? 'done' : '';
-      html += '<div class="st2 ' + cls + '"><div class="t"><b>' + (s.at ? (/~/.test(s.r.time) ? '~' : '') + esc(lt(s.at)) : esc(s.r.time)) + (s === cur ? '<span class="nowtag">Now</span>' : '') + '</b><small>' + (s.at ? 'your time \u00b7 ' : '') + esc(s.r.time) + '</small></div><ul>' + s.r.items.map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('') + '</ul></div>';
+      html += '<div class="st2 ' + cls + '"><div class="t"><b>' + (s.at ? (/~/.test(s.r.time) ? '~' : '') + esc(lt(s.at)) : esc(s.r.time)) + (s === cur ? '<span class="nowtag">Now</span>' : '') + '</b><small>Bungie posted ' + esc(s.r.time) + '</small></div><ul>' + s.r.items.map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('') + '</ul></div>';
     });
     $('tlB').innerHTML = html || '<p style="color:var(--mute);margin:8px 0 12px">Bungie has not posted a timeline yet. Check the links for the latest.</p>';
     $('tlT').textContent = down ? 'Bungie\u2019s maintenance timeline' : 'Maintenance coming up';
-    $('tlS').textContent = 'From Bungie\u2019s Server and Update Status page' + (j.updated ? ', updated ' + new Date(j.updated).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '') + '. The same steps @BNGServerStatus posts.';
+    $('tlS').textContent = 'From Bungie\u2019s Server and Update Status page' + (j.updated ? ', updated ' + new Date(j.updated).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '') + '. The same steps @BNGServerStatus posts. Big times are your time' + (zn ? ' (' + zn + ', from this device\u2019s clock)' : ' (from this device\u2019s clock)') + '.';
     if (j.url) $('tlBH').href = j.url;
     box.hidden = false;
   }
