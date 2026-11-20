@@ -629,7 +629,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 #settings .scols{display:flex;gap:16px;align-items:flex-start}#settings .scol{flex:1 1 0;min-width:0}
 #settings .sg{grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:6px}#settings .sg.wlps{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}#settings .th{padding:6px 6px 7px;font-size:12.5px}#settings .th i{height:20px;margin-bottom:5px}
 #settings .uis{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
-#settings .setgrid{display:contents}.adml{display:flex;flex-direction:column;margin:4px 0 10px}.admr{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--g-line,#2b2e33);flex-wrap:wrap}.admn{min-width:0;flex:1 1 220px}.admn b{display:block}.admn small{color:var(--mute,#9aa1ab);font-size:12px}.admn input{width:100%;margin-top:4px;box-sizing:border-box}.admc{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.admren{flex:1 1 100%;padding-top:4px}#settings .spane .card.son~.card.son{margin-top:14px}.admtag.own{background:var(--g-accent,#7ab8e8)!important;color:var(--g-on-accent,#111)!important}.admkey{display:block;word-break:break-all;user-select:all;font-size:13px}
+#settings .setgrid{display:contents}.adml{display:flex;flex-direction:column;margin:4px 0 10px}.admlog{display:flex;gap:4px 14px;padding:6px 0;border-bottom:1px solid var(--g-line,#2b2e33);font-size:13px;flex-wrap:wrap}.admlog small{flex:none;width:150px;color:var(--mute,#9aa1ab)}.admlog span{flex:1 1 260px;min-width:0}#settings .admrf{margin:2px 0 8px;flex-wrap:wrap}#settings .admseg.admrf button.on{background:color-mix(in srgb,var(--g-accent,#e8b84a) 20%,transparent);color:var(--g-accent,#e8b84a)}.admswg{margin:12px 0 0;color:var(--mute,#9aa1ab);font-size:12px;font-weight:700}#settings .admseg{display:inline-flex;flex:none;border:1px solid var(--g-line,#2b2e33);border-radius:9px;overflow:hidden}#settings .admseg button{margin:0;border:0;border-radius:0;background:transparent;color:var(--mute,#9aa1ab);padding:6px 11px;font-size:13px;box-shadow:none}#settings .admseg button+button{border-left:1px solid var(--g-line,#2b2e33)}#settings .admseg button:hover{color:var(--text,#e8ecf2)}#settings .admseg button.on{background:rgba(71,194,122,.16);color:#bdf0d0}#settings .admseg button.on.dev{background:color-mix(in srgb,var(--g-accent,#e8b84a) 20%,transparent);color:var(--g-accent,#e8b84a)}#settings .admseg button.on.off{background:rgba(239,100,97,.16);color:#ffb9b7}.admr{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--g-line,#2b2e33);flex-wrap:wrap}.admn{min-width:0;flex:1 1 220px}.admn b{display:block}.admn small{color:var(--mute,#9aa1ab);font-size:12px}.admn input{width:100%;margin-top:4px;box-sizing:border-box}.admc{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.admren{flex:1 1 100%;padding-top:4px}#settings .spane .card.son~.card.son{margin-top:14px}.admtag.own{background:var(--g-accent,#7ab8e8)!important;color:var(--g-on-accent,#111)!important}.admkey{display:block;word-break:break-all;user-select:all;font-size:13px}
 .hown{display:inline-block;margin-left:6px;padding:0 7px;border-radius:999px;font-size:10.5px;font-weight:800;letter-spacing:.04em;background:var(--g-accent,#7ab8e8);color:var(--g-on-accent,#111);vertical-align:1px}.hb.own{border-color:var(--g-accent,#7ab8e8)!important}.fbk{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}#settings .fbk .chip{padding:5px 14px!important;border-radius:999px!important;border:1px solid var(--g-line,#3a3d43)!important;background:transparent!important;color:#cfd3da!important;font-weight:600}#settings .fbk .chip.on{background:var(--g-accent,#7ab8e8)!important;border-color:var(--g-accent,#7ab8e8)!important;color:var(--g-on-accent,#111)!important}#fbmsg{width:100%;box-sizing:border-box;min-height:120px;resize:vertical;font:inherit;line-height:1.5}.fbr{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:8px}.fbr #fbcon{flex:1 1 260px;min-width:0}.fbc{display:flex!important;gap:8px;align-items:center;cursor:pointer;white-space:nowrap;width:auto!important;margin:0!important;font-size:13.5px}.fbc input{width:16px!important;height:16px;margin:0!important}.fbb{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.fbn{font-size:13.5px;color:#8fd19e}.fbn.bad{color:#ff8a8a}
 .hnote{font-size:13.5px;color:#8fd19e;margin:6px 0}.hnote.bad{color:#ff8a8a}.hsm{font-size:12.5px;margin-top:10px}
 .hlist{display:flex;flex-direction:column;border:1px solid var(--g-line,#2b2e33);border-radius:10px;overflow:hidden;margin-top:6px}.hlist>p{padding:12px 14px;margin:0}
@@ -1148,6 +1148,11 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   const devOff = () => { try { const a = JSON.parse(localStorage.getItem('gt_devoff')); return Array.isArray(a) ? a : []; } catch (e) { return []; } };
   window.__gtFlag = (name, dflt) => { const l = FLG.flags[name]; if (!l) return dflt === undefined ? true : !!dflt; if (l === 'on') return true; if (l === 'off') return false; return !!FLG.dev && !devOff().includes(name); };
   window.__gtDev = () => !!FLG.dev;
+  // Tabs have switches too ("tab-optimizer", ...), set on the admin page: Nobody hides the tab for everyone, Developers only shows
+  // it just to developer accounts. Not set = everyone. Inventory, Home and Settings always stay.
+  window.__gtTabLocked = (id) => !['vault', 'home', 'settings'].includes(id) && !window.__gtFlag('tab-' + id, true);
+  const FNAME = { 'maint-bar': 'Maintenance bar' };
+  const fName = (k) => FNAME[k] || (/^tab-/.test(k) && window.__gtnav && window.__gtnav.name && window.__gtnav.name(k.slice(4)) ? window.__gtnav.name(k.slice(4)) + ' tab' : k);
   // A feature that is for developers until the admin page says otherwise: no switch (or 'dev') = developer accounts only,
   // 'on' = everyone, 'off' = nobody. Turning off "Show for me" in Settings > Developer hides it for you too.
   window.__gtDevFeature = (name) => { const l = FLG.flags[name]; if (l === 'on') return true; if (l === 'off') return false; return !!FLG.dev && !devOff().includes(name); };
@@ -1361,12 +1366,12 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   function devCard() {
     if (!FLG.dev) return '';
     const off = devOff(), names = [...new Set([...Object.keys(FLG.flags), ...(window.__gtDevFeatureNames || [])])].sort();
-    const lv = { on: 'On for everyone', dev: 'Developers only', off: 'Off for everyone' };
+    const lv = { on: 'Everyone', dev: 'Developers only', off: 'Hidden for everyone' };
     // "Show for me" (on = you see it, like everyone it is switched on for). Turn it off to see the app the way players do.
-    const rows = names.map((n) => { const lvl = FLG.flags[n] || 'dev'; return `<div class="sx"><div class="sxt"><b>${esc(n)}</b><small>${lv[lvl] || esc(lvl)}${FLG.flags[n] ? '' : ' (not on the admin page yet)'}</small></div><div class="sxc">${lvl === 'dev' ? `<label class="mute" style="display:flex;gap:8px;align-items:center">Show for me <label class="tgl"><input type="checkbox" data-devoff="${esc(n)}"${off.includes(n) ? '' : ' checked'}><i></i></label></label>` : ''}</div></div>`; }).join('');
+    const rows = names.map((n) => { const lvl = FLG.flags[n] || 'dev'; return `<div class="sx"><div class="sxt"><b>${esc(fName(n))}</b><small>${lv[lvl] || esc(lvl)}</small></div><div class="sxc">${lvl === 'dev' ? `<label class="mute" style="display:flex;gap:8px;align-items:center">Show for me <label class="tgl"><input type="checkbox" data-devoff="${esc(n)}"${off.includes(n) ? '' : ' checked'}><i></i></label></label>` : ''}</div></div>`; }).join('');
     const pc = !document.documentElement.classList.contains('gtweb');
     return `<div class="card sc"><h2>Developer</h2><p class="mute">You are signed in with a developer account (${esc((PFA && PFA.name) || '')}). Switches are set on the admin page; changes reach the app within 10 minutes.</p>
-      <div class="thh">Feature switches</div>${rows || '<p class="mute">No switches yet. Add them on the admin page.</p>'}
+      <div class="thh">Feature switches</div>${rows || '<p class="mute">Everything is on for everyone right now. Switches are set in Admin or on the admin page.</p>'}
       <div class="thh">Tools</div><p>${pc ? '<button class="g" data-dev="tools">Open developer tools</button> ' : ''}<button class="g" data-dev="flags">Check switches now</button> <button class="g" data-dev="diag">Copy diagnostics</button></p>
       <div class="thh">Rename an account</div><p class="mute">For a name that breaks the rules. The account's password becomes 123456 and they pick a new one when they sign in; their devices are signed out and the Bungie sign-ins saved in it are cleared. ${PFA && PFA.founder ? 'Founder accounts are renamed on the admin page.' : 'You can rename player accounts.'}</p>
       <div class="pfaf"><input id="devrnf" type="text" placeholder="Current account name" autocapitalize="off" spellcheck="false" maxlength="200" value="${esc(DEVRN.from)}"><input id="devrnt" type="text" placeholder="New account name" autocapitalize="off" spellcheck="false" maxlength="24" value="${esc(DEVRN.to)}"><button class="b" data-dev="rename">${DEVRN.busy ? 'Renaming…' : 'Rename'}</button></div>${DEVRN.msg ? `<p class="admmsg${DEVRN.bad ? ' bad' : ''}">${esc(DEVRN.msg)}</p>` : ''}</div>`;
@@ -1397,7 +1402,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   // ---- Admin (founder accounts only) ----
   // The admin page's tools inside the app. Needs the founder role (set on the admin page) and the admin key, which is kept only
   // in memory until Pathfinder closes. Founders cannot be made or changed from here: that stays on the admin page.
-  const ADM = { keys: [], newKey: null, ren: '', key: '', on: false, acc: [], fl: {}, q: '', msg: '', code: '', codeFor: '', busy: false, newFl: '' };
+  const ADM = { keys: [], newKey: null, ren: '', key: '', on: false, acc: [], fl: {}, q: '', msg: '', code: '', codeFor: '', busy: false, cat: null, rf: 'all', log: null, logN: 10 };
   const admWhen = (t) => (t ? new Date(t).toLocaleString([], { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }) : '-');
   async function admCall(method, path, body) {
     const r = await gt.admCall({ method, path, body, key: ADM.key });
@@ -1405,10 +1410,12 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   }
   async function admLoad() {
     ADM.busy = true; aDraw();
-    try { ADM.acc = (await admCall('GET', '/accounts')).accounts || []; ADM.fl = (await admCall('GET', '/flags')).flags || {}; ADM.on = true; ADM.msg = ''; ADM.keys = PFA && PFA.owner ? ((await admCall('GET', '/keys').catch(() => ({}))).keys || []) : []; }
+    try { ADM.acc = (await admCall('GET', '/accounts')).accounts || []; { const fr = await admCall('GET', '/flags'); ADM.fl = fr.flags || {}; ADM.cat = fr.catalog || null; } ADM.on = true; ADM.msg = ''; ADM.keys = PFA && PFA.owner ? ((await admCall('GET', '/keys').catch(() => ({}))).keys || []) : []; ADM.log = (await admCall('GET', '/log').catch(() => ({}))).log || null; }
     catch (er) { ADM.msg = clean(er); if (/wrong admin key|too many/i.test(ADM.msg)) { ADM.on = false; ADM.key = ''; } }
     ADM.busy = false; aDraw();
   }
+  // The admin activity list (who did what) follows every change made here.
+  const admLogNow = () => admCall('GET', '/log').then((r) => { if (r && r.log) { ADM.log = r.log; aDraw(); } }).catch(() => {});
   function admCard() {
     if (!PFA || !PFA.founder) return '';
     if (!ADM.on) return `<div class="card sc"><h2>Admin</h2><p class="mute">Manage Pathfinder accounts, help requests and feature switches. For founder and owner accounts, with an access key from the owner. The key is kept only until you close Pathfinder.</p>
@@ -1417,12 +1424,23 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     // Founders look after players and developers; the owner also founders; owner accounts only change on the admin page.
     const may = (r) => (r === 'owner' ? false : r === 'founder' ? !!PFA.owner : true);
     const roleOpts = PFA.owner ? [['', 'Player'], ['dev', 'Developer'], ['founder', 'Founder']] : [['', 'Player'], ['dev', 'Developer']];
-    const rows = ADM.acc.filter((a) => !q || (a.name || '').toLowerCase().includes(q)).map((a) => `<div class="admr" data-aid="${esc(a.id)}">
+    const cnt = { all: ADM.acc.length, '': 0, dev: 0, founder: 0, locked: 0 }; ADM.acc.forEach((a) => { cnt[a.role === 'owner' ? 'founder' : a.role || ''] += 1; if (a.locked) cnt.locked += 1; });
+    const inRf = (a) => ADM.rf === 'all' || (ADM.rf === 'locked' ? a.locked : ADM.rf === 'founder' ? ['founder', 'owner'].includes(a.role) : (a.role || '') === ADM.rf);
+    const rfH = `<div class="admseg admrf" role="group" aria-label="Show accounts">${[['all', 'All'], ['', 'Players'], ['dev', 'Developers'], ['founder', 'Founders'], ['locked', 'Locked']].filter(([v]) => v !== 'locked' || cnt.locked).map(([v, l]) => `<button type="button" data-adm="rf" data-rf="${v}" class="${ADM.rf === v ? 'on' : ''}" aria-pressed="${ADM.rf === v}">${l} ${cnt[v]}</button>`).join('')}</div>`;
+    const rows = ADM.acc.filter((a) => inRf(a) && (!q || (a.name || '').toLowerCase().includes(q))).map((a) => `<div class="admr" data-aid="${esc(a.id)}">
       <div class="admn"><b>${a.name ? esc(a.name) : '<span class="mute">(name not saved yet)</span>'}</b><small>Created ${esc(admWhen(a.created))} &middot; last sign-in ${esc(admWhen(a.lastLogin))}${a.locked ? ' &middot; <span class="bad">locked 15 min</span>' : ''}${a.codeWaiting ? ' &middot; reset code waiting' : ''}${a.tmp ? ' &middot; password 123456' : ''}</small></div>
       <div class="admc">${!may(a.role) ? `<span class="admtag${a.role === 'owner' ? ' own' : ''}">${RL[a.role] || 'Player'}</span>` : `<select data-adm="role" aria-label="Role for ${esc(a.name || 'account')}">${roleOpts.map(([v, l]) => `<option value="${v}"${(a.role || '') === v ? ' selected' : ''}>${l}</option>`).join('')}</select>`}
-      ${may(a.role) ? '<button class="g" data-adm="reset">Reset code</button><button class="g" data-adm="quick" title="Set the password to 123456">Reset to 123456</button><button class="g" data-adm="rename">Rename</button>' : ''}${a.locked ? '<button class="g" data-adm="unlockacc">Unlock</button>' : ''}${a.codeWaiting ? '<button class="g" data-adm="cancel">Cancel code</button>' : ''}${may(a.role) ? '<button class="g admdel" data-adm="del">Delete</button>' : ''}</div>${ADM.ren === a.id ? `<div class="admc admren"><input type="text" id="admren" maxlength="24" value="${esc(a.name)}" aria-label="New account name" autocapitalize="off" spellcheck="false"><button class="b" data-adm="rensave">Save name</button><button class="g" data-adm="rencancel">Cancel</button><small class="mute">Renaming sets the password to 123456.</small></div>` : ''}</div>`).join('') || '<p class="mute">No accounts.</p>';
-    const fk = Object.keys(ADM.fl).sort();
-    const frows = fk.map((k) => `<div class="admr" data-fk="${esc(k)}"><div class="admn"><b>${esc(k)}</b><input type="text" data-adm="fnote" value="${esc(ADM.fl[k].note || '')}" placeholder="What it is" maxlength="200"></div><div class="admc"><select data-adm="flevel">${[['on', 'On (everyone)'], ['dev', 'Developers only'], ['off', 'Off (nobody)']].map(([v, l]) => `<option value="${v}"${ADM.fl[k].level === v ? ' selected' : ''}>${l}</option>`).join('')}</select><button class="g admdel" data-adm="frm">Remove</button></div></div>`).join('') || '<p class="mute">No switches yet.</p>';
+      ${may(a.role) ? '<button class="g" data-adm="reset">Reset code</button><button class="g" data-adm="quick" title="Set the password to 123456">Reset to 123456</button><button class="g" data-adm="rename">Rename</button><button class="g" data-adm="signout" title="End every saved sign-in; the password stays the same">Sign out everywhere</button>' : ''}${a.locked ? '<button class="g" data-adm="unlockacc">Unlock</button>' : ''}${a.codeWaiting ? '<button class="g" data-adm="cancel">Cancel code</button>' : ''}${may(a.role) ? '<button class="g admdel" data-adm="del">Delete</button>' : ''}</div>${ADM.ren === a.id ? `<div class="admc admren"><input type="text" id="admren" maxlength="24" value="${esc(a.name)}" aria-label="New account name" autocapitalize="off" spellcheck="false"><button class="b" data-adm="rensave">Save name</button><button class="g" data-adm="rencancel">Cancel</button><small class="mute">Renaming sets the password to 123456.</small></div>` : ''}</div>`).join('') || '<p class="mute">No accounts.</p>';
+    // Feature switches: every switch the app knows, by name, with three buttons. A click saves it (no typing, no Save button).
+    const cat = ADM.cat || [], known = new Set(cat.map((c) => c.k)), LV = [['on', 'Everyone'], ['dev', 'Developers only'], ['off', 'Nobody']];
+    let frows = '', fg = '';
+    cat.forEach((c) => { const cur = (ADM.fl[c.k] && ADM.fl[c.k].level) || 'on'; if (c.group !== fg) { fg = c.group; frows += `<div class="admswg">${esc(fg)}</div>`; }
+      frows += `<div class="admr" data-fk="${esc(c.k)}"><div class="admn"><b>${esc(c.name)}</b><small>${esc(c.about || '')}</small></div><div class="admseg" role="group" aria-label="Who sees ${esc(c.name)}">${LV.map(([v, l]) => `<button type="button" data-adm="flv" data-lv="${v}" class="${cur === v ? 'on ' + v : ''}" aria-pressed="${cur === v}">${l}</button>`).join('')}</div></div>`; });
+    const old = Object.keys(ADM.fl).filter((k) => !known.has(k)).sort();
+    if (old.length) frows += `<div class="admswg">Old switches</div><p class="mute">Nothing in the app uses these any more. Remove them to tidy up.</p>` + old.map((k) => `<div class="admr" data-fk="${esc(k)}"><div class="admn"><b>${esc(k)}</b><small>${esc(ADM.fl[k].note || '')}</small></div><div class="admc"><button class="g admdel" data-adm="frm">Remove</button></div></div>`).join('');
+    if (!frows) frows = `<p class="mute">${ADM.cat ? 'No switches.' : 'Deploy the latest token-service/worker.js to see the switches here.'}</p>`;
+    const LR = { owner: 'owner', founder: 'founder', dev: 'developer' };
+    const logH = !ADM.log ? '<p class="mute">Deploy the latest token-service/worker.js to see this.</p>' : `<div class="adml">${ADM.log.slice(0, ADM.logN).map((e) => `<div class="admlog"><small>${esc(admWhen(e.t))}</small><span><b>${esc(e.by || 'Someone')}</b>${LR[e.role] ? ` <span class="mute">(${LR[e.role]})</span>` : ''} ${esc(e.a)}${e.who ? ` <b>${esc(e.who)}</b>` : ''}${e.d ? (e.who ? ' ' : ': ') + esc(e.d) : ''}</span></div>`).join('') || '<p class="mute">Nothing yet.</p>'}</div>${ADM.log.length > ADM.logN ? '<p><button class="g" data-adm="logmore">Show more</button></p>' : ''}`;
     const keysH = PFA.owner ? `<div class="thh">Access keys</div><p class="mute">Founders open this Admin section with an access key. Make one for each person, give it to them privately, and take it back whenever you like.</p>
       ${ADM.newKey ? `<div class="admcode"><p>Key for <b>${esc(ADM.newKey.name)}</b>. Copy it now: it is not shown again.</p><code class="admkey">${esc(ADM.newKey.key)}</code><p><button class="g" data-adm="kcopy">Copy key</button></p></div>` : ''}
       <div class="pfaf"><input type="text" id="admkname" maxlength="40" placeholder="Who is it for? (e.g. Manta)"><button class="b" data-adm="kadd">Make key</button></div>
@@ -1430,21 +1448,26 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     return `<div class="card sc"><h2>Admin</h2><p class="mute">Signed in as ${PFA.owner ? 'the owner' : 'founder'} ${esc(PFA.name || '')}. Passwords are never shown here. ${PFA.owner ? 'Owner accounts are only changed on the admin page.' : 'Founder and owner accounts are changed by the owner.'}</p>
       ${ADM.msg ? `<p class="admmsg${/^(Could|Wrong|Too|No |Only)/.test(ADM.msg) ? ' bad' : ''}">${esc(ADM.msg)}</p>` : ''}
       ${ADM.code ? `<div class="admcode"><p>Reset code for <b>${esc(ADM.codeFor)}</b>. It works once, for 48 hours. They enter it in Settings &gt; Accounts &gt; "Forgot your password? Reset it with a code".</p><code>${esc(ADM.code)}</code><p class="mute">Using it clears the Bungie accounts saved in their Pathfinder account and signs their other devices out.</p></div>` : ''}
-      <div class="thh">Accounts (${ADM.acc.length})</div>
+      <div class="thh">Accounts (${ADM.acc.length})</div>${rfH}
       <div class="pfaf"><input type="search" id="admq" placeholder="Filter by name" value="${esc(ADM.q)}"><input type="text" id="admfind" placeholder="Find by exact name"><button class="g" data-adm="find">Find</button><button class="g" data-adm="reload">${ADM.busy ? 'Loading…' : 'Reload'}</button></div>
       <div class="adml">${rows}</div>
-      <div class="thh">Feature switches</div><div class="adml">${frows}</div>
-      <div class="pfaf"><input type="text" id="admnewfl" placeholder="new-switch-name" value="${esc(ADM.newFl)}"><button class="g" data-adm="fadd">Add switch</button><button class="b" data-adm="fsave">Save switches</button></div>
+      <div class="thh">Help requests</div><p class="mute">${DSK.list ? (DSK.list.filter((x) => x.status === 'open').length ? DSK.list.filter((x) => x.status === 'open').length + ' waiting for an answer.' : 'Nothing waiting for an answer.') : 'Answered in the Help desk section.'} <button class="g" data-adm="godesk">Open Help desk</button></p>
+      <div class="thh">Feature switches</div><p class="mute">Choose who sees each part of Pathfinder. A click saves it; every copy of the app follows within 10 minutes. Developers only is for trying something out before everyone gets it.</p><div class="adml">${frows}</div>
       ${keysH}
+      <div class="thh">Recent admin actions</div><p class="mute">Every change made here, on the admin page or with the developer rename tool.</p>${logH}
       <p><button class="g" data-adm="lock">Lock admin</button></p></div>`;
   }
   settingsSec.addEventListener('click', async (e) => {
     const b = e.target.closest('[data-adm]'); if (!b || b.tagName === 'SELECT' || b.tagName === 'INPUT') return;
     const a = b.dataset.adm, row = b.closest('[data-aid]'), acc = row && ADM.acc.find((x) => x.id === row.dataset.aid), nm = (acc && acc.name) || 'this account';
-    const run = async (f, ok) => { try { await f(); if (ok) ADM.msg = ok; } catch (er) { ADM.msg = clean(er); if (/wrong admin key/i.test(ADM.msg)) { ADM.on = false; ADM.key = ''; } } aDraw(); };
+    const run = async (f, ok) => { try { await f(); if (ok) ADM.msg = ok; admLogNow(); } catch (er) { ADM.msg = clean(er); if (/wrong admin key/i.test(ADM.msg)) { ADM.on = false; ADM.key = ''; } } aDraw(); };
     if (a === 'unlock') { ADM.key = (document.getElementById('admkey') || {}).value || ''; if (!ADM.key) return; ADM.msg = ''; admLoad(); return; }
     if (a === 'lock') { ADM.key = ''; ADM.on = false; ADM.code = ''; ADM.msg = ''; ADM.newKey = null; ADM.keys = []; aDraw(); return; }
     if (a === 'reload') { ADM.code = ''; admLoad(); return; }
+    if (a === 'rf') { ADM.rf = b.dataset.rf; aDraw(); return; }
+    if (a === 'logmore') { ADM.logN += 30; aDraw(); return; }
+    if (a === 'godesk') { const d = settingsSec.querySelector('.sni[data-ssec="Help desk"]'); if (d) d.click(); return; }
+    if (a === 'signout' && acc) { if (!confirm('Sign ' + nm + ' out on every device?\n\nTheir password stays the same; they just sign in again. Use it when a password was shared or someone else may be signed in.')) return; return run(async () => { Object.assign(acc, (await admCall('POST', '/signout', { id: acc.id })).account); }, nm + ' is signed out on every device.'); }
     if (a === 'find') { const n = ((document.getElementById('admfind') || {}).value || '').trim(); if (!n) return; return run(async () => { const r = await admCall('POST', '/find', { name: n }); const x = r.account; if (!x.name) x.name = n; if (!ADM.acc.some((y) => y.id === x.id)) ADM.acc.unshift(x); ADM.q = ''; }, 'Found it.'); }
     if (a === 'reset' && acc) { if (!confirm('Make a one-time reset code for ' + nm + '?')) return; return run(async () => { const r = await admCall('POST', '/reset', { id: acc.id }); ADM.code = r.code; ADM.codeFor = nm; acc.codeWaiting = true; }, ''); }
     if (a === 'quick' && acc) { if (!acc.name) { ADM.msg = 'Find this account by its name first.'; aDraw(); return; } if (!confirm('Set the password for ' + nm + ' to 123456?\n\nTheir saved Bungie sign-ins are cleared, every device is signed out, and they must pick a new password when they sign in.')) return; ADM.msg = 'Working…'; aDraw(); return run(async () => { const r = await admCall('POST', '/quickreset', { id: acc.id, name: acc.name }); Object.assign(acc, r.account); }, nm + ': the password is now 123456. They pick a new one when they sign in.'); }
@@ -1454,28 +1477,28 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     if (a === 'cancel' && acc) return run(async () => { await admCall('POST', '/cancelreset', { id: acc.id }); acc.codeWaiting = false; if (ADM.codeFor === nm) ADM.code = ''; }, 'Reset code cancelled.');
     if (a === 'unlockacc' && acc) return run(async () => { Object.assign(acc, (await admCall('POST', '/unlock', { id: acc.id })).account); }, nm + ' is unlocked.');
     if (a === 'del' && acc) { if (!confirm('Delete ' + nm + ' and the Bungie sign-ins saved in it? This cannot be undone.')) return; return run(async () => { await admCall('POST', '/delete', { id: acc.id }); ADM.acc = ADM.acc.filter((x) => x.id !== acc.id); }, nm + ' was deleted.'); }
-    if (a === 'fadd') { const k = ((document.getElementById('admnewfl') || {}).value || '').trim().toLowerCase(); if (!/^[a-z0-9][a-z0-9_-]{0,39}$/.test(k)) { ADM.msg = 'Switch names are lowercase letters, numbers, - and _.'; aDraw(); return; } if (!ADM.fl[k]) ADM.fl[k] = { level: 'dev', note: '' }; ADM.newFl = ''; ADM.msg = 'Added. Press Save switches to keep it.'; aDraw(); return; }
-    if (a === 'frm') { const k = b.closest('[data-fk]').dataset.fk; delete ADM.fl[k]; ADM.msg = 'Removed. Press Save switches to keep it.'; aDraw(); return; }
+    if (a === 'flv' || a === 'frm') {
+      const k = b.closest('[data-fk]').dataset.fk, lv = a === 'frm' ? '' : b.dataset.lv; if (a === 'flv' && b.classList.contains('on')) return;
+      const n = Object.assign({}, ADM.fl); if (!lv || lv === 'on') delete n[k]; else n[k] = { level: lv, note: (ADM.fl[k] && ADM.fl[k].note) || '' };
+      const c = (ADM.cat || []).find((x) => x.k === k), nm2 = c ? c.name : k;
+      return run(async () => { ADM.fl = (await admCall('PUT', '/flags', { flags: n })).flags || {}; FLG = { flags: {}, dev: FLG.dev }; flagsLoad(true); }, nm2 + (lv ? ': ' + { on: 'everyone sees it.', dev: 'only developer accounts see it.', off: 'hidden for everyone.' }[lv] : ' removed.') + ' Other copies of Pathfinder follow within 10 minutes.');
+    }
     if (a === 'kadd') { const n = ((document.getElementById('admkname') || {}).value || '').trim(); if (!n) { ADM.msg = 'Give the key a name, like who it is for.'; aDraw(); return; } return run(async () => { const r = await admCall('POST', '/keys', { name: n }); ADM.keys = r.keys || []; ADM.newKey = { name: n, key: r.key }; }, 'Key made. Copy it now and give it to ' + n + ' privately.'); }
     if (a === 'kcopy' && ADM.newKey) { const k = ADM.newKey.key; (navigator.clipboard ? navigator.clipboard.writeText(k) : Promise.reject()).then(() => { b.textContent = 'Copied'; }).catch(() => { const c = settingsSec.querySelector('.admkey'); if (c) { const r = document.createRange(); r.selectNodeContents(c); const sl = getSelection(); sl.removeAllRanges(); sl.addRange(r); } }); return; }
     if (a === 'krev') { const k = (ADM.keys || []).find((x) => x.id === b.closest('[data-kid]').dataset.kid); if (!k || !confirm('Take back the key for ' + k.name + '? Anyone using it is locked out of admin right away.')) return; return run(async () => { ADM.keys = (await admCall('POST', '/keyrevoke', { id: k.id })).keys || []; if (ADM.newKey && ADM.newKey.name === k.name) ADM.newKey = null; }, 'Key taken back.'); }
-    if (a === 'fsave') return run(async () => { ADM.fl = (await admCall('PUT', '/flags', { flags: ADM.fl })).flags || {}; FLG = { flags: {}, dev: FLG.dev }; flagsLoad(); }, 'Switches saved. Other copies of Pathfinder pick them up within 10 minutes.');
   });
   settingsSec.addEventListener('change', async (e) => {
     const t = e.target; if (!t.dataset || !t.dataset.adm) return;
     if (t.dataset.adm === 'role') {
       const row = t.closest('[data-aid]'), acc = ADM.acc.find((x) => x.id === row.dataset.aid); if (!acc) return;
       if (t.value === 'founder' && !confirm('Make ' + (acc.name || 'this account') + ' a founder? Founders can use Admin (with an access key you give them): accounts, passwords, renames, help requests and switches.')) { t.value = acc.role || ''; return; }
-      try { Object.assign(acc, (await admCall('POST', '/role', { id: acc.id, role: t.value })).account); ADM.msg = (acc.name || 'The account') + ' is now ' + ({ '': 'a player', dev: 'a developer', founder: 'a founder' }[t.value] || 'changed') + '.'; } catch (er) { ADM.msg = clean(er); }
+      try { Object.assign(acc, (await admCall('POST', '/role', { id: acc.id, role: t.value })).account); admLogNow(); ADM.msg = (acc.name || 'The account') + ' is now ' + ({ '': 'a player', dev: 'a developer', founder: 'a founder' }[t.value] || 'changed') + '.'; } catch (er) { ADM.msg = clean(er); }
       aDraw();
     }
-    if (t.dataset.adm === 'flevel') { const k = t.closest('[data-fk]').dataset.fk; if (ADM.fl[k]) ADM.fl[k].level = t.value; }
   });
   settingsSec.addEventListener('input', (e) => {
     const t = e.target;
     if (t.id === 'admq') { ADM.q = t.value; const pos = t.selectionStart; aDraw(); const n = document.getElementById('admq'); if (n) { n.focus(); n.setSelectionRange(pos, pos); } }
-    if (t.id === 'admnewfl') ADM.newFl = t.value;
-    if (t.dataset && t.dataset.adm === 'fnote') { const k = t.closest('[data-fk]').dataset.fk; if (ADM.fl[k]) ADM.fl[k].note = t.value; }
   });
   settingsSec.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.id === 'admkey') { e.preventDefault(); const b = settingsSec.querySelector('[data-adm=unlock]'); if (b) b.click(); } });
   const acctNs = (mid, prim) => (prim && mid && String(mid) !== String(prim) ? '@' + mid : '');
@@ -1871,7 +1894,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   }
   let maintT = 0, maintOff = false;
   async function maintShow() {
-    if (maintOff || !window.gt || !gt.bungieStatus) return;
+    if (maintOff || !window.gt || !gt.bungieStatus || !window.__gtFlag('maint-bar', true)) { maintHide(); return; }
     clearTimeout(maintT); maintT = setTimeout(maintShow, 3e5); // keep it current while it lasts
     const j = await gt.bungieStatus().catch(() => null); const now = Date.now();
     const steps = []; ((j && j.events) || []).forEach((ev) => (ev.rows || []).forEach((r) => { const at = bWhen(ev.title, r.time, r.tz); if (at) steps.push({ at, r }); }));

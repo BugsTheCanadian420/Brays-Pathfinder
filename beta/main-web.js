@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.26-beta.1: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.26-beta.2: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -706,7 +706,7 @@ H('bungie:status', async () => {
 // Developer tools (the PC app only, developer accounts only).
 // Admin from inside the app (founder accounts only). The admin key is typed in the app each time and only passed along;
 // the token service checks both the founder role and the key.
-const ADMP = { 'GET /ping': 1, 'GET /keys': 1, 'POST /keys': 1, 'POST /keyrevoke': 1, 'GET /accounts': 1, 'POST /find': 1, 'POST /reset': 1, 'POST /quickreset': 1, 'POST /rename': 1, 'POST /cancelreset': 1, 'POST /role': 1, 'POST /unlock': 1, 'POST /delete': 1, 'GET /flags': 1, 'PUT /flags': 1 };
+const ADMP = { 'GET /ping': 1, 'GET /keys': 1, 'POST /keys': 1, 'POST /keyrevoke': 1, 'GET /accounts': 1, 'POST /find': 1, 'POST /reset': 1, 'POST /quickreset': 1, 'POST /rename': 1, 'POST /cancelreset': 1, 'POST /role': 1, 'POST /unlock': 1, 'POST /delete': 1, 'GET /flags': 1, 'PUT /flags': 1, 'POST /signout': 1, 'GET /log': 1 };
 H('adm:call', async (e, v) => {
   OBJ(v); const method = TXT(v.method, 6).toUpperCase(), p = TXT(v.path, 30), key = TXT(v.key, 200);
   if (!ADMP[method + ' ' + p]) throw bad();

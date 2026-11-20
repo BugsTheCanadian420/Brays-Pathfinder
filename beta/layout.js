@@ -48,7 +48,7 @@
   const HIDK = 'gt.nav.hide';
   const hidSet = () => { try { const a = JSON.parse(localStorage.getItem(HIDK)); return new Set(Array.isArray(a) ? a : []); } catch (e) { return new Set(); } };
   let HID = hidSet();
-  // Also gone: tabs locked to developer accounts (devtabs.js) for everyone else.
+  // Also gone: tabs switched off on the admin page (or limited to developer accounts) for this account.
   const hidden = (id) => (HID.has(id) && id !== 'vault' && id !== 'settings') || !!(window.__gtTabLocked && window.__gtTabLocked(id));
   function applyHide() { nav.querySelectorAll('button[data-t]').forEach((b) => b.classList.toggle('gthide', hidden(b.dataset.t))); }
   applyHide();
@@ -124,8 +124,11 @@
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
   window.addEventListener('resize', () => { close(); fitSoon(); });
   if (window.ResizeObserver) new ResizeObserver(fitSoon).observe(hd);
+  // A switch changed on the admin page: refit the bar, and leave a tab that was just hidden.
+  window.addEventListener('gtflags', () => { const a = active(); if (a && window.__gtTabLocked && window.__gtTabLocked(a.dataset.t)) { const v = btn('vault'); if (v) v.click(); } fit(); window.dispatchEvent(new Event('gtnavchange')); });
   window.__gtnav = {
-    // [id, name, hidden, always shown], in tab order. Tabs locked to developer accounts are left out for everyone else.
+    name: (id) => NAME[id] || '',
+    // [id, name, hidden, always shown], in tab order. Tabs switched off for this account (admin page) are left out.
     list: () => ORD.filter((id) => btn(id) && NAME[id] && !(window.__gtTabLocked && window.__gtTabLocked(id))).map((id) => [id, NAME[id], hidden(id), id === 'vault']),
     // Move a tab to just before another one (or to the end), or reset to the usual order.
     move(id, before) {
