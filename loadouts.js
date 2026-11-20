@@ -1252,7 +1252,7 @@ ${art ? `<div class="dl-mrow"><span class="dl-gl">Artifact &middot; ${esc(AR.ite
 .dl-sp{flex:1}.dl-bt{display:flex;gap:6px;flex-wrap:wrap}.dl-col{flex-direction:column}
 .dl-notes-v{font-size:13px;color:#aab0ba;margin:0 0 8px;white-space:pre-wrap}
 .dl-body{display:flex;flex-wrap:wrap;gap:6px 22px;align-items:flex-start}
-.dl-g{display:flex;flex-direction:column;gap:4px}.dl-gl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#7c7f86}
+.dl-g{display:flex;flex-direction:column;gap:4px}.dl-gl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#8b8f97}
 .dl-tiles{display:flex;gap:4px;flex-wrap:wrap}.dl-tt{display:flex;flex-direction:column;align-items:center;gap:3px}.dl-ne{opacity:.55}
 .dl-miss{display:flex;align-items:center;justify-content:center;color:#ffb74d;font-size:20px;filter:grayscale(1) brightness(.6);border-color:#8a6d1d!important;cursor:default}
 .dl-sp2{display:flex;gap:3px;flex-wrap:wrap;max-width:260px}
@@ -1274,7 +1274,7 @@ ${art ? `<div class="dl-mrow"><span class="dl-gl">Artifact &middot; ${esc(AR.ite
 .dl-ebody{flex:1;overflow:auto;padding:10px 14px;display:flex;flex-direction:column;gap:10px}.dl-ebody>*{flex:none}
 .dl-notes{width:100%;height:54px;resize:vertical}.dl-tools{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .dl-es{border-top:1px solid #23262b;padding-top:8px}.dl-es.dis{opacity:.45}.dl-eh{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#aeb2b9;margin-bottom:6px;display:flex;gap:10px;align-items:center}.dl-eh small{color:#6d7077;letter-spacing:0;text-transform:none}
-.dl-er{display:flex;gap:12px;flex-wrap:wrap}.dl-slot{display:flex;flex-direction:column;gap:3px;align-items:center}.dl-sn{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#7c7f86}
+.dl-er{display:flex;gap:12px;flex-wrap:wrap}.dl-slot{display:flex;flex-direction:column;gap:3px;align-items:center}.dl-sn{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#8b8f97}
 .dl-tw{cursor:pointer}.dl-empty{width:var(--t);height:var(--t);border:1px dashed #4a4d54;display:flex;align-items:center;justify-content:center;color:#6d7077;font-size:22px}.dl-empty:hover{border-color:#fff;color:#fff}
 .dl-sf{display:flex;gap:3px}.dl-sf button{padding:1px 6px!important;font-size:11px!important}
 .dl-pk{background:#101216;padding:8px}.dl-pk input{width:100%;margin-bottom:8px}.dl-pl{display:flex;flex-wrap:wrap;gap:4px;max-height:30vh;overflow:auto}.dl-pi{cursor:pointer}.dl-pi.on .vt{outline:2px solid #6fd36f}

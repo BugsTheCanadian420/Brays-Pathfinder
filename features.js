@@ -46,7 +46,7 @@ header{position:relative}
 .fxbar.bulk{border-color:#3f6c93;background:#101b25}
 .fxfeed{background:#17181b;border:1px solid #2f3238;padding:6px 8px}
 .fxfeed h4{margin:0;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#cfd2d8;display:flex;align-items:center;gap:8px;cursor:pointer}
-.fxfeed h4 small{color:#7c7f86;letter-spacing:0;text-transform:none}
+.fxfeed h4 small{color:#8b8f97;letter-spacing:0;text-transform:none}
 .fxfeed .fxrow{display:flex;flex-wrap:wrap;gap:calc(var(--t,44px)*.12);margin-top:8px}
 .vt.bsel{outline:2px solid #7ab8e8;outline-offset:-2px}
 .vt.bsel::after{content:"\\2713";position:absolute;left:2px;top:2px;width:15px;height:15px;border-radius:50%;background:#7ab8e8;color:#08141f;font-size:11px;font-weight:700;line-height:15px;text-align:center;z-index:2}

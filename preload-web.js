@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.26: preload.js for the browser */
+/* Pathfinder 0.3.27: preload.js for the browser */
 (function (require) {
 const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('gt', {
@@ -21,16 +21,27 @@ contextBridge.exposeInMainWorld('gt', {
   wmFind: (v) => ipcRenderer.invoke('wm:find', v),
   pfaSetPw: (v) => ipcRenderer.invoke('pfa:setpw', v),
   pfaLogoutAll: () => ipcRenderer.invoke('pfa:logoutall'),
+  pfaSessions: () => ipcRenderer.invoke('pfa:sessions'),
+  pfaSessEnd: (v) => ipcRenderer.invoke('pfa:sessEnd', v),
   helpNew: (v) => ipcRenderer.invoke('help:new', v),
   helpMine: () => ipcRenderer.invoke('help:mine'),
   helpGet: (v) => ipcRenderer.invoke('help:get', v),
   helpReply: (v) => ipcRenderer.invoke('help:reply', v),
   helpClose: (v) => ipcRenderer.invoke('help:close', v),
   deskList: () => ipcRenderer.invoke('desk:list'),
+  fnotesGet: () => ipcRenderer.invoke('fnotes:get'),
+  fnotesPut: (v) => ipcRenderer.invoke('fnotes:put', v),
   deskGet: (v) => ipcRenderer.invoke('desk:get', v),
   deskReply: (v) => ipcRenderer.invoke('desk:reply', v),
   deskStatus: (v) => ipcRenderer.invoke('desk:status', v),
   deskDelete: (v) => ipcRenderer.invoke('desk:delete', v),
+  deskClaim: (v) => ipcRenderer.invoke('desk:claim', v),
+  deskCanned: () => ipcRenderer.invoke('desk:canned'),
+  deskCannedSave: (v) => ipcRenderer.invoke('desk:cannedSave', v),
+  deskCannedDel: (v) => ipcRenderer.invoke('desk:cannedDel', v),
+  deskNote: (v) => ipcRenderer.invoke('desk:note', v),
+  deskBlock: (v) => ipcRenderer.invoke('desk:block', v),
+  saveCsv: (v) => ipcRenderer.invoke('file:saveCsv', v),
   devRename: (v) => ipcRenderer.invoke('dev:rename', v),
   wmPool: (v) => ipcRenderer.invoke('wm:pool', v),
   actPgcr: (v) => ipcRenderer.invoke('act:pgcr', v),

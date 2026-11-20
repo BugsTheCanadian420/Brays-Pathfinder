@@ -7,10 +7,8 @@
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const ICON = (p) => (p ? (/^https?:/.test(p) ? p : 'https://www.bungie.net' + p) : '');
   const V = () => window.__gtv;
-  const SW = { godrolls: 'godroll-tab', wishmaker: 'wishmaker-tab' };
   window.__gtDevFeatureNames = [];
-  const allowed = () => true;
-  window.__gtTabLocked = () => false;
+  const allowed = () => true; // like every tab, they can be switched off on the admin page (tab-godrolls, tab-wishmaker)
 
   const mk = (id, label) => {
     const s = document.createElement('section'); s.id = id; s.className = 'gdark'; vsec.parentNode.appendChild(s);
@@ -21,17 +19,6 @@
   };
   const gr = mk('godrolls', 'God rolls'), wm = mk('wishmaker', 'Wish list maker');
 
-  // Locked again (switch changed, signed out of the developer account): leave the page and refit the tab bar.
-  function applyLock() {
-    for (const id of Object.keys(SW)) {
-      const ok = allowed(id), b = id === 'godrolls' ? gr.b : wm.b, s = id === 'godrolls' ? gr.s : wm.s;
-      b.classList.toggle('gthide', !ok);
-      if (!ok && s.classList.contains('on') && window.show) window.show('vault');
-    }
-    window.dispatchEvent(new Event('resize'));
-  }
-  window.addEventListener('gtflags', applyLock);
-  setTimeout(applyLock, 0);
 
   // ---------- God rolls ----------
   const drawGr = () => {
