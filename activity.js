@@ -233,7 +233,7 @@
   }
   RENDER.rot = async (force) => {
     const r = await fetchCached('rot' + st.char, () => gt().actRot(charArg()), force);
-    const part = (k, title) => { const l = (r.feat || []).filter((x) => x.k === k); return l.length ? `<h3 class="sec">${title}</h3><div class="agrid fit">${l.map((x) => `<div class="acard bg plan clk" data-ak="${k.toLowerCase()}" data-gd="${esc(x.n)}" title="Open the ${esc(x.n)} guide in Helpful">${x.img ? `<div class="abgi" style="background-image:url('${esc(img(x.img))}')"></div>` : ''}<b>${esc(x.n)}</b><div class="sub">${k === 'Pantheon' ? 'Featured ' + esc(x.s || 'Pantheon') : 'Weekly ' + k.toLowerCase() + ' challenge'}</div><div class="sub">Ends in ${esc(resetIn())}</div><div class="sub gdl">Open the guide &rsaquo;</div></div>`).join('')}</div>` : ''; };
+    const part = (k, title) => { const l = (r.feat || []).filter((x) => x.k === k); return l.length ? `<h3 class="sec">${title}</h3><div class="agrid fit">${l.map((x) => `<div class="acard bg plan clk" data-ak="${k.toLowerCase()}" data-gd="${esc(x.n)}" title="Open the ${esc(x.n)} guide in Guides">${x.img ? `<div class="abgi" style="background-image:url('${esc(img(x.img))}')"></div>` : ''}<b>${esc(x.n)}</b><div class="sub">${k === 'Pantheon' ? 'Featured ' + esc(x.s || 'Pantheon') : 'Weekly ' + k.toLowerCase() + ' challenge'}</div><div class="sub">Ends in ${esc(resetIn())}</div><div class="sub gdl">Open the guide &rsaquo;</div></div>`).join('')}</div>` : ''; };
     const feat = rsCards() + part('Raid', 'Featured raids this week') + part('Dungeon', 'Featured dungeons this week') + part('Pantheon', 'Featured Pantheon this week');
     return feat || msg('No featured raids or dungeons found yet. Try Refresh in a moment.');
   };

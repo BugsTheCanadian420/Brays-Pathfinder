@@ -13,7 +13,6 @@
       'When Bungie is down, the vault you loaded last stays on screen (read-only) with a line saying when it is from, and Pathfinder tries again every 2 minutes. A bar under the tabs shows Bungie\'s maintenance timeline in your own time.',
       'Help: ask a question, report a bug or suggest an idea in Settings, About & help. The team answers right there; open conversations update by themselves.',
       'A notification when the team answers your help request (PC app, and the website while it is open).',
-      'Accounts: see the devices signed in to your Pathfinder account and sign one out (Settings, Accounts).',
       'Optimizer: stat mods can be +5 or +10, and when no set reaches every minimum you get the closest ones, with how far short each stat is.',
       'A short tour for new players, and this list can now be switched off (Settings, About & help).',
       'The status page shows Bungie\'s maintenance timeline. Announcements from the Pathfinder team show at the top of the app.',
@@ -208,9 +207,13 @@ ${list.map((c) => `<div class="gtnv"><small>${esc(c.date)}</small><ul>${c.items.
     const rows = L.length ? `<div class="gtl">${L.map((x) => `<div><small>${esc(new Date(x.t).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }))}${x.n > 1 ? ' &middot; ' + x.n + ' times' : ''}</small>${esc(x.m)}</div>`).join('')}</div>` : '<p class="mute">No problems logged.</p>';
     return `<div class="card sc" id="gtab"><h2>About &amp; help</h2><p class="mute">Pathfinder ${esc(VER || '')} &middot; ${isWeb() ? 'website' : 'PC app'}. Not made by or affiliated with Bungie.</p>
 <h3 class="gth">Updates</h3><p class="mute">${esc(updLine())}</p>${!isWeb() && UPD.canUpdate ? `<p>${UPD.state === 'ready' ? '<button class="b" data-ab="install">Restart to install</button>' : '<button class="g" data-ab="check">Check for updates</button>'}</p>` : ''}
+<h3 class="gth">About Pathfinder</h3>
+<p class="gtabout">Hey, I'm Bray, the owner of Pathfinder. We built this as Destiny players, for Destiny players: the companion we wanted for our own vaults, loadouts and god rolls, kept free and shaped by the people who use it.</p>
+<p class="gtabout">A big thank you to <b>Frosty</b> (Founder), <b>Manta</b> (Founder), <b>Fee</b> (feedback and ideas), <b>Ryu</b> (Dev), <b>Zeb</b> (Founder) and everyone else who helped with ideas, input and testing. Pathfinder is what it is because of you.</p>
+<p><a class="gtdisc" href="https://discord.gg/rJXsgHdcMY" target="_blank" rel="noopener" data-ab="discord">Join our Discord</a></p>
 <h3 class="gth">Help</h3><p class="mute">Questions, bugs or ideas: <a href="mailto:${HELP}" data-ab="mail">${HELP}</a></p>
 <p><button class="g" data-ab="tour">Take the tour</button> <button class="g" data-ab="news">What's new${(+lsGet('gt_news_seen', 0) || 0) < LATEST ? ' <em class="gtnd">new</em>' : ''}</button> ${window.__gtbetaInfo ? '<button class="g" data-ab="beta" title="Try the next version early. Same sign-in and settings; you can come back any time.">Try the beta</button> ' : window.__GT_BETA__ ? '<button class="g" data-ab="unbeta">Back to the regular site</button> ' : ''}<button class="g" data-ab="status" title="Is Pathfinder, its sign-in service and Bungie's API working right now?">Status</button> <button class="g" data-ab="privacy">Privacy</button>${isWeb() && window.__GT_DL__ ? ' <button class="g" data-ab="pcapp">Get the PC app</button>' : ''}</p>
-<label class="gtna"><input type="checkbox" data-ab="auto"${auto() ? ' checked' : ''}> Show What's new after updates</label>
+<div class="sx gtna"><div class="sxt"><b>Show What's new after updates</b><small>The list of changes after each update. What's new above always shows it.</small></div><div class="sxc"><label class="tgl"><input type="checkbox" data-ab="auto"${auto() ? ' checked' : ''}><i></i></label></div></div>
 <h3 class="gth">Problems</h3><p class="mute">Errors the app ran into, newest first. If something breaks, copy the report and send it along with what you were doing.</p>${rows}
 <p><button class="b" data-ab="copy">Copy problem report</button> <button class="g" data-ab="clear"${L.length ? '' : ' disabled'}>Clear</button> <span class="mute" id="gtabm"></span></p></div>`;
   }
@@ -231,6 +234,7 @@ ${list.map((c) => `<div class="gtnv"><small>${esc(c.date)}</small><ul>${c.items.
       if (a === 'unbeta') { location.href = '../'; return; }
       if (a === 'status') { openLink(SITE + '/status'); return; }
       if (a === 'privacy') { openLink(SITE + '/privacy'); return; }
+      if (a === 'discord') { e.preventDefault(); openLink('https://discord.gg/rJXsgHdcMY'); return; }
       if (a === 'pcapp') { location.href = window.__GT_DL__; return; }
       if (a === 'clear') { lsSet(LOGK, []); drawCard(); return; }
       if (a === 'copy') { msg((await copyText(report())) ? 'Copied. Send it to ' + HELP + '.' : 'Could not copy.'); }
@@ -248,7 +252,8 @@ ${list.map((c) => `<div class="gtnv"><small>${esc(c.date)}</small><ul>${c.items.
     + '#gtnews .gtnb{margin:16px 0 0}'
     + '#gtab a{color:var(--acc,#e8b84a)}#gtab .gth{font-size:13px;margin:14px 0 2px;color:#fff;letter-spacing:.04em}#gtab .gtl{display:flex;flex-direction:column;gap:6px;margin:8px 0;max-height:220px;overflow:auto}'
     + '#gtab .gtl div{font-size:12.5px;color:#d7dae0;border-left:2px solid #d9534f;padding:2px 8px;word-break:break-word}#gtab .gtl small{display:block;color:#9aa0a8;font-size:11px}'
-    + '#gtab button[disabled]{opacity:.4;pointer-events:none}#gtab .gtnd{font-style:normal;font-size:10.5px;font-weight:700;color:#111;background:var(--g-accent,#e8b84a);border-radius:8px;padding:1px 6px;margin-left:4px}#gtab .gtna{display:flex;gap:8px;align-items:center;font-size:13px;color:#cfd2d8;margin:4px 0 2px;cursor:pointer}'
+    + '#gtab .gtabout{color:#cfd3da;font-size:13.5px;line-height:1.6;margin:6px 0;max-width:720px}#gtab .gtabout b{color:#fff}#gtab a.gtdisc{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:999px;background:#5865f2;color:#fff;font-weight:700;font-size:13.5px;text-decoration:none}#gtab a.gtdisc:hover{background:#4752c4}'
+    + '#gtab button[disabled]{opacity:.4;pointer-events:none}#gtab .gtnd{font-style:normal;font-size:10.5px;font-weight:700;color:#111;background:var(--g-accent,#e8b84a);border-radius:8px;padding:1px 6px;margin-left:4px}#gtab .sx.gtna{margin:8px 0 2px}'
     + '#gttour{position:fixed;inset:0;z-index:9650}#gttour .gtth{position:fixed;border-radius:10px;box-shadow:0 0 0 9999px rgba(0,0,0,.6),0 0 0 2px var(--g-accent,#e8b84a);pointer-events:none;transition:all .2s}'
     + '#gttour .gttc{position:fixed;width:min(340px,calc(100vw - 16px));background:var(--g-panel,#1a1c20);border:1px solid var(--g-accent,#e8b84a);border-radius:12px;padding:14px 16px;box-shadow:0 12px 40px rgba(0,0,0,.6)}#gttour .gttc b{color:#fff;font-size:15px}#gttour .gttc p{margin:6px 0 12px;color:#d7dae0;font-size:13.5px;line-height:1.5}#gttour .gttb{display:flex;justify-content:space-between;gap:8px}'
     + '@media (prefers-reduced-motion:reduce){#gttour .gtth{transition:none}}'
