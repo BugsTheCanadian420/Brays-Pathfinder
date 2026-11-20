@@ -108,7 +108,7 @@
 .hmpin{display:inline-flex!important;align-items:center;gap:5px;padding:3px 9px!important;font-size:11.5px!important;letter-spacing:.5px!important;text-transform:none!important;white-space:nowrap}
 .hmpin.on{color:#e5c158!important;border-color:#8a6a2a!important}
 @media (max-width:1250px){#home .hm-c,#home .hm-c.w3,#home .hm-c.w4{grid-column:span 6}#home .hm-c.w8{grid-column:span 12}}
-@media (max-width:760px){#home .hm-g{grid-template-columns:1fr}#home .hm-c,#home .hm-c.w3,#home .hm-c.w6,#home .hm-c.w8,#home .hm-c.w12{grid-column:1/-1}#home .hm-chs{grid-template-columns:1fr}}
+@media (max-width:760px){#home .hm-g{grid-template-columns:1fr}#home .hm-c,#home .hm-c.w3,#home .hm-c.w4,#home .hm-c.w6,#home .hm-c.w8,#home .hm-c.w12{grid-column:1/-1}#home .hm-chs{grid-template-columns:1fr}}
 `;
   document.head.appendChild(css);
 

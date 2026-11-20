@@ -720,7 +720,7 @@
     const mods = [...(d.fm || []).map((p) => [0, p[0], p[2], p[1]]), ...d.it.flatMap((q) => (AB.includes(q.b) ? q.m : []))];
     const coss = d.it.filter((q) => (WB.includes(q.b) || AB.includes(q.b)) && q.cs && q.cs.length);
     const cosRow = coss.length ? coss.map((q) => `<span class="dl-cs" title="${esc(q.n)}"><img class="dl-csi" src="${esc(V.icon(q.i))}" alt="">${plugIcons(q.cs)}</span>`).join('') : '<span class="mute">Not saved. The loadout leaves your ornaments and shaders as they are.</span>';
-    const modRow = mods.length ? mods.map((p) => `<span class="ap" title="${esc(p[3])}">${p[2] ? `<img src="${esc(V.icon(p[2]))}" alt="">` : ''}</span>`).join('') : '<span class="mute">No mods saved.</span>';
+    loadSlots(d);
     const warn = (xw > 1 ? '<div class="dl-wr">Only one exotic weapon can be equipped at a time.</div>' : '') + (xa > 1 ? '<div class="dl-wr">Only one exotic armor piece can be equipped at a time.</div>' : '');
     const pn = (cls, title, body, foot, dis) => `<div class="dl-pn ${cls}${dis ? ' dis' : ''}"><div class="dl-ph"><span>${title}</span></div><div class="dl-pb">${body}</div>${foot ? `<div class="dl-pf">${foot}</div>` : ''}</div>`;
     box.innerHTML = `<div class="dl-eb">
@@ -733,7 +733,7 @@ ${pn('dl-p-sub', 'Subclass', anyc ? '<span class="mute">Pick a class to add a su
 ${pn('dl-p-wep', 'Weapons', `<div class="dl-er">${row(WB)}</div>`, `<label class="dl-ac"><input type="checkbox" id="dlmv"${d.mv ? ' checked' : ''}> Move other items away</label>`)}
 ${pn('dl-p-arm', 'Armor', `<div class="dl-er">${row(AB)}</div>`, '', anyc)}
 ${pn('dl-p-gen', 'General', `<div class="dl-er">${row(GB)}</div>`, '')}
-${pn('dl-p-mod', 'Mods', `<div class="arow dl-mods">${modRow}</div>`, `<button class="g" data-ed="curmods">Use current mods</button>${mods.length ? '<button class="g" data-ed="clrmods">Clear</button>' : ''}`)}
+${pn('dl-p-mod', 'Mods', modsBody(d), `<button class="g" data-ed="curmods">Use current mods</button>${mods.length ? '<button class="g" data-ed="clrmods">Clear</button>' : ''}`)}
 ${pn('dl-p-cos', 'Ornaments and shaders', `<div class="arow dl-coss">${cosRow}</div>`, `<button class="g" data-ed="curcos">Use current look</button>${coss.length ? '<button class="g" data-ed="clrcos">Clear</button>' : ''}`)}
 ${pn('dl-p-art', 'Artifact', `<div class="dl-artrow">${d.ai && d.ai.i ? `<span class="dl-ai"><img src="${esc(V.icon(d.ai.i))}" alt="" title="${esc(d.ai.n)}"></span>` : ''}<div class="arow">${d.a.length ? aRowL(d.a) : '<span class="mute">No artifact perks saved.</span>'}</div></div>`, `<button class="g" data-ed="artpick">Customize artifact</button><button class="g" data-ed="artcur">Use current</button>${d.a.length ? '<button class="g" data-ed="artclr">Clear</button>' : ''}`)}
 </div>
@@ -832,6 +832,7 @@ ${pn('dl-p-art', 'Artifact', `<div class="dl-artrow">${d.ai && d.ai.i ? `<span c
     else if (a === 'rand') doRandom();
     else if (a === 'clrmods') mut((d) => { d.fm = []; d.it.forEach((q) => { if (AB.includes(q.b)) q.m = []; }); });
     else if (a === 'subcust') openSub();
+    else if (a === 'modsock') openModPick(b, +t.dataset.si);
     else if (a === 'curmods') {
       const ens = ed.d.it.filter((q) => AB.includes(q.b)); if (!ens.length) { ed.msg = 'Add armor first.'; drawEd(); return; }
       ed.msg = 'Reading your armor mods...'; drawEd();
@@ -854,6 +855,70 @@ ${pn('dl-p-art', 'Artifact', `<div class="dl-artrow">${d.ai && d.ai.i ? `<span c
     else if (a === 'savenew') commit(true);
     else if (a === 'share') share(norm({ ...ed.d, n: ed.d.n || 'Loadout' }));
     else if (a === 'del') { if (ed.id && confirm('Delete "' + (ed.d.n || 'this loadout') + '"?')) { const id = ed.id; LS = all().filter((q) => q.id !== id); save(); closeEd(); render(); toast('Loadout deleted'); } }
+  }
+
+  // ---------------- choosing armor mods in the editor ----------------
+  // Each armor piece shows its mod sockets. A socket with a saved mod shows that mod; the others are faded and keep whatever is in
+  // them in the game. Click a socket to pick a mod for it (every mod that fits, from the game's own list for that socket).
+  const SLOTC = {}, MOPC = {};
+  const xOf = (d, en) => items().find((o) => o.id === en.id) || (resolve(d).find((q) => q.en === en) || {}).x;
+  function loadSlots(d) {
+    d.it.filter((q) => AB.includes(q.b)).forEach((en) => {
+      const x = xOf(d, en); if (!x || !/^\d+$/.test(String(x.id)) || SLOTC[x.id]) return;
+      SLOTC[x.id] = 'wait';
+      Promise.resolve().then(() => gt.itemSlots({ id: x.id })).then((ss) => { SLOTC[x.id] = Array.isArray(ss) ? ss : []; }, () => { SLOTC[x.id] = 'err'; }).then(() => { if (ed) drawEd(); });
+    });
+  }
+  const mIcon = (i) => (i ? `<img src="${esc(V.icon(i))}" alt="">` : '');
+  function modsBody(d) {
+    const ens = AB.map((b) => d.it.find((q) => q.b === b)).filter(Boolean), fm = d.fm || [];
+    if (!ens.length && !fm.length) return '<span class="mute">Add armor to choose its mods.</span>';
+    const rows = ens.map((en) => {
+      const x = xOf(d, en), ss = x && SLOTC[x.id], saved = new Map((en.m || []).map((p) => [p[0], p]));
+      let cells = '';
+      if (Array.isArray(ss) && ss.length) {
+        cells = ss.map((q, k) => {
+          const p = saved.get(q.si), lab = esc(BN[en.b] || 'Armor') + ' mod ' + (k + 1);
+          return p ? `<button class="ap md dl-ms" data-ed="modsock" data-b="${en.b}" data-si="${q.si}" title="${lab}: ${esc(p[3])}. Click to change it." aria-label="${lab}: ${esc(p[3])}">${mIcon(p[2])}</button>`
+            : `<button class="ap md dl-ms asis" data-ed="modsock" data-b="${en.b}" data-si="${q.si}" title="${lab}: left as it is in the game${q.n ? ' (' + esc(q.n) + ')' : ''}. Click to choose a mod." aria-label="${lab}: left as it is">${mIcon(q.i)}</button>`;
+        }).join('');
+      } else {
+        cells = (en.m || []).map((p) => `<span class="ap" title="${esc(p[3])}">${mIcon(p[2])}</span>`).join('')
+          + `<span class="mute dl-mst">${!x ? 'This piece is not in your inventory, so its mods cannot be changed.' : ss === 'err' ? 'Could not read its mod sockets.' : ss === 'wait' || !ss ? 'Reading its mod sockets...' : 'No mod sockets.'}</span>`;
+      }
+      return `<div class="dl-mpc"><span class="dl-mpi" title="${esc(en.n || (x && x.n) || '')}">${mIcon(en.i || (x && x.i))}</span><div class="dl-mps">${cells}</div></div>`;
+    }).join('');
+    const other = fm.length ? `<div class="dl-mpc"><span class="dl-mpl0">Any piece</span><div class="dl-mps">${fm.map((p) => `<span class="ap" title="${esc(p[1])}">${mIcon(p[2])}</span>`).join('')}</div></div>` : '';
+    return `<p class="mute dl-mhint">Click a socket to choose its mod. Faded sockets are left as they are in the game.</p><div class="dl-mgrid">${rows}${other}</div>`;
+  }
+  async function openModPick(b, si) {
+    if (!ed) return; const d = ed.d, en = d.it.find((q) => q.b === b), x = en && xOf(d, en); if (!x) return;
+    const ss = Array.isArray(SLOTC[x.id]) ? SLOTC[x.id] : [], sk = ss.find((q) => q.si === si), k = ss.indexOf(sk);
+    mod = { t: 'modp', b, si, q: '', msg: '', name: (BN[b] || 'Armor') + ' mod ' + (k + 1), piece: en.n || x.n || '', opts: null }; drawMod();
+    const key = x.h + ':' + si;
+    try { if (!MOPC[key]) MOPC[key] = await gt.modOpts({ h: x.h, si, char: CH, cur: sk && sk.cur ? [[sk.cur, true]] : [] }); }
+    catch (e) { if (mod && mod.t === 'modp') { mod.msg = 'Could not load the mods for this socket: ' + V.clean(e); drawMod(); } return; }
+    if (!mod || mod.t !== 'modp' || mod.si !== si || mod.b !== b) return;
+    const r = MOPC[key], seen = new Map();
+    ((r && r.opts) || []).forEach((o) => { const nk = String(o.n || '').toLowerCase(), was = seen.get(nk); if (!was || (o.own && !was.own) || (o.ci && !was.ci)) seen.set(nk, o); });
+    mod.known = !!(r && r.known);
+    mod.opts = [...seen.values()].sort((p, q) => (q.em - p.em) || ((mod.known ? (q.own ? 1 : 0) - (p.own ? 1 : 0) : 0)) || String(p.n).localeCompare(String(q.n)));
+    drawMod(); const i = g('dlmq'); if (i) i.focus();
+  }
+  function modpList() {
+    if (!mod.opts) return `<p class="mute">${mod.msg ? esc(mod.msg) : 'Loading the mods...'}</p>`;
+    const en = ed && ed.d.it.find((q) => q.b === mod.b), cur = en && (en.m || []).find((p) => p[0] === mod.si), qq = mod.q.trim().toLowerCase();
+    const list = mod.opts.filter((o) => !qq || (o.n + ' ' + (o.d || '')).toLowerCase().includes(qq));
+    return list.map((o) => {
+      const lock = mod.known && !o.own && !o.em;
+      return `<button class="dl-mo${cur && cur[1] === o.h ? ' on' : ''}${lock ? ' lock' : ''}" data-md="mpset" data-h="${o.h}" title="${esc(o.n + (o.d ? '\n' + o.d : '') + (lock ? '\nNot unlocked on this account yet' + (o.src ? ': ' + o.src : '.') : ''))}">${mIcon(o.i)}<span><b>${esc(o.em ? 'Empty socket (remove the mod)' : o.n)}</b>${o.d && !o.em ? `<small>${esc(String(o.d).slice(0, 110))}</small>` : ''}${lock ? '<small class="dl-mol">Not unlocked yet</small>' : ''}</span></button>`;
+    }).join('') || '<p class="mute">No mods match.</p>';
+  }
+  function modpHTML() {
+    return `<div class="dl-mc dl-modp"><h3>${esc(mod.name)}</h3><p class="mute">${esc(mod.piece)}. The mod you pick is put in when the loadout is applied.</p>
+<input id="dlmq" type="search" placeholder="Search mods" value="${esc(mod.q)}" autocomplete="off" aria-label="Search mods">
+<div class="dl-mpl" id="dlmpl">${modpList()}</div>
+<div class="dl-bt"><button class="g" data-md="mpkeep">Leave it as it is in the game</button><span class="dl-sp"></span><button class="g" data-md="x">Close</button></div></div>`;
   }
 
   // ---------------- subclass customiser ----------------
@@ -882,9 +947,10 @@ ${pn('dl-p-art', 'Artifact', `<div class="dl-artrow">${d.ai && d.ai.i ? `<span c
   function drawMod() {
     let box = g('dlmod');
     if (!mod) { if (box) box.remove(); return; }
-    if (!box) { box = document.createElement('div'); box.id = 'dlmod'; document.body.appendChild(box); box.onclick = modClick; box.onchange = modChange; }
+    if (!box) { box = document.createElement('div'); box.id = 'dlmod'; document.body.appendChild(box); box.onclick = modClick; box.onchange = modChange; box.oninput = (e) => { if (mod && mod.t === 'modp' && e.target.id === 'dlmq') { mod.q = e.target.value; const l = g('dlmpl'); if (l) l.innerHTML = modpList(); } }; }
     const D = D0(); let h = '';
     if (mod.t === 'sub') h = subHTML();
+    else if (mod.t === 'modp') h = modpHTML();
     else if (mod.t === 'imp') {
       h = `<div class="dl-mc"><h3>Import loadout</h3><p class="mute">Paste a Pathfinder share link (d2pathfinder.com/...), a DIM loadout link (dim.gg/...) or a loadout code (GTL1:...). Items are matched to the closest ones you own.</p><textarea id="dlimp" placeholder="https://d2pathfinder.com/..."" spellcheck="false">${esc(mod.text || '')}</textarea>${mod.msg ? `<div class="dl-wr">${esc(mod.msg)}</div>` : ''}<div class="dl-bt"><button class="g" data-md="paste">Paste from clipboard</button><span class="dl-sp"></span><button class="b" data-md="doimp">Import</button><button class="g" data-md="x">Cancel</button></div></div>`;
     } else if (mod.t === 'shmenu') {
@@ -956,6 +1022,12 @@ ${pn('dl-p-art', 'Artifact', `<div class="dl-artrow">${d.ai && d.ai.i ? `<span c
     if ((sw || ic) && mod.t === 'ident') { if (sw) mod.ch = +sw.dataset.sw; else mod.ih = +ic.dataset.ic; const nm = g('dlnm'), sl = g('dlslot'); if (nm) mod.nh = +nm.value; if (sl) mod.i = +sl.value; drawMod(); return; }
     const b = e.target.closest('[data-md]'); if (!b) return;
     const a = b.dataset.md, D = D0();
+    if (mod.t === 'modp' && (a === 'mpset' || a === 'mpkeep')) {
+      const { b: bk, si } = mod, o = a === 'mpset' && (mod.opts || []).find((q) => q.h === +b.dataset.h);
+      if (a === 'mpset' && !o) return;
+      mut((d) => { const en = d.it.find((q) => q.b === bk); if (!en) return; en.m = (en.m || []).filter((p) => p[0] !== si); if (o) { en.m.push([si, o.h, rawIcon(o.i), String(o.n || '').slice(0, 60)]); en.m.sort((p, q) => p[0] - q[0]); } });
+      mod = null; drawMod(); return;
+    }
     // Sharing Equipped: wait until its mods, subclass and artifact have been read.
     if (mod && mod.t === 'shmenu' && mod.wait && ['shlink', 'shpic', 'shcode', 'shsend'].includes(a)) {
       const w = mod.wait, m0 = mod; m0.msg = 'Reading your mods, subclass and artifact...'; drawMod(); await w;
@@ -1292,13 +1364,25 @@ ${art ? `<div class="dl-mrow"><span class="dl-gl">Artifact &middot; ${esc(AR.ite
 #dlt{display:none;position:fixed;left:16px;bottom:16px;z-index:99;background:#1f3a24;border:1px solid #4caf50;color:#fff;padding:10px 14px;border-radius:3px;max-width:380px;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.5)}
 #loimg{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box}#loimg .li{background:#17181b;border:1px solid #2f3238;padding:14px;max-width:100%;max-height:100%;box-sizing:border-box;display:flex;flex-direction:column;min-height:0}#loimg img{display:block;max-width:min(1000px,100%);max-height:calc(100vh - 140px);width:auto;height:auto;object-fit:contain;margin:0 auto;border:1px solid #2f3238;min-height:0}#loimg p{flex:none}#loimg p{margin:10px 0 0;display:flex;gap:8px;align-items:center;flex-wrap:wrap}#dlt .dl-undo{margin-top:8px}.dl-coss{display:flex;flex-wrap:wrap;gap:10px}.dl-cs{display:inline-flex;align-items:center;gap:3px;padding:2px 6px 2px 2px;border:1px solid #2f3238;border-radius:3px}.dl-csi{width:30px;height:30px;border:1px solid #3a3d43}#dlt .dl-undo{margin-top:8px;padding:4px 12px;font-size:12px}#dlt.bad{background:#3d2218;border-color:#d9772f}.dl-ti{display:flex;gap:3px;flex-wrap:wrap;margin-top:6px}.dl-ti img{width:28px;height:28px;border:1px solid #455565}.dl-tl{font-size:12px;margin-top:4px;color:#f1d6c8}
 #dled{background:#0f1114}
-.dl-panels{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start}.dl-pn{flex:0 1 auto;max-width:100%}
+.dl-panels{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start}.dl-pn{flex:0 1 auto;max-width:100%}@media (max-width:760px){.dl-pn{flex:1 1 100%}}
 .dl-ehd #dlen{width:auto;flex:1 1 220px}.dl-ehd #dlcls{width:auto;flex:none;background:#0e1013;border:1px solid #3a3d43;color:#fff;padding:7px 10px;border-radius:3px}
 #dled .dl-notes{width:100%;box-sizing:border-box}
 .dl-pn{background:#181a1e;border:1px solid #2e3136;display:flex;flex-direction:column}.dl-pn.dis{opacity:.45;pointer-events:none}
 .dl-ph{padding:6px 10px;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#cfd2d8;border-bottom:1px solid #2e3136;background:#1d2024}
 .dl-pb{padding:10px;display:flex;flex-direction:column;gap:8px}.dl-pf{padding:8px 10px;border-top:1px solid #2e3136;display:flex;gap:6px;flex-wrap:wrap}
 .dl-subrow{display:flex;gap:10px;align-items:flex-start}.dl-subpl{display:flex;gap:4px;flex-wrap:wrap}
+.dl-mhint{margin:0 0 8px;font-size:12.5px}.dl-mgrid{display:flex;flex-direction:column;gap:6px}
+.dl-mpc{display:flex;align-items:center;gap:10px;min-width:0}.dl-mpi{width:40px;height:40px;flex:none;border-radius:3px;overflow:hidden;background:#0e1013;border:1px solid #3a3d43}.dl-mpi img{width:100%;height:100%;display:block}
+.dl-mpl0{width:40px;flex:none;font-size:10.5px;line-height:1.2;color:#9aa0a8;text-align:center}
+.dl-mps{display:flex;gap:4px;flex-wrap:wrap;align-items:center;min-width:0}.dl-mst{font-size:12.5px}
+#dled button.dl-ms{padding:0;width:36px;height:36px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:#0e1013;cursor:pointer;overflow:hidden}
+#dled button.dl-ms img{width:100%;height:100%;display:block}#dled button.dl-ms.asis{opacity:.45;border-style:dashed}#dled button.dl-ms:hover,#dled button.dl-ms:focus-visible{opacity:1;border-color:#fff}
+.dl-modp{width:min(560px,94vw)}#dlmod #dlmq{background:#0e1013;border:1px solid #3a3d43;border-radius:3px;color:#fff;padding:8px 10px;font:inherit;width:100%;box-sizing:border-box}
+.dl-mpl{display:flex;flex-direction:column;gap:4px;max-height:min(52vh,460px);overflow:auto;padding-right:2px}
+#dlmod button.dl-mo{display:flex;align-items:center;gap:10px;text-align:left;padding:6px 8px;width:100%;box-sizing:border-box}
+#dlmod button.dl-mo img{width:34px;height:34px;flex:none;border-radius:50%;background:#0e1013}#dlmod button.dl-mo span{display:flex;flex-direction:column;min-width:0}
+#dlmod button.dl-mo b{font-size:13.5px;color:#fff;font-weight:600}#dlmod button.dl-mo small{font-size:12px;color:#9aa0a8;line-height:1.35}
+#dlmod button.dl-mo.on{border-color:#6fd36f;background:rgba(111,211,111,.10)}#dlmod button.dl-mo.lock{opacity:.6}#dlmod button.dl-mo .dl-mol{color:#e0b25a}
 .dl-artrow{display:flex;gap:8px;align-items:center}.dl-ai img{width:44px;height:44px;border:1px solid #4a4d54}
 .dl-sub{max-width:min(640px,94vw)}.dl-sw{display:flex;flex-direction:column;gap:8px}.dl-sr{display:flex;gap:10px;align-items:center;border-top:1px solid #2b2d31;padding-top:6px}
 .dl-sr .dl-gl{width:90px;flex:none}.dl-so{display:flex;gap:4px;flex-wrap:wrap}.dl-so .ap{cursor:pointer;opacity:.6}.dl-so .ap.on{opacity:1;outline:2px solid #6fd36f}.dl-so .ap:hover{opacity:1}

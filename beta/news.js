@@ -17,7 +17,9 @@
       'The Helpful tab is now called Guides.',
       'The Hub is now Community sites, with a Join our Discord button. You can also join from Settings, About & help.',
       'About Pathfinder: who makes it and the people who helped, in Settings, About & help and on d2pathfinder.com.',
+      'Loadouts: choose the mods for each armor piece while you build or edit a loadout. Click a mod socket and pick from every mod that fits it, or leave it as it is in the game.',
       'Settings uses more of a big screen, and still fits phones.',
+      'Phones: a search button in the top bar opens a full-width search, text boxes no longer zoom the page in on iPhone, bigger buttons for fingers, and Notes, Home, the Optimizer, the Organizer, the loadout editor and the item pop-up all fit small screens properly.',
       'Help: when you are not signed in to a Pathfinder account, the help form offers to sign you in so the team knows who they are talking to.',
     ] },
     { id: 19, date: 'Nov 2026', items: [

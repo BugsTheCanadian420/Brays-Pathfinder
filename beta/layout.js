@@ -19,6 +19,17 @@
   const sub = hd.querySelector('h1 small'); if (sub) sub.remove();
   hd.appendChild(nav); // nav lives inside the bar now; its buttons are laid out by the bar itself
   const slot = document.createElement('div'); slot.id = 'gtsrch'; hd.appendChild(slot);
+  // Phones: the search box is too narrow beside the bar's buttons, so a search button opens it across the whole bar.
+  { const MG = '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>';
+    const sq = document.createElement('button'); sq.id = 'gtsq'; sq.type = 'button'; sq.title = 'Search'; sq.setAttribute('aria-label', 'Search your items'); sq.innerHTML = MG + '<i aria-hidden="true"></i>';
+    const sx = document.createElement('button'); sx.id = 'gtsqx'; sx.type = 'button'; sx.title = 'Close search'; sx.setAttribute('aria-label', 'Close search'); sx.textContent = '\u00d7';
+    hd.insertBefore(sq, slot); hd.appendChild(sx); // beside the slot, not in it: the vault replaces everything inside the slot when it redraws
+    const mark = () => { const i = document.getElementById('vq'); sq.classList.toggle('on', !!(i && i.value.trim())); };
+    const open = (on) => { html.classList.toggle('gtsq-open', on); if (on) { const i = document.getElementById('vq'); if (i) { i.focus(); try { i.select(); } catch (e) { /* not a text box */ } } } mark(); };
+    sq.onclick = () => open(true); sx.onclick = () => open(false);
+    document.addEventListener('input', (e) => { if (e.target && e.target.id === 'vq') mark(); }, true);
+    document.addEventListener('keydown', (e) => { if (html.classList.contains('gtsq-open') && (e.key === 'Escape' || (e.key === 'Enter' && e.target && e.target.id === 'vq'))) { open(false); if (e.target && e.target.blur) e.target.blur(); } }, true);
+    window.addEventListener('resize', () => { if (html.classList.contains('gtsq-open') && innerWidth > 560) open(false); }); }
   // If the vault finished drawing before this file ran, its search bar is still in the page: move it up.
   { const ex = document.querySelector('#vault .vcard .vbar'), v = document.getElementById('vault');
     if (ex && v) { slot.appendChild(ex); ex.onclick = (e) => v.onclick(e); const c = v.querySelector('.vcard'); if (c) c.remove(); } }
@@ -185,6 +196,18 @@ html[data-gtab="vault"] #gtsrch .vbar{display:flex}
 #gtsrch .vbar button.g svg{display:block;pointer-events:none;width:16px!important;height:16px!important;filter:none!important}
 #gtsrch .vbar button.g:hover{background:rgba(255,255,255,.09)!important;color:#fff!important}
 #gtsrch .vbar button.g.on{background:var(--g-accent2,#2b4a6b)!important;color:var(--g-on-accent,#fff)!important}
+#gtsq,#gtsqx{display:none}
+@media (max-width:560px){
+html[data-gtab="vault"] #gtsq{display:inline-flex;position:relative;flex:none;order:5;margin-left:auto;width:38px;height:34px;align-items:center;justify-content:center;padding:0!important;margin-right:4px;background:var(--g-btn,#1b1d21)!important;border:1px solid #33363c!important;border-radius:8px!important;color:#cfd2d8!important;cursor:pointer}
+#gtsq svg{width:17px!important;height:17px!important;flex:none;display:block;margin:0!important}html[data-gtab="vault"] #gtsrch{flex:0 0 auto;margin-left:0}
+#gtsq i{display:none;position:absolute;top:5px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--g-accent,#7ab8e8)}#gtsq.on{color:var(--g-accent,#7ab8e8)!important;border-color:var(--g-accent,#7ab8e8)!important}#gtsq.on i{display:block}
+html:not(.gtsq-open) #gtsrch .vbar input{display:none!important}
+#gtsrch .vbar{justify-content:flex-end}
+html.gtsq-open #gtsrch .vbar{position:fixed;left:0;right:0;top:var(--gt-sat,0px);height:48px;max-width:none!important;width:auto!important;z-index:9600;background:var(--g-solid,#14161b);padding:0 54px 0 10px;box-sizing:border-box;box-shadow:0 6px 18px rgba(0,0,0,.5)}
+html.gtsq-open #gtsrch .vbar>*:not(input){display:none!important}
+html.gtsq-open #gtsrch .vbar input{display:block!important;flex:1;height:38px;font-size:16px}
+html.gtsq-open #gtsqx{display:inline-flex;position:fixed;right:8px;top:calc(var(--gt-sat,0px) + 6px);z-index:9601;width:40px;height:36px;align-items:center;justify-content:center;padding:0!important;font-size:22px;line-height:1;background:var(--g-btn,#1b1d21)!important;border:1px solid #33363c!important;border-radius:8px!important;color:#e6e7ea!important;cursor:pointer}
+}
 #gtmp{position:fixed;z-index:70;min-width:260px;max-width:320px;max-height:calc(100vh - 70px);overflow:auto;background:var(--g-panel,#1a1c20);border:1px solid #4a4d54;box-shadow:0 12px 34px rgba(0,0,0,.65);padding:4px 0 6px;display:none}
 #gtmp.open{display:block}
 #gtmp .gl{padding:10px 16px 3px;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#6f737b}
