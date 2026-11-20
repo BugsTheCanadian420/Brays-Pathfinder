@@ -8,8 +8,8 @@
 <style id="gtpre">html:not(.gtready) body>*{visibility:hidden!important}html:not(.gtready) body{background:#0b0d12}</style>
 <script>setTimeout(function(){document.documentElement.classList.add('gtready')},4000);</script>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Open+Sans:wght@400;600;700&family=Barlow:wght@300;400;500;600&family=Manrope:wght@400;500;600;700;800&family=Inter+Tight:wght@400;500;600;700;800&family=Shantell+Sans:wght@400;500;600;700;800&family=Exile&family=Blinker:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="beta.css?v=0.3.28-beta.1">
-<link rel="stylesheet" href="guides.css?v=0.3.28-beta.1">
+<link rel="stylesheet" href="beta.css?v=0.3.29-beta.1">
+<link rel="stylesheet" href="guides.css?v=0.3.29-beta.1">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
 --bg:#eef0f3;--panel:#fff;--line:#d3d8e0;--text:#1b2230;--mute:#667085;--gold:#9a7416;--arc:#1b6aa5;--ok:#2e7d4f;--inp:#f5f7fa}
@@ -152,13 +152,13 @@ main{position:relative;z-index:2}
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://d2pathfinder.com/og-image.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="web.css?v=0.3.28-beta.1">
-<script>window.__GT_VER__="0.3.28-beta.1";window.__GT_BETA__=1;</script>
-<script src="shims.js?v=0.3.28-beta.1"></script><script src="pako.min.js?v=0.3.28-beta.1"></script><script src="preload-web.js?v=0.3.28-beta.1"></script><script src="main-web.js?v=0.3.28-beta.1"></script>
+<link rel="stylesheet" href="web.css?v=0.3.29-beta.1">
+<script>window.__GT_VER__="0.3.29-beta.1";window.__GT_BETA__=1;</script>
+<script src="shims.js?v=0.3.29-beta.1"></script><script src="pako.min.js?v=0.3.29-beta.1"></script><script src="preload-web.js?v=0.3.29-beta.1"></script><script src="main-web.js?v=0.3.29-beta.1"></script>
 <script>window.__GT_WEB__.start();document.documentElement.classList.add('gtweb');</script>
-<script src="mobile.js?v=0.3.28-beta.1" defer></script>
+<script src="mobile.js?v=0.3.29-beta.1" defer></script>
 <script>window.__GT_DL__="/download";</script>
-<script src="install.js?v=0.3.28-beta.1" defer></script>
+<script src="install.js?v=0.3.29-beta.1" defer></script>
 </head><body>
 <!-- Pathfinder landing page (web only, added by web/build.js right after <body>). Shown to first-time visitors and search
      engines; anyone who has used the app before (or is coming back from signing in or opening a share link) goes straight to
@@ -303,7 +303,7 @@ html.pfl-off #pfl{display:none!important}
 </div>
 <script>(function(){var l=document.getElementById('pfl');if(!l)return;l.addEventListener('click',function(e){var h=e.target.closest('a[href^="#pfl-"]');if(h){e.preventDefault();var t=document.getElementById(h.getAttribute('href').slice(1));if(t)t.scrollIntoView({behavior:'smooth',block:'start'});return;}var o=e.target.closest('[data-pfl-open]');if(!o)return;e.preventDefault();try{localStorage.setItem('gt_seenapp','1');}catch(x){}document.documentElement.classList.add('pfl-off');window.scrollTo(0,0);});if(document.documentElement.classList.contains('pfl-off'))l.remove();})();</script>
 
-<header><img class="plogo" src="logo.png" alt="" aria-hidden="true"><h1>Pathfinder<small>Works without a Bungie API key. Your data stays in this browser.</small></h1></header>
+<header><img class="plogo" src="logo.png" alt="" aria-hidden="true"><h1>D2 Pathfinder<small>Works without a Bungie API key. Your data stays in this browser.</small></h1></header>
 <nav id="nav"></nav>
 <main>
 
@@ -347,7 +347,7 @@ html.pfl-off #pfl{display:none!important}
 
 <section id="guides">
  <div id="ghub">
-  <div class="card"><h2>Helpful</h2><div class="mute">Choose a category, then an activity. Search finds any guide.</div>
+  <div class="card"><h2>Guides</h2><div class="mute">Choose a category, then an activity. Search finds any guide.</div>
   <input id="gsearch" placeholder="Search all guides" style="margin-top:8px"><div class="chips" id="gchips"></div></div>
   <div id="glist"></div>
  </div>
@@ -370,7 +370,7 @@ html.pfl-off #pfl{display:none!important}
 <script>
 const $=id=>document.getElementById(id);
 const ST={get(k,d){try{const v=localStorage.getItem('gt_'+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem('gt_'+k,JSON.stringify(v))}catch(e){}}};
-const tabs=[['guides','Helpful'],['check','Checklist']];
+const tabs=[['guides','Guides'],['check','Checklist']];
 tabs.forEach(([id,n],i)=>{const b=document.createElement('button');b.textContent=n;b.onclick=()=>show(id);b.dataset.t=id;$('nav').appendChild(b)});
 function show(id){const R=document.documentElement,sx=document.getElementById(id);R.dataset.gsec=id;R.dataset.dark=sx&&sx.classList.contains('gdark')?'1':'0';document.querySelectorAll('section').forEach(s=>s.classList.toggle('on',s.id===id));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===id));ST.set('tab',id)}
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -556,7 +556,7 @@ const CATS=[["Raid","Raids","Six-player endgame activities with multi-encounter 
 function thumbOf(name){const F=FULL[name];if(!F)return'';for(let i=0;i<F.sections.length;i++){const im=F.sections[i].img||[];for(let j=0;j<im.length;j++){if(/emblem/i.test(im[j])){const u=BUILT[name+'|'+i+'_'+j];if(u)return u}}}return''}
 function tileHTML(g){const t=thumbOf(g[1]),full=!!FULL[g[1]],done=NOUP.has(g[1]);return`<button class="gcard" data-cat="${esc(g[0])}" data-g="${esc(g[1])}">${t?`<img class="thumb" src="${t}" alt="">`:'<div class="thumb ph"></div>'}<b>${esc(g[1])}</b><div class="gm"><small>${esc(g[0])}</small>${full?`<span class="tag">${done?'Complete':'Needs maps'}</span>`:'<span class="tag">Coming soon</span>'}</div><div class="mute">${esc(g[2])}</div></button>`}
 function drawG(){const q=$('gsearch').value.trim().toLowerCase(),L=$('glist');
-$('gchips').innerHTML=(gcat!=='All'&&!q)?`<button data-c="All">\u2190 Helpful</button><span class="mute" style="align-self:center">${(CATS.find(c=>c[0]===gcat)||[])[1]||''}</span>`:'';
+$('gchips').innerHTML=(gcat!=='All'&&!q)?`<button data-c="All">\u2190 Guides</button><span class="mute" style="align-self:center">${(CATS.find(c=>c[0]===gcat)||[])[1]||''}</span>`:'';
 if(!q&&gcat==='All'){L.className='hubgrid';L.innerHTML=CATS.map(c=>{const n=GD.filter(g=>g[0]===c[0]).length,ex=GD.find(g=>g[0]===c[0]&&thumbOf(g[1])),t=ex?thumbOf(ex[1]):'';return`<button class="cat" data-c="${c[0]}" style="border-top-color:var(${c[3]})">${t?`<img class="bg" src="${t}" alt="">`:''}<h3>${c[1]}</h3><div class="mute">${c[2]}</div><div class="big" style="font-size:28px;margin-top:10px">${n}<small class="mute" style="font-size:14px;letter-spacing:1px"> ${n===1?'guide':'guides'}</small></div></button>`}).join('');return}
 L.className='';const list=GD.filter(g=>q?(g[1]+g[2]+g[3].join(' ')).toLowerCase().includes(q):g[0]===gcat);
 L.innerHTML=list.length?list.map(tileHTML).join(''):'<div class="card mute">No guides match. Try a different search.</div>'}
@@ -565,7 +565,7 @@ function rerender(){const y=window.scrollY;openGuide($('gpage').dataset.cur);win
 $('gchips').onclick=e=>{if(e.target.dataset.c){gcat=e.target.dataset.c;drawG()}};$('gsearch').oninput=drawG;drawG();
 {const t=ST.get('tab','vault');window.__gtLastTab=t;} /* the start tab is picked once by polish.js (Settings > Display > Open the app on), so no other page flashes first */
 </script>
-<script src="sync.js?v=0.3.28-beta.1"></script><script src="vault.js?v=0.3.28-beta.1"></script><script src="features.js?v=0.3.28-beta.1"></script><script src="news.js?v=0.3.28-beta.1"></script><script src="extras.js?v=0.3.28-beta.1"></script><script src="activity.js?v=0.3.28-beta.1"></script><script src="notes.js?v=0.3.28-beta.1"></script><script src="targets.js?v=0.3.28-beta.1"></script><script src="loadouts.js?v=0.3.28-beta.1"></script>
-<script src="home.js?v=0.3.28-beta.1"></script>
-<script src="devtabs.js?v=0.3.28-beta.1"></script><script src="layout.js?v=0.3.28-beta.1"></script><script src="lists.js?v=0.3.28-beta.1"></script><script src="polish.js?v=0.3.28-beta.1"></script>
-<script src="guides-data.js?v=0.3.28-beta.1"></script><script src="guides.js?v=0.3.28-beta.1"></script></body></html>
+<script src="sync.js?v=0.3.29-beta.1"></script><script src="vault.js?v=0.3.29-beta.1"></script><script src="features.js?v=0.3.29-beta.1"></script><script src="news.js?v=0.3.29-beta.1"></script><script src="extras.js?v=0.3.29-beta.1"></script><script src="activity.js?v=0.3.29-beta.1"></script><script src="notes.js?v=0.3.29-beta.1"></script><script src="targets.js?v=0.3.29-beta.1"></script><script src="loadouts.js?v=0.3.29-beta.1"></script>
+<script src="home.js?v=0.3.29-beta.1"></script>
+<script src="devtabs.js?v=0.3.29-beta.1"></script><script src="layout.js?v=0.3.29-beta.1"></script><script src="lists.js?v=0.3.29-beta.1"></script><script src="polish.js?v=0.3.29-beta.1"></script>
+<script src="guides-data.js?v=0.3.29-beta.1"></script><script src="guides.js?v=0.3.29-beta.1"></script></body></html>

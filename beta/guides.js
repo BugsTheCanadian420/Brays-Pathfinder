@@ -26,7 +26,7 @@
   const list = swap('glist'), page = swap('gpage');
   page.classList.add('gx-page');
   const card0 = document.querySelector('#ghub>.card');
-  if (card0) card0.outerHTML = '<div class="gx-top"><h2>Helpful</h2><input id="gsearch" type="search" placeholder="Search raids, dungeons, missions, bosses" autocomplete="off" aria-label="Search guides"></div><div id="gchips" class="gx-seg" role="tablist" aria-label="Guide categories"></div>';
+  if (card0) card0.outerHTML = '<div class="gx-top"><h2>Guides</h2><input id="gsearch" type="search" placeholder="Search raids, dungeons, missions, bosses" autocomplete="off" aria-label="Search guides"></div><div id="gchips" class="gx-seg" role="tablist" aria-label="Guide categories"></div>';
   let lb = $('gx-lb');
   if (!lb) { lb = document.createElement('div'); lb.id = 'gx-lb'; lb.hidden = true; lb.innerHTML = '<img alt=""><p></p>'; document.body.appendChild(lb); lb.onclick = () => { lb.hidden = true; }; }
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !lb.hidden) lb.hidden = true; });
