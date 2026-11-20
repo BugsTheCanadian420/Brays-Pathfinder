@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.26-beta.2: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.26-beta.3: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -644,7 +644,7 @@ async function helpReq(p, body, staff) {
   catch (er) { throw new Error(ac.signal.aborted ? 'Pathfinder did not answer in time. Check your connection and try again.' : 'Could not reach Pathfinder. Check your connection and try again.'); }
   finally { clearTimeout(tm); }
   let j = {}; try { j = await r.json(); } catch (er) { j = {}; }
-  if (!r.ok) { const er = new Error(j.message || (r.status === 404 || r.status === 501 ? 'Help is not switched on in the token service yet. Email help@d2pathfinder.com instead.' : 'Could not reach Pathfinder (HTTP ' + r.status + '). Try again in a moment.')); er.code = j.error || r.status; throw er; }
+  if (!r.ok) { const er = new Error(j.message || (r.status === 404 || r.status === 501 ? 'Help is not switched on in the token service yet. Email help@d2pathfinder.com instead.' : 'Could not reach Pathfinder (HTTP ' + r.status + '). Try again in a moment.')); er.code = j.error || r.status; er.data = j; throw er; }
   return j;
 }
 const myTickets = () => { const t = rd().tickets; return Array.isArray(t) ? t.filter((x) => x && typeof x.id === 'string' && typeof x.key === 'string').slice(0, 60) : []; };
@@ -662,6 +662,16 @@ H('help:mine', async () => { const c = rd(); if (!myTickets().length && !(c.pfa 
 H('help:get', async (e, v) => { OBJ(v); const id = HID(v.id); return (await helpReq('/help/get', { id, key: tKey(id) })).ticket; });
 H('help:reply', async (e, v) => { OBJ(v); const id = HID(v.id), text = TXT(v.text, 3000).trim(); if (!text) throw new Error('Write a message first.'); return (await helpReq('/help/reply', { id, key: tKey(id), text })).ticket; });
 H('help:close', async (e, v) => { OBJ(v); const id = HID(v.id); return (await helpReq('/help/close', { id, key: tKey(id), open: !!v.open })).ticket; });
+// Founder notes: one notepad shared by founder and owner accounts (the token service checks the role). A save based on an
+// older version comes back as { conflict: true, pages, v, by, at } so the notepad can merge.
+const founderOnly = () => { if (!pfaStatus().founder) throw new Error('Founder and owner accounts only.'); };
+H('fnotes:get', async () => { founderOnly(); const j = await helpReq('/acct/fnotes/get', {}, true); return { pages: Array.isArray(j.pages) ? j.pages : [], v: j.v || '', by: j.by || '', at: j.at || 0 }; });
+H('fnotes:put', async (e, v) => {
+  founderOnly(); OBJ(v); if (!Array.isArray(v.pages) || v.pages.length > 60) throw bad();
+  const pages = v.pages.map((p) => { OBJ(p); return { id: TXT(p.id, 20), t: TXT(String(p.t || 'Untitled'), 60), b: TXT(p.b, 200000), at: +p.at || 0 }; });
+  try { return await helpReq('/acct/fnotes/put', { pages, base: TXT(String(v.base || ''), 40) }, true); }
+  catch (er) { if (er.code === 'conflict' && er.data) return { conflict: true, pages: er.data.pages || [], v: er.data.v || '', by: er.data.by || '', at: er.data.at || 0 }; throw er; }
+});
 // The team's side: developer and founder accounts (the token service checks the role).
 const staffOnly = () => { if (!pfaStatus().dev) throw new Error('Developer and founder accounts only.'); };
 H('desk:list', async () => { staffOnly(); return (await helpReq('/acct/help/list', null, true)).tickets || []; });

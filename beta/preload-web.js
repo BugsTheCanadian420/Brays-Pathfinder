@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.26-beta.2: preload.js for the browser */
+/* Pathfinder 0.3.26-beta.3: preload.js for the browser */
 (function (require) {
 const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('gt', {
@@ -27,6 +27,8 @@ contextBridge.exposeInMainWorld('gt', {
   helpReply: (v) => ipcRenderer.invoke('help:reply', v),
   helpClose: (v) => ipcRenderer.invoke('help:close', v),
   deskList: () => ipcRenderer.invoke('desk:list'),
+  fnotesGet: () => ipcRenderer.invoke('fnotes:get'),
+  fnotesPut: (v) => ipcRenderer.invoke('fnotes:put', v),
   deskGet: (v) => ipcRenderer.invoke('desk:get', v),
   deskReply: (v) => ipcRenderer.invoke('desk:reply', v),
   deskStatus: (v) => ipcRenderer.invoke('desk:status', v),

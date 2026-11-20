@@ -77,7 +77,7 @@ ${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((i) => `:root[data-anim="full"] :i
   // whenever one appears, grows (its text arrived) or the window changes size, it is measured for real and, if any edge is
   // outside the window, moved back in; one taller or wider than the window is capped and scrolls. Measuring the real result
   // means it holds at any Interface scale, window size and position.
-  const FLOAT = '#gtctx,#dlpp,#vqs,#eqpick,#gtmp,#gtmenup,#gtdlp,#gtnp';
+  const FLOAT = '#gtctx,#dlpp,#vqs,#eqpick,#gtmp,#gtmenup,#gtdlp,#gtnp,#gtfnp';
   const rel = (el, top0) => { const q = el.getBoundingClientRect(); return { left: q.left, right: q.right, width: q.width, height: q.height, top: q.top - top0, bottom: q.bottom - top0 }; };
   function fit(el) {
     if (!el || !el.isConnected) return;

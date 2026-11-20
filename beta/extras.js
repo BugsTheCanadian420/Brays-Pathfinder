@@ -24,7 +24,7 @@
 .otbl td{padding:3px 6px;border-bottom:1px solid #26282d;white-space:nowrap;color:#e6e7ea}.otbl tr.r{cursor:pointer}.otbl tr.r:hover{background:#26282d}
 .otbl td.n{display:flex;align-items:center;gap:6px}.otbl td.n>img{width:28px;height:28px;border:1px solid #4a4d54}.otbl td.pk{white-space:normal;max-width:420px;color:#b9bcc4;font-size:12px}
 .otbl .ex{color:#ceae33}.otbl .hi{color:#7fd17f;font-weight:700}
-.otgt{display:flex;flex-direction:column;gap:4px;margin:10px 0;max-width:560px}.otr{display:grid;grid-template-columns:40px 80px 1fr 64px 28px;gap:8px;align-items:center}.otr b{color:#fff;font-size:13px}.otr input[type=range]{width:100%;margin:0}.otr input[type=number]{width:64px;padding:3px 6px!important}.otr .ord{display:flex;gap:2px}.otr .ord button{padding:0 4px!important;font-size:9px;line-height:16px;min-width:0}.otr .ord button[disabled]{opacity:.3}.ostats span.ok b{color:#7fd48a}.ostats em{font-style:normal;color:#e0b64a;font-size:11px;margin-left:3px}.owgt{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin:8px 0}.owgt label{display:flex;flex-direction:column;font-size:12px;color:var(--mute);text-transform:capitalize}
+.otgt{display:flex;flex-direction:column;gap:4px;margin:10px 0;max-width:560px}.otr{display:grid;grid-template-columns:40px 80px 1fr 64px 28px;gap:8px;align-items:center}.otr b{color:#fff;font-size:13px}.otr input[type=range]{width:100%;margin:0}.otr input[type=number]{width:64px;padding:3px 6px!important}.otr .ord{display:flex;gap:2px}.otr .ord button{padding:0 4px!important;font-size:9px;line-height:16px;min-width:0}.otr .ord button[disabled]{opacity:.3}.ostats span.ok b{color:#7fd48a}.ostats span.short b{color:#ff9a8f}.ostats i{font-style:normal;color:#ff9a8f;font-size:11px;margin-left:3px}.oset.near{border-left:2px solid rgba(255,154,143,.5);padding-left:8px}.ostats em{font-style:normal;color:#e0b64a;font-size:11px;margin-left:3px}.owgt{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin:8px 0}.owgt label{display:flex;flex-direction:column;font-size:12px;color:var(--mute);text-transform:capitalize}
 .oset{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:8px 0;border-top:1px solid var(--g-line)}
 .oset .tiles{display:flex;gap:3px}.oset .tiles>img{width:var(--t);height:var(--t);border:1px solid #4a4d54;background:var(--g-line)}
 .oset .tiles .ex>img{border-color:#ceae33}.ostats{display:grid;grid-template-columns:repeat(3,auto);gap:2px 12px;font-size:12px;color:#e6e7ea}.ostats b{color:#fff}
@@ -80,10 +80,11 @@
 
   // ---------------- Loadout Optimizer ----------------
   // Armor 3.0: each stat goes from 0 to 200. You set the minimum you want for each stat and the order they matter in;
-  // +10 stat mods (one per piece) can fill what the armor alone is missing.
+  // Stat mods (one per piece, +5 minor or +10 major) can fill what the armor alone is missing. When no set reaches every
+  // minimum, the closest sets are shown instead, with how far short each stat is.
   const OPS = (() => { try { return JSON.parse(localStorage.getItem('gt.opt')) || {}; } catch (e) { return {}; } })();
-  const OP = { cls: 0, t: Array.isArray(OPS.t) && OPS.t.length === 6 ? OPS.t.map((v) => Math.max(0, Math.min(200, +v || 0))) : [0, 0, 0, 0, 0, 0], pri: Array.isArray(OPS.pri) && OPS.pri.length === 6 ? OPS.pri : [1, 5, 3, 4, 2, 0], mods: OPS.mods === undefined ? 5 : Math.max(0, Math.min(5, +OPS.mods || 0)), ex: '', res: null, msg: '', set: 0, need: 2, SI: null, SD: {}, sLoad: false };
-  const saveOP = () => { try { localStorage.setItem('gt.opt', JSON.stringify({ t: OP.t, pri: OP.pri, mods: OP.mods })); } catch (e) { /* storage off */ } };
+  const OP = { cls: 0, t: Array.isArray(OPS.t) && OPS.t.length === 6 ? OPS.t.map((v) => Math.max(0, Math.min(200, +v || 0))) : [0, 0, 0, 0, 0, 0], pri: Array.isArray(OPS.pri) && OPS.pri.length === 6 ? OPS.pri : [1, 5, 3, 4, 2, 0], mods: OPS.mods === undefined ? 5 : Math.max(0, Math.min(5, +OPS.mods || 0)), msz: +OPS.msz === 5 ? 5 : 10, near: false, ex: '', res: null, msg: '', set: 0, need: 2, SI: null, SD: {}, sLoad: false };
+  const saveOP = () => { try { localStorage.setItem('gt.opt', JSON.stringify({ t: OP.t, pri: OP.pri, mods: OP.mods, msz: OP.msz })); } catch (e) { /* storage off */ } };
   const SLOTS = [3448274439, 3551918588, 14239492, 20886954, 1585787867];
   const inSet = (x) => !!(OP.set && OP.SI && OP.SI[x.h] === OP.set);
   // Which armor set each piece belongs to, looked up once (the app keeps it on disk after the first time).
@@ -109,15 +110,27 @@
       return [...ex, ...nx, ...sx];
     });
     if (per.some((a) => !a.length)) return [];
-    const best = []; let worst = -Infinity;
+    const best = [], near = []; let worst = -Infinity, nworst = Infinity;
+    const M = OP.msz;
+    // No set reaches every minimum: keep the closest ones (least short in total, then the best stats).
+    const nearLeaf = (s0) => {
+      const v = tot.slice(), used = [0, 0, 0, 0, 0, 0]; let left = OP.mods;
+      for (const k of OP.pri) while (left > 0 && OP.t[k] - v[k] > 0) { v[k] += M; used[k]++; left--; }
+      const short = v.map((q, k) => Math.max(0, OP.t[k] - q)), sh = short.reduce((a, q) => a + q, 0), key = tot.join(',');
+      const rk = sh * 1e7 - s0;
+      if (near.length < 8 || rk < nworst) {
+        if (near.some((b) => b.key === key)) return;
+        near.push({ rk, key, ids: pick.slice(), t: v, base: tot.slice(), used, short }); near.sort((a, b) => a.rk - b.rk); if (near.length > 8) near.length = 8; nworst = near[near.length - 1].rk;
+      }
+    };
     const tot = [0, 0, 0, 0, 0, 0], pick = [];
     const leaf = () => {
       let need = 0; const v = tot.slice(), used = [0, 0, 0, 0, 0, 0];
-      for (let k = 0; k < 6; k++) { const def = OP.t[k] - v[k]; if (def > 0) { const m = Math.ceil(def / 10); need += m; used[k] += m; v[k] += m * 10; } }
-      if (need > OP.mods) return;
+      for (let k = 0; k < 6; k++) { const def = OP.t[k] - v[k]; if (def > 0) { const m = Math.ceil(def / M); need += m; used[k] += m; v[k] += m * M; } }
+      if (need > OP.mods) { if (!best.length) nearLeaf(tot.reduce((a, q, k) => a + Math.min(q, 200) * (6 - rank[k]), 0)); return; }
       // spare mods go to the stats that matter most and are not yet at 200
       let spare = OP.mods - need;
-      for (const k of OP.pri) { while (spare > 0 && v[k] + 10 <= 200 && (OP.t[k] > 0 || OP.t.every((q) => !q))) { v[k] += 10; used[k]++; spare--; } }
+      for (const k of OP.pri) { while (spare > 0 && v[k] + M <= 200 && (OP.t[k] > 0 || OP.t.every((q) => !q))) { v[k] += M; used[k]++; spare--; } }
       const s = v.reduce((a, q, k) => a + Math.min(q, 200) * 1000 + Math.min(q, 200) * (6 - rank[k]), 0);
       if (best.length < 8 || s > worst) {
         const key = tot.join(',');
@@ -136,7 +149,8 @@
       }
     };
     rec(0, 0, 0);
-    return best;
+    OP.near = !best.length && near.length > 0;
+    return best.length ? best : near;
   }
   function setOpts() {
     const d = D(); if (!d || !OP.SI) return '';
@@ -154,22 +168,23 @@
     const res = (OP.res || []).map((r) => {
       const its = r.ids.map((id) => d.items.find((x) => x.id === id));
       const chars = d.chars.filter((c) => c.cls === OP.cls);
-      return `<div class="oset"><div class="tiles">${its.map((x) => `<div class="mtile" style="--t:52px" title="${esc(x.n)} (${esc(where(x))})">${mt(x)}</div>`).join('')}</div><div class="ostats">${OP.pri.map((i) => `<span class="${OP.t[i] && r.t[i] >= OP.t[i] ? 'ok' : ''}">${stn[i]} <b>${Math.min(200, r.t[i])}</b>${r.used[i] ? `<em>+${r.used[i] * 10}</em>` : ''}</span>`).join('')}</div><span class="mute">Total ${r.t.reduce((a, b) => a + Math.min(200, b), 0)}${r.used.some((u) => u) ? ` &middot; mods: ${OP.pri.filter((i) => r.used[i]).map((i) => '+10 ' + stn[i] + (r.used[i] > 1 ? ' &times;' + r.used[i] : '')).join(', ')}` : ''}</span>${setsOf(its).map((q) => `<span class="oset-b" title="${esc(((q.d && q.d.p) || []).filter((p) => p.rc <= q.n).map((p) => p.rc + '-piece: ' + p.n + (p.d ? ' - ' + p.d : '')).join('\n'))}">${esc((q.d && q.d.n) || 'Set')} ${q.n >= 4 ? '4' : '2'}-piece</span>`).join('')}${chars.map((c) => `<button data-eq="${esc(c.id)}" data-ids="${esc(r.ids.join(','))}">Equip on ${esc(X.CL[c.cls])} ${c.light}</button>`).join('')}</div>`;
+      const M = OP.msz;
+      return `<div class="oset${r.short ? ' near' : ''}"><div class="tiles">${its.map((x) => `<div class="mtile" style="--t:52px" title="${esc(x.n)} (${esc(where(x))})">${mt(x)}</div>`).join('')}</div><div class="ostats">${OP.pri.map((i) => `<span class="${OP.t[i] && r.t[i] >= OP.t[i] ? 'ok' : r.short && r.short[i] ? 'short' : ''}">${stn[i]} <b>${Math.min(200, r.t[i])}</b>${r.used[i] ? `<em>+${r.used[i] * M}</em>` : ''}${r.short && r.short[i] ? `<i title="Short of your minimum (${OP.t[i]})">${r.short[i]} short</i>` : ''}</span>`).join('')}</div><span class="mute">Total ${r.t.reduce((a, b) => a + Math.min(200, b), 0)}${r.used.some((u) => u) ? ` &middot; mods: ${OP.pri.filter((i) => r.used[i]).map((i) => '+' + M + ' ' + stn[i] + (r.used[i] > 1 ? ' &times;' + r.used[i] : '')).join(', ')}` : ''}</span>${setsOf(its).map((q) => `<span class="oset-b" title="${esc(((q.d && q.d.p) || []).filter((p) => p.rc <= q.n).map((p) => p.rc + '-piece: ' + p.n + (p.d ? ' - ' + p.d : '')).join('\n'))}">${esc((q.d && q.d.n) || 'Set')} ${q.n >= 4 ? '4' : '2'}-piece</span>`).join('')}${chars.map((c) => `<button data-eq="${esc(c.id)}" data-ids="${esc(r.ids.join(','))}">Equip on ${esc(X.CL[c.cls])} ${c.light}</button>`).join('')}</div>`;
     }).join('');
-    opt.s.innerHTML = `<div class="card"><h2 style="margin:0 0 6px">Loadout Optimizer</h2><p class="mute">Finds the best five-piece armor set from everything you own. Stats go from 0 to 200. Set the minimum you want for each stat (0 means no minimum) and use the arrows to put the stats in order: stats nearer the top count for more when picking between sets. +10 stat mods (one per piece) fill whatever the armor is missing. Fragments and the artifact are not counted.</p><div class="otools"><label>Class <select id="pcls">${X.CL.map((c, i) => `<option value="${i}"${OP.cls === i ? ' selected' : ''}>${c}</option>`).join('')}</select></label><label>Exotic <select id="pex"><option value="">Any (at most one)</option>${exo.map((x) => `<option value="${esc(x.id)}"${OP.ex === x.id ? ' selected' : ''}>${esc(x.n)}</option>`).join('')}</select></label><label>Set bonus <select id="pset"${OP.SI ? '' : ' disabled'}><option value="0">${OP.SI ? 'None' : OP.setErr ? 'Could not load armor sets' : 'Loading armor sets...'}</option>${setOpts()}</select></label>${OP.set ? `<label><select id="pneed"><option value="2"${OP.need === 2 ? ' selected' : ''}>2-piece</option><option value="4"${OP.need === 4 ? ' selected' : ''}>4-piece</option></select></label>` : ''}</div>${OP.set && OP.SD[OP.set] ? `<div class="osetp">${(OP.SD[OP.set].p || []).map((p) => `<div><b>${p.rc}-piece: ${esc(p.n)}</b> <span class="mute">${esc(p.d)}</span></div>`).join('')}</div>` : ''}<div class="otgt">${OP.pri.map((i, r) => `<div class="otr"><span class="ord"><button data-up="${r}"${r ? '' : ' disabled'} title="Matters more">&#9650;</button><button data-dn="${r}"${r < 5 ? '' : ' disabled'} title="Matters less">&#9660;</button></span><b>${stn[i]}</b><input type="range" min="0" max="200" step="5" value="${OP.t[i]}" data-t="${i}"><input type="number" min="0" max="200" step="5" value="${OP.t[i]}" data-tn="${i}"><span class="mute">min</span></div>`).join('')}</div>
-<div class="orun"><div class="omods"><span class="olbl">+10 stat mods</span><select id="pmods" title="How many armor pieces may use a +10 stat mod (one per piece) to reach your minimums">${[0, 1, 2, 3, 4, 5].map((n) => `<option value="${n}"${OP.mods === n ? ' selected' : ''}>${n ? n + (n === 1 ? ' piece' : ' pieces') + ' (+' + n * 10 + ')' : 'None'}</option>`).join('')}</select></div><button class="on orbtn" id="prun">Find best sets</button><span class="mute" id="pmsg">${esc(OP.msg)}</span></div>${res || ''}</div>`;
+    opt.s.innerHTML = `<div class="card"><h2 style="margin:0 0 6px">Loadout Optimizer</h2><p class="mute">Finds the best five-piece armor set from everything you own. Stats go from 0 to 200. Set the minimum you want for each stat (0 means no minimum) and use the arrows to put the stats in order: stats nearer the top count for more when picking between sets. Stat mods (one per piece, +5 or +10) fill whatever the armor is missing. If nothing reaches every minimum, you get the closest sets. Fragments and the artifact are not counted.</p><div class="otools"><label>Class <select id="pcls">${X.CL.map((c, i) => `<option value="${i}"${OP.cls === i ? ' selected' : ''}>${c}</option>`).join('')}</select></label><label>Exotic <select id="pex"><option value="">Any (at most one)</option>${exo.map((x) => `<option value="${esc(x.id)}"${OP.ex === x.id ? ' selected' : ''}>${esc(x.n)}</option>`).join('')}</select></label><label>Set bonus <select id="pset"${OP.SI ? '' : ' disabled'}><option value="0">${OP.SI ? 'None' : OP.setErr ? 'Could not load armor sets' : 'Loading armor sets...'}</option>${setOpts()}</select></label>${OP.set ? `<label><select id="pneed"><option value="2"${OP.need === 2 ? ' selected' : ''}>2-piece</option><option value="4"${OP.need === 4 ? ' selected' : ''}>4-piece</option></select></label>` : ''}</div>${OP.set && OP.SD[OP.set] ? `<div class="osetp">${(OP.SD[OP.set].p || []).map((p) => `<div><b>${p.rc}-piece: ${esc(p.n)}</b> <span class="mute">${esc(p.d)}</span></div>`).join('')}</div>` : ''}<div class="otgt">${OP.pri.map((i, r) => `<div class="otr"><span class="ord"><button data-up="${r}"${r ? '' : ' disabled'} title="Matters more">&#9650;</button><button data-dn="${r}"${r < 5 ? '' : ' disabled'} title="Matters less">&#9660;</button></span><b>${stn[i]}</b><input type="range" min="0" max="200" step="5" value="${OP.t[i]}" data-t="${i}"><input type="number" min="0" max="200" step="5" value="${OP.t[i]}" data-tn="${i}"><span class="mute">min</span></div>`).join('')}</div>
+<div class="orun"><div class="omods"><span class="olbl">Stat mods</span><select id="pmods" title="How many armor pieces may use a stat mod (one per piece) to reach your minimums">${[0, 1, 2, 3, 4, 5].map((n) => `<option value="${n}"${OP.mods === n ? ' selected' : ''}>${n ? n + (n === 1 ? ' piece' : ' pieces') : 'None (0)'}</option>`).join('')}</select>${OP.mods ? `<select id="pmsz" title="Minor stat mods give +5, major ones +10"><option value="10"${OP.msz === 10 ? ' selected' : ''}>+10 each (major)</option><option value="5"${OP.msz === 5 ? ' selected' : ''}>+5 each (minor)</option></select>` : ''}</div><button class="on orbtn" id="prun">Find best sets</button><span class="mute" id="pmsg">${esc(OP.msg)}</span></div>${res || ''}</div>`;
   }
   opt.s.addEventListener('input', (e) => {
     const t = e.target, k = t.dataset.t !== undefined ? +t.dataset.t : t.dataset.tn !== undefined ? +t.dataset.tn : -1; if (k < 0) return;
     const v = Math.max(0, Math.min(200, Math.round((+t.value || 0) / 5) * 5)); OP.t[k] = v; saveOP();
     const row = t.closest('.otr'); if (row) { const a = row.querySelector('[data-t]'), n = row.querySelector('[data-tn]'); if (a && a !== t) a.value = v; if (n && n !== t) n.value = v; }
   });
-  opt.s.addEventListener('change', (e) => { if (e.target.id === 'pcls') { OP.cls = +e.target.value; OP.ex = ''; OP.set = 0; OP.res = null; drawOpt(); } else if (e.target.id === 'pex') OP.ex = e.target.value; else if (e.target.id === 'pset') { OP.set = +e.target.value || 0; OP.res = null; drawOpt(); } else if (e.target.id === 'pneed') { OP.need = +e.target.value === 4 ? 4 : 2; OP.res = null; drawOpt(); } else if (e.target.id === 'pmods') { OP.mods = +e.target.value || 0; saveOP(); } else if (e.target.dataset.tn !== undefined) { const n = e.target; n.value = OP.t[+n.dataset.tn]; } });
+  opt.s.addEventListener('change', (e) => { if (e.target.id === 'pcls') { OP.cls = +e.target.value; OP.ex = ''; OP.set = 0; OP.res = null; drawOpt(); } else if (e.target.id === 'pex') OP.ex = e.target.value; else if (e.target.id === 'pset') { OP.set = +e.target.value || 0; OP.res = null; drawOpt(); } else if (e.target.id === 'pneed') { OP.need = +e.target.value === 4 ? 4 : 2; OP.res = null; drawOpt(); } else if (e.target.id === 'pmods') { OP.mods = +e.target.value || 0; saveOP(); drawOpt(); } else if (e.target.id === 'pmsz') { OP.msz = +e.target.value === 5 ? 5 : 10; saveOP(); } else if (e.target.dataset.tn !== undefined) { const n = e.target; n.value = OP.t[+n.dataset.tn]; } });
   opt.s.addEventListener('click', async (e) => {
     if (e.target.id === 'prun') {
       OP.res = optimize();
       const want = OP.t.some((v) => v > 0);
-      OP.msg = OP.res.length ? 'Top ' + OP.res.length + ' sets:' : want ? 'No set reaches those minimums' + (OP.mods < 5 ? ' (try allowing more stat mods)' : '') + (OP.set ? ' with that set bonus' : '') + '. Lower a minimum and try again.' : OP.set ? 'No set of five gets that set bonus with the armor you own.' : 'Not enough armor with stats for that class. Load the vault again.'; drawOpt(); return;
+      OP.msg = OP.res.length && OP.near ? 'No set reaches every minimum' + (OP.set ? ' with that set bonus' : '') + '. The ' + OP.res.length + ' closest' + (OP.mods < 5 || OP.msz < 10 ? ' (more or bigger stat mods may close the gap)' : '') + ':' : OP.res.length ? 'Top ' + OP.res.length + ' sets:' : want ? 'No set reaches those minimums' + (OP.set ? ' with that set bonus' : '') + '. Lower a minimum and try again.' : OP.set ? 'No set of five gets that set bonus with the armor you own.' : 'Not enough armor with stats for that class. Load the vault again.'; drawOpt(); return;
     }
     const up = e.target.closest('[data-up]'), dn = e.target.closest('[data-dn]');
     if (up || dn) { const r = +(up || dn).dataset[up ? 'up' : 'dn'], o = up ? r - 1 : r + 1; if (o >= 0 && o < 6) { const a = OP.pri; [a[r], a[o]] = [a[o], a[r]]; saveOP(); OP.res = null; drawOpt(); } return;

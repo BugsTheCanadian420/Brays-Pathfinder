@@ -1170,6 +1170,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
       if (!st.founder && ADM.on) { ADM.on = false; ADM.key = ''; ADM.acc = []; ADM.keys = []; ADM.newKey = null; ADM.code = ''; }
       if (!st.dev) { DSK.list = null; DSK.t = null; SECN['Help desk'] = 0; }
       badges(); if (settingsSec.classList.contains('on')) drawSettings();
+      window.dispatchEvent(new CustomEvent('gtrole', { detail: st })); // founder notes (notes.js) shows or hides its button
     }).catch(() => {});
   }
   setTimeout(flagsLoad, 1500); setInterval(flagsLoad, 6e5);
@@ -1297,10 +1298,10 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
         <div class="hmsgs">${t.msgs.map((m) => `<div class="hb${m.by === 'team' ? ' team' : ''}${m.role === 'owner' ? ' own' : ''}"><small>${m.by === 'team' ? esc(m.name || 'Pathfinder team') + (m.role === 'owner' ? '<em class="hown">Owner</em>' : m.role === 'founder' ? ' &middot; Founder' : m.role === 'dev' ? ' &middot; Developer' : '') : 'Player'} &middot; ${esc(hWhen(m.at))}</small><div>${hText(m.text)}</div></div>`).join('')}</div>
         ${t.report ? `<details class="hrep"><summary>Problem report</summary><pre>${esc(t.report)}</pre></details>` : ''}
         <textarea id="dreply" maxlength="3000" rows="4" placeholder="Write a reply. The player sees it in Settings > About & help.">${esc(DSK.reply)}</textarea>
-        <p class="fbb"><button class="b" data-d="reply" type="button"${DSK.busy ? ' disabled' : ''}>${DSK.busy ? 'Sending…' : 'Send reply'}</button><button class="g" data-d="replyclose" type="button"${DSK.busy ? ' disabled' : ''}>Send and close</button>${t.status === 'closed' ? '<button class="g" data-d="reopen" type="button">Reopen</button>' : '<button class="g" data-d="close" type="button">Close without reply</button>'}${PFA && PFA.founder ? '<button class="g admdel" data-d="del" type="button">Delete</button>' : ''}</p></div>`;
+        <p class="fbb"><button class="b" data-d="reply" type="button"${DSK.busy ? ' disabled' : ''}>${DSK.busy ? 'Sending…' : 'Send reply'}</button><button class="g" data-d="replyclose" type="button"${DSK.busy ? ' disabled' : ''}>Send and mark solved</button>${t.status === 'closed' ? '<button class="g" data-d="reopen" type="button">Reopen</button>' : '<button class="g" data-d="close" type="button">Mark as solved</button>'}${PFA && PFA.founder ? '<button class="g admdel" data-d="del" type="button">Delete</button>' : ''}</p></div>`;
     } else {
       const list = L.filter((x) => DSK.f === 'all' || x.status === DSK.f);
-      body = `<div class="fbk">${[['open', 'Waiting'], ['answered', 'Answered'], ['closed', 'Closed'], ['all', 'All']].map(([k, l]) => `<button class="chip${DSK.f === k ? ' on' : ''}" data-df="${k}" type="button">${l} ${k === 'all' ? L.length : cnt[k]}</button>`).join('')}<button class="g" data-d="refresh" type="button">${DSK.loading ? 'Loading…' : 'Reload'}</button></div>
+      body = `<div class="fbk">${[['open', 'Waiting'], ['answered', 'Answered'], ['closed', 'Solved'], ['all', 'All']].map(([k, l]) => `<button class="chip${DSK.f === k ? ' on' : ''}" data-df="${k}" type="button">${l} ${k === 'all' ? L.length : cnt[k]}</button>`).join('')}<button class="g" data-d="refresh" type="button">${DSK.loading ? 'Loading…' : 'Reload'}</button></div>
         <div class="hlist">${list.map((x) => { const st = HST[x.status] || HST.open; return `<div class="hrow${x.unread ? ' new' : ''}" data-did="${esc(x.id)}" role="button" tabindex="0"><span class="hk">${esc(HKN[x.kind] || 'Other')}</span><span class="hf">${esc(x.first)}</span><span class="hst ${st[1]}">${x.unread ? 'New message' : x.status === 'open' ? 'Waiting for us' : st[0]}</span><small>${esc(x.acct || 'no account')} &middot; ${esc(hWhen(x.upd))}</small></div>`; }).join('') || `<p class="mute">${DSK.list === null ? 'Loading…' : 'Nothing here.'}</p>`}</div>`;
     }
     return `<div class="card sc"><h2>Help desk</h2><p class="mute">Help requests from players. Your reply shows in their Settings &gt; About & help, signed with your account name (${esc((PFA && PFA.name) || '')}).</p>${note}${body}</div>`;
@@ -1315,8 +1316,8 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     if (a === 'back') { DSK.t = null; DSK.note = ''; dDraw(); return; }
     if (a === 'refresh') { deskLoad(false); return; }
     if (!DSK.t) return;
-    if (a === 'reply' || a === 'replyclose') { if (!DSK.reply.trim()) { DSK.note = 'Write a reply first.'; DSK.bad = true; dDraw(); return; } return act(async () => { const t = await gt.deskReply({ id: DSK.t.id, text: DSK.reply.trim(), close: a === 'replyclose' }); DSK.reply = ''; return t; }, 'Reply sent. The player sees it in Settings > About & help.'); }
-    if (a === 'close' || a === 'reopen') return act(() => gt.deskStatus({ id: DSK.t.id, status: a === 'close' ? 'closed' : 'open' }), a === 'close' ? 'Closed.' : 'Reopened.');
+    if (a === 'reply' || a === 'replyclose') { if (!DSK.reply.trim()) { DSK.note = 'Write a reply first.'; DSK.bad = true; dDraw(); return; } return act(async () => { const t = await gt.deskReply({ id: DSK.t.id, text: DSK.reply.trim(), close: a === 'replyclose' }); DSK.reply = ''; return t; }, a === 'replyclose' ? 'Reply sent and marked as solved.' : 'Reply sent. The player sees it in Settings > About & help.'); }
+    if (a === 'close' || a === 'reopen') return act(() => gt.deskStatus({ id: DSK.t.id, status: a === 'close' ? 'closed' : 'open' }), a === 'close' ? 'Marked as solved. If the player writes back, it opens again.' : 'Reopened.');
     if (a === 'del') { if (!confirm('Delete this help request for good? The player will no longer see it.')) return; const id = DSK.t.id; return act(async () => { await gt.deskDelete({ id }); DSK.list = (DSK.list || []).filter((x) => x.id !== id); DSK.t = null; return null; }, 'Deleted.'); }
   });
   // Coming back to Pathfinder (a phone app switched back to, a laptop woken up, a tab clicked again): bring everything up to
