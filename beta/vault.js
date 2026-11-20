@@ -1198,6 +1198,8 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   const HK = [['bug', 'Bug'], ['idea', 'Idea'], ['question', 'Question'], ['other', 'Other']], HKN = { bug: 'Bug', idea: 'Idea', question: 'Question', other: 'Other' };
   const HLP = { view: 'list', list: null, loading: false, t: null, kind: 'bug', msg: '', contact: '', rep: true, reply: '', busy: false, note: '', bad: false, unread: 0 };
   const HST = { open: ['Waiting for an answer', 'w'], answered: ['Answered', 'a'], closed: ['Solved', 'c'] };
+  // The Help desk's own words: waiting for us to answer, open (answered, the player may write back), solved.
+  const DSN = (s) => (s === 'open' ? 'Waiting for us' : s === 'answered' ? 'Open' : 'Solved');
   const hWhen = (t) => (t ? new Date(t).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '');
   const hText = (t) => esc(t).replace(/\n/g, '<br>');
   // Never leave a button on "Sending…": after 25 s say so (the message may still have arrived; the list is checked again).
@@ -1295,7 +1297,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     if (DSK.t) {
       const t = DSK.t, st = HST[t.status] || HST.open;
       body = `<p class="fbb"><button class="g hback" data-d="back" type="button">&larr; All requests</button><button class="g" data-d="tref" type="button"${DSK.busy ? ' disabled' : ''}>&#8635; Refresh</button></p>
-        <div class="hth"><div class="hthh"><b>${esc(HKN[t.kind] || 'Other')}</b><span class="hst ${st[1]}">${t.status === 'open' ? 'Waiting for us' : st[0]}</span><small>Opened ${esc(hWhen(t.at))}</small></div>
+        <div class="hth"><div class="hthh"><b>${esc(HKN[t.kind] || 'Other')}</b><span class="hst ${st[1]}">${DSN(t.status)}</span><small>Opened ${esc(hWhen(t.at))}</small></div>
         <p class="mute hsm">${t.acct ? 'Pathfinder account <b>' + esc(t.acct) + '</b>' : 'Not signed in to a Pathfinder account'}${t.contact ? ' &middot; reply to <b>' + esc(t.contact) + '</b>' : ''} &middot; ${esc(t.where || '')} ${esc(t.ver || '')}</p>
         <div class="hmsgs">${t.msgs.map((m) => `<div class="hb${m.by === 'team' ? ' team' : ''}${m.role === 'owner' ? ' own' : ''}"><small>${m.by === 'team' ? esc(m.name || 'Pathfinder team') + (m.role === 'owner' ? '<em class="hown">Owner</em>' : m.role === 'founder' ? ' &middot; Founder' : m.role === 'dev' ? ' &middot; Developer' : '') : 'Player'} &middot; ${esc(hWhen(m.at))}</small><div>${hText(m.text)}</div></div>`).join('')}</div>
         ${t.report ? `<details class="hrep"><summary>Problem report</summary><pre>${esc(t.report)}</pre></details>` : ''}
@@ -1303,13 +1305,14 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
         <p class="fbb"><button class="b" data-d="reply" type="button"${DSK.busy ? ' disabled' : ''}>${DSK.busy ? 'Sending…' : 'Send reply'}</button><button class="g" data-d="replyclose" type="button"${DSK.busy ? ' disabled' : ''}>Send and mark solved</button>${t.status === 'closed' ? '<button class="g" data-d="reopen" type="button">Reopen</button>' : '<button class="g" data-d="close" type="button">Mark as solved</button>'}${PFA && PFA.founder ? '<button class="g admdel" data-d="del" type="button">Delete</button>' : ''}</p></div>`;
     } else {
       const list = L.filter((x) => DSK.f === 'all' || x.status === DSK.f);
-      body = `<div class="fbk">${[['open', 'Waiting'], ['answered', 'Answered'], ['closed', 'Solved'], ['all', 'All']].map(([k, l]) => `<button class="chip${DSK.f === k ? ' on' : ''}" data-df="${k}" type="button">${l} ${k === 'all' ? L.length : cnt[k]}</button>`).join('')}<button class="g" data-d="refresh" type="button">${DSK.loading ? 'Loading…' : '&#8635; Refresh'}</button></div>
-        <div class="hlist">${list.map((x) => { const st = HST[x.status] || HST.open; return `<div class="hrow${x.unread ? ' new' : ''}" data-did="${esc(x.id)}" role="button" tabindex="0"><span class="hk">${esc(HKN[x.kind] || 'Other')}</span><span class="hf">${esc(x.first)}</span><span class="hst ${st[1]}">${x.unread ? 'New message' : x.status === 'open' ? 'Waiting for us' : st[0]}</span><small>${esc(x.acct || 'no account')} &middot; ${esc(hWhen(x.upd))}</small></div>`; }).join('') || `<p class="mute">${DSK.list === null ? 'Loading…' : 'Nothing here.'}</p>`}</div>`;
+      body = `<div class="fbk">${[['open', 'Waiting'], ['answered', 'Open'], ['closed', 'Solved'], ['all', 'All']].map(([k, l]) => `<button class="chip${DSK.f === k ? ' on' : ''}" data-df="${k}" type="button">${l} ${k === 'all' ? L.length : cnt[k]}</button>`).join('')}<button class="g" data-d="refresh" type="button">${DSK.loading ? 'Loading…' : '&#8635; Refresh'}</button></div>
+        <div class="hlist">${list.map((x) => { const st = HST[x.status] || HST.open; return `<div class="hrow${x.unread ? ' new' : ''}" data-did="${esc(x.id)}" role="button" tabindex="0"><span class="hk">${esc(HKN[x.kind] || 'Other')}</span><span class="hf">${esc(x.first)}</span><span class="hst ${st[1]}">${x.unread ? 'New message' : DSN(x.status)}</span><small>${esc(x.acct || 'no account')} &middot; ${esc(hWhen(x.upd))}</small></div>`; }).join('') || `<p class="mute">${DSK.list === null ? 'Loading…' : 'Nothing here.'}</p>`}</div>`;
     }
     return `<div class="card sc"><h2>Help desk</h2><p class="mute">Help requests from players. Your reply shows in their Settings &gt; About & help, signed with your account name (${esc((PFA && PFA.name) || '')}).</p>${note}${body}</div>`;
   }
   settingsSec.addEventListener('click', (e) => {
     const f = e.target.closest('[data-df]'); if (f) { DSK.f = f.dataset.df; dDraw(); return; }
+    // (see the 10-second check below the Help desk)
     const row = e.target.closest('[data-did]');
     if (row) { const id = row.dataset.did; DSK.reply = ''; DSK.note = ''; gt.deskGet({ id }).then((t) => { DSK.t = t; const r = (DSK.list || []).find((x) => x.id === id); if (r) r.unread = false; SECN['Help desk'] = (DSK.list || []).filter((x) => x.unread).length; badges(); dDraw(); const m = settingsSec.querySelector('.hmsgs'); if (m) m.scrollTop = m.scrollHeight; }).catch((er) => { DSK.note = clean(er); DSK.bad = true; dDraw(); }); return; }
     const b = e.target.closest('[data-d]'); if (!b || DSK.busy) return;
@@ -1323,6 +1326,26 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     if (a === 'close' || a === 'reopen') return act(() => gt.deskStatus({ id: DSK.t.id, status: a === 'close' ? 'closed' : 'open' }), a === 'close' ? 'Marked as solved. If the player writes back, it opens again.' : 'Reopened.');
     if (a === 'del') { if (!confirm('Delete this help request for good? The player will no longer see it.')) return; const id = DSK.t.id; return act(async () => { await gt.deskDelete({ id }); DSK.list = (DSK.list || []).filter((x) => x.id !== id); DSK.t = null; return null; }, 'Deleted.'); }
   });
+  // An open conversation (Help or the Help desk) checks for new messages every 10 seconds while it is on screen. It only redraws
+  // when something changed, and what you are typing (and where the cursor is) stays as it is.
+  setInterval(() => {
+    if (document.hidden || !settingsSec.classList.contains('on') || !window.gt) return;
+    if (DSK.t && !DSK.busy && document.getElementById('dreply') && gt.deskGet) {
+      const id = DSK.t.id, n0 = DSK.t.msgs.length, s0 = DSK.t.status;
+      gt.deskGet({ id }).then((t) => {
+        if (!t || !DSK.t || DSK.t.id !== id || DSK.busy || (t.msgs.length === n0 && t.status === s0)) return;
+        DSK.t = t; const r = (DSK.list || []).find((x) => x.id === id); if (r) Object.assign(r, { status: t.status, upd: t.upd, unread: false, n: t.n });
+        dDraw(); if (t.msgs.length > n0) { const m = settingsSec.querySelector('.hmsgs'); if (m) m.scrollTop = m.scrollHeight; }
+      }).catch(() => {});
+    }
+    if (HLP.view === 'ticket' && HLP.t && !HLP.busy && document.getElementById('hreply') && gt.helpGet) {
+      const id = HLP.t.id, n0 = HLP.t.msgs.length, s0 = HLP.t.status;
+      gt.helpGet({ id }).then((t) => {
+        if (!t || HLP.view !== 'ticket' || !HLP.t || HLP.t.id !== id || HLP.busy || (t.msgs.length === n0 && t.status === s0)) return;
+        hSync(t); hDraw(); if (t.msgs.length > n0) { const m = settingsSec.querySelector('.hmsgs'); if (m) m.scrollTop = m.scrollHeight; }
+      }).catch(() => {});
+    }
+  }, 10000);
   // Coming back to Pathfinder (a phone app switched back to, a laptop woken up, a tab clicked again): bring everything up to
   // date, because a phone can keep the page asleep for hours. The Pathfinder account (your Bungie accounts) syncs if it has not
   // for 5 minutes, help answers and switches are checked, and the website reloads itself if a newer version came out.
