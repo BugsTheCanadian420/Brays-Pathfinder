@@ -215,12 +215,13 @@
       FN.busy = false; FB.stat();
       if (FN.again) { FN.again = false; if (++FN.tries < 6) push(); }
     }
-    async function pull() {
+    async function pull(asked) {
       if (FN.busy) return;
       try {
         const r = await g.fnotesGet(); FN.err = '';
+        if (asked && FN.loaded) FN.note = r.v === FN.v ? 'up to date' : 'refreshed';
         if (!FN.loaded) { take(r); FN.loaded = true; body(); return; }
-        if (r.v !== FN.v) { if (JSON.stringify(plain(FB.D.pages)) === FN.lastS) { take(r); FN.note = ''; FB.sync(null, true); } else { merge(r); push(); } }
+        if (r.v !== FN.v) { if (JSON.stringify(plain(FB.D.pages)) === FN.lastS) { take(r); if (!asked) FN.note = ''; FB.sync(null, true); } else { merge(r); push(); } }
       } catch (er) { FN.err = errText(er); if (!FN.loaded) { body(); return; } }
       FB.stat();
     }
@@ -228,7 +229,7 @@
     // the window, like the notepad's: drag by the header, resize from the corner, Esc closes
     const fp = document.createElement('div'); fp.id = 'gtfnp'; fp.hidden = true;
     const SHIELD = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>';
-    fp.innerHTML = '<div class="nph">' + SHIELD + '<b>Founder notes</b><span class="sp"></span><button data-fp="x" title="Close" aria-label="Close">&times;</button></div><div class="npb"></div>';
+    fp.innerHTML = '<div class="nph">' + SHIELD + '<b>Founder notes</b><span class="sp"></span><button data-fp="refresh" title="Get the latest changes from the other founders">&#8635; Refresh</button><button data-fp="x" title="Close" aria-label="Close">&times;</button></div><div class="npb"></div>';
     document.body.appendChild(fp);
     const fbody = fp.querySelector('.npb');
     let fe = null;
@@ -254,7 +255,12 @@
       else { clearTimeout(FN.t); push(); }
     }
     ffab.onclick = () => fOpen(fp.hidden);
-    fp.addEventListener('click', (e) => { const b = e.target.closest('[data-fp]'); if (!b) return; if (b.dataset.fp === 'x') fOpen(false); else { FN.err = ''; body(); pull(); } });
+    fp.addEventListener('click', (e) => { const b = e.target.closest('[data-fp]'); if (!b) return; if (b.dataset.fp === 'x') { fOpen(false); return; }
+      // Refresh (or Try again): save anything typed here first, then fetch the latest from the other founders.
+      FN.err = ''; if (!FN.loaded) body();
+      b.disabled = true; clearTimeout(FN.t);
+      (FN.loaded ? push() : Promise.resolve()).then(() => pull(true)).finally(() => { b.disabled = false; FB.stat(); clearTimeout(FN.nt); FN.nt = setTimeout(() => { if (/^(up to date|refreshed)$/.test(FN.note)) { FN.note = ''; FB.stat(); } }, 4000); });
+    });
     fp.addEventListener('keydown', (e) => { if (e.key === 'Escape') fOpen(false); });
     fp.querySelector('.nph').addEventListener('pointerdown', (e) => {
       if (e.target.closest('button')) return;

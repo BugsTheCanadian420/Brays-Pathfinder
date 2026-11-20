@@ -1236,7 +1236,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
         <p class="mute hsm">You get the answer right here in Settings &gt; About & help${PFA && PFA.on ? `, on every device signed in as ${esc(PFA.name)}` : ''}. A Discord name or email is only needed if you would also like an answer there. The problem report lists the errors Pathfinder ran into, your version and screen size; nothing about your Destiny account.</p></div>`;
     } else if (HLP.view === 'ticket' && HLP.t) {
       const t = HLP.t, st = HST[t.status] || HST.open;
-      body = `<p><button class="g hback" data-h="list" type="button">&larr; All requests</button></p>
+      body = `<p class="fbb"><button class="g hback" data-h="list" type="button">&larr; All requests</button><button class="g" data-h="tref" type="button"${HLP.busy ? ' disabled' : ''}>&#8635; Refresh</button></p>
         <div class="hth"><div class="hthh"><b>${esc(HKN[t.kind] || 'Other')}</b><span class="hst ${st[1]}">${st[0]}</span><small>Opened ${esc(hWhen(t.at))}</small></div>
         <div class="hmsgs">${t.msgs.map((m) => `<div class="hb${m.by === 'team' ? ' team' : ''}${m.role === 'owner' ? ' own' : ''}"><small>${m.by === 'team' ? esc(m.name || 'Pathfinder team') + (m.role === 'owner' ? '<em class="hown">Owner</em>' : ' &middot; Pathfinder team') : 'You'} &middot; ${esc(hWhen(m.at))}</small><div>${hText(m.text)}</div></div>`).join('')}</div>
         <textarea id="hreply" maxlength="3000" rows="3" placeholder="${t.status === 'closed' ? 'Write to reopen this request' : 'Write a reply'}">${esc(HLP.reply)}</textarea>
@@ -1262,10 +1262,12 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     const k = e.target.closest('[data-hk]'); if (k) { HLP.kind = k.dataset.hk; hDraw(); return; }
     const row = e.target.closest('[data-hid]'); if (row) { helpOpen(row.dataset.hid); return; }
     const b = e.target.closest('[data-h]'); if (!b || HLP.busy) return;
-    const a = b.dataset.h, act = (fn, ok) => { HLP.busy = true; HLP.note = ''; hDraw(); hTimed(fn()).then((t) => { if (t) hSync(t); HLP.note = ok || ''; HLP.bad = false; }).catch((er) => { HLP.note = clean(er); HLP.bad = true; }).finally(() => { HLP.busy = false; hDraw(); const m = settingsSec.querySelector('.hmsgs'); if (m) m.scrollTop = m.scrollHeight; }); };
+    const a = b.dataset.h, act = (fn, ok) => { HLP.busy = true; HLP.note = ''; hDraw(); hTimed(fn()).then((t) => { if (t) hSync(t); HLP.note = (typeof ok === 'function' ? t && ok(t) : ok) || ''; HLP.bad = false; }).catch((er) => { HLP.note = clean(er); HLP.bad = true; }).finally(() => { HLP.busy = false; hDraw(); const m = settingsSec.querySelector('.hmsgs'); if (m) m.scrollTop = m.scrollHeight; }); };
     if (a === 'new') { HLP.view = 'new'; HLP.note = ''; hDraw(); setTimeout(() => { const t = document.getElementById('hmsg'); if (t) t.focus(); }, 0); return; }
     if (a === 'list') { HLP.view = 'list'; HLP.note = ''; hDraw(); return; }
     if (a === 'refresh') { helpLoad(false); return; }
+    // Refresh the open request (what you were typing stays)
+    if (a === 'tref' && HLP.t) { const n0 = HLP.t.msgs.length, s0 = HLP.t.status; helpLoad(true); return act(() => gt.helpGet({ id: HLP.t.id }), (t) => (t.msgs.length > n0 ? 'New message.' : t.status !== s0 ? 'Updated.' : 'Up to date.')); }
     if (a === 'send') {
       if (HLP.msg.trim().length < 3) { HLP.note = 'Write a message first.'; HLP.bad = true; hDraw(); return; }
       return act(async () => { const t = await gt.helpNew({ kind: HLP.kind, msg: HLP.msg.trim(), contact: HLP.contact.trim(), report: HLP.rep ? helpReport() : '' }); HLP.msg = ''; HLP.view = 'ticket'; return t; }, 'Sent. You will see the answer here, and a dot on Settings when it arrives.');
@@ -1292,7 +1294,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     let body;
     if (DSK.t) {
       const t = DSK.t, st = HST[t.status] || HST.open;
-      body = `<p><button class="g hback" data-d="back" type="button">&larr; All requests</button></p>
+      body = `<p class="fbb"><button class="g hback" data-d="back" type="button">&larr; All requests</button><button class="g" data-d="tref" type="button"${DSK.busy ? ' disabled' : ''}>&#8635; Refresh</button></p>
         <div class="hth"><div class="hthh"><b>${esc(HKN[t.kind] || 'Other')}</b><span class="hst ${st[1]}">${t.status === 'open' ? 'Waiting for us' : st[0]}</span><small>Opened ${esc(hWhen(t.at))}</small></div>
         <p class="mute hsm">${t.acct ? 'Pathfinder account <b>' + esc(t.acct) + '</b>' : 'Not signed in to a Pathfinder account'}${t.contact ? ' &middot; reply to <b>' + esc(t.contact) + '</b>' : ''} &middot; ${esc(t.where || '')} ${esc(t.ver || '')}</p>
         <div class="hmsgs">${t.msgs.map((m) => `<div class="hb${m.by === 'team' ? ' team' : ''}${m.role === 'owner' ? ' own' : ''}"><small>${m.by === 'team' ? esc(m.name || 'Pathfinder team') + (m.role === 'owner' ? '<em class="hown">Owner</em>' : m.role === 'founder' ? ' &middot; Founder' : m.role === 'dev' ? ' &middot; Developer' : '') : 'Player'} &middot; ${esc(hWhen(m.at))}</small><div>${hText(m.text)}</div></div>`).join('')}</div>
@@ -1301,7 +1303,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
         <p class="fbb"><button class="b" data-d="reply" type="button"${DSK.busy ? ' disabled' : ''}>${DSK.busy ? 'Sending…' : 'Send reply'}</button><button class="g" data-d="replyclose" type="button"${DSK.busy ? ' disabled' : ''}>Send and mark solved</button>${t.status === 'closed' ? '<button class="g" data-d="reopen" type="button">Reopen</button>' : '<button class="g" data-d="close" type="button">Mark as solved</button>'}${PFA && PFA.founder ? '<button class="g admdel" data-d="del" type="button">Delete</button>' : ''}</p></div>`;
     } else {
       const list = L.filter((x) => DSK.f === 'all' || x.status === DSK.f);
-      body = `<div class="fbk">${[['open', 'Waiting'], ['answered', 'Answered'], ['closed', 'Solved'], ['all', 'All']].map(([k, l]) => `<button class="chip${DSK.f === k ? ' on' : ''}" data-df="${k}" type="button">${l} ${k === 'all' ? L.length : cnt[k]}</button>`).join('')}<button class="g" data-d="refresh" type="button">${DSK.loading ? 'Loading…' : 'Reload'}</button></div>
+      body = `<div class="fbk">${[['open', 'Waiting'], ['answered', 'Answered'], ['closed', 'Solved'], ['all', 'All']].map(([k, l]) => `<button class="chip${DSK.f === k ? ' on' : ''}" data-df="${k}" type="button">${l} ${k === 'all' ? L.length : cnt[k]}</button>`).join('')}<button class="g" data-d="refresh" type="button">${DSK.loading ? 'Loading…' : '&#8635; Refresh'}</button></div>
         <div class="hlist">${list.map((x) => { const st = HST[x.status] || HST.open; return `<div class="hrow${x.unread ? ' new' : ''}" data-did="${esc(x.id)}" role="button" tabindex="0"><span class="hk">${esc(HKN[x.kind] || 'Other')}</span><span class="hf">${esc(x.first)}</span><span class="hst ${st[1]}">${x.unread ? 'New message' : x.status === 'open' ? 'Waiting for us' : st[0]}</span><small>${esc(x.acct || 'no account')} &middot; ${esc(hWhen(x.upd))}</small></div>`; }).join('') || `<p class="mute">${DSK.list === null ? 'Loading…' : 'Nothing here.'}</p>`}</div>`;
     }
     return `<div class="card sc"><h2>Help desk</h2><p class="mute">Help requests from players. Your reply shows in their Settings &gt; About & help, signed with your account name (${esc((PFA && PFA.name) || '')}).</p>${note}${body}</div>`;
@@ -1312,9 +1314,10 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     if (row) { const id = row.dataset.did; DSK.reply = ''; DSK.note = ''; gt.deskGet({ id }).then((t) => { DSK.t = t; const r = (DSK.list || []).find((x) => x.id === id); if (r) r.unread = false; SECN['Help desk'] = (DSK.list || []).filter((x) => x.unread).length; badges(); dDraw(); const m = settingsSec.querySelector('.hmsgs'); if (m) m.scrollTop = m.scrollHeight; }).catch((er) => { DSK.note = clean(er); DSK.bad = true; dDraw(); }); return; }
     const b = e.target.closest('[data-d]'); if (!b || DSK.busy) return;
     const a = b.dataset.d, sync = (t) => { DSK.t = t; const r = (DSK.list || []).find((x) => x.id === t.id); if (r) Object.assign(r, { status: t.status, upd: t.upd, unread: false, n: t.n }); };
-    const act = (fn, ok) => { DSK.busy = true; DSK.note = ''; dDraw(); hTimed(fn()).then((t) => { if (t && t.id) sync(t); DSK.note = ok || ''; DSK.bad = false; }).catch((er) => { DSK.note = clean(er); DSK.bad = true; }).finally(() => { DSK.busy = false; dDraw(); }); };
+    const act = (fn, ok) => { DSK.busy = true; DSK.note = ''; dDraw(); hTimed(fn()).then((t) => { if (t && t.id) sync(t); DSK.note = (typeof ok === 'function' ? t && ok(t) : ok) || ''; DSK.bad = false; }).catch((er) => { DSK.note = clean(er); DSK.bad = true; }).finally(() => { DSK.busy = false; dDraw(); }); };
     if (a === 'back') { DSK.t = null; DSK.note = ''; dDraw(); return; }
     if (a === 'refresh') { deskLoad(false); return; }
+    if (a === 'tref' && DSK.t) { const n0 = DSK.t.msgs.length, s0 = DSK.t.status; deskLoad(true); return act(() => gt.deskGet({ id: DSK.t.id }), (t) => (t.msgs.length > n0 ? 'New message.' : t.status !== s0 ? 'Updated.' : 'Up to date.')); }
     if (!DSK.t) return;
     if (a === 'reply' || a === 'replyclose') { if (!DSK.reply.trim()) { DSK.note = 'Write a reply first.'; DSK.bad = true; dDraw(); return; } return act(async () => { const t = await gt.deskReply({ id: DSK.t.id, text: DSK.reply.trim(), close: a === 'replyclose' }); DSK.reply = ''; return t; }, a === 'replyclose' ? 'Reply sent and marked as solved.' : 'Reply sent. The player sees it in Settings > About & help.'); }
     if (a === 'close' || a === 'reopen') return act(() => gt.deskStatus({ id: DSK.t.id, status: a === 'close' ? 'closed' : 'open' }), a === 'close' ? 'Marked as solved. If the player writes back, it opens again.' : 'Reopened.');
