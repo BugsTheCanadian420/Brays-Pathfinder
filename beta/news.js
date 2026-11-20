@@ -9,6 +9,15 @@
 
   // ---- what changed: newest first. Add an entry (next id) with every update. ----
   const CHANGES = [
+    { id: 19, date: 'Nov 2026', items: [
+      'When Bungie is down, the vault you loaded last stays on screen (read-only) with a line saying when it is from, and Pathfinder tries again every 2 minutes. A bar under the tabs shows Bungie\'s maintenance timeline in your own time.',
+      'Help: ask a question, report a bug or suggest an idea in Settings, About & help. The team answers right there; open conversations update by themselves.',
+      'A notification when the team answers your help request (PC app, and the website while it is open).',
+      'Accounts: see the devices signed in to your Pathfinder account and sign one out (Settings, Accounts).',
+      'Optimizer: stat mods can be +5 or +10, and when no set reaches every minimum you get the closest ones, with how far short each stat is.',
+      'A short tour for new players, and this list can now be switched off (Settings, About & help).',
+      'The status page shows Bungie\'s maintenance timeline. Announcements from the Pathfinder team show at the top of the app.',
+    ] },
     { id: 18, date: 'Nov 2026', items: [
       'Beta interface style, second pass: rounded glass panels with depth, modern lettering, the current tab as a soft pill, and gentle accent light over the contour map.',
       'A beta copy of the website can now be published at d2pathfinder.com/beta to try changes before everyone gets them. When one is up, Settings, About and help shows "Try the beta".',
@@ -135,17 +144,62 @@ ${list.map((c) => `<div class="gtnv"><small>${esc(c.date)}</small><ul>${c.items.
 <p class="gtnb"><button class="b" data-nw="ok">Got it</button>${all ? '' : ' <button class="g" data-nw="all">Older changes</button>'}</p></div>`;
     m.onclick = (e) => {
       const b = e.target.closest('[data-nw]');
-      if (e.target === m || (b && (b.dataset.nw === 'x' || b.dataset.nw === 'ok'))) { lsSet('gt_news_seen', LATEST); m.remove(); return; }
+      if (e.target === m || (b && (b.dataset.nw === 'x' || b.dataset.nw === 'ok'))) { lsSet('gt_news_seen', LATEST); m.remove(); if (document.getElementById('gtab')) drawCard(); return; }
       if (b && b.dataset.nw === 'all') { lsSet('gt_news_seen', LATEST); showNews(true); }
     };
     document.body.appendChild(m);
   }
   // After an update, once the app is on screen. Someone who has never seen this list gets only the newest entry.
+  // About & help > "Show What's new after updates" turns this off (the What's new button still works, marked when there is news).
+  const auto = () => lsGet('gt_news_auto', true) !== false;
   setTimeout(() => {
     const seen = lsGet('gt_news_seen', null);
-    if (seen == null) { lsSet('gt_news_seen', LATEST - 1); }
-    if ((+lsGet('gt_news_seen', 0) || 0) < LATEST && !/Welcome to Pathfinder/.test((document.getElementById('vault') || {}).textContent || '')) showNews(false);
+    if (seen == null) { lsSet('gt_news_seen', LATEST); return; } // someone new gets the tour (below), not a list of changes
+    if (auto() && (+lsGet('gt_news_seen', 0) || 0) < LATEST && !/Welcome to Pathfinder/.test((document.getElementById('vault') || {}).textContent || '')) showNews(false);
   }, 2500);
+
+
+  // ---- first-time tour ----
+  // Five short stops, shown once after the first vault loads (About & help > Take the tour shows it again). Each stop points at
+  // the real thing on screen; a stop whose thing is hidden (a tab bar on a phone, say) is skipped. Esc or Skip ends it.
+  const STOPS = [
+    ['header.gtbar', 'Tabs', 'Inventory is your vault and characters. Loadouts, Triumphs, Farming and the rest are up here. Reorder or hide tabs in Settings, Appearance.'],
+    ['#vq', 'Search', 'Search like DIM: names, perks, or filters such as is:handcannon, is:godroll or tag:junk.'],
+    [['#vgrid .eq [data-id]', '#vgrid [data-id]'], 'Items', 'Click an item for its perks, stats and wish list grade. Drag it onto a character or the vault to move it.'],
+    ['#nav button[data-t="settings"]', 'Settings', 'Your accounts, looks, wish lists and shortcuts. Questions or bugs? About & help sends them straight to the Pathfinder team.'],
+    ['#gtnfab', 'Notes', 'A notepad that stays open on any tab (Ctrl+Shift+N).'],
+  ];
+  const pick = (q) => [].concat(q).map((x) => document.querySelector(x)).find((el) => seenEl(el)) || null; // the first selector whose thing is on screen
+  const seenEl = (el) => { if (!el) return false; const r = el.getBoundingClientRect(); return r.width > 4 && r.height > 4 && getComputedStyle(el).visibility !== 'hidden'; };
+  function tour(i) {
+    let t = document.getElementById('gttour'); if (t) t.remove();
+    while (i < STOPS.length && !pick(STOPS[i][0])) i++;
+    if (i >= STOPS.length) { lsSet('gt_tour_done', 1); return; }
+    const el = pick(STOPS[i][0]), left = STOPS.slice(i + 1).filter((x) => pick(x[0])).length;
+    el.scrollIntoView({ block: 'nearest' });
+    const r = el.getBoundingClientRect(), pad = 6;
+    t = document.createElement('div'); t.id = 'gttour';
+    t.innerHTML = `<div class="gtth" style="left:${r.left - pad}px;top:${r.top - pad}px;width:${r.width + pad * 2}px;height:${r.height + pad * 2}px"></div><div class="gttc" role="dialog" aria-label="Tour: ${esc(STOPS[i][1])}"><b>${esc(STOPS[i][1])}</b><p>${esc(STOPS[i][2])}</p><div class="gttb"><button class="g" data-tt="skip">${left ? 'Skip the tour' : 'Close'}</button><button class="b" data-tt="next">${left ? 'Next' : 'Done'}</button></div></div>`;
+    document.body.appendChild(t);
+    const c = t.querySelector('.gttc'), cr = c.getBoundingClientRect(), below = r.bottom + 12 + cr.height < innerHeight;
+    c.style.top = Math.max(8, below ? r.bottom + 12 : r.top - cr.height - 12) + 'px';
+    c.style.left = Math.max(8, Math.min(innerWidth - cr.width - 8, r.left + r.width / 2 - cr.width / 2)) + 'px';
+    const end = () => { lsSet('gt_tour_done', 1); t.remove(); document.removeEventListener('keydown', key, true); };
+    const key = (e) => { if (!document.getElementById('gttour')) { document.removeEventListener('keydown', key, true); return; } if (e.key === 'Escape') { e.preventDefault(); end(); } else if (e.key === 'Enter') { e.preventDefault(); document.removeEventListener('keydown', key, true); left ? tour(i + 1) : end(); } };
+    document.addEventListener('keydown', key, true);
+    t.onclick = (e) => { const b = e.target.closest('[data-tt]'); if (!b) return; document.removeEventListener('keydown', key, true); if (b.dataset.tt === 'next' && left) tour(i + 1); else end(); };
+    setTimeout(() => { const n = t.querySelector('[data-tt=next]'); if (n) n.focus(); }, 0);
+  }
+  window.__gttour = () => tour(0);
+  // Start once the vault has items on screen and nothing else is in front (the welcome page, What's new, the landing page).
+  if (!lsGet('gt_tour_done', 0)) {
+    let tries = 0; const tw = setInterval(() => {
+      if (++tries > 150 || lsGet('gt_tour_done', 0)) { clearInterval(tw); return; }
+      const v = document.getElementById('vault');
+      if (!v || !v.classList.contains('on') || !document.querySelector('#vgrid [data-id]') || document.getElementById('gtnews') || seenEl(document.getElementById('pfl'))) return;
+      clearInterval(tw); setTimeout(() => tour(0), 800);
+    }, 2000);
+  }
 
   // ---- About & help card in Settings ----
   const setEl = document.getElementById('settings');
@@ -155,7 +209,8 @@ ${list.map((c) => `<div class="gtnv"><small>${esc(c.date)}</small><ul>${c.items.
     return `<div class="card sc" id="gtab"><h2>About &amp; help</h2><p class="mute">Pathfinder ${esc(VER || '')} &middot; ${isWeb() ? 'website' : 'PC app'}. Not made by or affiliated with Bungie.</p>
 <h3 class="gth">Updates</h3><p class="mute">${esc(updLine())}</p>${!isWeb() && UPD.canUpdate ? `<p>${UPD.state === 'ready' ? '<button class="b" data-ab="install">Restart to install</button>' : '<button class="g" data-ab="check">Check for updates</button>'}</p>` : ''}
 <h3 class="gth">Help</h3><p class="mute">Questions, bugs or ideas: <a href="mailto:${HELP}" data-ab="mail">${HELP}</a></p>
-<p><button class="g" data-ab="news">What's new</button> ${window.__gtbetaInfo ? '<button class="g" data-ab="beta" title="Try the next version early. Same sign-in and settings; you can come back any time.">Try the beta</button> ' : window.__GT_BETA__ ? '<button class="g" data-ab="unbeta">Back to the regular site</button> ' : ''}<button class="g" data-ab="status" title="Is Pathfinder, its sign-in service and Bungie's API working right now?">Status</button> <button class="g" data-ab="privacy">Privacy</button>${isWeb() && window.__GT_DL__ ? ' <button class="g" data-ab="pcapp">Get the PC app</button>' : ''}</p>
+<p><button class="g" data-ab="tour">Take the tour</button> <button class="g" data-ab="news">What's new${(+lsGet('gt_news_seen', 0) || 0) < LATEST ? ' <em class="gtnd">new</em>' : ''}</button> ${window.__gtbetaInfo ? '<button class="g" data-ab="beta" title="Try the next version early. Same sign-in and settings; you can come back any time.">Try the beta</button> ' : window.__GT_BETA__ ? '<button class="g" data-ab="unbeta">Back to the regular site</button> ' : ''}<button class="g" data-ab="status" title="Is Pathfinder, its sign-in service and Bungie's API working right now?">Status</button> <button class="g" data-ab="privacy">Privacy</button>${isWeb() && window.__GT_DL__ ? ' <button class="g" data-ab="pcapp">Get the PC app</button>' : ''}</p>
+<label class="gtna"><input type="checkbox" data-ab="auto"${auto() ? ' checked' : ''}> Show What's new after updates</label>
 <h3 class="gth">Problems</h3><p class="mute">Errors the app ran into, newest first. If something breaks, copy the report and send it along with what you were doing.</p>${rows}
 <p><button class="b" data-ab="copy">Copy problem report</button> <button class="g" data-ab="clear"${L.length ? '' : ' disabled'}>Clear</button> <span class="mute" id="gtabm"></span></p></div>`;
   }
@@ -169,7 +224,9 @@ ${list.map((c) => `<div class="gtnv"><small>${esc(c.date)}</small><ul>${c.items.
     setEl.addEventListener('click', async (e) => {
       const b = e.target.closest('[data-ab]'); if (!b) return;
       const a = b.dataset.ab, msg = (t) => { const s = document.getElementById('gtabm'); if (s) s.textContent = t; };
-      if (a === 'news') { showNews(true); return; }
+      if (a === 'news') { showNews((+lsGet('gt_news_seen', 0) || 0) >= LATEST); setTimeout(drawCard, 0); return; }
+      if (a === 'tour') { if (window.show) window.show('vault'); setTimeout(() => tour(0), 400); return; }
+      if (a === 'auto') { lsSet('gt_news_auto', !!b.checked); return; }
       if (a === 'beta') { location.href = 'beta/'; return; }
       if (a === 'unbeta') { location.href = '../'; return; }
       if (a === 'status') { openLink(SITE + '/status'); return; }
@@ -191,7 +248,10 @@ ${list.map((c) => `<div class="gtnv"><small>${esc(c.date)}</small><ul>${c.items.
     + '#gtnews .gtnb{margin:16px 0 0}'
     + '#gtab a{color:var(--acc,#e8b84a)}#gtab .gth{font-size:13px;margin:14px 0 2px;color:#fff;letter-spacing:.04em}#gtab .gtl{display:flex;flex-direction:column;gap:6px;margin:8px 0;max-height:220px;overflow:auto}'
     + '#gtab .gtl div{font-size:12.5px;color:#d7dae0;border-left:2px solid #d9534f;padding:2px 8px;word-break:break-word}#gtab .gtl small{display:block;color:#9aa0a8;font-size:11px}'
-    + '#gtab button[disabled]{opacity:.4;pointer-events:none}'
+    + '#gtab button[disabled]{opacity:.4;pointer-events:none}#gtab .gtnd{font-style:normal;font-size:10.5px;font-weight:700;color:#111;background:var(--g-accent,#e8b84a);border-radius:8px;padding:1px 6px;margin-left:4px}#gtab .gtna{display:flex;gap:8px;align-items:center;font-size:13px;color:#cfd2d8;margin:4px 0 2px;cursor:pointer}'
+    + '#gttour{position:fixed;inset:0;z-index:9650}#gttour .gtth{position:fixed;border-radius:10px;box-shadow:0 0 0 9999px rgba(0,0,0,.6),0 0 0 2px var(--g-accent,#e8b84a);pointer-events:none;transition:all .2s}'
+    + '#gttour .gttc{position:fixed;width:min(340px,calc(100vw - 16px));background:var(--g-panel,#1a1c20);border:1px solid var(--g-accent,#e8b84a);border-radius:12px;padding:14px 16px;box-shadow:0 12px 40px rgba(0,0,0,.6)}#gttour .gttc b{color:#fff;font-size:15px}#gttour .gttc p{margin:6px 0 12px;color:#d7dae0;font-size:13.5px;line-height:1.5}#gttour .gttb{display:flex;justify-content:space-between;gap:8px}'
+    + '@media (prefers-reduced-motion:reduce){#gttour .gtth{transition:none}}'
     + '@media (max-width:640px){#gtnews{padding:12px 8px}#gtnews .gtn{max-height:calc(100dvh - 110px);padding:14px}}';
   document.head.appendChild(css);
   window.__gtnews = { show: showNews, log, report, CHANGES };

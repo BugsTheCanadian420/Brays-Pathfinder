@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.26-beta.5: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.27-beta.1: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -679,8 +679,15 @@ H('desk:get', async (e, v) => { staffOnly(); OBJ(v); return (await helpReq('/acc
 H('desk:reply', async (e, v) => { staffOnly(); OBJ(v); const text = TXT(v.text, 3000).trim(); if (!text) throw new Error('Write a reply first.'); return (await helpReq('/acct/help/reply', { id: HID(v.id), text, close: !!v.close }, true)).ticket; });
 H('desk:status', async (e, v) => { staffOnly(); OBJ(v); const st = TXT(v.status, 10); if (!['open', 'answered', 'closed'].includes(st)) throw bad(); return (await helpReq('/acct/help/status', { id: HID(v.id), status: st }, true)).ticket; });
 H('desk:delete', async (e, v) => { staffOnly(); OBJ(v); return helpReq('/acct/help/delete', { id: HID(v.id) }, true); });
+H('desk:canned', async () => { staffOnly(); return (await helpReq('/acct/help/canned', null, true)).canned || []; });
+H('desk:cannedSave', async (e, v) => { staffOnly(); OBJ(v); return (await helpReq('/acct/help/canned/save', { id: v.id === undefined ? '' : TXT(v.id, 20), title: v.title === undefined ? '' : TXT(v.title, 60), text: TXT(v.text, 3000) }, true)).canned || []; });
+H('desk:cannedDel', async (e, v) => { staffOnly(); OBJ(v); return (await helpReq('/acct/help/canned/delete', { id: TXT(v.id, 20) }, true)).canned || []; });
+H('desk:claim', async (e, v) => { staffOnly(); OBJ(v); return (await helpReq('/acct/help/claim', { id: HID(v.id), on: !!v.on }, true)).ticket; });
+H('desk:note', async (e, v) => { staffOnly(); OBJ(v); const text = TXT(v.text, 2000).trim(); if (!text) throw new Error('Write the note first.'); return (await helpReq('/acct/help/note', { id: HID(v.id), text }, true)).ticket; });
+H('desk:block', async (e, v) => { staffOnly(); OBJ(v); return (await helpReq('/acct/help/block', { id: HID(v.id), on: !!v.on }, true)).ticket; });
 // Feature switches set on the admin page: 'on' (everyone), 'dev' (developer accounts only), 'off' (nobody). Checked every 10 minutes.
 let FLAGS = null, FLAGS_AT = 0;
+let FLAGS_ANN = null; // the team's announcement (Admin > Announcement), shown at the top of the app
 H('flags:get', async (e, v) => {
   const base = preset && preset.tokenUrl && /^https:\/\//i.test(preset.tokenUrl) ? preset.tokenUrl.replace(/\/+$/, '') : '';
   const force = !!(v && typeof v === 'object' && v.force);
@@ -690,7 +697,7 @@ H('flags:get', async (e, v) => {
     try {
       const r = await fetch(base + '/flags', { headers: { Accept: 'application/json', ...(sess ? { Authorization: 'Bearer ' + sess } : {}) }, signal: ac.signal });
       if (r.ok) {
-        const j = await r.json(); FLAGS = j && j.flags && typeof j.flags === 'object' ? j.flags : {}; FLAGS_AT = Date.now();
+        const j = await r.json(); FLAGS = j && j.flags && typeof j.flags === 'object' ? j.flags : {}; FLAGS_AT = Date.now(); FLAGS_ANN = j && j.ann && typeof j.ann.text === 'string' ? { id: String(j.ann.id || ''), text: j.ann.text.slice(0, 300), level: j.ann.level === 'warn' ? 'warn' : 'info', at: +j.ann.at || 0 } : null;
         // The account's current role comes along: a role changed on the admin page (or in Admin) takes effect here by itself.
         if (sess && j && 'me' in j) {
           const c2 = rd();
@@ -703,7 +710,7 @@ H('flags:get', async (e, v) => {
     } catch (er) { /* keep the last ones */ } finally { clearTimeout(tm); }
   }
   const st = pfaStatus();
-  return { flags: FLAGS || {}, dev: st.dev, role: st.role, on: st.on };
+  return { flags: FLAGS || {}, dev: st.dev, role: st.role, on: st.on, ann: FLAGS_ANN };
 });
 // Bungie's maintenance timeline (its Server and Update Status page), read through the token service; shown in the app while
 // Bungie is down for maintenance.
@@ -716,7 +723,7 @@ H('bungie:status', async () => {
 // Developer tools (the PC app only, developer accounts only).
 // Admin from inside the app (founder accounts only). The admin key is typed in the app each time and only passed along;
 // the token service checks both the founder role and the key.
-const ADMP = { 'GET /ping': 1, 'GET /keys': 1, 'POST /keys': 1, 'POST /keyrevoke': 1, 'GET /accounts': 1, 'POST /find': 1, 'POST /reset': 1, 'POST /quickreset': 1, 'POST /rename': 1, 'POST /cancelreset': 1, 'POST /role': 1, 'POST /unlock': 1, 'POST /delete': 1, 'GET /flags': 1, 'PUT /flags': 1, 'POST /signout': 1, 'GET /log': 1 };
+const ADMP = { 'GET /ping': 1, 'GET /keys': 1, 'POST /keys': 1, 'POST /keyrevoke': 1, 'GET /accounts': 1, 'POST /find': 1, 'POST /reset': 1, 'POST /quickreset': 1, 'POST /rename': 1, 'POST /cancelreset': 1, 'POST /role': 1, 'POST /unlock': 1, 'POST /delete': 1, 'GET /flags': 1, 'PUT /flags': 1, 'POST /signout': 1, 'GET /log': 1, 'GET /announce': 1, 'POST /announce': 1, 'POST /suspend': 1, 'GET /help/blocks': 1, 'POST /help/unblock': 1, 'GET /backup': 1 };
 H('adm:call', async (e, v) => {
   OBJ(v); const method = TXT(v.method, 6).toUpperCase(), p = TXT(v.path, 30), key = TXT(v.key, 200);
   if (!ADMP[method + ' ' + p]) throw bad();
@@ -730,6 +737,9 @@ H('adm:call', async (e, v) => {
 H('dev:tools', () => { if (!pfaStatus().dev) throw new Error('Developer accounts only.'); if (win && !win.isDestroyed() && win.webContents && win.webContents.openDevTools) win.webContents.openDevTools({ mode: 'detach' }); return true; });
 H('pfa:logout', async () => { const c = rd(); if (c.pfa && c.pfa.sess) { try { await pfaReq('POST', '/logout', {}, c.pfa.sess); } catch (e) { /* signed out here anyway */ } } delete c.pfa; wr(c); PFA_ERR = ''; return pfaStatus(); });
 H('pfa:logoutall', async () => { const c = rd(); if (!c.pfa || !c.pfa.sess) throw new Error('Sign in to your Pathfinder account first.'); await pfaReq('POST', '/logoutall', {}, c.pfa.sess); delete c.pfa; wr(c); PFA_ERR = ''; return pfaStatus(); });
+// Signed-in devices (Settings > Accounts): the list, and signing one of them out.
+H('pfa:sessions', async () => { const c = rd(); if (!c.pfa || !c.pfa.sess) throw new Error('Sign in to your Pathfinder account first.'); return (await pfaReq('POST', '/sessions', {}, c.pfa.sess)).sessions || []; });
+H('pfa:sessEnd', async (e, v) => { OBJ(v); const c = rd(); if (!c.pfa || !c.pfa.sess) throw new Error('Sign in to your Pathfinder account first.'); const r = await pfaReq('POST', '/sessions/end', { id: TXT(v.id, 20) }, c.pfa.sess); if (r.me) { delete c.pfa; wr(c); } return { me: !!r.me }; });
 H('pfa:delete', async () => { const c = rd(); if (!c.pfa || !c.pfa.sess) throw new Error('Sign in to your Pathfinder account first.'); await pfaReq('DELETE', '', null, c.pfa.sess); delete c.pfa; wr(c); return pfaStatus(); });
 // Keep the box up to date: shortly after start, then every six hours.
 setTimeout(() => { if (rd().pfa) pfaRun().catch(() => {}); setInterval(() => { if (rd().pfa) pfaRun().catch(() => {}); }, 6 * 3600e3); }, 8000);
@@ -3069,6 +3079,13 @@ H('bk:export', async (e, v) => {
   if (r.canceled || !r.filePath) return { ok: false };
   fs.writeFileSync(r.filePath, data);
   return { ok: true, file: path.basename(r.filePath), n: Object.keys(keep).length };
+});
+// Save a small text file the app made (Admin > Recent admin actions > Download): asks where, like a backup.
+H('file:saveCsv', async (e, v) => {
+  OBJ(v); const text = TXT(v.text, 30e6), name = TXT(v.name, 80).replace(/[^A-Za-z0-9._-]/g, '-'), json = /\.json$/i.test(name);
+  const r = await dialog.showSaveDialog(win, { title: 'Save file', defaultPath: path.join(app.getPath('documents'), name || 'pathfinder.csv'), filters: [json ? { name: 'JSON file', extensions: ['json'] } : { name: 'CSV file', extensions: ['csv'] }] });
+  if (r.canceled || !r.filePath) return { ok: false };
+  fs.writeFileSync(r.filePath, (json ? '' : '\ufeff') + text); return { ok: true, file: path.basename(r.filePath) };
 });
 H('bk:import', async () => {
   const r = await dialog.showOpenDialog(win, { title: 'Restore a backup', properties: ['openFile'], filters: [{ name: 'Pathfinder backup', extensions: ['json'] }] });

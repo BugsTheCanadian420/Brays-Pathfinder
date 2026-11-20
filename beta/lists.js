@@ -33,7 +33,7 @@
 .ck-row{display:flex;align-items:center;gap:10px;padding:6px 8px;border:1px solid transparent;border-radius:3px;background:rgba(0,0,0,.18);margin-bottom:4px}
 .ck-row:hover{border-color:#3a3d43}.ck-row.done .ck-t{color:#7d8088;text-decoration:line-through}
 .ck-row.drag{opacity:.4}.ck-row.over{border-color:#8fb3d9}
-.ck-h{cursor:grab;color:#6d7077;user-select:none;font-size:14px}
+.ck-h{cursor:grab;color:#8b8f97;user-select:none;font-size:14px}
 .ck-t{flex:1;min-width:0;cursor:text}.ck-t small{color:#8b8f97;margin-left:6px}
 .ck-n{color:#8b8f97;font-size:12px;display:block;margin-top:2px;white-space:pre-wrap}
 .ck-cb{display:flex;gap:6px}.ck-cb label{display:flex;align-items:center;gap:3px;font-size:11px;color:#9aa0a8;cursor:pointer}
@@ -99,7 +99,7 @@
     const rl = (r) => (r === 'd' ? 'Resets in ' + left(lastReset(false) + 864e5 - now) : r === 'w' ? 'Resets in ' + left(lastReset(true) + 6048e5 - now) : 'Never resets');
     const row = (it) => {
       const done = isDone(it);
-      const boxes = it.pc && ch.length ? `<span class="ck-cb">${ch.map((c) => `<label title="${esc(CLN[c.cls] || 'Character')}"><input type="checkbox" data-ck="${it.id}" data-c="${esc(c.id)}"${it.x[c.id] ? ' checked' : ''}>${esc((CLN[c.cls] || '?')[0])}</label>`).join('')}</span>` : `<span class="ck-cb"><input type="checkbox" data-ck="${it.id}" data-c="all"${it.x.all ? ' checked' : ''}></span>`;
+      const boxes = it.pc && ch.length ? `<span class="ck-cb">${ch.map((c) => `<label title="${esc(CLN[c.cls] || 'Character')}"><input type="checkbox" data-ck="${it.id}" data-c="${esc(c.id)}" aria-label="${esc(it.t)}: done on ${esc(CLN[c.cls] || 'this character')}"${it.x[c.id] ? ' checked' : ''}>${esc((CLN[c.cls] || '?')[0])}</label>`).join('')}</span>` : `<span class="ck-cb"><input type="checkbox" data-ck="${it.id}" data-c="all" aria-label="${esc(it.t)}: done"${it.x.all ? ' checked' : ''}></span>`;
       const text = cs.edit === it.id
         ? `<span class="ck-t"><input type="text" id="ckin" value="${esc(it.t)}" maxlength="120" style="width:100%"><input type="text" id="ckno" value="${esc(it.n || '')}" maxlength="200" placeholder="Note (optional)" style="width:100%;margin-top:4px"></span><button class="ic pri" data-ca="ok" data-id="${it.id}">Save</button>`
         : `<span class="ck-t" data-ca="edit" data-id="${it.id}" title="Click to rename">${esc(it.t)}${it.pc ? '<small>per character</small>' : ''}${it.n ? `<span class="ck-n">${esc(it.n)}</span>` : ''}</span>`;
