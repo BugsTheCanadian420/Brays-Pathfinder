@@ -7,8 +7,19 @@
   const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* storage off */ } };
   const SITE = 'https://d2pathfinder.com';
 
-  // ---- what changed: newest first. Add an entry (next id) with every update. ----
-  const CHANGES = [
+  // ---- what changed: newest first ----
+  // Small changes collect in one entry marked draft: true. Nobody sees a draft (no pop-up, no "new" badge, not in the list).
+  // Only when Bray says an actual update is rolling out does the draft lose its draft mark and get posted. Never add an
+  // entry for every small change.
+  const ALL = [
+    { id: 20, draft: true, date: 'Nov 2026', items: [
+      'A new look for God rolls: big filter tiles for God rolls, Keepers, Not keepers and Not rated yet, search and sort, and a card for each weapon with its grade, main perks and which perks your wish list wants.',
+      'The Helpful tab is now called Guides.',
+      'The Hub is now Community sites, with a Join our Discord button. You can also join from Settings, About & help.',
+      'About Pathfinder: who makes it and the people who helped, in Settings, About & help and on d2pathfinder.com.',
+      'Settings uses more of a big screen, and still fits phones.',
+      'Help: when you are not signed in to a Pathfinder account, the help form offers to sign you in so the team knows who they are talking to.',
+    ] },
     { id: 19, date: 'Nov 2026', items: [
       'When Bungie is down, the vault you loaded last stays on screen (read-only) with a line saying when it is from, and Pathfinder tries again every 2 minutes. A bar under the tabs shows Bungie\'s maintenance timeline in your own time.',
       'Help: ask a question, report a bug or suggest an idea in Settings, About & help. The team answers right there; open conversations update by themselves.',
@@ -89,6 +100,7 @@
       'Crucible play time counts your matches even when Bungie\'s summary is empty.',
     ] },
   ];
+  const CHANGES = ALL.filter((c) => !c.draft);
   const LATEST = CHANGES[0].id;
 
   // ---- problem log ----
