@@ -534,8 +534,8 @@
         if (tag) { font(13.5, 700); const tw2 = Math.min(tw, g2.measureText(tag).width + 18); rr(tx, iy + 24, tw2, 24, 12); g2.fillStyle = ex ? 'rgba(206,174,51,.22)' : 'rgba(255,255,255,.12)'; g2.fill(); txt(tag, tx + 9, iy + 41, 13.5, ex ? '#f0d58a' : '#fff', 700, tw - 18); }
         const tier = r.x && r.x.gt ? +r.x.gt : 0;
         if (tier) { for (let k = 0; k < 5; k++) { g2.save(); g2.translate(tx + 6 + k * 14, iy + 66); g2.rotate(Math.PI / 4); g2.fillStyle = k < tier ? '#e0b64a' : 'rgba(255,255,255,.15)'; g2.fillRect(-4.5, -4.5, 9, 9); g2.restore(); } txt('T' + tier, tx + 76, iy + 71, 12.5, '#c9b06a', 700, tw - 76); }
-        // under the picture, the full width: its set (or the exotic's perk)
-        txt(ex ? (AD[i].f || r.x.n || '') : (AD[i].s || (r.x || r.en).n || ''), ix, iy + 88 + 20, 14, ex ? '#ceae33' : '#e6e7ea', 600, CW - 20);
+        // under the picture, the full width: its set, or for an exotic its own name (not its perk, which read like the item's name)
+        txt(ex ? (r.x.n || (r.en && r.en.n) || '') : (AD[i].s || (r.x || r.en).n || ''), ix, iy + 88 + 20, 14, ex ? '#ceae33' : '#e6e7ea', 600, CW - 20);
         // this piece's stats, biggest first
         let yy = iy + 88 + 30;
         pst[i].forEach(([v, k, tn]) => {
