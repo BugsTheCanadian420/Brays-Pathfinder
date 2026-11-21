@@ -19,6 +19,7 @@
       'About Pathfinder: who makes it and the people who helped, in Settings, About & help and on d2pathfinder.com.',
       'Loadouts: choose mods while you build or edit a loadout. Select mods picks from every mod that fits your armor (the same one more than once if you like) and puts each in a free socket when you apply it, or click one socket to pick exactly what goes there.',
       'DIM loadout links keep their armor mods now (before, a link that also had shaders or ornaments lost its mods).',
+      'Loadout pictures can be imported: a picture made with Pathfinder carries its loadout, so choose or drop it in Import. Each picture also shows a short link for when an app re-saved it or someone took a screenshot. Sharing an in-game loadout now brings its mods, subclass and your artifact too.',
       'Settings uses more of a big screen, and still fits phones.',
       'Phones: a search button in the top bar opens a full-width search, text boxes no longer zoom the page in on iPhone, bigger buttons for fingers, and Notes, Home, the Optimizer, the Organizer, the loadout editor and the item pop-up all fit small screens properly.',
       'Help: when you are not signed in to a Pathfinder account, the help form offers to sign you in so the team knows who they are talking to.',
