@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.32: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.33: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -2889,7 +2889,7 @@ H('item:slots', async (e, v) => { await ensureM();
   OBJ(v); const id = ID(v.id), df = await defs();
   const r = await api(`/Destiny2/${M.membershipType}/Profile/${M.membershipId}/Item/${id}/?components=305`);
   const socks = (r.sockets && r.sockets.data && r.sockets.data.sockets) || [];
-  return socks.map((s, si) => { const p = s.plugHash && df.p[s.plugHash]; return { si, cur: s.plugHash || 0, cat: p ? p.c || '' : '', vis: s.isVisible !== false }; })
+  return socks.map((s, si) => { const p = s.plugHash && df.p[s.plugHash]; return { si, cur: s.plugHash || 0, cat: p ? p.c || '' : '', n: p ? p.n || '' : '', i: p ? p.i || '' : '', vis: s.isVisible !== false }; })
     .filter((q) => q.vis && /enhancement/i.test(q.cat) && !/masterwork|tuning|catalyst|shader|ornament|fashion|cosmetic/i.test(q.cat));
 });
 // ---- Wish list maker tab ----

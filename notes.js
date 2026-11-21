@@ -287,6 +287,7 @@
 #notes .nt-wrap.side{display:grid;grid-template-columns:230px minmax(0,1fr);gap:12px;align-items:stretch;min-height:calc(100vh - 170px)}
 .nt-wrap{display:flex;flex-direction:column;min-height:0;height:100%;color:#e6e7ea}
 .nt-pages{display:flex;flex-direction:column;gap:6px;overflow:auto;max-height:calc(100vh - 170px)}
+@media (max-width:760px){#notes .nt-wrap.side,.nt-wrap.side{grid-template-columns:minmax(0,1fr);min-height:0;gap:10px}.nt-wrap.side .nt-pages{flex-direction:row;max-height:none;overflow-x:auto;overflow-y:hidden;padding-bottom:2px;scrollbar-width:none}.nt-wrap.side .nt-pages::-webkit-scrollbar{display:none}.nt-wrap.side .nt-pages button{flex:0 0 auto;max-width:62vw;min-width:120px}.nt-wrap.side .nta{min-height:50vh}}
 .nt-pages button{text-align:left;background:var(--g-panel,#1a1c20);border:1px solid var(--g-line,#2b2e33);color:#e6e7ea;padding:8px 10px;cursor:pointer;display:flex;flex-direction:column;gap:2px;font:inherit;border-radius:3px}
 .nt-pages button b{font-weight:600;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .nt-pages button small{color:var(--mute,#9aa0a8);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
