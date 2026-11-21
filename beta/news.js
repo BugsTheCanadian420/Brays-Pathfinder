@@ -13,7 +13,7 @@
   // entry for every small change.
   const ALL = [
     { id: 20, draft: true, date: 'Nov 2026', items: [
-      'A new look for God rolls: big filter tiles for God rolls, Keepers, Not keepers and Not rated yet, search and sort, and a card for each weapon with its grade, main perks and which perks your wish list wants.',
+      'A new look for God rolls: big filter tiles for God rolls, S rated, Keepers, Not keepers and Not rated yet, search and sort, and a card for each weapon with its grade, main perks and which perks your wish list wants.',
       'The Helpful tab is now called Guides.',
       'The Hub is now Community sites, with a Join our Discord button. You can also join from Settings, About & help.',
       'About Pathfinder: who makes it and the people who helped, in Settings, About & help and on d2pathfinder.com.',
@@ -34,6 +34,7 @@
       'Polish everywhere: clearer stats on phones (Crucible, Play time, Personal bests), a cleaner Xûr countdown, a tidier Checklist on phones, and the Checklist, Roll Tracker and Organizer on the same glass panels as the rest of the beta look.',
       'God rolls: clicking a weapon opens its own God roll view (in the same style as the cards) with every perk column, which perks your wish list wants and what is in now. Pick perks or press Pick my wish list perks, then Apply. Tag, move, equip and lock from the same view.',
       'Changing perks now checks with Bungie: Pathfinder only shows the new perk once Bungie confirms it, and tells you if the change did not go through (perk changes only work in orbit, a social space or offline). The God roll card updates straight away too.',
+      'Stricter God rolls: a weapon only counts as a god roll when one top roll (Aegis S tier, best perk per column) has a perk in every column of that copy: barrel, magazine and both traits, plus the origin trait when the roll names one. S tier weapons with a good roll that is not a full god roll go in the new S rated group (search is:srated), and the God roll view says which columns miss the top perk.',
     ] },
     { id: 19, date: 'Nov 2026', items: [
       'When Bungie is down, the vault you loaded last stays on screen (read-only) with a line saying when it is from, and Pathfinder tries again every 2 minutes. A bar under the tabs shows Bungie\'s maintenance timeline in your own time.',

@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.35-beta.6: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.35-beta.7: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -843,6 +843,19 @@ H('vault:load', async () => {
     [...o].forEach((h) => { const q = df.p[h]; if (q && q.n && !/^(empty|default)/i.test(q.n)) (df.ix[(q.c || '') + '|' + q.n] || []).forEach((x) => o.add(x)); });
     return [...o];
   };
+  // The weapon's perk columns (barrel or sight, magazine, the two traits, and the like; not the frame or the origin trait): each is every
+  // perk that can go in it, base and enhanced. The God roll check uses them: a god roll has a wish list perk in every column.
+  const PCRE = /^(barrels?|scopes?|magazines?(_gl)?|batter\w*|arrows?|bowstrings?|blades?|guards?|tubes?|hafts?|frames?|grips?|stocks?)$/i;
+  const pcol = (id) => {
+    const ss = (sk[id] && sk[id].sockets) || [], r = (rp[id] && rp[id].plugs) || {}, out = [];
+    ss.forEach((q, i) => {
+      const a = q.plugHash && df.p[q.plugHash]; if (!a || !PCRE.test(a.c || '')) return;
+      const o = new Set([q.plugHash]); (r[i] || []).forEach((p) => p.plugItemHash && o.add(p.plugItemHash));
+      [...o].forEach((h) => { const p = df.p[h]; if (p && p.n) (df.ix[(p.c || '') + '|' + p.n] || []).forEach((x) => o.add(x)); });
+      out.push([...o]);
+    });
+    return out.length ? out : undefined;
+  };
   const ist = (pr.itemComponents && pr.itemComponents.stats && pr.itemComponents.stats.data) || {};
   const ARB = new Set([3448274439, 3551918588, 14239492, 20886954, 1585787867]);
   const SH = [2996146975, 392767087, 1943323491, 1735777505, 144602215, 4244567218]; // weapons, health, class, grenade, super, melee
@@ -863,7 +876,7 @@ H('vault:load', async () => {
     const o = ovd && (ovd.fg || ovd.i) ? { n: ovd.n, i: ovd.fg || ovd.i, fg: !!ovd.fg } : orn(it.itemInstanceId);
     const s = it.itemInstanceId && inst[it.itemInstanceId] && inst[it.itemInstanceId].primaryStat;
     const wmi = f.wl && f.wl.length ? f.wl[Math.min(it.versionNumber || 0, f.wl.length - 1)] : f.w, stt = it.state || 0, gti = it.itemInstanceId && inst[it.itemInstanceId] && inst[it.itemInstanceId].gearTier;
-    return { wm: wmi >= 0 && df.W ? df.W[wmi] : undefined, bt: f.bt || undefined, fc: f.f || undefined, lk: stt & 1 ? 1 : undefined, mw: stt & 4 ? 1 : undefined, cr: stt & 8 ? 1 : undefined, gt: gti || undefined, id: it.itemInstanceId, h: it.itemHash, n: f.n, i: o ? o.i : f.i, bi: o ? f.i : undefined, orn: o ? o.n : undefined, of: o && o.fg ? 1 : undefined, pk: WB.has(f.b) && it.itemInstanceId ? perks(it.itemInstanceId) : undefined, fr: WB.has(f.b) && it.itemInstanceId ? frI(it.itemInstanceId) : undefined, ep: WB.has(f.b) && it.itemInstanceId ? epl(it.itemInstanceId) : undefined, ah: WB.has(f.b) && it.itemInstanceId ? ((sk[it.itemInstanceId] && sk[it.itemInstanceId].sockets) || []).map((q) => (q.isEnabled !== false && q.plugHash) || 0).filter(Boolean) : undefined, st: ARB.has(f.b) && it.itemInstanceId ? astats(it.itemInstanceId) : undefined, ap: (ARB.has(f.b) || f.b === SUBB) && it.itemInstanceId ? aplugs(it.itemInstanceId) : undefined, am: f.am || undefined, en: (ARB.has(f.b) && inst[it.itemInstanceId] && inst[it.itemInstanceId].energy && inst[it.itemInstanceId].energy.energyCapacity) || undefined, ds: stt & 16 ? 1 : undefined, r: f.r, t: f.t, b: f.b, c: f.c, p: s ? s.value : 0, el: (inst[it.itemInstanceId] && inst[it.itemInstanceId].damageType) || 0 };
+    return { wm: wmi >= 0 && df.W ? df.W[wmi] : undefined, bt: f.bt || undefined, fc: f.f || undefined, lk: stt & 1 ? 1 : undefined, mw: stt & 4 ? 1 : undefined, cr: stt & 8 ? 1 : undefined, gt: gti || undefined, id: it.itemInstanceId, h: it.itemHash, n: f.n, i: o ? o.i : f.i, bi: o ? f.i : undefined, orn: o ? o.n : undefined, of: o && o.fg ? 1 : undefined, pk: WB.has(f.b) && it.itemInstanceId ? perks(it.itemInstanceId) : undefined, fr: WB.has(f.b) && it.itemInstanceId ? frI(it.itemInstanceId) : undefined, pc: WB.has(f.b) && it.itemInstanceId && f.r === 'Legendary' ? pcol(it.itemInstanceId) : undefined, ep: WB.has(f.b) && it.itemInstanceId ? epl(it.itemInstanceId) : undefined, ah: WB.has(f.b) && it.itemInstanceId ? ((sk[it.itemInstanceId] && sk[it.itemInstanceId].sockets) || []).map((q) => (q.isEnabled !== false && q.plugHash) || 0).filter(Boolean) : undefined, st: ARB.has(f.b) && it.itemInstanceId ? astats(it.itemInstanceId) : undefined, ap: (ARB.has(f.b) || f.b === SUBB) && it.itemInstanceId ? aplugs(it.itemInstanceId) : undefined, am: f.am || undefined, en: (ARB.has(f.b) && inst[it.itemInstanceId] && inst[it.itemInstanceId].energy && inst[it.itemInstanceId].energy.energyCapacity) || undefined, ds: stt & 16 ? 1 : undefined, r: f.r, t: f.t, b: f.b, c: f.c, p: s ? s.value : 0, el: (inst[it.itemInstanceId] && inst[it.itemInstanceId].damageType) || 0 };
   };
   { // ornament definitions the cached item data does not have (new universal ornaments): look them up once
     const all = [...((pr.profileInventory.data || {}).items || [])]; for (const k in pr.characterEquipment.data) all.push(...(pr.characterEquipment.data[k].items || [])); for (const k in pr.characterInventories.data) all.push(...(pr.characterInventories.data[k].items || []));
@@ -1654,7 +1667,9 @@ function wlWrite(lists, dropOld) {
 function wlPub(lists) {
   const rolls = {}, notes = [], ix = new Map(); let n = 0;
   const ni = (s) => { s = s || ''; let i = ix.get(s); if (i === undefined) { i = notes.length; notes.push(s); ix.set(s, i); } return i; };
-  for (const l of lists) for (const k in l.rolls || {}) { const dst = (rolls[k] = rolls[k] || []); for (const r of l.rolls[k]) dst.push([r[0].join(','), ni(r[1]), r[2], r[3]]); n += l.rolls[k].length; }
+  // Aegis lists say how many perks per column they allow (PPC=1 is only the single best perk in each column); each roll carries it.
+  const ppc = (l) => { const m = String(l.desc || '').match(/PPC\s*=\s*(\d)/i) || String(l.url || '').match(/_PPC(\d)\b/i); return m ? +m[1] : 0; };
+  for (const l of lists) { const q = ppc(l); for (const k in l.rolls || {}) { const dst = (rolls[k] = rolls[k] || []); for (const r of l.rolls[k]) dst.push(q ? [r[0].join(','), ni(r[1]), r[2], r[3], q] : [r[0].join(','), ni(r[1]), r[2], r[3]]); n += l.rolls[k].length; } }
   return { n, rolls, notes, lists: lists.map(({ rolls: _r, ...meta }) => meta) };
 }
 async function wlRefreshOne(l) {

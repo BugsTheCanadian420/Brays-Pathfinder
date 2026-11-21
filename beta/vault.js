@@ -754,14 +754,14 @@ body.gtann #gtmaint{top:calc(var(--gt-bar-h,56px) + 74px)}
 #godrolls .gph h2{margin:0 0 4px!important;padding:0!important;border:0!important;font-size:30px;line-height:1.1;color:#fff;letter-spacing:-.01em;text-transform:none}
 #godrolls .gph p{margin:0;color:#aeb4bd;font-size:14px}
 #godrolls .gptools{display:flex;gap:8px;align-items:center}#godrolls .gptools input,#godrolls .gptools select{width:auto!important;height:38px;margin:0!important;box-sizing:border-box}#godrolls .gptools input{width:240px!important}
-#godrolls .gpfs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:12px 0 6px}
+#godrolls .gpfs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:12px 0 6px}
 #godrolls .gpf{--gc:#8b8f97;display:flex!important;flex-direction:column;align-items:flex-start;gap:2px;padding:12px 16px!important;border-radius:14px!important;border:1px solid var(--g-line,#2b2e33)!important;background:var(--g-panel,#16181c)!important;color:#cfd3da!important;text-align:left;cursor:pointer;box-shadow:none!important;text-transform:none!important;letter-spacing:0!important;font-family:inherit}
 #godrolls .gpf b{font-size:26px;line-height:1.1;color:var(--gc);font-weight:800}#godrolls .gpf span{font-size:13px;font-weight:600}
 #godrolls .gpf:hover{border-color:color-mix(in srgb,var(--gc) 60%,transparent)!important}
 #godrolls .gpf.on{border-color:var(--gc)!important;background:linear-gradient(180deg,color-mix(in srgb,var(--gc) 18%,transparent),color-mix(in srgb,var(--gc) 4%,transparent)),var(--g-panel,#16181c)!important;color:#fff!important}
-#godrolls .g-S{--gc:#f2b441}#godrolls .g-A{--gc:#5fd38a}#godrolls .g-C{--gc:#9aa1ab}#godrolls .g-D{--gc:#ef6461}#godrolls .g-q{--gc:#ffd27a}
+#godrolls .g-S{--gc:#f2b441}#godrolls .g-R{--gc:#c58cff}#godrolls .g-A{--gc:#5fd38a}#godrolls .g-C{--gc:#9aa1ab}#godrolls .g-D{--gc:#ef6461}#godrolls .g-q{--gc:#ffd27a}
 #gvm{position:fixed;inset:0;z-index:70;background:rgba(4,6,10,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:flex;align-items:flex-start;justify-content:center;padding:max(24px,4vh) 16px 24px;overflow:auto}
-#gvm .g-S{--gc:#f2b441}#gvm .g-A{--gc:#5fd38a}#gvm .g-C{--gc:#9aa1ab}#gvm .g-D{--gc:#ef6461}#gvm .g-q{--gc:#ffd27a}
+#gvm .g-S{--gc:#f2b441}#gvm .g-R{--gc:#c58cff}#gvm .g-A{--gc:#5fd38a}#gvm .g-C{--gc:#9aa1ab}#gvm .g-D{--gc:#ef6461}#gvm .g-q{--gc:#ffd27a}
 #gvm .gvp{position:relative;width:min(1080px,100%);border-radius:20px;border:1px solid color-mix(in srgb,var(--gc) 40%,var(--g-line,#2b2e33));background:radial-gradient(70% 60% at 100% 0,color-mix(in srgb,var(--gc) 14%,transparent),transparent 65%),linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,0) 30%),var(--g-panel,#15171b);box-shadow:0 30px 80px rgba(0,0,0,.6);padding:20px 22px 22px;color:#e8ecf2}
 #gvm .gvh{display:flex;gap:16px;align-items:center}#gvm .gvh .vt{--t:72px;flex:none}
 #gvm .gvn{flex:1;min-width:0}#gvm .gvn h3{margin:0;font-size:24px;line-height:1.15;color:#fff;font-weight:800;letter-spacing:.01em;text-transform:none;border:0;padding:0}
@@ -774,6 +774,7 @@ body.gtann #gtmaint{top:calc(var(--gt-bar-h,56px) + 74px)}
 #gvm .gva{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:16px 0 0}
 #gvm button{letter-spacing:0!important;text-transform:none!important;font-family:inherit}
 #gvm .gva button{border-radius:12px!important;padding:9px 16px!important;font-weight:700;font-size:14px}#gvm .gva .b{background:var(--gc)!important;border-color:var(--gc)!important;color:#141006!important}#gvm .gva .b:disabled{background:rgba(255,255,255,.06)!important;border-color:rgba(255,255,255,.12)!important;color:#8b929c!important;cursor:default}
+#gvm .gvgod{margin:14px 2px 0;font-size:13.5px;font-weight:700;color:var(--gc)}#gvm .gvgod.r{font-weight:600}
 #gvm .gvok{color:#35e3cf;font-weight:600;font-size:13.5px}
 #gvm .gvmsg{margin:12px 0 0;padding:10px 14px;border-radius:12px;font-size:13.5px;background:color-mix(in srgb,#35e3cf 10%,transparent);border:1px solid color-mix(in srgb,#35e3cf 40%,transparent);color:#d6fbf5}
 #gvm .gvmsg.bad{background:rgba(239,100,97,.1);border-color:rgba(239,100,97,.45);color:#ffd6d5}
@@ -824,7 +825,7 @@ body.gtann #gtmaint{top:calc(var(--gt-bar-h,56px) + 74px)}
 #godrolls .gpp li em{margin-left:auto;font-style:normal;font-size:11px;font-weight:700;color:#35e3cf}
 #godrolls .gpnote{margin:2px 0 0;padding-top:10px;border-top:1px solid var(--g-line,#2b2e33);font-size:12.5px;line-height:1.45;color:#9aa1ab;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 #godrolls .gpempty{padding:40px 20px;text-align:center;color:#9aa1ab;border:1px dashed var(--g-line,#2b2e33);border-radius:16px}
-@media (max-width:760px){#godrolls .gpfs{grid-template-columns:repeat(2,minmax(0,1fr))}#godrolls .gph h2{font-size:24px}#godrolls .gptools{width:100%}#godrolls .gptools input{flex:1;width:auto!important;min-width:0}#godrolls .gptools select{flex:none;max-width:40%}}
+@media (max-width:760px){#godrolls .gpfs{grid-template-columns:repeat(2,minmax(0,1fr))}#godrolls .gpf:first-child{grid-column:1/-1}#godrolls .gph h2{font-size:24px}#godrolls .gptools{width:100%}#godrolls .gptools input{flex:1;width:auto!important;min-width:0}#godrolls .gptools select{flex:none;max-width:40%}}
 @media (prefers-reduced-motion:reduce){#godrolls .gpc{transition:none}#godrolls .gpc:hover{transform:none}}#godrolls .jk.grfp{background:var(--g-panel,#1a1c20);border:1px solid var(--g-line,#2b2e33);border-radius:12px;max-width:920px;margin:0 auto 24px;padding:16px 20px}#godrolls .jkr{grid-template-columns:26px 48px 1fr auto}#godrolls .grb{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:20px;padding:0 4px;border-radius:4px;font:800 12px/1 'Open Sans',system-ui,sans-serif;font-style:normal;color:#111;background:var(--gc)}#godrolls .jkt .grb{min-width:18px;height:16px;font-size:10.5px;margin-right:2px}#godrolls .jkr{grid-template-columns:26px 44px 1fr}#godrolls .jkh{display:flex;align-items:baseline;gap:12px}#godrolls .jkh b{font-size:16px;color:#fff}#godrolls .jkh button{margin-left:auto}#godrolls .jkl{display:flex;flex-direction:column;gap:4px;margin:8px 0}#godrolls .jkr{display:grid;grid-template-columns:48px 1fr auto;gap:10px;align-items:center;padding:4px;border:1px solid transparent;cursor:pointer}#godrolls .jkr:hover{border-color:var(--g-line,#3a3d43);background:rgba(255,255,255,.03)}#godrolls .jkr .vt{--t:48px;width:48px;height:48px;pointer-events:none}#godrolls .jkr small{display:block;color:#b9bec6;font-size:12px}#godrolls .jkb{position:sticky;bottom:-14px;background:var(--g-panel,#1a1c20);padding:10px 0;margin:0}#godrolls .jkb{position:static}#godrolls .jkr{grid-template-columns:22px 48px 1fr auto}#godrolls .jkr input{width:16px;height:16px;margin:0;cursor:pointer}#godrolls .jkr.sel{background:rgba(255,255,255,.04);border-color:var(--g-line,#3a3d43)}#godrolls .jkt{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}#godrolls .jkt button{background:transparent;border:1px solid var(--g-line,#3a3d43);color:#cfd3da;padding:5px 10px;font:inherit;font-size:12.5px;cursor:pointer}#godrolls .jkt button.on{border-color:var(--acc,#e8b84a);color:#fff;background:rgba(255,255,255,.06)}#godrolls .jkt i{font-style:normal;opacity:.7;margin-left:4px}#godrolls .jkd{margin:6px 0}#godrolls .jks{display:flex;gap:12px;align-items:center;font-size:12.5px;margin:4px 0}#godrolls .jks label{display:flex!important;gap:6px;align-items:center;cursor:pointer;white-space:nowrap;width:auto!important;margin:0!important;padding:0!important}#godrolls .jkb button[disabled]{opacity:.4!important;cursor:default;pointer-events:none}#godrolls .jke{margin:16px 0}#godrolls .jkr{grid-template-columns:22px 44px 1fr}#godrolls .jkr>.mute{display:none}.vt.gtflash{outline:3px solid var(--g-accent,#7ab8e8);outline-offset:2px;border-radius:4px}.vrf{margin-left:10px;flex:none;width:30px;height:30px;padding:0!important;display:inline-flex!important;align-items:center;justify-content:center;border-radius:50%!important;background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.14)!important;color:#d6d9de!important;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
 .vrf:hover{background:rgba(255,255,255,.14)!important;color:#fff!important;border-color:var(--g-accent,#7ab8e8)!important}
 .vrf.spin svg{animation:vrfspin .8s linear infinite}@keyframes vrfspin{to{transform:rotate(360deg)}}
@@ -1104,11 +1105,38 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     if (!WL || !x || !x.pk || x.r !== 'Legendary' || !WEAPON.has(x.b) || x.pm) return false;
     const a = WL.rolls[x.h]; return !(a && a.length) && !wish(x).v;
   }
-  // The roll grade used by the god roll finder: S (a roll your lists call a god roll), A (any wish list roll),
-  // C (rated, not a match), D (a trash roll), ? (not yet rated).
+  // The roll grade used by the God rolls tab and the finder:
+  //  S  God roll: ONE top wish list roll has a perk in every perk column of this copy (barrel or sight, magazine and both traits;
+  //     the origin trait too when the roll names one) and this copy has all of them. A top roll is one from a list that keeps only
+  //     the single best perk per column (Aegis S grade, 1 perk per column) or one its curator tags as a god roll.
+  //  R  S rated: matches a roll for an S tier weapon (Aegis "Tier: S", or tagged god roll) but is not a full god roll.
+  //  A  Keeper: any other wish list roll.  C  rated, not a match.  D  trash roll.  ?  not yet rated.
+  const SRE = /\bTier:\s*S\b/i, GODRE = /god ?roll|\bgod(pve|pvp)?\b/i;
+  const gcache = {};
+  function godInfo(x) {
+    if (!WL || !x || !x.pk) return null;
+    const k = x.id + ':' + WLV; if (k in gcache) return gcache[k];
+    const P = new Set(x.pk), cols = Array.isArray(x.pc) ? x.pc : [];
+    let best = null;
+    for (const r of WL.rolls[x.h] || []) {
+      if (r[2]) continue;
+      if (typeof r[0] === 'string') r[0] = r[0] ? r[0].split(',').map(Number) : [];
+      if (!r[0].length || !r[0].every((h) => P.has(h))) continue;
+      const txt = String(typeof r[1] === 'number' ? (WL.notes || [])[r[1]] || '' : r[1] || '') + ' ' + (r[3] || '');
+      const god = GODRE.test(r[3] || '') || GODRE.test(txt), top = god || SRE.test(txt);
+      if (!top) continue;
+      const R = new Set(r[0]), full = cols.length >= 2 && cols.every((c) => c.some((h) => R.has(h)));
+      const gr = full && (r[4] === 1 || god) ? 'S' : 'R';
+      const score = (gr === 'S' ? 100 : 0) + (full ? 10 : 0) + (r[4] ? 4 - Math.min(3, r[4]) : 0);
+      if (!best || score > best.score) best = { gr, full, roll: r, score };
+      if (gr === 'S' && r[4] === 1) break;
+    }
+    return (gcache[k] = best);
+  }
   function grade(x) {
+    const gi = godInfo(x); if (gi) return gi.gr;
     const w = wish(x);
-    if (w.v > 0) { const t = (w.tags || []).join(',') + ' ' + (w.notes || []).join(' '); return /god/i.test(t) ? 'S' : 'A'; }
+    if (w.v > 0) return 'A';
     if (w.v < 0) return 'D';
     return unrated(x) ? '?' : 'C';
   }
@@ -1133,7 +1161,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   function wish0(x) {
     if (!WL || !x.pk) return { v: 0, notes: [], tags: [], perks: new Set() };
     const k = x.id + ':' + WLV; if (wcache[k]) return wcache[k];
-    const r = wishRoll(x), perks = new Set();
+    const gi = godInfo(x), r = (gi && gi.roll) || wishRoll(x), perks = new Set();
     if (!r) return (wcache[k] = { v: 0, notes: [], tags: [], perks });
     const note = String(typeof r[1] === 'number' ? (WL.notes || [])[r[1]] || '' : r[1] || '');
     if (!r[2]) r[0].forEach((h) => { perks.add(h); const nm = D && D.pn && D.pn[h]; if (nm) perks.add(nm); });
@@ -2280,6 +2308,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     if (v === 'trashlist') return wish(x).v === -1;
     if (v === 'unrated') return unrated(x);
     if (v === 'godroll') return grade(x) === 'S';
+    if (v === 'srated') return grade(x) === 'R';
     if (v === 'keeper') return wish(x).v === 1;
     if (v === 'notkeeper') return WEAPON.has(x.b) && x.r === 'Legendary' && !!x.pk && !!WL && (grade(x) === 'C' || grade(x) === 'D');
     if (v === 'inloadout') { if (!LOSET || LOSETq !== q) { LOSET = inLo(); LOSETq = q; } return LOSET.has(x.id); }
@@ -2339,7 +2368,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   const SKEYS = ['is:', 'not:', 'perk:', 'exactperk:', 'name:', 'exactname:', 'notes:', 'tag:', 'element:', 'slot:', 'class:', 'ammo:', 'breaker:', 'power:>=', 'stat:', 'total:>=', 'customtotal:>=', 'energy:>=', 'tier:>=', 'target:', 'wishlistnotes:'];
   const ISV = () => {
     const ty = [...new Set(D.items.filter((x) => (WEAPON.has(x.b) || ARMOR.has(x.b)) && x.t).map((x) => nz(x.t)))];
-    return [...new Set(['exotic', 'legendary', 'rare', 'weapon', 'armor', 'equipped', 'unequipped', 'locked', 'unlocked', 'crafted', 'masterwork', 'deepsight', 'adept', 'duplicate', 'wishlist', 'trashlist', 'unrated', 'godroll', 'keeper', 'notkeeper', 'tagged', 'untagged', 'hasnotes', 'inloadout', 'vault', 'postmaster', 'target', 'kinetic', 'arc', 'solar', 'void', 'stasis', 'strand', 'prismatic', 'primary', 'special', 'heavy', 'barrier', 'overload', 'unstoppable', 'titan', 'hunter', 'warlock', 'kineticslot', 'energyslot', 'powerslot', 'helmet', 'gauntlets', 'chest', 'legs', 'classitem', 'ghost', 'sparrow', 'ship', 'subclass', ...ty])];
+    return [...new Set(['exotic', 'legendary', 'rare', 'weapon', 'armor', 'equipped', 'unequipped', 'locked', 'unlocked', 'crafted', 'masterwork', 'deepsight', 'adept', 'duplicate', 'wishlist', 'trashlist', 'unrated', 'godroll', 'srated', 'keeper', 'notkeeper', 'tagged', 'untagged', 'hasnotes', 'inloadout', 'vault', 'postmaster', 'target', 'kinetic', 'arc', 'solar', 'void', 'stasis', 'strand', 'prismatic', 'primary', 'special', 'heavy', 'barrier', 'overload', 'unstoppable', 'titan', 'hunter', 'warlock', 'kineticslot', 'energyslot', 'powerslot', 'helmet', 'gauntlets', 'chest', 'legs', 'classitem', 'ghost', 'sparrow', 'ship', 'subclass', ...ty])];
   };
   const SVALS = { tag: () => ['favorite', 'keep', 'infuse', 'junk', 'archive', 'none'], element: () => Object.keys(ELN), slot: () => ['kinetic', 'energy', 'power', 'helmet', 'gauntlets', 'chest', 'legs', 'classitem', 'ghost', 'sparrow', 'ship', 'subclass'], class: () => ['titan', 'hunter', 'warlock'], ammo: () => Object.keys(AMMO), breaker: () => ['barrier', 'overload', 'unstoppable'], stat: () => STN.map((n) => n + ':>='), target: () => [] };
   let SUG = { list: [], i: -1 };
@@ -2558,8 +2587,8 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
   // S = a roll your lists call a god roll, A = any wish list roll (both get the thumbs up: keep), C = rated but not a match,
   // D = a trash roll (both safe to dismantle), ? = no list has this weapon yet (keep it until you check).
   let GTAB = 'S';
-  const GTABS = [['S', 'God rolls', 'Rolls your wish lists call a god roll. Keep these.'], ['A', 'Keepers', 'Rolls on your wish lists (thumbs up). Keep these.'], ['CD', 'Not keepers', 'Your lists rate these weapons and this copy is not one of their rolls (or is a trash roll). Safe to dismantle unless you use it.'], ['?', 'Not yet rated', 'No wish list mentions these weapons yet, so keep them until you check them.']];
-  const GCOL = { S: '#e8b84a', A: '#4caf50', C: '#8b8f97', D: '#d9534f', '?': '#ffd27a' };
+  const GTABS = [['S', 'God rolls', 'The best of the best: one top roll for an S tier weapon has a perk in every column of this copy (barrel, magazine, both traits). Keep these.'], ['R', 'S rated', 'S tier weapons with a good roll that is not a full god roll: some columns miss the top perk. Worth keeping.'], ['A', 'Keepers', 'Rolls on your wish lists (thumbs up). Keep these.'], ['CD', 'Not keepers', 'Your lists rate these weapons and this copy is not one of their rolls (or is a trash roll). Safe to dismantle unless you use it.'], ['?', 'Not yet rated', 'No wish list mentions these weapons yet, so keep them until you check them.']];
+  const GCOL = { S: '#e8b84a', R: '#c58cff', A: '#4caf50', C: '#8b8f97', D: '#d9534f', '?': '#ffd27a' };
   // Opened from the magnifying glass next to the vault refresh, the G key, or Settings. The button and G also close it,
   // and so do Esc, the X and clicking outside it. While it is open the page behind it does not scroll.
   const grfClose = () => { const m = g('junkm'); if (m) m.remove(); };
@@ -2570,12 +2599,12 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
   // Four tiles filter by grade (with counts); each card shows the weapon, where it is, its grade, the perks it rolled (the
   // ones your wish list asks for are ticked) and the wish list's note. Clicking a card opens the weapon's pop-up beside it.
   let GPQ = '', GPS = 'name';
-  const GNAME = { S: 'God roll', A: 'Keeper', C: 'Not a keeper', D: 'Trash roll', '?': 'Not rated yet' };
+  const GNAME = { S: 'God roll', R: 'S rated', A: 'Keeper', C: 'Not a keeper', D: 'Trash roll', '?': 'Not rated yet' };
   function grPage(host) {
     if (!D) { host.innerHTML = '<div class="gpg"><div class="gph"><div><h2>God rolls</h2><p>Sign in on the Inventory tab first.</p></div></div></div>'; return; }
     if (!WL) { host.innerHTML = '<div class="gpg"><div class="gph"><div><h2>God rolls</h2><p>Add a wish list first (Settings, Wish lists): every weapon you own is graded with your wish lists.</p></div></div></div>'; return; }
     const ws = D.items.filter((x) => WEAPON.has(x.b) && x.r === 'Legendary' && x.pk && !x.pm);
-    const by = { S: [], A: [], CD: [], '?': [] };
+    const by = { S: [], R: [], A: [], CD: [], '?': [] };
     ws.forEach((x) => { const gr = grade(x); (by[gr === 'C' || gr === 'D' ? 'CD' : gr]).push({ x, gr }); });
     if (!GTABS.some((t) => t[0] === GTAB)) GTAB = 'S';
     const T = TAGS(), info = GTABS.find((t) => t[0] === GTAB), q = GPQ.trim().toLowerCase();
@@ -2606,7 +2635,7 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
       <div class="gph"><div><h2>God rolls</h2><p>${ws.length} legendary weapons graded with your wish lists.</p></div>
         <div class="gptools"><input type="search" id="gpq" placeholder="Search weapons" value="${esc(GPQ)}" aria-label="Search weapons"><select id="gps" aria-label="Sort">${[['name', 'Name'], ['power', 'Power'], ['type', 'Weapon type']].map(([v, l]) => `<option value="${v}"${GPS === v ? ' selected' : ''}>Sort: ${l}</option>`).join('')}</select></div></div>
       <div class="gpfs" role="group" aria-label="Show">${tiles}</div>
-      <p class="gphint">${esc(info[2])} Click a weapon for its perks; <b>Apply Perks</b> in its pop-up puts the wish list perks in.</p>
+      <p class="gphint">${esc(info[2])} Click a weapon to see every perk column and put the wish list perks in.</p>
       ${GTAB === 'CD' && junkable.length ? `<div class="gpjunk"><button class="b" data-gk="junk">Tag ${junkable.length} as junk</button><span>Skips equipped items and anything tagged favorite or keep. Dismantle them in game afterwards.</span></div>` : ''}
       ${list.length ? `<div class="gpgrid">${list.map(card).join('')}</div>` : `<div class="gpempty">${q ? 'No weapon here matches "' + esc(GPQ) + '".' : GTAB === '?' ? 'Every weapon you own is rated.' : 'Nothing here yet.'}</div>`}
     </div>`;
@@ -2673,7 +2702,11 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
         return `<div class="gvs"><span>${esc(q.n)}</span><b>${esc(q.v)}</b>${bar ? `<i><u style="width:${Math.max(0, Math.min(100, (q.v / (q.max || 100)) * 100))}%"></u></i>` : '<i class="nb"></i>'}</div>`;
       }).join('');
       const acts = `<div class="gva"><button class="b" data-gv="apply"${ch.length && !GV.busy ? '' : ' disabled'}>${GV.busy ? 'Applying…' : ch.length ? '&#10003; Apply ' + ch.length + ' perk' + (ch.length > 1 ? 's' : '') : 'Apply perks'}</button>${best && bestDiff ? '<button class="g" data-gv="wish">&#9733; Pick my wish list perks</button>' : best ? '<span class="gvok">&#10003; This copy already has its wish list perks in.</span>' : ''}${Object.keys(GV.pick).length ? '<button class="g" data-gv="undo">Clear picks</button>' : ''}</div>`;
-      body = `${acts}${GV.msg ? `<div class="gvmsg${GV.bad ? ' bad' : ''}" role="status">${esc(GV.msg)}</div>` : ''}
+      // S rated: say which columns keep it from being a full god roll
+      const miss = gr === 'R' ? cols.filter((c) => c.name !== 'Origin trait' && !c.col.some(want)).map((c) => c.name) : [];
+      const notIn = gr === 'S' && cols.some((c) => c.name !== 'Origin trait' && c.col.some(want) && !want(c.on));
+      const gstat = gr === 'S' ? `<p class="gvgod">&#9733; Full god roll: this copy has the top perk for every column.${notIn ? ' Some are not in yet: press Pick my wish list perks, then Apply.' : ''}</p>` : gr === 'R' ? `<p class="gvgod r">S tier weapon, not a full god roll${miss.length ? ': ' + esc(miss.join(', ')) + (miss.length > 1 ? ' do' : ' does') + ' not have a top perk on this copy' : ''}.</p>` : '';
+      body = `${gstat}${acts}${GV.msg ? `<div class="gvmsg${GV.bad ? ' bad' : ''}" role="status">${esc(GV.msg)}</div>` : ''}
 <div class="gvcols">${colH || '<p class="gvl">This weapon has no perks to change.</p>'}</div>
 <p class="gvhint">Click a perk to pick it, then Apply. Ticked perks are the ones your wish list wants. Greyed-out perks are not on this copy. Changes only work while you are in orbit, a social space or offline.</p>
 <div class="gvlow">${stats ? `<div class="gvst"><h5>Stats</h5>${stats}</div>` : ''}<div class="gvside">
@@ -2737,7 +2770,7 @@ ${body}</div>`;
     if (host && !D) { host.innerHTML = '<div class="jk grfp"><div class="jkh"><b>God rolls</b></div><p class="mute">Sign in on the Inventory tab first.</p></div>'; return; }
     if (!WL) { if (host) host.innerHTML = '<div class="jk grfp"><div class="jkh"><b>God rolls</b></div><p class="mute">Add a wish list first (Settings, Wish lists): every weapon you own is graded with your wish lists.</p></div>'; else setNote('Add a wish list first (Settings, Wish lists): the god roll finder grades your weapons with it.'); return; }
     const ws = D.items.filter((x) => WEAPON.has(x.b) && x.r === 'Legendary' && x.pk && !x.pm);
-    const by = { S: [], A: [], CD: [], '?': [] };
+    const by = { S: [], R: [], A: [], CD: [], '?': [] };
     ws.forEach((x) => { const gr = grade(x); (by[gr === 'C' || gr === 'D' ? 'CD' : gr]).push({ x, gr }); });
     Object.values(by).forEach((a) => a.sort((p, q2) => String(p.x.n).localeCompare(q2.x.n) || (q2.x.p || 0) - (p.x.p || 0)));
     if (!GTABS.some((t) => t[0] === GTAB)) GTAB = 'S';
@@ -3185,7 +3218,7 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
   // says whether each new weapon is a god roll, a keeper, not a keeper, or not yet rated. Only Bungie's API is used, like DIM:
   // nothing reads the screen or touches the game. Bungie itself can take a few seconds to a minute to report a drop.
   let SEEN = null;
-  const DROPW = { S: ['God roll', '#e8b84a'], A: ['Keeper', '#4caf50'], C: ['Not a keeper', '#8b8f97'], D: ['Trash roll', '#d9534f'], '?': ['Not yet rated', '#ffd27a'] };
+  const DROPW = { S: ['God roll', '#e8b84a'], R: ['S rated', '#c58cff'], A: ['Keeper', '#4caf50'], C: ['Not a keeper', '#8b8f97'], D: ['Trash roll', '#d9534f'], '?': ['Not yet rated', '#ffd27a'] };
   function dropCheck(n) {
     if (!n || !n.items) return;
     const ids = n.items.filter((x) => WEAPON.has(x.b) || (x.pm && x.pk)).map((x) => x.id);
@@ -3436,7 +3469,7 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
     const cand = [];
     const T = window.__gtt, th = T && T.hit ? T.hit(x) : null;
     if (th && th.perks && th.perks.size) cand.push({ hs: [...th.perks].filter((v) => typeof v === 'number'), names: [...th.perks].filter((v) => typeof v === 'string'), note: 'Farming target: ' + th.name, pri: 1 });
-    const wr = wishRoll(x); void P;
+    const gi = godInfo(x), wr = (gi && gi.roll) || wishRoll(x); void P;
     if (wr && !wr[2]) cand.push({ hs: wr[0], names: [], note: typeof wr[1] === 'number' ? (WL.notes || [])[wr[1]] || '' : wr[1] || '', pri: 0 });
     let best = null;
     const allH = new Set(); cols.forEach(({ col }) => col.forEach((p) => { if (p.h) allH.add(p.h); }));
