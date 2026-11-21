@@ -32,6 +32,8 @@
       'No more flash when the app opens: it goes straight to your start page instead of showing Inventory for a moment or fading the page in twice, and pages no longer shift sideways when a scrollbar appears.',
       'Loadouts: if your browser blocks copying a share link, Pathfinder now says so and selects the link for you to copy.',
       'Polish everywhere: clearer stats on phones (Crucible, Play time, Personal bests), a cleaner Xûr countdown, a tidier Checklist on phones, and the Checklist, Roll Tracker and Organizer on the same glass panels as the rest of the beta look.',
+      'God rolls: clicking a weapon opens its own God roll view (in the same style as the cards) with every perk column, which perks your wish list wants and what is in now. Pick perks or press Pick my wish list perks, then Apply. Tag, move, equip and lock from the same view.',
+      'Changing perks now checks with Bungie: Pathfinder only shows the new perk once Bungie confirms it, and tells you if the change did not go through (perk changes only work in orbit, a social space or offline). The God roll card updates straight away too.',
     ] },
     { id: 19, date: 'Nov 2026', items: [
       'When Bungie is down, the vault you loaded last stays on screen (read-only) with a line saying when it is from, and Pathfinder tries again every 2 minutes. A bar under the tabs shows Bungie\'s maintenance timeline in your own time.',

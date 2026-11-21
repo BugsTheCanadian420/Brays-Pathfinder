@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.35-beta.5: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.35-beta.6: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -1128,7 +1128,16 @@ H('item:stack', async (e, v) => {
 // Lock or unlock an item (the padlock in the game). Needs a character to act through, even for vault items.
 H('item:lock', async (e, v) => { OBJ(v); const id = ID(v.id), char = ID(v.char), state = v.state; await post('/Destiny2/Actions/Items/SetLockState/', { state: !!state, itemId: id, characterId: char }); return true; });
 // Put a perk into a socket for free. Bungie only allows this where the game does (crafted weapons, armor mods you own...).
-H('item:plug', async (e, v) => { await ensureM(); OBJ(v); const id = ID(v.id), char = ID(v.char), socket = INT(v.socket, 0, 200), plug = HASH(v.plug); IDIRTY.add(id); await post('/Destiny2/Actions/Items/InsertSocketPlugFree/', { plug: { socketIndex: socket, socketArrayType: 0, plugItemHash: plug }, itemId: id, characterId: char }); return true; });
+// Bungie answers a perk change with the weapon as the game now has it. That answer is checked, so a change Bungie says it made
+// but did not (the socket still holds the old perk) is reported instead of shown as done. sure = Bungie's answer confirmed it.
+H('item:plug', async (e, v) => {
+  await ensureM(); OBJ(v); const id = ID(v.id), char = ID(v.char), socket = INT(v.socket, 0, 200), plug = HASH(v.plug); IDIRTY.add(id);
+  const j = await post('/Destiny2/Actions/Items/InsertSocketPlugFree/', { plug: { socketIndex: socket, socketArrayType: 0, plugItemHash: plug }, itemId: id, characterId: char });
+  const it = j && j.Response && j.Response.item, sk = it && it.sockets && it.sockets.data && it.sockets.data.sockets;
+  const now = Array.isArray(sk) && sk[socket] ? sk[socket].plugHash : undefined;
+  if (now !== undefined && now !== plug) throw new Error('Bungie answered but the perk did not change (the weapon still has its old perk). Try again from orbit or a social space.');
+  return { ok: 1, sure: now === plug ? 1 : 0 };
+});
 // Every mod or catalyst a weapon socket can take: the ones this account has unlocked (can be put in right away) and the
 // ones it has not, with Bungie's own "Source:" line when there is one. Asked for only when the socket is clicked.
 H('item:modopts', async (e, v) => {

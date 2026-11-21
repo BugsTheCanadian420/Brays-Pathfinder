@@ -760,6 +760,52 @@ body.gtann #gtmaint{top:calc(var(--gt-bar-h,56px) + 74px)}
 #godrolls .gpf:hover{border-color:color-mix(in srgb,var(--gc) 60%,transparent)!important}
 #godrolls .gpf.on{border-color:var(--gc)!important;background:linear-gradient(180deg,color-mix(in srgb,var(--gc) 18%,transparent),color-mix(in srgb,var(--gc) 4%,transparent)),var(--g-panel,#16181c)!important;color:#fff!important}
 #godrolls .g-S{--gc:#f2b441}#godrolls .g-A{--gc:#5fd38a}#godrolls .g-C{--gc:#9aa1ab}#godrolls .g-D{--gc:#ef6461}#godrolls .g-q{--gc:#ffd27a}
+#gvm{position:fixed;inset:0;z-index:70;background:rgba(4,6,10,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:flex;align-items:flex-start;justify-content:center;padding:max(24px,4vh) 16px 24px;overflow:auto}
+#gvm .g-S{--gc:#f2b441}#gvm .g-A{--gc:#5fd38a}#gvm .g-C{--gc:#9aa1ab}#gvm .g-D{--gc:#ef6461}#gvm .g-q{--gc:#ffd27a}
+#gvm .gvp{position:relative;width:min(1080px,100%);border-radius:20px;border:1px solid color-mix(in srgb,var(--gc) 40%,var(--g-line,#2b2e33));background:radial-gradient(70% 60% at 100% 0,color-mix(in srgb,var(--gc) 14%,transparent),transparent 65%),linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,0) 30%),var(--g-panel,#15171b);box-shadow:0 30px 80px rgba(0,0,0,.6);padding:20px 22px 22px;color:#e8ecf2}
+#gvm .gvh{display:flex;gap:16px;align-items:center}#gvm .gvh .vt{--t:72px;flex:none}
+#gvm .gvn{flex:1;min-width:0}#gvm .gvn h3{margin:0;font-size:24px;line-height:1.15;color:#fff;font-weight:800;letter-spacing:.01em;text-transform:none;border:0;padding:0}
+#gvm .gvn small{display:block;margin:3px 0 8px;color:#a3aab4;font-size:13px}
+#gvm .gpb{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+#gvm .gpg-pill{display:inline-flex;align-items:center;padding:3px 10px;border-radius:999px;font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--gc);background:color-mix(in srgb,var(--gc) 16%,transparent);border:1px solid color-mix(in srgb,var(--gc) 45%,transparent)}
+#gvm .gptag,#gvm .gvfr{display:inline-flex;align-items:center;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600;color:#cfd5de;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)}
+#gvm .gvx{align-self:flex-start;flex:none;width:38px;height:38px;border-radius:12px;padding:0!important;font-size:16px}
+#gvm .gvnote{margin:16px 0 0;padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.035);border:1px solid var(--g-line,#2b2e33);border-left:3px solid var(--gc);font-size:13.5px;line-height:1.5;color:#cdd3dc}
+#gvm .gva{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:16px 0 0}
+#gvm button{letter-spacing:0!important;text-transform:none!important;font-family:inherit}
+#gvm .gva button{border-radius:12px!important;padding:9px 16px!important;font-weight:700;font-size:14px}#gvm .gva .b{background:var(--gc)!important;border-color:var(--gc)!important;color:#141006!important}#gvm .gva .b:disabled{background:rgba(255,255,255,.06)!important;border-color:rgba(255,255,255,.12)!important;color:#8b929c!important;cursor:default}
+#gvm .gvok{color:#35e3cf;font-weight:600;font-size:13.5px}
+#gvm .gvmsg{margin:12px 0 0;padding:10px 14px;border-radius:12px;font-size:13.5px;background:color-mix(in srgb,#35e3cf 10%,transparent);border:1px solid color-mix(in srgb,#35e3cf 40%,transparent);color:#d6fbf5}
+#gvm .gvmsg.bad{background:rgba(239,100,97,.1);border-color:rgba(239,100,97,.45);color:#ffd6d5}
+#gvm .gvcols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:12px;margin:16px 0 0}
+#gvm .gvc{display:flex;flex-direction:column;gap:6px;padding:12px;border-radius:14px;background:rgba(0,0,0,.18);border:1px solid var(--g-line,#2b2e33)}
+#gvm .gvc h5{margin:0 0 2px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9aa1ab}
+#gvm .gvos{display:flex;flex-direction:column;gap:5px}
+#gvm .gvo{display:flex;align-items:center;gap:9px;width:100%;min-height:40px;padding:5px 8px!important;border-radius:10px!important;border:1px solid transparent!important;background:rgba(255,255,255,.03)!important;color:#dfe4ea!important;text-align:left;font-size:13.5px;font-weight:600;letter-spacing:0!important;text-transform:none!important;cursor:pointer}
+#gvm .gvo:hover:not(:disabled){background:rgba(255,255,255,.07)!important}
+#gvm .gvo img,#gvm .gvo .gvi{width:30px;height:30px;border-radius:50%;flex:none;background:#0d0f13;border:1px solid rgba(255,255,255,.14)}
+#gvm .gvo span{flex:1;min-width:0;overflow:hidden;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:anywhere}
+#gvm .gvo em{flex:none;font-style:normal;font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:2px 6px;border-radius:999px}
+#gvm .gvo em.in{color:var(--gc);background:color-mix(in srgb,var(--gc) 15%,transparent)}#gvm .gvo em.pk{color:#35e3cf;background:color-mix(in srgb,#35e3cf 14%,transparent)}
+#gvm .gvo b.wl{flex:none;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:11px;background:#35e3cf;color:#08221f}
+#gvm .gvo.on{border-color:color-mix(in srgb,var(--gc) 55%,transparent)!important;background:color-mix(in srgb,var(--gc) 10%,transparent)!important;color:#fff!important}
+#gvm .gvo.pick{border-color:#35e3cf!important;background:color-mix(in srgb,#35e3cf 9%,transparent)!important;color:#fff!important}
+#gvm .gvo.lock{opacity:.38;cursor:default}
+#gvm .gvd{margin:4px 2px 0;font-size:12.5px;line-height:1.45;color:#a3aab4;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+#gvm .gvhint{margin:12px 2px 0;font-size:12.5px;color:#8b929c}
+#gvm .gvlow{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:16px;margin:16px 0 0}
+#gvm .gvst,#gvm .gvside{padding:14px;border-radius:14px;background:rgba(0,0,0,.18);border:1px solid var(--g-line,#2b2e33)}
+#gvm .gvst h5,#gvm .gvside h5{margin:0 0 8px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9aa1ab}#gvm .gvside h5:not(:first-child){margin-top:14px}
+#gvm .gvs{display:grid;grid-template-columns:minmax(0,1fr) 40px minmax(0,1.3fr);align-items:center;gap:10px;padding:3px 0;font-size:13px;color:#c9cfd8}
+#gvm .gvs b{text-align:right;color:#fff;font-variant-numeric:tabular-nums}#gvm .gvs i{height:6px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden}#gvm .gvs i.nb{background:none}#gvm .gvs u{display:block;height:100%;background:linear-gradient(90deg,color-mix(in srgb,var(--gc) 70%,#fff),var(--gc));border-radius:3px}
+#gvm .gvtags,#gvm .gvbtns{display:flex;flex-wrap:wrap;gap:6px}
+#gvm .gvtags button,#gvm .gvbtns button{display:inline-flex;align-items:center;gap:6px;border-radius:10px!important;padding:6px 11px!important;font-size:12.5px;min-height:32px}
+#gvm .gvtags button svg{width:14px;height:14px;color:var(--tc)}#gvm .gvtags button.on{border-color:var(--tc)!important;background:color-mix(in srgb,var(--tc) 16%,transparent)!important;color:#fff!important}
+#gvm .gvl{padding:28px;text-align:center;color:#a3aab4}
+@media (max-width:760px){#gvm .gvlow{grid-template-columns:1fr}}
+@media (max-width:560px){#gvm{padding:0}#gvm .gvp{border-radius:0;min-height:100%;padding:16px 14px 28px;border-left:0;border-right:0}#gvm .gvh .vt{--t:56px}#gvm .gvn h3{font-size:20px}#gvm .gvcols{grid-template-columns:1fr 1fr;gap:8px}#gvm .gvc{padding:9px}#gvm .gvo{font-size:12.5px;min-height:38px}#gvm .gvo img{width:26px;height:26px}#gvm .gvo em{display:none}}
+@media (prefers-reduced-motion:no-preference){#gvm .gvp.enter{animation:gvIn .2s cubic-bezier(.2,.8,.2,1)}@keyframes gvIn{from{opacity:0;transform:translateY(10px) scale(.99)}to{opacity:1;transform:none}}}
+
 #godrolls .gphint{margin:6px 2px 12px;color:#9aa1ab;font-size:13px}
 #godrolls .gpjunk button{text-transform:none!important;letter-spacing:0!important;padding:7px 16px!important}#godrolls .gpjunk{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:0 0 12px;padding:10px 14px;border-radius:12px;border:1px solid color-mix(in srgb,#ef6461 40%,transparent);background:color-mix(in srgb,#ef6461 8%,transparent);font-size:13px;color:#e7c9c8}
 #godrolls .gpgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
@@ -2569,12 +2615,122 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
       const tb = e.target.closest('button[data-gt]'); if (tb && host.contains(tb) && GTABS.some((t) => t[0] === tb.dataset.gt)) { GTAB = tb.dataset.gt; redraw(); return; }
       const b = e.target.closest('[data-gk]');
       if (b && b.dataset.gk === 'junk') { const o = TAGS(); junkable.forEach((q2) => { o[q2.x.id] = 'junk'; }); saveTAGS(o); renderGrid(); setNote(junkable.length + ' weapons tagged junk.'); redraw(); return; }
-      const r = e.target.closest('[data-jid]'); if (r && window.__gtx && window.__gtx.openHere) { e.stopPropagation(); window.__gtx.openHere(r.dataset.jid, r.querySelector('.vt') || r); }
+      const r = e.target.closest('[data-jid]'); if (r) { e.stopPropagation(); gvOpen(r.dataset.jid); }
     };
     host.onkeydown = (e) => { const r = e.target.closest && e.target.closest('.gpc[data-jid]'); if (r && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); r.click(); } };
     host.oninput = (e) => { if (e.target.id === 'gpq') { GPQ = e.target.value; clearTimeout(host._t); host._t = setTimeout(redraw, 120); } };
     host.onchange = (e) => { if (e.target.id === 'gps') { GPS = e.target.value; redraw(); } };
   }
+  // ---- A weapon opened from the God rolls tab: its own view, in the page's card style ----
+  // Every perk column side by side: what is in the weapon now, what your wish list wants (ticked) and what this copy can switch
+  // to. One button picks the wish list perks, one puts them in (each change checked against Bungie's answer), with the stats,
+  // tags, lock, move and equip below. Nothing here is the Inventory pop-up.
+  const GV = { id: '', pick: {}, msg: '', bad: 0, busy: 0 };
+  const COLN = [[/^barrels?/, 'Barrel'], [/^scopes?/, 'Sight'], [/^magazines?|^magazines_gl/, 'Magazine'], [/^batter/, 'Battery'], [/^arrows?/, 'Arrow'], [/^bowstrings?/, 'Bowstring'], [/^blades?/, 'Blade'], [/^guards?/, 'Guard'], [/^tubes?/, 'Launcher'], [/^hafts?/, 'Haft'], [/^origins?/, 'Origin trait']];
+  function gvCols(d) {
+    const out = []; let tr = 0;
+    (d.groups || []).forEach((g2, gi) => { if (g2.label !== 'Perks') return; g2.cols.forEach((col, ci) => {
+      const on = col.find((p) => p.on) || col[0], c = String((on && on.c) || '').toLowerCase();
+      let name = ''; for (const [re, n] of COLN) if (re.test(c)) { name = n; break; }
+      if (!name) name = /frames?|traits?/.test(c) || !c ? 'Trait ' + (++tr) : 'Perk';
+      out.push({ k: gi + '-' + ci, col, on, name });
+    }); });
+    return out;
+  }
+  function gvChanges(d) { return gvCols(d).map((c) => { const i = GV.pick[c.k]; const p = i === undefined ? null : c.col[i]; return p && p !== c.on && p.ci ? { k: c.k, si: p.si, h: p.h, n: p.n } : null; }).filter(Boolean); }
+  function gvOpen(id) {
+    const x = byId(id); if (!x) return;
+    if (GV.id !== id) { GV.id = id; GV.pick = {}; GV.msg = ''; GV.bad = 0; }
+    gvDraw();
+    if (!DET[id] || DET[id].err) { delete DET[id]; fetchDet(x).then(() => { if (GV.id === id) gvDraw(); }); }
+  }
+  function gvClose() { GV.id = ''; const m = g('gvm'); if (m) m.remove(); document.removeEventListener('keydown', gvKey, true); }
+  function gvKey(e) { if (e.key === 'Escape' && g('gvm')) { e.stopPropagation(); gvClose(); } }
+  function gvDraw() {
+    const x = byId(GV.id); if (!x) { gvClose(); return; }
+    let m = g('gvm'); const fresh = !m;
+    if (!m) { m = document.createElement('div'); m.id = 'gvm'; m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); document.body.appendChild(m); m.onclick = gvClick; document.addEventListener('keydown', gvKey, true); }
+    const d = DET[GV.id], gr = grade(x), w = wish(x), wp = w.perks || new Set(), want = (p) => !!p && (wp.has(p.h) || wp.has(p.n));
+    const el = ELEM[x.el], T = TAGS(), tg = T[x.id];
+    const where = x.loc === 'vault' ? 'Vault' : (() => { const c = D.chars.find((k) => k.id === x.loc); return c ? CL[c.cls] || 'Guardian' : ''; })();
+    const note = (w.notes && w.notes[0]) || (gr === '?' ? 'No wish list has this weapon yet.' : gr === 'C' ? 'Your lists rate this weapon; this copy is not one of their rolls.' : gr === 'D' ? 'Your wish list marks this roll as trash.' : '');
+    let body;
+    if (!d) body = '<div class="gvl">Loading this weapon from Bungie…</div>';
+    else if (d.err) body = `<div class="gvmsg bad">Could not load this weapon: ${esc(d.err)} <button class="g" data-gv="retry">Try again</button></div>`;
+    else {
+      const cols = gvCols(d), ch = gvChanges(d), best = bestRoll(x, d);
+      const bestDiff = best && Object.keys(best.pick).some((k) => { const c = cols.find((q) => q.k === k); return c && c.col[best.pick[k]] && c.col[best.pick[k]] !== c.on; });
+      const colH = cols.map((c) => {
+        const selI = GV.pick[c.k] !== undefined ? GV.pick[c.k] : c.col.indexOf(c.on), sel2 = c.col[selI] || c.on;
+        const opts = c.col.slice(0, 10).map((p, i) => {
+          const isOn = p === c.on, isPick = i === selI && !isOn, wl = want(p), lock = !p.ci && !isOn;
+          return `<button type="button" class="gvo${isOn ? ' on' : ''}${isPick ? ' pick' : ''}${wl ? ' want' : ''}${lock ? ' lock' : ''}" data-gk="${c.k}" data-gi="${i}"${lock ? ' disabled' : ''} title="${esc(p.n)}${lock ? ': this copy cannot switch to it' : ''}">${p.i ? `<img src="${esc(icon(p.i))}" alt="" loading="lazy">` : '<i class="gvi"></i>'}<span>${esc(p.n)}</span>${isOn ? '<em class="in">In now</em>' : isPick ? '<em class="pk">Picked</em>' : ''}${wl ? '<b class="wl" title="Your wish list wants this">&#10003;</b>' : ''}</button>`;
+        }).join('');
+        return `<div class="gvc"><h5>${esc(c.name)}</h5><div class="gvos">${opts}</div>${sel2 && sel2.d ? `<p class="gvd">${esc(sel2.d)}</p>` : ''}</div>`;
+      }).join('');
+      const stats = (d.stats || []).filter((q) => q.v !== undefined).map((q) => {
+        const bar = !q.num && q.max !== 0;
+        return `<div class="gvs"><span>${esc(q.n)}</span><b>${esc(q.v)}</b>${bar ? `<i><u style="width:${Math.max(0, Math.min(100, (q.v / (q.max || 100)) * 100))}%"></u></i>` : '<i class="nb"></i>'}</div>`;
+      }).join('');
+      const acts = `<div class="gva"><button class="b" data-gv="apply"${ch.length && !GV.busy ? '' : ' disabled'}>${GV.busy ? 'Applying…' : ch.length ? '&#10003; Apply ' + ch.length + ' perk' + (ch.length > 1 ? 's' : '') : 'Apply perks'}</button>${best && bestDiff ? '<button class="g" data-gv="wish">&#9733; Pick my wish list perks</button>' : best ? '<span class="gvok">&#10003; This copy already has its wish list perks in.</span>' : ''}${Object.keys(GV.pick).length ? '<button class="g" data-gv="undo">Clear picks</button>' : ''}</div>`;
+      body = `${acts}${GV.msg ? `<div class="gvmsg${GV.bad ? ' bad' : ''}" role="status">${esc(GV.msg)}</div>` : ''}
+<div class="gvcols">${colH || '<p class="gvl">This weapon has no perks to change.</p>'}</div>
+<p class="gvhint">Click a perk to pick it, then Apply. Ticked perks are the ones your wish list wants. Greyed-out perks are not on this copy. Changes only work while you are in orbit, a social space or offline.</p>
+<div class="gvlow">${stats ? `<div class="gvst"><h5>Stats</h5>${stats}</div>` : ''}<div class="gvside">
+<h5>Tag</h5><div class="gvtags">${TG.map(([k, svg, col, lbl]) => `<button type="button" class="g${tg === k ? ' on' : ''}" data-gv="tag" data-v="${k}" style="--tc:${col}" title="${esc(lbl)}">${svg}<span>${esc(lbl)}</span></button>`).join('')}</div>
+<h5>Move to</h5><div class="gvbtns">${sortedChars().map((c) => `<button type="button" class="g" data-gv="mv" data-t="${esc(c.id)}"${x.loc === c.id && !x.e ? ' disabled' : ''}>${esc(CL[c.cls] || 'Guardian')}</button>`).join('')}<button type="button" class="g" data-gv="mv" data-t="vault"${x.loc === 'vault' ? ' disabled' : ''}>Vault</button></div>
+<h5>Equip on</h5><div class="gvbtns">${sortedChars().map((c) => `<button type="button" class="g" data-gv="eq" data-t="${esc(c.id)}"${x.e && x.loc === c.id ? ' disabled' : ''}>${esc(CL[c.cls] || 'Guardian')}</button>`).join('')}</div>
+<div class="gvbtns" style="margin-top:12px"><button type="button" class="g" data-gv="lock">${x.lk ? 'Unlock' : 'Lock'}</button><button type="button" class="g" data-gv="inv">Open in Inventory</button></div>
+</div></div>`;
+    }
+    const fr = d && !d.err && d.frame ? `<span class="gvfr">${esc(d.frame.n)}</span>` : '';
+    m.innerHTML = `<div class="gvp g-${gr === '?' ? 'q' : gr}${fresh ? ' enter' : ''}">
+<div class="gvh">${tile(x)}<div class="gvn"><h3>${esc(x.n)}</h3><small>${esc(x.t || 'Weapon')}${el ? ` &middot; <span style="color:${el[1]}">${el[0]}</span>` : ''} &middot; ${esc(where)}${x.e ? ' (equipped)' : ''}${x.p ? ' &middot; &#9670; ' + esc(x.p) : ''}</small>
+<div class="gpb"><span class="gpg-pill">${gr === 'S' ? '&#9733; ' : ''}${esc(GNAME[gr] || '')}</span>${fr}${tg ? `<span class="gptag">${esc(tg)}</span>` : ''}${x.lk ? '<span class="gptag">Locked</span>' : ''}</div></div>
+<button type="button" class="g gvx" data-gv="x" aria-label="Close" title="Close (Esc)">&#10005;</button></div>
+${note ? `<p class="gvnote">${esc(note)}</p>` : ''}
+${body}</div>`;
+  }
+  async function gvClick(e) {
+    const m = g('gvm'); if (!m) return;
+    if (e.target === m) { gvClose(); return; }
+    const x = byId(GV.id); if (!x) { gvClose(); return; }
+    const o = e.target.closest('.gvo[data-gk]');
+    if (o && !o.disabled) { const k = o.dataset.gk, i = +o.dataset.gi, d = DET[GV.id], c = d && gvCols(d).find((q) => q.k === k); if (!c) return; if (c.col[i] === c.on || GV.pick[k] === i) delete GV.pick[k]; else GV.pick[k] = i; GV.msg = ''; gvDraw(); return; }
+    const b = e.target.closest('[data-gv]'); if (!b || b.disabled) return;
+    const a = b.dataset.gv, d = DET[GV.id];
+    if (a === 'x') { gvClose(); return; }
+    if (a === 'retry') { delete DET[GV.id]; delete PEND[GV.id]; gvOpen(GV.id); return; }
+    if (a === 'undo') { GV.pick = {}; GV.msg = ''; gvDraw(); return; }
+    if (a === 'wish' && d) { const best = bestRoll(x, d); if (best) { GV.pick = Object.assign({}, best.pick); const n = gvChanges(d).length; GV.msg = n ? 'Picked your wish list perks. Press Apply to put them in.' : 'This copy cannot switch to its wish list perks (they are not on this roll).'; GV.bad = 0; } gvDraw(); return; }
+    if (a === 'apply' && d) { await gvApply(x, d); return; }
+    if (a === 'tag') { const t = TAGS(), v = b.dataset.v; if (t[x.id] === v) delete t[x.id]; else t[x.id] = v; saveTAGS(t); renderGrid(); grRefresh(); gvDraw(); return; }
+    if (a === 'lock') { await toggleLock(x); GV.msg = PMSG || ''; GV.bad = /^Failed/.test(GV.msg) ? 1 : 0; grRefresh(); gvDraw(); return; }
+    if (a === 'mv') { doMove(x, b.dataset.t); GV.msg = 'Moving…'; GV.bad = 0; gvDraw(); setTimeout(() => { if (GV.id === x.id) { GV.msg = ''; grRefresh(); gvDraw(); } }, 2500); return; }
+    if (a === 'eq') { doEquip(x, b.dataset.t); GV.msg = 'Equipping…'; GV.bad = 0; gvDraw(); setTimeout(() => { if (GV.id === x.id) { GV.msg = ''; grRefresh(); gvDraw(); } }, 2500); return; }
+    if (a === 'inv') { const id = x.id; gvClose(); goItem(id); return; }
+  }
+  async function gvApply(x, d) {
+    const list = gvChanges(d); if (!list.length || GV.busy) return;
+    GV.busy = 1; GV.bad = 0; const id = x.id, done = [], bad = []; let sure = true;
+    for (let k = 0; k < list.length; k++) {
+      const c = list[k]; GV.msg = 'Putting in ' + c.n + ' (' + (k + 1) + ' of ' + list.length + ')…'; gvDraw();
+      let tries = 0;
+      for (;;) {
+        try { const r = await gt.itemPlug({ id, char: charFor(x), socket: c.si, plug: c.h }); if (!(r && r.sure)) sure = false; done.push([c.si, c.h]); break; }
+        catch (er) { if (++tries < 2 && !/did not change|orbit|social space/i.test(clean(er))) { await new Promise((r2) => setTimeout(r2, 1200)); continue; } bad.push(c.n + ': ' + clean(er)); break; }
+      }
+      if (k < list.length - 1) await new Promise((r2) => setTimeout(r2, 450));
+    }
+    done.forEach(([si, ph]) => markPlug(id, si, ph));
+    GV.pick = {}; GV.busy = 0;
+    GV.bad = bad.length ? 1 : 0;
+    GV.msg = bad.length ? (done.length ? done.length + ' of ' + list.length + ' perks changed. ' : 'Nothing changed. ') + bad[0] : sure ? 'Done: Bungie confirmed the new perks are in.' : 'Done: Bungie accepted the change. It can take a minute to show everywhere.';
+    renderGrid(); grRefresh(); gvDraw();
+    confirmPlugs(id, x.h, done, sure);
+  }
+  let grT = 0;
+  function grRefresh() { clearTimeout(grT); grT = setTimeout(() => { const h = g('godrolls'); if (h && h.classList.contains('on')) grPage(h); if (GV.id && g('gvm')) gvDraw(); }, 60); }
   function grfRender(host) {
     if (host) { grPage(host); return; }
     let m = host ? null : g('junkm'); const had = !!m; if (m) m.remove();
@@ -3345,13 +3501,27 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
     const d = DET[id], x = byId(id);
     if (d && d.groups) d.groups.forEach((gr) => gr.cols.forEach((col) => { if (col.some((q) => q.si === si && q.h === h)) { const old = col.find((q) => q.on); col.forEach((q) => { q.on = q.h === h; }); if (x && x.pk && old && old.h !== h) { const i = x.pk.indexOf(old.h); if (i >= 0) x.pk[i] = h; else x.pk.push(h); } } }));
     if (x) { Object.keys(wcache).forEach((k) => { if (k.startsWith(id + ':')) delete wcache[k]; }); }
+    if (x && Array.isArray(x.ep) && d && d.groups) d.groups.forEach((gr) => gr.cols.forEach((col) => { const nw = col.find((q) => q.si === si && q.h === h); if (!nw) return; const pn = D && D.pn ? D.pn : {}; x.ep = x.ep.map((n) => (col.some((q) => q.n === n && q.h !== h) ? nw.n : n)); void pn; }));
+    grRefresh();
   }
-  function confirmPlugs(id, h, want) {
+  // Reads the weapon back from Bungie 6 and 20 seconds later. When Bungie's answer to the change confirmed it (sure), a read
+  // that still shows the old perk is Bungie's copy lagging, so the change stays. When it was never confirmed and Bungie still
+  // shows the old perk after 20 seconds, Bungie's version wins and you are told: it used to keep showing the new perk anyway.
+  function confirmPlugs(id, h, want, sure) {
     if (!want.length) return;
     const agrees = (d) => want.every(([si, ph]) => d && d.groups && d.groups.some((gr) => gr.cols.some((col) => col.some((q) => q.si === si && q.h === ph && q.on))));
     [6000, 20000].forEach((ms, n) => setTimeout(async () => {
       let d; try { d = await gt.itemDetail({ id, h }); } catch (er) { return; }
-      if (agrees(d) || n === 1) { DET[id] = d; if (!agrees(d)) want.forEach(([si, ph]) => markPlug(id, si, ph)); if (sel === id) renderPop(); }
+      if (agrees(d)) { DET[id] = d; if (sel === id) renderPop(); if (GV.id === id) gvDraw(); return; }
+      if (n !== 1) return;
+      if (sure) { DET[id] = d; want.forEach(([si, ph]) => markPlug(id, si, ph)); }
+      else {
+        DET[id] = d;
+        d.groups.forEach((gr) => gr.cols.forEach((col) => { const on = col.find((q) => q.on); if (on && want.some(([si]) => si === on.si)) markPlug(id, on.si, on.h); }));
+        const m = 'Bungie still shows the old perks on this weapon, so the change did not go through. Try again from orbit or a social space.';
+        if (sel === id) PMSG = m; if (GV.id === id) { GV.msg = m; GV.bad = 1; }
+      }
+      if (sel === id) renderPop(); if (GV.id === id) gvDraw();
     }, ms));
   }
   // Perks you have clicked that differ from what is equipped right now.
@@ -3738,7 +3908,7 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
       const x0 = byId(sel), d = DET[sel]; if (!x0 || !d) return;
       const [gi, ci] = sbp.dataset.sbp.split('-').map(Number), p = d.groups[gi] && d.groups[gi].cols[ci] && d.groups[gi].cols[ci][+sbp.dataset.pi]; if (!p) return;
       const id = x0.id; PMSG = 'Equipping ' + p.n + '...'; pex = ''; renderPop();
-      try { await gt.itemPlug({ id, char: charFor(x0), socket: p.si, plug: p.h }); PMSG = p.n + ' equipped.'; markPlug(id, p.si, p.h); renderPop(); renderGrid(); confirmPlugs(id, x0.h, [[p.si, p.h]]); window.dispatchEvent(new Event('gtsub')); }
+      try { const r = await gt.itemPlug({ id, char: charFor(x0), socket: p.si, plug: p.h }); PMSG = p.n + ' equipped.'; markPlug(id, p.si, p.h); renderPop(); renderGrid(); confirmPlugs(id, x0.h, [[p.si, p.h]], !!(r && r.sure)); window.dispatchEvent(new Event('gtsub')); }
       catch (er) { PMSG = 'Failed: ' + clean(er); renderPop(); }
       return;
     }
@@ -3750,9 +3920,9 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
       const si = +mpp.dataset.msi, h = +mpp.dataset.mpp, got = MODO[x0.id + ':' + si], o = got && got.opts && got.opts.find((q) => q.h === h); if (!o) return;
       const id = x0.id; PMSG = 'Putting in ' + o.n + '...'; renderPop();
       try {
-        await gt.itemPlug({ id, char: charFor(x0), socket: si, plug: h });
+        const r = await gt.itemPlug({ id, char: charFor(x0), socket: si, plug: h });
         d.groups.forEach((gr) => gr.cols.forEach((col) => { if (col.some((q) => q.si === si)) { if (!col.some((q) => q.h === h)) col.push({ h, si, ci: true, n: o.n, i: o.i, d: o.d, s: [], c: col[0].c || '' }); col.forEach((q) => { q.on = q.h === h; }); } }));
-        delete MODO[x0.id + ':' + si]; PMSG = o.n + ' is in.'; pex = ''; renderPop(); renderGrid(); confirmPlugs(id, x0.h, [[si, h]]);
+        delete MODO[x0.id + ':' + si]; PMSG = o.n + ' is in.'; pex = ''; renderPop(); renderGrid(); confirmPlugs(id, x0.h, [[si, h]], !!(r && r.sure));
       } catch (er) { PMSG = 'Failed: ' + clean(er); renderPop(); }
       return;
     }
@@ -3795,27 +3965,27 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
       const d = DET[sel], id = x.id, list = d && !x.ro ? psChanges(d).filter((c) => c.ci) : []; if (!list.length) return;
       // One perk at a time, a short pause between them (Bungie refuses changes sent back to back), carrying on past a refusal.
       // Afterwards the item is always read again, so the pop-up shows what is really equipped, not the preview.
-      const bad = [], done = []; let ok = 0;
+      const bad = [], done = []; let ok = 0, sure = true;
       for (let k = 0; k < list.length; k++) {
         const c = list[k]; PMSG = 'Applying ' + (k + 1) + ' of ' + list.length + '...'; renderPop();
         let tries = 0;
         for (;;) {
-          try { await gt.itemPlug({ id, char: charFor(x), socket: c.si, plug: c.h }); ok++; done.push([c.si, c.h]); break; }
+          try { const r = await gt.itemPlug({ id, char: charFor(x), socket: c.si, plug: c.h }); if (!(r && r.sure)) sure = false; ok++; done.push([c.si, c.h]); break; }
           catch (er) { if (++tries < 2) { await new Promise((r) => setTimeout(r, 1200)); continue; } bad.push(clean(er)); break; }
         }
         if (k < list.length - 1) await new Promise((r) => setTimeout(r, 450));
       }
       const locked = psChanges(d).filter((c) => !c.ci).length;
       psel = {}; plast = null; pex = '';
-      PMSG = (bad.length ? (ok ? ok + ' of ' + list.length + ' perks changed. ' : '') + 'Failed: ' + bad[0] : 'Done. The perks were changed in game.') + (locked ? ' ' + locked + ' picked perk' + (locked > 1 ? 's are' : ' is') + ' not unlocked on this copy, so ' + (locked > 1 ? 'they were' : 'it was') + ' left as is.' : '');
+      PMSG = (bad.length ? (ok ? ok + ' of ' + list.length + ' perks changed. ' : '') + 'Failed: ' + bad[0] : sure ? 'Done: Bungie confirmed the new perks are in.' : 'Done: Bungie accepted the change. It can take a minute to show everywhere.') + (locked ? ' ' + locked + ' picked perk' + (locked > 1 ? 's are' : ' is') + ' not unlocked on this copy, so ' + (locked > 1 ? 'they were' : 'it was') + ' left as is.' : '');
       done.forEach(([si, ph]) => markPlug(id, si, ph));
       renderPop(); renderGrid();
-      confirmPlugs(id, x.h, done);
+      confirmPlugs(id, x.h, done, sure);
       return;
     }
     if (t.dataset.a === 'plug' && x) {
       const id = x.id; PMSG = 'Applying...'; renderPop();
-      try { await gt.itemPlug({ id, char: charFor(x), socket: +t.dataset.s, plug: +t.dataset.h }); PMSG = 'Done. The perk was changed in game.'; psel = {}; plast = null; markPlug(id, +t.dataset.s, +t.dataset.h); renderPop(); renderGrid(); confirmPlugs(id, x.h, [[+t.dataset.s, +t.dataset.h]]); }
+      try { const r = await gt.itemPlug({ id, char: charFor(x), socket: +t.dataset.s, plug: +t.dataset.h }); PMSG = r && r.sure ? 'Done: Bungie confirmed the new perk is in.' : 'Done: Bungie accepted the change.'; psel = {}; plast = null; markPlug(id, +t.dataset.s, +t.dataset.h); renderPop(); renderGrid(); confirmPlugs(id, x.h, [[+t.dataset.s, +t.dataset.h]], !!(r && r.sure)); }
       catch (er) { PMSG = 'Failed: ' + clean(er); renderPop(); }
       return;
     }
