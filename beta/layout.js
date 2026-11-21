@@ -156,6 +156,47 @@
       HID = a; applyHide(); fit(); window.dispatchEvent(new Event('gtnavchange'));
     },
   };
+  // Drag a tab along the bar to reorder it (it saves the same order as Settings > Appearance > Tabs). Drop it on More to send it
+  // to the end of the list. A short press is still a normal click.
+  {
+    let dg = null; const mark = document.createElement('div'); mark.id = 'gtnavmark'; document.body.appendChild(mark);
+    const barBtns = () => [...nav.querySelectorAll('button[data-t].gtp')].filter((b) => b.offsetParent !== null);
+    const target = (x) => {
+      const bs = barBtns().filter((b) => b !== dg.b), mr = more.getBoundingClientRect();
+      if (!more.classList.contains('gtnone') && x >= mr.left - 4) return { before: null, more: true, x: mr.left };
+      for (const b of bs) { const r = b.getBoundingClientRect(); if (x < r.left + r.width / 2) return { before: b.dataset.t, x: r.left }; }
+      const last = bs[bs.length - 1], lr = last ? last.getBoundingClientRect() : dg.b.getBoundingClientRect();
+      // past the last tab on the bar: right after it, so it stays on the bar
+      const ids = ORD.filter((id) => id !== dg.id), li = last ? ids.indexOf(last.dataset.t) : -1;
+      return { before: ids[li + 1] || null, x: lr.right };
+    };
+    const end = (drop) => {
+      if (!dg) return; const d = dg; dg = null;
+      d.b.classList.remove('gtdrag'); d.b.style.transform = ''; html.classList.remove('gtnavdrag'); mark.classList.remove('on');
+      if (!d.on) return;
+      // the click that follows the drag must not open the tab
+      const eat = (e) => { e.stopPropagation(); e.preventDefault(); }; window.addEventListener('click', eat, true); setTimeout(() => window.removeEventListener('click', eat, true), 0);
+      if (drop && d.t && window.__gtnav) window.__gtnav.move(d.id, d.t.before);
+    };
+    nav.addEventListener('pointerdown', (e) => {
+      const b = e.target.closest('button[data-t]');
+      if (!b || e.button !== 0 || e.pointerType === 'touch' || narrow.matches || !b.classList.contains('gtp')) return;
+      dg = { b, id: b.dataset.t, x0: e.clientX, on: false, t: null, pid: e.pointerId };
+    });
+    window.addEventListener('pointermove', (e) => {
+      if (!dg || e.pointerId !== dg.pid) return;
+      const dx = e.clientX - dg.x0;
+      if (!dg.on) { if (Math.abs(dx) < 7) return; dg.on = true; dg.b.classList.add('gtdrag'); html.classList.add('gtnavdrag'); try { dg.b.setPointerCapture(e.pointerId); } catch (er) { /* fine without */ } }
+      dg.b.style.transform = 'translateX(' + dx + 'px)';
+      dg.t = target(e.clientX); const hr = hd.getBoundingClientRect();
+      mark.style.left = Math.round(dg.t.x - 1) + 'px'; mark.style.top = Math.round(hr.top + 8) + 'px'; mark.style.height = Math.round(hr.height - 16) + 'px';
+      mark.classList.add('on'); more.classList.toggle('gtdropto', !!dg.t.more);
+    });
+    window.addEventListener('pointerup', (e) => { if (dg && e.pointerId === dg.pid) { more.classList.remove('gtdropto'); end(true); } });
+    window.addEventListener('pointercancel', () => { more.classList.remove('gtdropto'); end(false); });
+    window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && dg) { more.classList.remove('gtdropto'); end(false); } });
+    window.addEventListener('blur', () => { more.classList.remove('gtdropto'); end(false); });
+  }
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitSoon);
 
   const st = document.createElement('style');
@@ -197,6 +238,10 @@ html[data-gtab="vault"] #gtsrch .vbar{display:flex}
 #gtsrch .vbar button.g:hover{background:rgba(255,255,255,.09)!important;color:#fff!important}
 #gtsrch .vbar button.g.on{background:var(--g-accent2,#2b4a6b)!important;color:var(--g-on-accent,#fff)!important}
 #gtsq,#gtsqx{display:none}
+header.gtbar nav button.gtdrag{z-index:6;cursor:grabbing!important;opacity:.9;background:rgba(255,255,255,.08)!important;border-radius:6px;transition:none!important}
+html.gtnavdrag,html.gtnavdrag *{cursor:grabbing!important;user-select:none!important}
+#gtnavmark{position:fixed;width:3px;border-radius:2px;background:var(--g-accent,#7ab8e8);box-shadow:0 0 8px var(--g-accent,#7ab8e8);z-index:9700;pointer-events:none;display:none}#gtnavmark.on{display:block}
+header.gtbar nav #gtmore.gtdropto{outline:2px dashed var(--g-accent,#7ab8e8);outline-offset:-4px;border-radius:6px}
 @media (max-width:560px){
 html[data-gtab="vault"] #gtsq{display:inline-flex;position:relative;flex:none;order:5;margin-left:auto;width:38px;height:34px;align-items:center;justify-content:center;padding:0!important;margin-right:4px;background:var(--g-btn,#1b1d21)!important;border:1px solid #33363c!important;border-radius:8px!important;color:#cfd2d8!important;cursor:pointer}
 #gtsq svg{width:17px!important;height:17px!important;flex:none;display:block;margin:0!important}html[data-gtab="vault"] #gtsrch{flex:0 0 auto;margin-left:0}
