@@ -144,9 +144,11 @@
   const my = () => (st.g && st.g.me.type) || 0;
   const admin = () => my() >= 3;
   const canAct = (m) => admin() && !isMe(m) && m.type < my();
-  const scopeMsg = () => `Bungie has not given Pathfinder permission to manage clans yet, so this has to be done on Bungie.net for now. <a href="${esc(BNET(st.g ? st.g.id : ''))}" target="_blank" rel="noopener">Open your clan on Bungie.net</a>.`;
+  // Shown only when Pathfinder could not get the clan permission by itself (the website cannot re-approve quietly): one click
+  // re-approves with Bungie (no sign-out; tags, notes and loadouts stay), or do it on Bungie.net instead.
+  const scopeMsg = () => `Bungie needs you to allow clan management for Pathfinder once. <button class="pri" data-ca="perm">Allow clan management</button> Nothing is signed out and your tags, notes and loadouts stay. Or <a href="${esc(BNET(st.g ? st.g.id : ''))}" target="_blank" rel="noopener">do it on Bungie.net</a>.`;
   const errHtml = (e) => (e === 'SCOPE' ? scopeMsg() : esc(e));
-  const say = (t, kind) => { st.note = { t, kind: kind || 'ok', at: Date.now() }; draw(); setTimeout(() => { if (st.note && Date.now() - st.note.at >= 5900) { st.note = null; draw(); } }, 6000); };
+  const say = (t, kind) => { const ms = /data-ca="perm"/.test(t) ? 60000 : 6000; st.note = { t, kind: kind || 'ok', at: Date.now() }; draw(); setTimeout(() => { if (st.note && Date.now() - st.note.at >= ms - 100) { st.note = null; draw(); } }, ms); };
 
   // ---------- loading ----------
   async function load(force) {
@@ -357,6 +359,7 @@ ${canAct(m) || (my() === 5 && !isMe(m)) ? `<button class="more" data-menu="${esc
       else act(a, x);
       return;
     }
+    if (t.dataset.ca === 'perm') { t.disabled = true; t.textContent = 'Opening Bungie…'; Promise.resolve(window.gt.login()).then(() => load(true), (er) => say('Bungie did not finish: ' + esc(clean(er)), 'err')); return; }
     if (t.dataset.ca === 'approveall') { act('approveall', null); return; }
     if (t.dataset.ca === 'denyall') { ask('Decline every request?', `All ${num((st.lists.pending || []).length)} people waiting are told their request was declined.`, 'Decline all', '', () => act('denyall', null)); return; }
     const c = t.dataset.c;

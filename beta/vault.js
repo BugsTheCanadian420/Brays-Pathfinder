@@ -779,7 +779,7 @@ body.gtann #gtmaint{top:calc(var(--gt-bar-h,56px) + 74px)}
 #gvm .gvmsg{margin:12px 0 0;padding:10px 14px;border-radius:12px;font-size:13.5px;background:color-mix(in srgb,#35e3cf 10%,transparent);border:1px solid color-mix(in srgb,#35e3cf 40%,transparent);color:#d6fbf5}
 #gvm .gvmsg.bad{background:rgba(239,100,97,.1);border-color:rgba(239,100,97,.45);color:#ffd6d5}
 #gvm .gvcols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:12px;margin:16px 0 0}
-#gvm .gvc{display:flex;flex-direction:column;gap:6px;padding:12px;border-radius:14px;background:rgba(0,0,0,.18);border:1px solid var(--g-line,#2b2e33)}
+#gvm .gvc{min-width:0;display:flex;flex-direction:column;gap:6px;padding:12px;border-radius:14px;background:rgba(0,0,0,.18);border:1px solid var(--g-line,#2b2e33)}
 #gvm .gvc h5{margin:0 0 2px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9aa1ab}
 #gvm .gvos{display:flex;flex-direction:column;gap:5px}
 #gvm .gvo{display:flex;align-items:center;gap:9px;width:100%;min-height:40px;padding:5px 8px!important;border-radius:10px!important;border:1px solid transparent!important;background:rgba(255,255,255,.03)!important;color:#dfe4ea!important;text-align:left;font-size:13.5px;font-weight:600;letter-spacing:0!important;text-transform:none!important;cursor:pointer}
@@ -792,7 +792,7 @@ body.gtann #gtmaint{top:calc(var(--gt-bar-h,56px) + 74px)}
 #gvm .gvo.on{border-color:color-mix(in srgb,var(--gc) 55%,transparent)!important;background:color-mix(in srgb,var(--gc) 10%,transparent)!important;color:#fff!important}
 #gvm .gvo.pick{border-color:#35e3cf!important;background:color-mix(in srgb,#35e3cf 9%,transparent)!important;color:#fff!important}
 #gvm .gvo.lock{opacity:.38;cursor:default}
-#gvm .gvd{margin:4px 2px 0;font-size:12.5px;line-height:1.45;color:#a3aab4;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+#gvm .gvd{overflow-wrap:anywhere;margin:4px 2px 0;font-size:12.5px;line-height:1.45;color:#a3aab4;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
 #gvm .gvhint{margin:12px 2px 0;font-size:12.5px;color:#8b929c}
 #gvm .gvlow{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:16px;margin:16px 0 0}
 #gvm .gvst,#gvm .gvside{padding:14px;border-radius:14px;background:rgba(0,0,0,.18);border:1px solid var(--g-line,#2b2e33)}
@@ -804,7 +804,7 @@ body.gtann #gtmaint{top:calc(var(--gt-bar-h,56px) + 74px)}
 #gvm .gvtags button svg{width:14px;height:14px;color:var(--tc)}#gvm .gvtags button.on{border-color:var(--tc)!important;background:color-mix(in srgb,var(--tc) 16%,transparent)!important;color:#fff!important}
 #gvm .gvl{padding:28px;text-align:center;color:#a3aab4}
 @media (max-width:760px){#gvm .gvlow{grid-template-columns:1fr}}
-@media (max-width:560px){#gvm{padding:0}#gvm .gvp{border-radius:0;min-height:100%;padding:16px 14px 28px;border-left:0;border-right:0}#gvm .gvh .vt{--t:56px}#gvm .gvn h3{font-size:20px}#gvm .gvcols{grid-template-columns:1fr 1fr;gap:8px}#gvm .gvc{padding:9px}#gvm .gvo{font-size:12.5px;min-height:38px}#gvm .gvo img{width:26px;height:26px}#gvm .gvo em{display:none}}
+@media (max-width:560px){#gvm{padding:0}#gvm .gvp{border-radius:0;min-height:100%;padding:16px 14px 28px;border-left:0;border-right:0}#gvm .gvh .vt{--t:56px}#gvm .gvn h3{font-size:20px}#gvm .gvcols{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}#gvm .gvc{padding:9px}#gvm .gvo{font-size:12.5px;min-height:38px}#gvm .gvo img{width:26px;height:26px}#gvm .gvo em{display:none}}
 @media (prefers-reduced-motion:no-preference){#gvm .gvp.enter{animation:gvIn .2s cubic-bezier(.2,.8,.2,1)}@keyframes gvIn{from{opacity:0;transform:translateY(10px) scale(.99)}to{opacity:1;transform:none}}}
 
 #godrolls .gphint{margin:6px 2px 12px;color:#9aa1ab;font-size:13px}
@@ -1105,30 +1105,35 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     if (!WL || !x || !x.pk || x.r !== 'Legendary' || !WEAPON.has(x.b) || x.pm) return false;
     const a = WL.rolls[x.h]; return !(a && a.length) && !wish(x).v;
   }
-  // The roll grade used by the God rolls tab and the finder:
-  //  S  God roll: ONE top wish list roll has a perk in every perk column of this copy (barrel or sight, magazine and both traits;
-  //     the origin trait too when the roll names one) and this copy has all of them. A top roll is one from a list that keeps only
-  //     the single best perk per column (Aegis S grade, 1 perk per column) or one its curator tags as a god roll.
-  //  R  S rated: matches a roll for an S tier weapon (Aegis "Tier: S", or tagged god roll) but is not a full god roll.
+  // The roll grade used by the God rolls tab, the finder, search and drop alerts:
+  //  S  God roll: a top wish list roll for this weapon, and the perk IN NOW in every perk column of this copy (barrel or sight,
+  //     magazine or the like, both traits; rails and bolts on combat bows) is a perk that roll names. When the roll names an
+  //     origin trait, the one in now must be it too. A top roll comes from a list that keeps only the single best perk per column
+  //     (Aegis S grade, 1 perk per column) or is tagged by its curator as a god roll. So the card and the God roll view show
+  //     exactly the perks that made it a god roll, all ticked.
+  //  R  S rated: matches a roll for an S tier weapon (Aegis "Tier: S", or a god roll tag) but is not a god roll as it is now.
   //  A  Keeper: any other wish list roll.  C  rated, not a match.  D  trash roll.  ?  not yet rated.
-  const SRE = /\bTier:\s*S\b/i, GODRE = /god ?roll|\bgod(pve|pvp)?\b/i;
+  const SRE = /\bTier:\s*S\b/i, GODT = /god/i, GODN = /\bgod ?roll\b/i, NOTGOD = /\b(not|no|isn'?t|never|almost|near)\b[^.]{0,20}\bgod ?roll/i;
   const gcache = {};
   function godInfo(x) {
     if (!WL || !x || !x.pk) return null;
     const k = x.id + ':' + WLV; if (k in gcache) return gcache[k];
-    const P = new Set(x.pk), cols = Array.isArray(x.pc) ? x.pc : [];
+    const P = new Set(x.pk), cols = Array.isArray(x.pc) ? x.pc : [], pn = (D && D.pn) || {}, oo = Array.isArray(x.oo) ? x.oo : [];
     let best = null;
     for (const r of WL.rolls[x.h] || []) {
       if (r[2]) continue;
       if (typeof r[0] === 'string') r[0] = r[0] ? r[0].split(',').map(Number) : [];
       if (!r[0].length || !r[0].every((h) => P.has(h))) continue;
-      const txt = String(typeof r[1] === 'number' ? (WL.notes || [])[r[1]] || '' : r[1] || '') + ' ' + (r[3] || '');
-      const god = GODRE.test(r[3] || '') || GODRE.test(txt), top = god || SRE.test(txt);
+      const note = String(typeof r[1] === 'number' ? (WL.notes || [])[r[1]] || '' : r[1] || '');
+      const god = GODT.test(r[3] || '') || (GODN.test(note) && !NOTGOD.test(note)), top = god || SRE.test(note);
       if (!top) continue;
-      const R = new Set(r[0]), full = cols.length >= 2 && cols.every((c) => c.some((h) => R.has(h)));
-      const gr = full && (r[4] === 1 || god) ? 'S' : 'R';
-      const score = (gr === 'S' ? 100 : 0) + (full ? 10 : 0) + (r[4] ? 4 - Math.min(3, r[4]) : 0);
-      if (!best || score > best.score) best = { gr, full, roll: r, score };
+      const R = new Set(r[0]), RN = new Set(r[0].map((h) => pn[h]).filter(Boolean)), named = (h) => R.has(h) || (!!pn[h] && RN.has(pn[h]));
+      // every column: the perk in now (first in the column) is one the roll names; the origin trait in now too, when the roll names one
+      const inNow = cols.length >= 2 && cols.every((c) => named(c[0])), ogOk = !oo.some((h) => R.has(h)) || (x.og && named(x.og));
+      const canAll = cols.length >= 2 && cols.every((c) => c.some((h) => R.has(h)));
+      const gr = inNow && ogOk && (r[4] === 1 || god) ? 'S' : 'R';
+      const score = (gr === 'S' ? 100 : 0) + (canAll ? 10 : 0) + (r[4] ? 4 - Math.min(3, r[4]) : 0);
+      if (!best || score > best.score) best = { gr, canAll, roll: r, score };
       if (gr === 'S' && r[4] === 1) break;
     }
     return (gcache[k] = best);
@@ -2587,7 +2592,7 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
   // S = a roll your lists call a god roll, A = any wish list roll (both get the thumbs up: keep), C = rated but not a match,
   // D = a trash roll (both safe to dismantle), ? = no list has this weapon yet (keep it until you check).
   let GTAB = 'S';
-  const GTABS = [['S', 'God rolls', 'The best of the best: one top roll for an S tier weapon has a perk in every column of this copy (barrel, magazine, both traits). Keep these.'], ['R', 'S rated', 'S tier weapons with a good roll that is not a full god roll: some columns miss the top perk. Worth keeping.'], ['A', 'Keepers', 'Rolls on your wish lists (thumbs up). Keep these.'], ['CD', 'Not keepers', 'Your lists rate these weapons and this copy is not one of their rolls (or is a trash roll). Safe to dismantle unless you use it.'], ['?', 'Not yet rated', 'No wish list mentions these weapons yet, so keep them until you check them.']];
+  const GTABS = [['S', 'God rolls', 'The best of the best: the perk in every column of this copy (barrel, magazine, both traits, and the origin trait when it matters) is the top pick for an S tier weapon. Keep these.'], ['R', 'S rated', 'S tier weapons that are not a god roll as they are: some columns do not have the top perk in. Worth keeping; the God roll view says which.'], ['A', 'Keepers', 'Rolls on your wish lists (thumbs up). Keep these.'], ['CD', 'Not keepers', 'Your lists rate these weapons and this copy is not one of their rolls (or is a trash roll). Safe to dismantle unless you use it.'], ['?', 'Not yet rated', 'No wish list mentions these weapons yet, so keep them until you check them.']];
   const GCOL = { S: '#e8b84a', R: '#c58cff', A: '#4caf50', C: '#8b8f97', D: '#d9534f', '?': '#ffd27a' };
   // Opened from the magnifying glass next to the vault refresh, the G key, or Settings. The button and G also close it,
   // and so do Esc, the X and clicking outside it. While it is open the page behind it does not scroll.
@@ -2663,13 +2668,13 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
   // to. One button picks the wish list perks, one puts them in (each change checked against Bungie's answer), with the stats,
   // tags, lock, move and equip below. Nothing here is the Inventory pop-up.
   const GV = { id: '', pick: {}, msg: '', bad: 0, busy: 0 };
-  const COLN = [[/^barrels?/, 'Barrel'], [/^scopes?/, 'Sight'], [/^magazines?|^magazines_gl/, 'Magazine'], [/^batter/, 'Battery'], [/^arrows?/, 'Arrow'], [/^bowstrings?/, 'Bowstring'], [/^blades?/, 'Blade'], [/^guards?/, 'Guard'], [/^tubes?/, 'Launcher'], [/^hafts?/, 'Haft'], [/^origins?/, 'Origin trait']];
+  const COLN = [[/^barrels?/, 'Barrel'], [/^scopes?/, 'Sight'], [/^magazines?|^magazines_gl/, 'Magazine'], [/^batter/, 'Battery'], [/^arrows?/, 'Arrow'], [/^bowstrings?/, 'Bowstring'], [/^blades?/, 'Blade'], [/^guards?/, 'Guard'], [/^tubes?/, 'Launcher'], [/^hafts?/, 'Haft'], [/^rails?/, 'Rail'], [/^bolts?/, 'Bolts'], [/^origins?/, 'Origin trait']];
   function gvCols(d) {
     const out = []; let tr = 0;
     (d.groups || []).forEach((g2, gi) => { if (g2.label !== 'Perks') return; g2.cols.forEach((col, ci) => {
       const on = col.find((p) => p.on) || col[0], c = String((on && on.c) || '').toLowerCase();
       let name = ''; for (const [re, n] of COLN) if (re.test(c)) { name = n; break; }
-      if (!name) name = /frames?|traits?/.test(c) || !c ? 'Trait ' + (++tr) : 'Perk';
+      if (!name) name = /frames?|traits?/.test(c) || !c ? 'Trait ' + (++tr) : /^[a-z]+(_[a-z]+)?$/.test(c) ? c.replace(/_/g, ' ').replace(/^./, (m) => m.toUpperCase()) : 'Perk';
       out.push({ k: gi + '-' + ci, col, on, name });
     }); });
     return out;
@@ -2703,7 +2708,8 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
           const isOn = p === c.on, isPick = i === selI && !isOn, wl = want(p), lock = !p.ci && !isOn;
           return `<button type="button" class="gvo${isOn ? ' on' : ''}${isPick ? ' pick' : ''}${wl ? ' want' : ''}${lock ? ' lock' : ''}" data-gk="${c.k}" data-gi="${i}"${lock ? ' disabled' : ''} title="${esc(p.n)}${lock ? ': this copy cannot switch to it' : ''}">${p.i ? `<img src="${esc(icon(p.i))}" alt="" loading="lazy">` : '<i class="gvi"></i>'}<span>${esc(p.n)}</span>${isOn ? '<em class="in">In now</em>' : isPick ? '<em class="pk">Picked</em>' : ''}${wl ? '<b class="wl" title="Your wish list wants this">&#10003;</b>' : ''}</button>`;
         }).join('');
-        return `<div class="gvc"><h5>${esc(c.name)}</h5><div class="gvos">${opts}</div>${sel2 && sel2.d ? `<p class="gvd">${esc(sel2.d)}</p>` : ''}</div>`;
+        const dsc = sel2 && sel2.d ? String(sel2.d).replace(/\[###[^\]]*\]/g, (m) => (/interact/i.test(m) ? 'Interact' : '')).replace(/(Interact\s*){2,}/g, 'Interact ').replace(/\s{2,}/g, ' ').trim() : '';
+        return `<div class="gvc"><h5>${esc(c.name)}</h5><div class="gvos">${opts}</div>${dsc ? `<p class="gvd">${esc(dsc)}</p>` : ''}</div>`;
       }).join('');
       const stats = (d.stats || []).filter((q) => q.v !== undefined).map((q) => {
         const bar = !q.num && q.max !== 0;
@@ -2711,9 +2717,11 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
       }).join('');
       const acts = `<div class="gva"><button class="b" data-gv="apply"${ch.length && !GV.busy ? '' : ' disabled'}>${GV.busy ? 'Applying…' : ch.length ? '&#10003; Apply ' + ch.length + ' perk' + (ch.length > 1 ? 's' : '') : 'Apply perks'}</button>${best && bestDiff ? '<button class="g" data-gv="wish">&#9733; Pick my wish list perks</button>' : best ? '<span class="gvok">&#10003; This copy already has its wish list perks in.</span>' : ''}${Object.keys(GV.pick).length ? '<button class="g" data-gv="undo">Clear picks</button>' : ''}</div>`;
       // S rated: say which columns keep it from being a full god roll
-      const miss = gr === 'R' ? cols.filter((c) => c.name !== 'Origin trait' && !c.col.some(want)).map((c) => c.name) : [];
-      const notIn = gr === 'S' && cols.some((c) => c.name !== 'Origin trait' && c.col.some(want) && !want(c.on));
-      const gstat = gr === 'S' ? `<p class="gvgod">&#9733; Full god roll: this copy has the top perk for every column.${notIn ? ' Some are not in yet: press Pick my wish list perks, then Apply.' : ''}</p>` : gr === 'R' ? `<p class="gvgod r">S tier weapon, not a full god roll${miss.length ? ': ' + esc(miss.join(', ')) + (miss.length > 1 ? ' do' : ' does') + ' not have a top perk on this copy' : ''}.</p>` : '';
+      // S rated: which columns keep it from being a god roll, and whether Apply can fix them
+      const offC = gr === 'R' ? cols.filter((c) => !want(c.on) && (c.name !== 'Origin trait' || c.col.some(want))) : [];
+      const noTop = offC.filter((c) => !c.col.some(want)).map((c) => c.name), notIn = offC.filter((c) => c.col.some(want)).map((c) => c.name);
+      const lst = (a) => esc(a.join(', '));
+      const gstat = gr === 'S' ? '<p class="gvgod">&#9733; God roll: every column has the top perk in.</p>' : gr === 'R' ? `<p class="gvgod r">S tier weapon, not a god roll as it is.${noTop.length ? ' No top perk on this copy for ' + lst(noTop) + '.' : ''}${notIn.length ? ' The top perk for ' + lst(notIn) + ' is on this copy but not in: press Pick my wish list perks, then Apply.' : ''}</p>` : '';
       body = `${gstat}${acts}${GV.msg ? `<div class="gvmsg${GV.bad ? ' bad' : ''}" role="status">${esc(GV.msg)}</div>` : ''}
 <div class="gvcols">${colH || '<p class="gvl">This weapon has no perks to change.</p>'}</div>
 <p class="gvhint">Click a perk to pick it, then Apply. Ticked perks are the ones your wish list wants. Greyed-out perks are not on this copy. Changes only work while you are in orbit, a social space or offline.</p>

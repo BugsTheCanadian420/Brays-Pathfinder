@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.35-beta.8: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.35-beta.9: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -256,9 +256,9 @@ function manifest() {
   return p;
 }
 async function defs() {
-  const f = path.join(app.getPath('userData'), 'defs6.json');
+  const f = path.join(app.getPath('userData'), 'defs7.json');
   const m = await manifest();
-  const v = m.version + '.12';
+  const v = m.version + '.13';
   if (DEFS && DEFS.v === v) return DEFS;
   try { const o = JSON.parse(fs.readFileSync(f, 'utf8')); if (o.v === v) return (DEFS = o); } catch (e) { /* download below */ }
   send('Downloading item data. This only happens on the first run and after game updates.');
@@ -287,6 +287,8 @@ async function defs() {
       if (x.breakerType) d[k].bt = x.breakerType;
       else if (TF_WB0.has(b)) { const hs = ((x.sockets && x.sockets.socketEntries) || []).map((e) => e.singleInitialItemHash).filter(Boolean); if (hs.length) needBrk.push([k, hs]); }
       const ifc = x.quality && x.quality.infusionCategoryHashes; if (ifc && ifc.length) d[k].f = ifc[0];
+      // Weapons: which sockets are perk columns (Bungie's "weapon perks" socket category), for the God roll check.
+      if (x.itemType === 3 && x.sockets && Array.isArray(x.sockets.socketCategories)) { const c = x.sockets.socketCategories.find((q) => q.socketCategoryHash === 4241085061); if (c && c.socketIndexes && c.socketIndexes.length) d[k].ps = c.socketIndexes; }
       const amt = x.equippingBlock && x.equippingBlock.ammoType; if (amt) d[k].am = amt; // 1 primary, 2 special, 3 heavy (is:primary and so on in search)
     }
     else if (x.plug) p[k] = { n: dp.name, i: dp.icon, d: dp.description, c: x.plug.plugCategoryIdentifier, s: (x.investmentStats || []).filter((q) => q.value && !q.isConditionallyActive).map((q) => [q.statTypeHash, q.value]) };
@@ -846,17 +848,24 @@ H('vault:load', async () => {
   // The weapon's perk columns (barrel or sight, magazine, the two traits, and the like; not the frame or the origin trait): each is every
   // perk that can go in it, base and enhanced. The God roll check uses them: a god roll has a wish list perk in every column.
   const PCRE = /^(barrels?|scopes?|magazines?(_gl)?|batter\w*|arrows?|bowstrings?|blades?|guards?|tubes?|hafts?|frames?|grips?|stocks?)$/i;
-  const pcol = (id) => {
-    const ss = (sk[id] && sk[id].sockets) || [], r = (rp[id] && rp[id].plugs) || {}, out = [];
+  // Uses Bungie's own list of perk sockets for the weapon (so new weapon kinds, like combat bows with rails and bolts, work);
+  // the frame, the origin trait, empty sockets and cosmetics are left out. Without that list, it goes by the perk's category.
+  const PSKIP = /intrinsic|origin|shader|skin|ornament|memento|tracker|masterwork|mod|catalyst|crafting|empty|default/i;
+  const pcol = (id, h) => {
+    const ss = (sk[id] && sk[id].sockets) || [], r = (rp[id] && rp[id].plugs) || {}, out = [], ps = df.d[h] && df.d[h].ps;
     ss.forEach((q, i) => {
-      const a = q.plugHash && df.p[q.plugHash]; if (!a || !PCRE.test(a.c || '')) return;
+      const a = q.plugHash && df.p[q.plugHash]; if (!a) return;
+      if (ps ? !ps.includes(i) || PSKIP.test(a.c || '') || /^(empty|default)\b/i.test(a.n || '') : !PCRE.test(a.c || '')) return;
       const o = new Set([q.plugHash]); (r[i] || []).forEach((p) => p.plugItemHash && o.add(p.plugItemHash));
       [...o].forEach((h) => { const p = df.p[h]; if (p && p.n) (df.ix[(p.c || '') + '|' + p.n] || []).forEach((x) => o.add(x)); });
       out.push([...o]);
     });
     return out.length ? out : undefined;
   };
-  const ogh = (id) => { const q = ((sk[id] && sk[id].sockets) || []).find((q2) => q2.plugHash && df.p[q2.plugHash] && /^origins?$/i.test(df.p[q2.plugHash].c || '')); return q ? q.plugHash : undefined; };
+  // The origin trait in now (og) and every origin trait this copy can switch to (oo), for the God roll check.
+  const ogq = (id) => { const ss = (sk[id] && sk[id].sockets) || []; const i = ss.findIndex((q2) => q2.plugHash && df.p[q2.plugHash] && /^origins?$/i.test(df.p[q2.plugHash].c || '')); return i; };
+  const ogh = (id) => { const i = ogq(id); return i >= 0 ? sk[id].sockets[i].plugHash : undefined; };
+  const ooh = (id) => { const i = ogq(id); if (i < 0) return undefined; const o = new Set([sk[id].sockets[i].plugHash]); (((rp[id] && rp[id].plugs) || {})[i] || []).forEach((p) => p.plugItemHash && o.add(p.plugItemHash)); [...o].forEach((h) => { const p = df.p[h]; if (p && p.n) (df.ix[(p.c || '') + '|' + p.n] || []).forEach((x) => o.add(x)); }); return [...o]; };
   const ist = (pr.itemComponents && pr.itemComponents.stats && pr.itemComponents.stats.data) || {};
   const ARB = new Set([3448274439, 3551918588, 14239492, 20886954, 1585787867]);
   const SH = [2996146975, 392767087, 1943323491, 1735777505, 144602215, 4244567218]; // weapons, health, class, grenade, super, melee
@@ -877,7 +886,7 @@ H('vault:load', async () => {
     const o = ovd && (ovd.fg || ovd.i) ? { n: ovd.n, i: ovd.fg || ovd.i, fg: !!ovd.fg } : orn(it.itemInstanceId);
     const s = it.itemInstanceId && inst[it.itemInstanceId] && inst[it.itemInstanceId].primaryStat;
     const wmi = f.wl && f.wl.length ? f.wl[Math.min(it.versionNumber || 0, f.wl.length - 1)] : f.w, stt = it.state || 0, gti = it.itemInstanceId && inst[it.itemInstanceId] && inst[it.itemInstanceId].gearTier;
-    return { wm: wmi >= 0 && df.W ? df.W[wmi] : undefined, bt: f.bt || undefined, fc: f.f || undefined, lk: stt & 1 ? 1 : undefined, mw: stt & 4 ? 1 : undefined, cr: stt & 8 ? 1 : undefined, gt: gti || undefined, id: it.itemInstanceId, h: it.itemHash, n: f.n, i: o ? o.i : f.i, bi: o ? f.i : undefined, orn: o ? o.n : undefined, of: o && o.fg ? 1 : undefined, pk: WB.has(f.b) && it.itemInstanceId ? perks(it.itemInstanceId) : undefined, fr: WB.has(f.b) && it.itemInstanceId ? frI(it.itemInstanceId) : undefined, pc: WB.has(f.b) && it.itemInstanceId && f.r === 'Legendary' ? pcol(it.itemInstanceId) : undefined, og: WB.has(f.b) && it.itemInstanceId && f.r === 'Legendary' ? ogh(it.itemInstanceId) : undefined, ep: WB.has(f.b) && it.itemInstanceId ? epl(it.itemInstanceId) : undefined, ah: WB.has(f.b) && it.itemInstanceId ? ((sk[it.itemInstanceId] && sk[it.itemInstanceId].sockets) || []).map((q) => (q.isEnabled !== false && q.plugHash) || 0).filter(Boolean) : undefined, st: ARB.has(f.b) && it.itemInstanceId ? astats(it.itemInstanceId) : undefined, ap: (ARB.has(f.b) || f.b === SUBB) && it.itemInstanceId ? aplugs(it.itemInstanceId) : undefined, am: f.am || undefined, en: (ARB.has(f.b) && inst[it.itemInstanceId] && inst[it.itemInstanceId].energy && inst[it.itemInstanceId].energy.energyCapacity) || undefined, ds: stt & 16 ? 1 : undefined, r: f.r, t: f.t, b: f.b, c: f.c, p: s ? s.value : 0, el: (inst[it.itemInstanceId] && inst[it.itemInstanceId].damageType) || 0 };
+    return { wm: wmi >= 0 && df.W ? df.W[wmi] : undefined, bt: f.bt || undefined, fc: f.f || undefined, lk: stt & 1 ? 1 : undefined, mw: stt & 4 ? 1 : undefined, cr: stt & 8 ? 1 : undefined, gt: gti || undefined, id: it.itemInstanceId, h: it.itemHash, n: f.n, i: o ? o.i : f.i, bi: o ? f.i : undefined, orn: o ? o.n : undefined, of: o && o.fg ? 1 : undefined, pk: WB.has(f.b) && it.itemInstanceId ? perks(it.itemInstanceId) : undefined, fr: WB.has(f.b) && it.itemInstanceId ? frI(it.itemInstanceId) : undefined, pc: WB.has(f.b) && it.itemInstanceId && f.r === 'Legendary' ? pcol(it.itemInstanceId, it.itemHash) : undefined, og: WB.has(f.b) && it.itemInstanceId && f.r === 'Legendary' ? ogh(it.itemInstanceId) : undefined, oo: WB.has(f.b) && it.itemInstanceId && f.r === 'Legendary' ? ooh(it.itemInstanceId) : undefined, ep: WB.has(f.b) && it.itemInstanceId ? epl(it.itemInstanceId) : undefined, ah: WB.has(f.b) && it.itemInstanceId ? ((sk[it.itemInstanceId] && sk[it.itemInstanceId].sockets) || []).map((q) => (q.isEnabled !== false && q.plugHash) || 0).filter(Boolean) : undefined, st: ARB.has(f.b) && it.itemInstanceId ? astats(it.itemInstanceId) : undefined, ap: (ARB.has(f.b) || f.b === SUBB) && it.itemInstanceId ? aplugs(it.itemInstanceId) : undefined, am: f.am || undefined, en: (ARB.has(f.b) && inst[it.itemInstanceId] && inst[it.itemInstanceId].energy && inst[it.itemInstanceId].energy.energyCapacity) || undefined, ds: stt & 16 ? 1 : undefined, r: f.r, t: f.t, b: f.b, c: f.c, p: s ? s.value : 0, el: (inst[it.itemInstanceId] && inst[it.itemInstanceId].damageType) || 0 };
   };
   { // ornament definitions the cached item data does not have (new universal ornaments): look them up once
     const all = [...((pr.profileInventory.data || {}).items || [])]; for (const k in pr.characterEquipment.data) all.push(...(pr.characterEquipment.data[k].items || [])); for (const k in pr.characterInventories.data) all.push(...(pr.characterInventories.data[k].items || []));
@@ -1437,8 +1446,8 @@ app.on('session-created', (s) => { s.setPermissionRequestHandler((wc, p, cb) => 
 app.commandLine.appendSwitch('disk-cache-size', String(64 * 1024 * 1024));
 function tidyDisk() {
   const ud = app.getPath('userData');
-  // item data from older versions of the app (replaced by defs6.json)
-  for (const f of ['defs.json', 'defs2.json', 'defs3.json', 'defs4.json', 'defs5.json']) { try { fs.unlinkSync(path.join(ud, f)); } catch (e) { /* not there */ } }
+  // item data from older versions of the app (replaced by defs7.json)
+  for (const f of ['defs.json', 'defs2.json', 'defs3.json', 'defs4.json', 'defs5.json', 'defs6.json']) { try { fs.unlinkSync(path.join(ud, f)); } catch (e) { /* not there */ } }
   // logs never grow past a few hundred KB
   for (const f of ['loadout-log.txt', 'art-log.txt', 'auth-log.txt']) { try { const p = path.join(ud, f), st = fs.statSync(p); if (st.size > 300 * 1024) { const t = fs.readFileSync(p, 'utf8'); fs.writeFileSync(p, t.slice(-100 * 1024)); } } catch (e) { /* not there */ } }
   // installers the updater downloaded for versions that are already installed
@@ -1963,7 +1972,26 @@ H('tr:state', async () => {
 const CLAN = { g: null, at: 0, p: null, prof: {} };
 const bpath = (p) => (typeof p === 'string' && /^\/[\w./%-]{1,300}$/.test(p) ? p : '');
 const clanErr = (msg) => new Error(/scope/i.test(String(msg || '')) ? 'SCOPE' : String(msg || 'Bungie did not answer.'));
-const gget = (p) => api(p).catch((e) => { throw clanErr(e.message); });
+// When Bungie says the sign-in lacks the clan permission (it was given before the permission was turned on for the app),
+// Pathfinder gets a new sign-in by itself instead of making you sign out: first a fresh token from the saved sign-in, then
+// (PC) a quiet re-approval with your remembered Bungie login, where a Bungie window shows only if Bungie wants you to press
+// Allow. Each step is tried once per run. The website cannot do the quiet step; the Clan tab offers a one-click Allow there.
+let CLANRE = 0;
+async function clanReauth() {
+  const c = rd(); if (!c.tok) return false;
+  if (CLANRE === 0) { CLANRE = 1; if (c.tok.refresh && Date.now() < c.tok.rexp) { try { await tokenReq({ grant_type: 'refresh_token', refresh_token: c.tok.refresh }); return true; } catch (e) { /* next step */ } } }
+  if (CLANRE === 1) { CLANRE = 2; if (!WEB) { try { return !!(await silentAuth()); } catch (e) { return false; } } }
+  return false;
+}
+async function gget(p) {
+  for (;;) {
+    try { return await api(p); } catch (e) {
+      const er = clanErr(e.message);
+      if (er.message === 'SCOPE' && (await clanReauth())) continue;
+      throw er;
+    }
+  }
+}
 async function gpost(p, body) {
   for (let t = 0; ; t++) {
     await fresh(); const c = rd();
@@ -1972,6 +2000,7 @@ async function gpost(p, body) {
     if (j.ErrorCode === 1) return j.Response;
     const thr = (j.ThrottleSeconds || 0) > 0 || /throttl/i.test(String(j.ErrorStatus || ''));
     if (thr && t < 3) { await new Promise((res) => setTimeout(res, Math.min(5000, Math.max(600, (j.ThrottleSeconds || 1) * 1000)))); continue; }
+    if (/scope/i.test(String(j.ErrorStatus || '') + ' ' + String(j.Message || '')) && (await clanReauth())) continue;
     throw clanErr((/scope/i.test(String(j.ErrorStatus || '')) ? 'scope ' : '') + (j.Message || 'Bungie error ' + j.ErrorCode));
   }
 }
