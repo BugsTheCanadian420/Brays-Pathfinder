@@ -2616,7 +2616,15 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
       const x = o.x, w = wish(x), want = new Set([...(w.perks || [])].filter((p2) => typeof p2 === 'string').map((p2) => p2.toLowerCase()));
       const el = ELEM[x.el], ep = Array.isArray(x.ep) ? x.ep : [];
       // frame first, then the two trait perks big, barrel and magazine small
-      const rows = ep.map((n, i) => ({ n, i, want: want.has(String(n).toLowerCase()) }));
+      const pn = (D && D.pn) || {}, wh = w.perks || new Set(), row = (hh) => { const n = pn[hh] || ''; return { n, want: wh.has(hh) || want.has(n.toLowerCase()) }; };
+      // From the perk columns (barrel, magazine, traits) plus the origin trait: the same perks as the God roll view. Older data
+      // without columns falls back to the socket names.
+      let rows;
+      if (Array.isArray(x.pc) && x.pc.length) {
+        const base = [ep.length ? { n: ep[0], want: false } : null, ...x.pc.slice(0, 2).map((c) => row(c[0]))].filter((r) => r && r.n);
+        const tr = [...x.pc.slice(2).map((c) => row(c[0])), ...(x.og ? [row(x.og)] : [])].filter((r) => r.n);
+        rows = [...base.map((r) => ({ ...r, i: 0 })), ...tr.map((r) => ({ ...r, i: 3 }))];
+      } else rows = ep.map((n, i) => ({ n, i, want: want.has(String(n).toLowerCase()) }));
       const perkRow = (r) => `<li class="${r.want ? 'want' : ''}"><i aria-hidden="true">${r.want ? '&#10003;' : ''}</i><span>${esc(r.n)}</span>${r.want ? '<em>wish list</em>' : ''}</li>`;
       // the two trait perks as the main list; frame, barrel and magazine on one quiet line above (ticked when wanted)
       const traits = rows.filter((r) => r.i >= 3), base = rows.filter((r) => r.i < 3);
@@ -3532,8 +3540,10 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
   }
   function markPlug(id, si, h) {
     const d = DET[id], x = byId(id);
-    if (d && d.groups) d.groups.forEach((gr) => gr.cols.forEach((col) => { if (col.some((q) => q.si === si && q.h === h)) { const old = col.find((q) => q.on); col.forEach((q) => { q.on = q.h === h; }); if (x && x.pk && old && old.h !== h) { const i = x.pk.indexOf(old.h); if (i >= 0) x.pk[i] = h; else x.pk.push(h); } } }));
-    if (x) { Object.keys(wcache).forEach((k) => { if (k.startsWith(id + ':')) delete wcache[k]; }); }
+    if (d && d.groups) d.groups.forEach((gr) => gr.cols.forEach((col) => { if (col.some((q) => q.si === si && q.h === h)) { const old = col.find((q) => q.on); col.forEach((q) => { q.on = q.h === h; }); if (x && x.pk && old && old.h !== h && !x.pk.includes(h)) x.pk.push(h); if (x && x.og && old && x.og === old.h) x.og = h; } }));
+    // the perk columns keep the perk that is in now first (the God roll card reads it)
+    if (x && Array.isArray(x.pc)) x.pc = x.pc.map((c) => (c.includes(h) ? [h, ...c.filter((v) => v !== h)] : c));
+    if (x) { [wcache, gcache].forEach((c) => Object.keys(c).forEach((k) => { if (k.startsWith(id + ':')) delete c[k]; })); }
     if (x && Array.isArray(x.ep) && d && d.groups) d.groups.forEach((gr) => gr.cols.forEach((col) => { const nw = col.find((q) => q.si === si && q.h === h); if (!nw) return; const pn = D && D.pn ? D.pn : {}; x.ep = x.ep.map((n) => (col.some((q) => q.n === n && q.h !== h) ? nw.n : n)); void pn; }));
     grRefresh();
   }
