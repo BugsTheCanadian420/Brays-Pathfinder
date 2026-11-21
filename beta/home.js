@@ -64,7 +64,7 @@
 #home .hm-h{display:flex;align-items:center;gap:8px;margin:0 0 10px;font-size:11.5px;letter-spacing:2.5px;text-transform:uppercase;color:#aeb2b9;font-weight:600}
 #home .hm-h svg{color:var(--hc,var(--g-accent,#6aa6e0))}
 #home .hm-h .ct{margin-left:auto;letter-spacing:0;text-transform:none;color:#8b8f97;font-weight:400;font-size:12px}
-#home .hm-h .x{margin-left:6px;background:none;border:0;color:#8b8f97;cursor:pointer;font-size:16px;padding:0 4px;line-height:1}#home .hm-h .x:hover{color:#fff}
+#home .hm-h .x{margin:-6px -6px -6px 2px;background:none;border:0;color:#8b8f97;cursor:pointer;font-size:16px;padding:0;line-height:1;min-width:28px;min-height:28px;border-radius:4px}#home .hm-h .x:hover{color:#fff}
 #home .hm-big{font-size:30px;color:#fff;line-height:1.1;font-weight:600;font-variant-numeric:tabular-nums}
 #home .hm-big small{font-size:13px;color:#9aa0a8;font-weight:400;letter-spacing:.5px}
 #home .hm-sub{color:#9aa0a8;font-size:12.5px;margin-top:4px}
@@ -94,7 +94,8 @@
 #home .hm-hd h2{margin:0;font-size:16px;letter-spacing:3px;text-transform:uppercase;color:#fff;font-weight:600}
 #home .hm-hd label{margin-left:auto;color:#9aa0a8;font-size:12.5px;display:flex;align-items:center;gap:6px}
 #home .hm-hd label input{width:auto;margin:0}
-#home .hm-hd button{padding:4px 10px}
+#home .hm-hd button{padding:4px 10px;white-space:nowrap}
+@media (max-width:560px){#home .hm-hd{flex-wrap:wrap;row-gap:6px}#home .hm-hd label{font-size:12px}}
 #home .hm-sec{grid-column:1/-1;display:flex;align-items:center;gap:10px;margin:8px 0 -2px;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:#cfd2d8;font-weight:600}
 #home .hm-sec::after{content:'';flex:1;height:1px;background:var(--g-line,#2b2e33)}
 #home .gob{display:grid;grid-template-columns:minmax(0,1fr) 70px auto;gap:6px;align-items:center;font-size:11.5px;color:#b9bec6;margin-top:2px}
@@ -206,7 +207,11 @@
   // The page is only replaced when something on it actually changed. It used to be rebuilt every time one more piece of data
   // arrived (6 times while opening), which made it flash.
   let lastH = '', opening = false;
-  const paint = (h) => { if (h === lastH) return; lastH = h; s.innerHTML = h; };
+  // The cards' entrance animation plays when you open Home, not on every redraw while data arrives: replaying it each time
+  // made the page blink empty and fade back in.
+  let animNext = true;
+  const paint = (h) => { if (h === lastH) return; lastH = h; s.classList.toggle('hm-still', !animNext); s.innerHTML = h; if (/hm-hd/.test(h)) animNext = false; };
+  new MutationObserver(() => { if (!s.classList.contains('on')) animNext = true; }).observe(s, { attributes: true, attributeFilter: ['class'] });
   function draw() {
     const D = V().D && V().D();
     if (!D) { paint(opening ? '<div class="hm-g"><div class="hm-c w12"><div class="hm-h">Home</div><div class="hm-sub">Loading your Guardians…</div></div></div>' : '<div class="hm-g"><div class="hm-c w12"><div class="hm-h">Home</div><div class="hm-sub">Sign in on the Inventory tab to fill this page.</div></div></div>'); return; }

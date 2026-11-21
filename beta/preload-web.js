@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.35-beta.4: preload.js for the browser */
+/* Pathfinder 0.3.35-beta.5: preload.js for the browser */
 (function (require) {
 const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('gt', {
@@ -93,6 +93,15 @@ contextBridge.exposeInMainWorld('gt', {
   farmGet: () => ipcRenderer.invoke('farm:get'),
   onFarm: (cb) => ipcRenderer.on('farm', (e, m) => cb(m)),
   actRot: (v) => ipcRenderer.invoke('act:rot', v),
+  chkAuto: () => ipcRenderer.invoke('chk:auto'),
+  clanGet: (v) => ipcRenderer.invoke('clan:get', v),
+  clanProf: (v) => ipcRenderer.invoke('clan:prof', v),
+  clanXp: (v) => ipcRenderer.invoke('clan:xp', v),
+  clanList: (v) => ipcRenderer.invoke('clan:list', v),
+  clanAct: (v) => ipcRenderer.invoke('clan:act', v),
+  clanEdit: (v) => ipcRenderer.invoke('clan:edit', v),
+  clanFind: (v) => ipcRenderer.invoke('clan:find', v),
+  clanSearch: (v) => ipcRenderer.invoke('clan:search', v),
   actBounties: (v) => ipcRenderer.invoke('act:bounties', v),
   actVendor: (v) => ipcRenderer.invoke('act:vendor', v),
   actVendors: (v) => ipcRenderer.invoke('act:vendors', v),

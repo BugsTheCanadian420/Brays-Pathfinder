@@ -8,7 +8,8 @@
   if (!GG.length || !document.getElementById('guides')) return;
   const $ = (id) => document.getElementById(id);
   const E = typeof esc === 'function' ? esc : (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const B = (p) => (p ? (/^https?:/.test(p) ? p : 'https://www.bungie.net' + p) : '');
+  // Bungie paths start with '/'; the community maps in app/g are relative (g/12.webp) and load from Pathfinder itself.
+  const B = (p) => (!p ? '' : /^https?:/.test(p) ? p : p[0] === '/' ? 'https://www.bungie.net' + p : /^g\/[\w.-]+$/.test(p) ? p : '');
   const norm = (s) => String(s || '').toLowerCase().replace(/[’']/g, '').replace(/^the\s+/, '').replace(/[^a-z0-9]+/g, ' ').trim();
   const CAT = { Raid: ['Raids', '--cr'], Dungeon: ['Dungeons', '--cd'], 'Exotic mission': ['Exotic missions', '--cx'], 'Secret triumph': ['Secret triumphs', '--cs'] };
   const ORDER = ['Raid', 'Dungeon', 'Exotic mission', 'Secret triumph'];

@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.35-beta.4: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.35-beta.5: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -321,7 +321,7 @@ async function lodefs() {
 
 H('cfg:get', () => { const c = rd(); return { apiKey: !!c.apiKey, clientId: c.clientId || '', redirect: c.redirect || 'https://localhost/redirect', secret: !!c.clientSecret, signedIn: !!c.tok, preset: !!preset, mid: c.tok ? String(c.tok.mid || '') : '', prim: String(c.prim || '') }; });
 H('clip:read', () => clipboard.readText());
-H('clip:write', (e, t) => { clipboard.writeText(String(t || '')); return true; });
+H('clip:write', async (e, t) => { await clipboard.writeText(String(t || '')); return true; }); // on the website this can be refused; the page is told
 // Signing out also forgets the Bungie web login, so the next person (or account) gets a fresh sign-in page.
 H('auth:logout', async () => {
   const c = rd(), part = (c.tok && c.tok.part) || 'persist:bungie'; delete c.tok; M = null; farm.on = false; clearInterval(farm.t);
@@ -1930,6 +1930,193 @@ H('tr:state', async () => {
   return { score: { active: p.activeScore || 0, lifetime: p.lifetimeScore || 0, legacy: p.legacyScore || 0 }, cat: p.recordCategoriesRootNodeHash, seals: p.recordSealsRootNodeHash, tracked: p.trackedRecordHash ? [p.trackedRecordHash] : [], recs };
 });
 
+// ---------------- Clan tab: what the Destiny 2 companion app's clan page does ----------------
+// Roster with ranks, who is online and what they are playing, clan level and XP, join requests, invites and bans, and the
+// admin actions Bungie offers (promote, demote, kick, ban, approve, deny, invite, hand over founder, edit the clan).
+// Bungie decides who may do what. The admin actions also need the Bungie app (bungie.net/en/Application) to have the
+// group permissions turned on; without them Bungie answers with a scope error, sent to the page as 'SCOPE'.
+const CLAN = { g: null, at: 0, p: null, prof: {} };
+const bpath = (p) => (typeof p === 'string' && /^\/[\w./%-]{1,300}$/.test(p) ? p : '');
+const clanErr = (msg) => new Error(/scope/i.test(String(msg || '')) ? 'SCOPE' : String(msg || 'Bungie did not answer.'));
+const gget = (p) => api(p).catch((e) => { throw clanErr(e.message); });
+async function gpost(p, body) {
+  for (let t = 0; ; t++) {
+    await fresh(); const c = rd();
+    const r = await fetch(BASE + '/Platform' + p, { method: 'POST', headers: { 'X-API-Key': c.apiKey, 'User-Agent': UA, Authorization: 'Bearer ' + c.tok.access, 'Content-Type': 'application/json' }, body: JSON.stringify(body || {}) });
+    const j = await readJson(r);
+    if (j.ErrorCode === 1) return j.Response;
+    const thr = (j.ThrottleSeconds || 0) > 0 || /throttl/i.test(String(j.ErrorStatus || ''));
+    if (thr && t < 3) { await new Promise((res) => setTimeout(res, Math.min(5000, Math.max(600, (j.ThrottleSeconds || 1) * 1000)))); continue; }
+    throw clanErr((/scope/i.test(String(j.ErrorStatus || '')) ? 'scope ' : '') + (j.Message || 'Bungie error ' + j.ErrorCode));
+  }
+}
+// One person as the page needs them, from any of Bungie's member, application, invite or ban records.
+function clanPerson(m) {
+  const u = (m && m.destinyUserInfo) || {}, b = (m && m.bungieNetUserInfo) || {};
+  return {
+    mt: Number(u.membershipType) || 0, mid: String(u.membershipId || ''), bn: String(b.membershipId || ''),
+    n: String(u.bungieGlobalDisplayName || u.LastSeenDisplayName || u.displayName || b.bungieGlobalDisplayName || b.displayName || 'Guardian').slice(0, 40),
+    code: pad4(u.bungieGlobalDisplayNameCode != null ? u.bungieGlobalDisplayNameCode : b.bungieGlobalDisplayNameCode), icon: bpath(u.iconPath || b.iconPath),
+  };
+}
+async function clanMembers(gid) {
+  const out = [];
+  for (let pg = 1; pg <= 3; pg++) {
+    const r = await gget(`/GroupV2/${gid}/Members/?currentpage=${pg}`);
+    (r.results || []).forEach((m) => out.push({ ...clanPerson(m), type: Number(m.memberType) || 0, on: !!m.isOnline, seen: (Number(m.lastOnlineStatusChange) || 0) * 1000, joined: Date.parse(m.joinDate) || 0 }));
+    if (!r.hasMore) break;
+  }
+  return out.filter((x) => x.mid);
+}
+async function clanRewards(gid) {
+  try {
+    const r = await api(`/Destiny2/Clan/${gid}/WeeklyRewardState/`);
+    if (!r || !r.milestoneHash || !Array.isArray(r.rewards) || !r.rewards.length) return [];
+    const df = await ent('DestinyMilestoneDefinition', r.milestoneHash), out = [];
+    r.rewards.forEach((c) => {
+      const cd = (df.rewards || {})[c.rewardCategoryHash] || {};
+      (c.entries || []).forEach((en) => { const dp = (((cd.rewardEntries || {})[en.rewardEntryHash] || {}).displayProperties) || {}; if (dp.name) out.push({ n: String(dp.name).slice(0, 80), i: bpath(dp.icon), got: en.earned ? 1 : 0 }); });
+    });
+    return out.slice(0, 12);
+  } catch (e) { return []; }
+}
+async function clanLoad(force) {
+  if (!force && CLAN.g && Date.now() - CLAN.at < 60000) return CLAN.g;
+  if (CLAN.p) return CLAN.p;
+  CLAN.p = (async () => {
+    await ensureM();
+    const g = await gget(`/GroupV2/User/${M.membershipType}/${M.membershipId}/0/1/`);
+    const r0 = g && Array.isArray(g.results) && g.results[0];
+    if (!r0 || !r0.group) {
+      let inv = [];
+      try { const pz = await api(`/GroupV2/User/Potential/${M.membershipType}/${M.membershipId}/0/1/`); inv = ((pz && pz.results) || []).map((x) => ({ id: String((x.group || {}).groupId || ''), n: String((x.group || {}).name || '').slice(0, 60), st: (x.member || {}).potentialStatus || 0 })).filter((x) => x.id); } catch (e) { /* nothing pending */ }
+      return { none: 1, inv };
+    }
+    const gid = ID(r0.group.groupId);
+    const [gr, mem, rw] = await Promise.all([gget(`/GroupV2/${gid}/`), clanMembers(gid), clanRewards(gid)]);
+    const d = (gr && gr.detail) || r0.group, ci = d.clanInfo || {}, ft = d.features || {};
+    const ps = ci.d2ClanProgressions || {}, prog = [];
+    await pool(Object.keys(ps), 4, async (h) => {
+      const q = ps[h] || {}; let n = '';
+      try { const df = await entDef('DestinyProgressionDefinition', Number(h)); n = String((df && df.displayProperties && df.displayProperties.name) || ''); } catch (e) { /* nameless */ }
+      if (Number(h) === 584850370 && !n) n = 'Clan level';
+      if (!n) return;
+      prog.push({ h: Number(h), n: n.slice(0, 60), lv: q.level || 0, cap: q.levelCap || 0, cur: q.progressToNextLevel || 0, next: q.nextLevelAt || 0, wk: q.weeklyProgress || 0, wkl: q.weeklyLimit || 0 });
+    });
+    prog.sort((a, b) => (b.h === 584850370) - (a.h === 584850370) || a.n.localeCompare(b.n));
+    const me = mem.find((x) => x.mid === String(M.membershipId));
+    return {
+      id: gid, name: String(d.name || '').slice(0, 80), call: String(ci.clanCallsign || '').slice(0, 8), motto: String(d.motto || '').slice(0, 200), about: String(d.about || '').slice(0, 2000),
+      count: d.memberCount || mem.length, max: ft.maximumMembers || 100, created: Date.parse(d.creationDate) || 0, avatar: bpath(d.avatarPath), banner: bpath(d.bannerPath),
+      join: Number(d.membershipOption) || 0, pub: d.isPublic ? 1 : 0, locale: String(d.locale || ''),
+      me: { mid: String(M.membershipId), mt: M.membershipType, type: me ? me.type : Number((r0.member || {}).memberType) || 0 },
+      members: mem, prog, rw, at: Date.now(),
+    };
+  })();
+  try { CLAN.g = await CLAN.p; CLAN.at = Date.now(); return CLAN.g; } finally { CLAN.p = null; }
+}
+H('clan:get', async (e, v) => clanLoad(!!(v && v.force)));
+// Each member's character, power, emblem and (when online) what they are doing. Kept 3 minutes per member.
+H('clan:prof', async (e, v) => {
+  OBJ(v); const list = ARR(v.list, 120).map((x) => ({ mt: INT(x.mt, 1, 254), mid: ID(x.mid) }));
+  const out = {};
+  await pool(list, 6, async (x) => {
+    const c = CLAN.prof[x.mid]; if (c && Date.now() - c.at < 180000 && !v.force) { out[x.mid] = c; return; }
+    const o = { at: Date.now() };
+    try {
+      const pr = await api(`/Destiny2/${x.mt}/Profile/${x.mid}/?components=100,200,204`);
+      const cd = (pr.characters && pr.characters.data) || {}, ad = (pr.characterActivities && pr.characterActivities.data) || {};
+      const ids = Object.keys(cd).sort((a, b) => String(cd[b].dateLastPlayed).localeCompare(String(cd[a].dateLastPlayed)));
+      const c0 = cd[ids[0]];
+      if (c0) { o.cls = c0.classType; o.emb = bpath(c0.emblemBackgroundPath); o.last = Date.parse(c0.dateLastPlayed) || 0; o.pw = Math.max(0, ...ids.map((id) => cd[id].light || 0)); } else o.priv = 1;
+      const a = ids.map((id) => ad[id]).find((q) => q && q.currentActivityHash);
+      if (a) {
+        const f = await actInfo(a.currentActivityHash); let md = '';
+        if (a.currentActivityModeHash) { try { const m = await entDef('DestinyActivityModeDefinition', a.currentActivityModeHash); md = String((m && m.displayProperties && m.displayProperties.name) || ''); } catch (er) { /* no mode name */ } }
+        o.act = { n: String(f.n || '').slice(0, 80), md: md.slice(0, 60), t: Date.parse(a.dateActivityStarted) || 0 };
+      }
+    } catch (er) { o.priv = 1; }
+    CLAN.prof[x.mid] = o; out[x.mid] = o;
+  });
+  return out;
+});
+// Clan XP each member earned this week (the personal clan XP progression on each character, added up).
+const CLANXP = 540048094;
+H('clan:xp', async (e, v) => {
+  OBJ(v); const list = ARR(v.list, 120).map((x) => ({ mt: INT(x.mt, 1, 254), mid: ID(x.mid) }));
+  let n = ''; try { const df = await entDef('DestinyProgressionDefinition', CLANXP); n = String((df && df.displayProperties && df.displayProperties.name) || ''); } catch (er) { /* checked below */ }
+  const by = {}; let lim = 0, any = 0;
+  await pool(list, 6, async (x) => {
+    try {
+      const pr = await api(`/Destiny2/${x.mt}/Profile/${x.mid}/?components=202`);
+      const cp = (pr.characterProgressions && pr.characterProgressions.data) || {}; let sum = 0, seen = 0;
+      Object.values(cp).forEach((c) => { const q = c && c.progressions && c.progressions[CLANXP]; if (q) { seen = 1; sum += q.weeklyProgress || 0; lim += 0; if (q.weeklyLimit) lim = Math.max(lim, q.weeklyLimit); } });
+      by[x.mid] = seen ? sum : null; if (seen) any = 1;
+    } catch (er) { by[x.mid] = null; }
+  });
+  return { n: n || 'Clan XP', ok: any && (!n || /clan/i.test(n)) ? 1 : 0, by, lim };
+});
+// Join requests, invites sent and bans (admins only; Bungie refuses everyone else).
+H('clan:list', async (e, v) => {
+  OBJ(v); const k = TXT(v.k, 10), g = CLAN.g && CLAN.g.id; if (!g) throw new Error('Open the Clan tab first.');
+  const path0 = { pending: `/GroupV2/${g}/Members/Pending/?currentpage=1`, invited: `/GroupV2/${g}/Members/InvitedIndividuals/?currentpage=1`, banned: `/GroupV2/${g}/Banned/?currentpage=1` }[k];
+  if (!path0) throw bad();
+  const r = await gget(path0);
+  return ((r && r.results) || []).map((x) => ({ ...clanPerson(x), at: Date.parse(x.creationDate || x.dateBanned) || 0, exp: Date.parse(x.dateExpires) || 0, msg: String(x.requestMessage || x.comment || '').slice(0, 300) })).filter((x) => x.mid);
+});
+const CLANA = {
+  rank: (g, x, v) => gpost(`/GroupV2/${g}/Members/${x.mt}/${x.mid}/SetMembershipType/${INT(v.type, 1, 3)}/`),
+  kick: (g, x) => gpost(`/GroupV2/${g}/Members/${x.mt}/${x.mid}/Kick/`),
+  ban: (g, x, v) => gpost(`/GroupV2/${g}/Members/${x.mt}/${x.mid}/Ban/`, { comment: TXT(v.msg || '', 300), length: INT(v.len == null ? 8 : v.len, 0, 11) }),
+  unban: (g, x) => gpost(`/GroupV2/${g}/Members/${x.mt}/${x.mid}/Unban/`),
+  approve: (g, x, v) => gpost(`/GroupV2/${g}/Members/Approve/${x.mt}/${x.mid}/`, { message: TXT(v.msg || '', 300) }),
+  deny: (g, x, v) => gpost(`/GroupV2/${g}/Members/DenyList/`, { memberships: [{ membershipType: x.mt, membershipId: x.mid }], message: TXT(v.msg || '', 300) }),
+  approveall: (g, x, v) => gpost(`/GroupV2/${g}/Members/ApproveAll/`, { message: TXT(v.msg || '', 300) }),
+  denyall: (g, x, v) => gpost(`/GroupV2/${g}/Members/DenyAll/`, { message: TXT(v.msg || '', 300) }),
+  invite: (g, x, v) => gpost(`/GroupV2/${g}/Members/IndividualInvite/${x.mt}/${x.mid}/`, { message: TXT(v.msg || '', 300) }),
+  uninvite: (g, x) => gpost(`/GroupV2/${g}/Members/IndividualInviteCancel/${x.mt}/${x.mid}/`),
+  founder: (g, x) => gpost(`/GroupV2/${g}/Admin/AbdicateFoundership/${x.mt}/${x.mid}/`),
+};
+H('clan:act', async (e, v) => {
+  OBJ(v); const a = TXT(v.a, 12), fn = CLANA[a]; if (!fn) throw bad();
+  const g = CLAN.g && CLAN.g.id; if (!g) throw new Error('Open the Clan tab first.');
+  const x = /all$/.test(a) ? {} : { mt: INT(v.mt, 1, 254), mid: ID(v.mid) };
+  await fn(g, x, v);
+  CLAN.at = 0; // the next read comes fresh from Bungie
+  return { ok: 1 };
+});
+H('clan:edit', async (e, v) => {
+  OBJ(v); const g = CLAN.g && CLAN.g.id; if (!g) throw new Error('Open the Clan tab first.');
+  const b = {};
+  if (v.name != null) b.name = TXT(v.name, 80).trim();
+  if (v.call != null) b.callsign = TXT(v.call, 8).trim();
+  if (v.motto != null) b.motto = TXT(v.motto, 200);
+  if (v.about != null) b.about = TXT(v.about, 2000);
+  if (v.join != null) b.membershipOption = INT(v.join, 0, 2);
+  if (!Object.keys(b).length) return { ok: 1 };
+  await gpost(`/GroupV2/${g}/Edit/`, b);
+  CLAN.at = 0;
+  return { ok: 1 };
+});
+// Find a player to invite: "Name#1234" finds that exact player, a plain name searches by the start of the name.
+H('clan:find', async (e, v) => {
+  OBJ(v); const q = TXT(v.q, 60).trim(); if (q.length < 2) return [];
+  const pick = (ms) => (ms || []).find((d) => !d.crossSaveOverride || d.crossSaveOverride === d.membershipType) || (ms || [])[0];
+  const m = /^(.+)#(\d{1,4})$/.exec(q);
+  if (m) {
+    const r = await gpost('/Destiny2/SearchDestinyPlayerByBungieName/-1/', { displayName: m[1].trim(), displayNameCode: Number(m[2]) });
+    const p = pick(r); return p ? [{ mt: p.membershipType, mid: String(p.membershipId), n: String(p.bungieGlobalDisplayName || p.displayName || '').slice(0, 40), code: pad4(p.bungieGlobalDisplayNameCode), icon: bpath(p.iconPath) }] : [];
+  }
+  const r = await gpost('/User/Search/GlobalName/0/', { displayNamePrefix: q });
+  return ((r && r.searchResults) || []).slice(0, 12).map((u) => { const p = pick(u.destinyMemberships); return p ? { mt: p.membershipType, mid: String(p.membershipId), n: String(u.bungieGlobalDisplayName || '').slice(0, 40), code: pad4(u.bungieGlobalDisplayNameCode), icon: bpath(p.iconPath) } : null; }).filter(Boolean);
+});
+// Not in a clan: search clans by name (joining happens on Bungie.net; Bungie does not let apps send join requests).
+H('clan:search', async (e, v) => {
+  OBJ(v); const q = TXT(v.q, 60).trim(); if (q.length < 2) return [];
+  const r = await gpost('/GroupV2/Search/', { name: q, groupType: 1, creationDate: 0, sortBy: 0, localeFilter: '', tagText: '', itemsPerPage: 20, currentPage: 1, requestContinuationToken: null });
+  return ((r && r.results) || []).slice(0, 20).map((d) => ({ id: String(d.groupId || ''), n: String(d.name || '').slice(0, 80), call: String((d.clanInfo || {}).clanCallsign || '').slice(0, 8), motto: String(d.motto || '').slice(0, 200), count: d.memberCount || 0, avatar: bpath(d.avatarPath), join: Number(d.membershipOption) || 0 })).filter((x) => x.id);
+});
+
 // ---------------- friends and clan on a triumph (like Braytech): who has it done ----------------
 // Loaded once (every clan member and Bungie.net friend, then each one's public triumphs) and kept for 30 minutes,
 // so opening any triumph after that is instant. Nothing about other people is written to disk.
@@ -2154,6 +2341,52 @@ async function actInfo(h) {
     return (ACTD[h] = { n: cz ? rawN.replace(/\s*[:\-]\s*customi[sz]e\s*$/i, '').trim() : rawN, cz: cz ? 1 : 0, d: dp.description || '', tn, lvl: x.activityLightLevel || 0, img: x.pgcrImage || '' });
   } catch (e) { return (ACTD[h] = { n: '', d: '', tn: '', lvl: 0, img: '' }); }
 }
+
+// Checklist: this week's and today's milestones on every character, so Checklist items can tick themselves.
+// One profile request (characters + their milestones); the milestone names are looked up once per session.
+const MSD = {};
+async function msInfo(h) {
+  if (MSD[h]) return MSD[h];
+  const x = await ent('DestinyMilestoneDefinition', h), dp = x.displayProperties || {};
+  let n = dp.name || '', d = dp.description || '', i = dp.icon || '';
+  const q = x.quests && Object.values(x.quests)[0], qd = (q && q.displayProperties) || {};
+  if (!n) n = qd.name || ''; if (!d) d = qd.description || ''; if (!i) i = qd.icon || '';
+  if (!n && Array.isArray(x.activities) && x.activities[0]) n = (await actInfo(x.activities[0].activityHash)).n || '';
+  return (MSD[h] = { n: String(n).trim().slice(0, 120), d: String(d).trim().slice(0, 300), i: /^\/[\w./%-]{1,300}$/.test(i) ? i : '', t: x.milestoneType || 0 });
+}
+// Done = every quest finished, or else every challenge objective complete, or else every reward earned.
+function msState(m) {
+  const qs = m.availableQuests || [], objs = [], rw = [];
+  qs.forEach((q) => ((q.status || {}).stepObjectives || []).forEach((o) => objs.push(o)));
+  (m.activities || []).forEach((a) => (a.challenges || []).forEach((c) => { if (c && c.objective) objs.push(c.objective); }));
+  (m.rewards || []).forEach((r) => (r.entries || []).forEach((en) => rw.push(en)));
+  const dn = qs.length ? qs.every((q) => (q.status || {}).completed || (q.status || {}).redeemed)
+    : objs.length ? objs.every((o) => o.complete) : rw.length ? rw.every((en) => en.earned) : false;
+  let tx = '';
+  if (!dn) {
+    if (objs.length === 1 && (objs[0].completionValue || 0) > 1) tx = Math.min(objs[0].progress || 0, objs[0].completionValue) + '/' + objs[0].completionValue;
+    else if (objs.length > 1) tx = objs.filter((o) => o.complete).length + '/' + objs.length;
+    else if (rw.length > 1) tx = rw.filter((en) => en.earned).length + '/' + rw.length;
+  }
+  return { dn: dn ? 1 : 0, tx };
+}
+H('chk:auto', async () => {
+  const m = await acct();
+  const pr = await api(pbase(m) + '?components=200,202');
+  const cd = (pr.characters || {}).data || {}, pg = (pr.characterProgressions || {}).data || {};
+  const cids = Object.keys(cd), by = {};
+  cids.forEach((cid) => Object.values(((pg[cid] || {}).milestones) || {}).forEach((ms) => {
+    if (!ms || !ms.milestoneHash) return;
+    const h = ms.milestoneHash; (by[h] = by[h] || { h, o: ms.order || 0, ch: {} }).ch[cid] = msState(ms);
+  }));
+  const list = Object.values(by).slice(0, 150);
+  await pool(list, 6, async (x) => { Object.assign(x, await msInfo(x.h)); });
+  // Weekly (3) and daily (4) milestones that have a name; one-time, tutorial and special ones are left out.
+  const ms = list.filter((x) => x.n && (x.t === 3 || x.t === 4)).map((x) => ({ h: x.h, n: x.n, d: x.d, i: x.i, t: x.t === 4 ? 'd' : 'w', o: x.o, ch: x.ch }))
+    .sort((a, b) => a.o - b.o || a.n.localeCompare(b.n));
+  const wk = Math.floor((Date.now() - Date.UTC(1970, 0, 6, 17)) / 604800000), dy = Math.floor((Date.now() - Date.UTC(1970, 0, 1, 17)) / 864e5);
+  return { at: Date.now(), wk, dy, cids, ms };
+});
 
 // Today's rotations: whatever Bungie lists as available to the character right now.
 const OBJN = {};

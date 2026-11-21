@@ -61,7 +61,10 @@
   }
 
   // Share links: https://d2pathfinder.com/<code>/<name> (or the GitHub address of the website).
-  const linkCode = (t) => { const m = /(?:d2pathfinder\.com|bugsthecanadian420\.github\.io\/Brays-Pathfinder)\/([A-Za-z0-9]{5,12})(?=[/?#\s]|$)/i.exec(String(t || '')); return m ? m[1] : ''; };
+  // Share links: d2pathfinder.com, the old GitHub Pages address, or whatever address this copy of the site runs on (previews).
+  const HERE = (() => { try { return /^https?:$/.test(location.protocol) ? location.host.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') : ''; } catch (e) { return ''; } })();
+  const LINKRE = new RegExp('(?:d2pathfinder\\.com|bugsthecanadian420\\.github\\.io\\/Brays-Pathfinder' + (HERE ? '|' + HERE : '') + ')(?:\\/beta)?\\/([A-Za-z0-9]{5,12})(?=[/?#\\s]|$)', 'i');
+  const linkCode = (t) => { const m = LINKRE.exec(String(t || '')); return m && !/^(status|privacy|download|beta|index|terms)$/i.test(m[1]) ? m[1] : ''; }; // site pages are not share codes
   // A picture made with Pathfinder has its loadout code inside the file.
   async function impPic(file, pasted) {
     if (!mod || mod.t !== 'imp' || !file) return;
@@ -1095,7 +1098,7 @@ ${mod.msg && mod.cats ? `<p class="dl-msm">${esc(mod.msg)}</p>` : ''}
     } else if (mod.t === 'shmenu') {
       h = `<div class="dl-mc dl-ig-pop"><h3>Share loadout</h3><p class="mute">A link opens the loadout for anyone, in Pathfinder or in a browser, like a dim.gg link. A picture is easy to post anywhere.</p>${mod.msg ? `<div class="dl-wr">${esc(mod.msg)}</div>` : ''}<div class="dl-bt dl-col"><button class="b" data-md="shlink">Copy share link</button><button class="g" data-md="shpic">Share as a picture</button><button class="g" data-md="shcode">Copy loadout code</button>${navigator.share ? '<button class="g" data-md="shsend">Send the code...</button>' : ''}<button class="g" data-md="x">Close</button></div></div>`;
     } else if (mod.t === 'shlink') {
-      h = `<div class="dl-mc dl-ig-pop"><h3>Share link</h3><p class="mute">${esc(mod.copied ? 'Copied. Paste it anywhere: Discord, a message, a forum post. It shows a preview card with the loadout picture.' : 'Copy it and paste it anywhere: Discord, a message, a forum post. It shows a preview card with the loadout picture.')}</p><input id="dlurl" class="dl-url" readonly value="${esc(mod.url)}"><div class="dl-bt"><button class="b" data-md="lcopy">Copy link</button>${navigator.share ? '<button class="g" data-md="lsend">Share...</button>' : ''}<span class="dl-sp"></span><button class="g" data-md="x">Close</button></div></div>`;
+      h = `<div class="dl-mc dl-ig-pop"><h3>Share link</h3><p class="mute">${esc(mod.copied ? 'Copied. Paste it anywhere: Discord, a message, a forum post. It shows a preview card with the loadout picture.' : mod.copyFail ? 'Your browser blocked copying. The link below is selected: copy it with Ctrl+C, or press and hold it on a phone.' : 'Copy it and paste it anywhere: Discord, a message, a forum post. It shows a preview card with the loadout picture.')}</p><input id="dlurl" class="dl-url" readonly value="${esc(mod.url)}"><div class="dl-bt"><button class="b" data-md="lcopy">Copy link</button>${navigator.share ? '<button class="g" data-md="lsend">Share...</button>' : ''}<span class="dl-sp"></span><button class="g" data-md="x">Close</button></div></div>`;
     } else if (mod.t === 'shin') {
       h = shinHTML();
     } else if (mod.t === 'share') {
@@ -1193,8 +1196,9 @@ ${mod.msg && mod.cats ? `<p class="dl-msm">${esc(mod.msg)}</p>` : ''}
       if (a === 'lcopy') {
         const u = mod.url, done = () => { if (mod && mod.t === 'shlink') { mod.copied = true; drawMod(); } };
         const inp = g('dlurl'); if (inp) { inp.focus(); inp.select(); }
-        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(u).then(done, () => gt.writeClipboard(u).then(done, () => {}));
-        else gt.writeClipboard(u).then(done, () => {});
+        const fail = () => { if (mod && mod.t === 'shlink') { mod.copyFail = true; drawMod(); const i2 = g('dlurl'); if (i2) { i2.focus(); i2.select(); } } };
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(u).then(done, () => gt.writeClipboard(u).then(done, fail));
+        else gt.writeClipboard(u).then(done, fail);
         return;
       }
       if (a === 'lsend' && navigator.share) { navigator.share({ url: mod.url, title: 'Pathfinder loadout' }).catch(() => {}); return; }

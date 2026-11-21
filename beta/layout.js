@@ -5,11 +5,11 @@
   const nav = document.getElementById('nav'), hd = document.querySelector('header');
   if (!nav || !hd) return;
   const html = document.documentElement;
-  const NAME = { home: 'Home', vault: 'Inventory', loadouts: 'Loadouts', organizer: 'Organizer', optimizer: 'Optimizer', triumphs: 'Triumphs', activity: 'Activity', targets: 'Farming', check: 'Checklist', notes: 'Notes', wish: 'Roll Tracker', guides: 'Guides', hub: 'Hub', godrolls: 'God rolls', wishmaker: 'Wish list maker', settings: 'Settings' };
-  const TIP = { home: 'Resets, goals and season at a glance', vault: 'Your characters and vault', loadouts: 'Save and equip sets of gear', organizer: 'Sort and compare every weapon and armor piece', optimizer: 'Find the best armor for a build', triumphs: 'Records, seals and titles', activity: 'What you have played lately', targets: 'Farm for the exact rolls and armor you want', reset: 'Daily and weekly reset timers, Xur', check: 'Weekly and daily to-do list', notes: 'Your own notes', wish: 'Track the weapon rolls you are hunting', guides: 'How-to guides for activities', hub: 'Light.gg, DIM and other Destiny sites inside the app', godrolls: 'Your weapons graded with your wish lists', wishmaker: 'Make wish list rolls for any weapon' };
+  const NAME = { home: 'Home', vault: 'Inventory', loadouts: 'Loadouts', organizer: 'Organizer', optimizer: 'Optimizer', triumphs: 'Triumphs', activity: 'Activity', clan: 'Clan', targets: 'Farming', check: 'Checklist', notes: 'Notes', wish: 'Roll Tracker', guides: 'Guides', hub: 'Hub', godrolls: 'God rolls', wishmaker: 'Wish list maker', settings: 'Settings' };
+  const TIP = { home: 'Resets, goals and season at a glance', vault: 'Your characters and vault', loadouts: 'Save and equip sets of gear', organizer: 'Sort and compare every weapon and armor piece', optimizer: 'Find the best armor for a build', triumphs: 'Records, seals and titles', activity: 'What you have played lately', clan: 'Your clan: roster, ranks, who is online, clan XP and admin tools', targets: 'Farm for the exact rolls and armor you want', reset: 'Daily and weekly reset timers, Xur', check: 'Weekly and daily to-do list', notes: 'Your own notes', wish: 'Track the weapon rolls you are hunting', guides: 'How-to guides for activities', hub: 'Light.gg, DIM and other Destiny sites inside the app', godrolls: 'Your weapons graded with your wish lists', wishmaker: 'Make wish list rolls for any weapon' };
   const PRIMARY = ['home', 'vault', 'loadouts', 'triumphs', 'activity', 'targets'];
-  const GROUPS = [['Gear', ['home', 'vault', 'loadouts']], ['Progress', ['triumphs', 'activity', 'targets']], ['Learn', ['guides', 'hub']], ['Weekly', ['check']], ['Your lists', ['notes']], ['Gear tools', ['organizer', 'optimizer', 'godrolls', 'wishmaker']]];
-  const EXTRA = ['guides', 'hub', 'check', 'notes', 'organizer', 'optimizer', 'godrolls', 'wishmaker']; // join the bar one by one as the window gets wider
+  const GROUPS = [['Gear', ['home', 'vault', 'loadouts']], ['Progress', ['triumphs', 'activity', 'targets']], ['Clan', ['clan']], ['Learn', ['guides', 'hub']], ['Weekly', ['check']], ['Your lists', ['notes']], ['Gear tools', ['organizer', 'optimizer', 'godrolls', 'wishmaker']]];
+  const EXTRA = ['clan', 'guides', 'hub', 'check', 'notes', 'organizer', 'optimizer', 'godrolls', 'wishmaker']; // join the bar one by one as the window gets wider
 
   // The old hamburger menu is replaced by the one below.
   ['gtmenu', 'gtmenup', 'gtcur'].forEach((id) => { const n = document.getElementById(id); if (n) n.remove(); });
@@ -27,7 +27,15 @@
     const mark = () => { const i = document.getElementById('vq'); sq.classList.toggle('on', !!(i && i.value.trim())); };
     const open = (on) => { html.classList.toggle('gtsq-open', on); if (on) { const i = document.getElementById('vq'); if (i) { i.focus(); try { i.select(); } catch (e) { /* not a text box */ } } } mark(); };
     sq.onclick = () => open(true); sx.onclick = () => open(false);
-    document.addEventListener('input', (e) => { if (e.target && e.target.id === 'vq') mark(); }, true);
+    document.addEventListener('input', (e) => {
+      if (!e.target || e.target.id !== 'vq') return;
+      mark();
+      // The search box is on every tab now: typing in it from another page opens Inventory with the results, like DIM.
+      if (html.dataset.gtab && html.dataset.gtab !== 'vault') {
+        const vb = nav.querySelector('button[data-t="vault"]'); if (vb) vb.click();
+        requestAnimationFrame(() => { const i = document.getElementById('vq'); if (i && document.activeElement !== i) { i.focus(); try { i.setSelectionRange(i.value.length, i.value.length); } catch (er) { /* not a text box */ } } });
+      }
+    }, true);
     document.addEventListener('keydown', (e) => { if (html.classList.contains('gtsq-open') && (e.key === 'Escape' || (e.key === 'Enter' && e.target && e.target.id === 'vq'))) { open(false); if (e.target && e.target.blur) e.target.blur(); } }, true);
     window.addEventListener('resize', () => { if (html.classList.contains('gtsq-open') && innerWidth > 560) open(false); }); }
   // If the vault finished drawing before this file ran, its search bar is still in the page: move it up.
@@ -92,10 +100,10 @@
     tight = false; setNarrowCls();
     const all = shownAll();
     if (narrow.matches) { applyProm(0); sync(); return; }
-    // On Inventory, keep room for a usable search box plus its buttons. Elsewhere the bar has no search box, so every tab that fits goes on it.
-    const onVault = html.dataset.gtab === 'vault' || !html.dataset.gtab;
-    const nb = slot.querySelectorAll('.vbar button').length || 7, need = onVault ? Math.min(240 + nb * 37, 420) : 0;
-    html.classList.toggle('gtwide', !onVault);
+    // The bar is laid out the same on every tab: room for the search box and its buttons is always kept, so tabs never
+    // stretch, shrink or move into More when you switch pages (they used to jump every time you left or opened Inventory).
+    const nb = slot.querySelectorAll('.vbar button').length || 7, need = Math.min(240 + nb * 37, 420);
+    html.classList.remove('gtwide');
     const fits = () => (!need || slot.getBoundingClientRect().width >= need) && hd.scrollWidth <= hd.clientWidth + 1;
     let best = -1;
     for (let n = all.length; n >= 1; n--) { applyProm(n); if (fits()) { best = n; break; } }
@@ -226,8 +234,8 @@ html.gtwide header.gtbar nav button.gtp:not(.gthide),html.gtwide header.gtbar na
 html.gtwide #gtsrch{flex:1 1 0!important;margin-left:0!important}
 header.gtbar nav button.gtset{order:6;width:42px;padding:0!important;display:inline-flex;align-items:center;justify-content:center;margin-left:2px}
 #gtsrch{order:5;flex:1 1 200px;min-width:0;display:flex;justify-content:flex-end;align-items:center;margin-left:8px}
-#gtsrch .vbar{display:none;align-items:center;gap:5px;width:100%;max-width:680px}
-html[data-gtab="vault"] #gtsrch .vbar{display:flex}
+#gtsrch .vbar{display:flex;align-items:center;gap:5px;width:100%;max-width:680px}
+html:not([data-gtab="vault"]) #gtsrch .vbar .vtg{visibility:hidden;pointer-events:none}
 #gtsrch .vbar input{flex:1;min-width:70px;width:auto;margin:0;height:32px;padding:0 10px 0 32px;font-size:13.5px;color:#fff;background:var(--g-deep,#0f1012) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239b9ea5' stroke-width='2.4' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5'/%3E%3Cpath d='M15.5 15.5L21 21'/%3E%3C/svg%3E") no-repeat 10px center/15px;border:1px solid #3a3d43;border-radius:3px}
 #gtsrch .vbar input:focus{outline:0;border-color:var(--g-accent,#7ab8e8)}
 #gtsrch .vbar .vnm{display:none;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#8d9097;margin-right:4px}
@@ -269,4 +277,6 @@ html.gtnarrow header.gtbar nav button.gtp{display:none!important}html.gtnarrow h
   sync(); fit(); setTimeout(fitSoon, 600);
 })();
 // The page stays hidden until the bar above is laid out, so the plain first draw never flashes on screen (index.html, #gtpre).
-requestAnimationFrame(() => document.documentElement.classList.add('gtready'));
+// The page is revealed by polish.js once the start tab is chosen (otherwise Inventory flashed first); this is the fallback
+// for when polish.js is missing or failed.
+setTimeout(() => document.documentElement.classList.add('gtready'), 1500);

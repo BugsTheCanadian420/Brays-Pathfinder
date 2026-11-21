@@ -50,6 +50,15 @@
 #activity .acard b{color:#fff;font-weight:600}
 #activity .acard .sub{color:var(--mute,#9aa0a8);font-size:12px;margin-top:2px}
 #activity .acard .big{font-size:22px;margin-top:6px;color:#fff}
+#activity .big{letter-spacing:.5px;font-variant-numeric:tabular-nums}#activity .big small{letter-spacing:0;white-space:nowrap}
+#activity .acard .rsl{font-weight:500;color:#7be08c;font-size:12px;margin-left:6px;letter-spacing:0}
+#activity h3.sec small{display:block;margin-top:3px;font-size:12px;letter-spacing:0;text-transform:none;font-weight:400}
+@media (max-width:560px){
+#activity .crow{grid-template-columns:1fr 1fr;gap:8px}#activity .crow .acard{padding:10px 12px}
+#activity .acard .big{font-size:19px}#activity .crow .big small{display:block;margin-top:1px}
+#activity .agrid.fit{grid-template-columns:1fr}#activity .agrid.fit .acard.bg:not(:has(.abgi)){min-height:0}
+#activity .abar{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 32px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 32px),transparent)}
+}
 #activity .acard.ok{border-color:#2f6b3a}
 #activity .acard .gdl{margin-top:auto;padding-top:6px;color:var(--g-accent,#7ab8e8);font-size:11.5px;letter-spacing:.04em;opacity:.85}#activity .acard.clk:hover .gdl{opacity:1}
 #activity .acard.clk{cursor:pointer;transition:border-color .15s,transform .15s,box-shadow .15s}#activity .acard.clk:hover{border-color:var(--g-accent,#7ab8e8);box-shadow:0 0 0 1px var(--g-accent-soft,rgba(122,184,232,.2)),0 8px 22px rgba(0,0,0,.35);transform:translateY(-1px)}#activity .acard.clk:hover .abgi{opacity:.42}
@@ -168,6 +177,18 @@
   const PINNABLE = { cru: 'Crucible', rot: 'Rotations', bnt: 'Bounties', xur: 'Xûr', clr: 'Raids and dungeons', pb: 'Personal bests', time: 'Play time', rec: 'Recap', wep: 'Weapon stats' };
   function frame() {
     const cs = chars(), CL = (V().CL && V().CL()) || {};
+    const sl = (s.querySelector('.abar') || {}).scrollLeft || 0;
+    try { frame0(cs, CL); } finally { keepBar(sl); }
+  }
+  // On a phone the tab row scrolls sideways: redrawing it used to jump back to the start, hiding the tab you just picked.
+  function keepBar(sl) {
+    const bar = s.querySelector('.abar'); if (!bar || bar.scrollWidth <= bar.clientWidth) return;
+    bar.scrollLeft = sl;
+    const on = bar.querySelector('button.on'); if (!on) return;
+    const l = on.offsetLeft - bar.offsetLeft, r = l + on.offsetWidth;
+    if (l < bar.scrollLeft + 8 || r > bar.scrollLeft + bar.clientWidth - 32) bar.scrollLeft = Math.max(0, l - 24);
+  }
+  function frame0(cs, CL) {
     const showChar = ['bnt', 'ven', 'xur'].includes(st.tab) && cs.length > 1;
     s.innerHTML = `<div class="abar">${TABS.map(([k, n]) => `<button data-a="${k}" class="${st.tab === k ? 'on' : ''}">${n}</button>`).join('')}<span class="sp">${showChar ? `<select id="achar">${cs.map((c) => `<option value="${esc(c.id)}"${st.char === c.id ? ' selected' : ''}>${esc((CL[c.cls] || 'Guardian') + ' ' + (c.light || ''))}</option>`).join('')}</select>` : ''}${PINNABLE[st.tab] ? homeBtn('act', st.tab, PINNABLE[st.tab]) : ''}<button data-ax="refresh">Refresh</button></span></div><div id="abody"></div>`;
   }
@@ -193,12 +214,12 @@
   const rsText = (k) => {
     const L = typeof lastReset === 'function' ? lastReset : null, f = typeof fmt === 'function' ? fmt : null; if (!L || !f) return '';
     const n = Date.now(), d = L(false) + 864e5, w = L(true) + 6048e5, fri = L(true) + 3 * 864e5;
-    return k === 'd' ? f(d - n) : k === 'w' ? f(w - n) : n >= fri ? 'Here now: leaves in ' + f(w - n) : 'Arrives in ' + f(fri - n);
+    return k === 'd' ? f(d - n) : k === 'w' ? f(w - n) : k === 'xl' ? (n >= fri ? 'Here now · leaves in' : 'Arrives in') : n >= fri ? f(w - n) : f(fri - n);
   };
   const rsCards = () => {
     const L = typeof lastReset === 'function' ? lastReset : null; if (!L) return '';
     const dl = new Date(L(false) + 864e5).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-    const c = (k, t, sub) => `<div class="acard plan" data-ak="reset"><b>${t}</b><div class="big" data-rs="${k}">${esc(rsText(k))}</div><div class="sub">${sub}</div></div>`;
+    const c = (k, t, sub) => `<div class="acard plan" data-ak="reset"><b>${t}${k === 'x' ? ` <span class="rsl" data-rs="xl">${esc(rsText('xl'))}</span>` : ''}</b><div class="big" data-rs="${k}">${esc(rsText(k))}</div><div class="sub">${sub}</div></div>`;
     return `<h3 class="sec">Resets</h3><div class="agrid fit">${c('d', 'Daily reset', 'Every day at 17:00 UTC (' + esc(dl) + ' your time)' + (L(false) + 864e5 === L(true) + 6048e5 ? '. The next one is also the weekly reset.' : ''))}${c('w', 'Weekly reset', 'Tuesdays at 17:00 UTC. New Nightfall, raid and dungeon rotators.')}${c('x', 'X&ucirc;r', 'Arrives Friday reset and leaves at the next weekly reset. Click to see what he is selling.').replace('class="acard plan" data-ak="reset"', 'class="acard plan xurc" data-ak="xur" data-a="xur" title="See what Xûr is selling" style="cursor:pointer"')}</div>`;
   };
   // When a countdown hits zero (daily reset, weekly reset, Xûr arriving) what was fetched before it is out of date: forget it,
