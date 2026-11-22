@@ -669,6 +669,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 body.gtann #gtmaint{top:calc(var(--gt-bar-h,56px) + 74px)}
 .sx.hntf{margin:6px 0 0}
 .hnotes{margin:10px 0 4px;padding:8px 10px;border:1px dashed color-mix(in srgb,var(--g-accent,#e8b84a) 55%,#3a3d43);border-radius:10px;background:rgba(255,255,255,.02)}.hnotes .hn{font-size:13px;padding:5px 0;border-top:1px solid var(--g-line,#2b2e33);white-space:pre-wrap;word-break:break-word}.hnotes .hn:first-of-type{border-top:0}.hnotes .hn small{display:block;color:var(--mute,#9aa1ab);font-size:11.5px}.hnotes .hnt{font-size:12px;font-weight:700;color:var(--g-accent,#e8b84a)}
+.hhere{display:flex;flex-wrap:wrap;gap:6px 14px;margin:0 0 6px;font-size:12.5px;color:#dfe4ea}.hhere:empty{display:none}.hhp{display:inline-flex;align-items:center;gap:6px}.hhp i{width:8px;height:8px;border-radius:50%;background:#5fd38a;box-shadow:0 0 0 3px rgba(95,211,138,.18)}.hhp.ty i{background:var(--g-accent,#7ab8e8);box-shadow:0 0 0 3px var(--g-accent-soft,rgba(122,184,232,.2));animation:hhp 1s ease-in-out infinite alternate}@keyframes hhp{to{opacity:.35}}@media (prefers-reduced-motion:reduce){.hhp.ty i{animation:none}}.hslow{color:var(--mute,#9aa1ab);font-size:12px}
 .hclaim{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--mute,#9aa1ab)}.hclaim b{color:var(--g-accent,#e8b84a)}
 .hrow .hcl{font-style:normal;font-size:11px;color:var(--g-accent,#e8b84a);margin-left:6px}
 .admstats{display:flex;flex-wrap:wrap;gap:6px 16px;margin:2px 0 8px;font-size:13px;color:var(--mute,#9aa1ab)}.admstats b{color:var(--text,#e8ecf2);font-size:15px;margin-right:4px}
@@ -959,7 +960,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   const keyAct = (e) => { if (SET.keyson === false) return ''; const k = keyNorm(e); if (!k) return ''; const hit = KEYS.find((q) => keyOf(q[0]) && keyOf(q[0]) === k); return hit ? hit[0] : ''; };
   const keyLabel = (k) => (!k ? 'None' : k === ' ' ? 'Space' : k.length === 1 ? k.toUpperCase() : k);
   let keyEdit = '';
-  const keysCard = () => `<div class="card sc" id="gtkeys"><h2>Keyboard shortcuts</h2>
+  const keysCard = () => `<div class="card sc" id="gtkeys"><h2>Shortcuts</h2>
       <div class="sx"><div class="sxt"><b>Use keyboard shortcuts</b><small>Off: no key does anything on its own (Esc still closes pop-ups).</small></div><div class="sxc"><label class="tgl"><input type="checkbox" data-sk="keyson"${SET.keyson !== false ? ' checked' : ''}><i></i></label></div></div>
       <p class="mute" style="margin:6px 0 6px">Click a key to change it, then press the new key. Backspace clears it, Escape cancels. Shortcuts do nothing while you are typing in a box.</p>
       <div class="kyl${SET.keyson === false ? ' off' : ''}">${KEYS.map(([a, lbl]) => `<div class="kyr"><span>${esc(lbl)}</span><button type="button" class="kyb${keyEdit === a ? ' ed' : ''}${keyOf(a) ? '' : ' none'}" data-ky="${a}">${keyEdit === a ? 'Press a key' : esc(keyLabel(keyOf(a)))}</button></div>`).join('')}
@@ -1593,7 +1594,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   // Developer, founder and owner accounts check every minute, so a role taken away closes their tools quickly; anyone else signed
   // in to a Pathfinder account every 5 minutes, so a role given to them shows up without pressing Sync.
   let flT = 0;
-  setInterval(() => { if (document.hidden) return; flT++; if (FLG.dev || FLG.role === 'tester' || (PFA && PFA.on && flT % 5 === 0)) flagsLoad(true); }, 6e4);
+  setInterval(() => { if (document.hidden) return; flT++; if (((FLG.dev || FLG.role === 'tester') && flT % 3 === 0) || (PFA && PFA.on && flT % 5 === 0)) flagsLoad(true); }, 6e4); // the team every 3 minutes, everyone signed in every 5
   window.__gtFlagsNow = () => flagsLoad(true);
   // Redraw just one settings card in place (help, help desk, admin), so clicking around there never rebuilds the whole page.
   function redrawCard(t, fn) {
@@ -1607,7 +1608,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     c.replaceWith(n);
     if (aid) { const f = document.getElementById(aid); if (f) { f.focus(); if (pos != null) { try { f.setSelectionRange(pos, pos); } catch (e) { /* not text */ } } } }
   }
-  const hDraw = () => redrawCard('Help', helpCard), dDraw = () => redrawCard('Help desk', deskCard), aDraw = () => redrawCard('Founder panel', admCard);
+  const hDraw = () => redrawCard('Help', helpCard), dDraw = () => redrawCard('Help desk', deskCard), aDraw = () => redrawCard('Founder', admCard);
   // ---- Help: ask the Pathfinder team, and read their answers here (Settings > About & help) ----
   // Requests opened on this device are kept by key on this device; signed in to a Pathfinder account they also show on every
   // device. The team answers in the Help desk (developer and founder accounts) or on the admin page.
@@ -1695,7 +1696,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     hDraw(); const m = settingsSec.querySelector('.hmsgs'); if (m) m.scrollTop = m.scrollHeight;
   }
   const hSync = (t) => { HLP.t = t; const L = HLP.list || (HLP.list = []); const i = L.findIndex((x) => x.id === t.id); const sum = { id: t.id, at: t.at, upd: t.upd, kind: t.kind, status: t.status, first: t.first, n: t.n, unread: false }; if (i >= 0) L[i] = sum; else L.unshift(sum); L.sort((a, b) => b.upd - a.upd); };
-  settingsSec.addEventListener('input', (e) => { const id = e.target.id; if (id === 'hmsg') HLP.msg = e.target.value; if (id === 'hcon') HLP.contact = e.target.value; if (id === 'hreply') HLP.reply = e.target.value; if (id === 'dreply') DSK.reply = e.target.value; if (id === 'dnote') DSK.tn = e.target.value; });
+  settingsSec.addEventListener('input', (e) => { const id = e.target.id; if (id === 'hmsg') HLP.msg = e.target.value; if (id === 'hcon') HLP.contact = e.target.value; if (id === 'hreply') HLP.reply = e.target.value; if (id === 'dreply') { DSK.reply = e.target.value; DSK.typ = { k: 'reply', at: Date.now() }; } if (id === 'dnote') { DSK.tn = e.target.value; DSK.typ = { k: 'note', at: Date.now() }; } });
   settingsSec.addEventListener('change', (e) => {
     if (e.target.id === 'dcan' && e.target.value) { const x = (DSK.can || []).find((q) => q.id === e.target.value); if (x) { DSK.reply = (DSK.reply.trim() ? DSK.reply.replace(/\s+$/, '') + '\n\n' : '') + x.text; dDraw(); const t = document.getElementById('dreply'); if (t) { t.focus(); t.setSelectionRange(t.value.length, t.value.length); } } return; }
     if (e.target.id === 'hrep') HLP.rep = e.target.checked; if (e.target.dataset && e.target.dataset.ntf) { try { localStorage.setItem(e.target.dataset.ntf, e.target.checked ? '1' : '0'); } catch (er) { /* storage off */ } if (e.target.checked) askNotify(); } });
@@ -1721,7 +1722,16 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   settingsSec.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('[data-hid],[data-did]')) { e.preventDefault(); e.target.click(); } });
 
   // ---- Help desk: every help request, for developer and founder accounts (Settings > Help desk) ----
-  const DSK = { list: null, loading: false, f: 'open', t: null, reply: '', busy: false, note: '', bad: false, tn: '', can: null, canMan: false };
+  const DSK = { list: null, loading: false, f: 'open', t: null, reply: '', busy: false, note: '', bad: false, tn: '', can: null, canMan: false, typ: null, moved: false };
+  // Who else on the team has the open request on screen (and is typing), so two people do not answer at once.
+  const RN = { owner: 'Owner', founder: 'Founder', dev: 'Developer', tester: 'Tester' };
+  function hereHTML(t) {
+    const H = (t && t.here) || [];
+    const line = H.map((x) => `<span class="hhp${x.typing ? ' ty' : ''}"><i aria-hidden="true"></i><b>${esc(x.name)}</b>${RN[x.role] ? ' (' + RN[x.role] + ')' : ''} ${x.typing === 'reply' ? 'is typing a reply…' : x.typing === 'note' ? 'is writing a team note…' : 'is looking at this too'}</span>`).join('');
+    const slow = t && t.live === false ? '<span class="hslow">Changes from the rest of the team can take up to a minute to show here. ADMIN-SETUP.txt has the one-time step that makes them show in seconds.</span>' : '';
+    return line + slow;
+  }
+  const typingNow = () => (DSK.typ && Date.now() - DSK.typ.at < 8000 ? DSK.typ.k : '');
   const canLoad = () => { if (!gt.deskCanned) return; gt.deskCanned().then((l) => { DSK.can = l; if (DSK.t) dDraw(); }).catch(() => { DSK.can = DSK.can || []; }); };
   async function deskLoad(quiet) {
     if (!FLG.dev || !window.gt || !gt.deskList || DSK.loading) return;
@@ -1746,6 +1756,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
       body = `<p class="fbb"><button class="g hback" data-d="back" type="button">&larr; All requests</button><button class="g" data-d="tref" type="button"${DSK.busy ? ' disabled' : ''}>&#8635; Refresh</button></p>
         <div class="hth"><div class="hthh"><b>${esc(HKN[t.kind] || 'Other')}</b><span class="hst ${st[1]}">${DSN(t.status)}</span><small>Opened ${esc(hWhen(t.at))}</small></div>
         <p class="fbb hsm" style="margin:2px 0 6px"><span class="hclaim">${t.claim ? (t.claim.name === pdn() ? '<b>You are answering this</b>' : `<b>${esc(t.claim.name)}</b> is answering this`) : 'Nobody is answering this yet'}</span>${t.claim && t.claim.name === (PFA && PFA.name) ? '<button class="g" data-d="unclaim" type="button">Let someone else</button>' : `<button class="g" data-d="claim" type="button">${t.claim ? 'Take it over' : 'I&rsquo;m answering this'}</button>`}${PFA && PFA.founder && t.canBlock ? `<button class="g${t.blocked ? '' : ' admdel'}" data-d="block" type="button">${t.blocked ? 'Unblock sender' : 'Block sender'}</button>` : ''}${t.blocked ? '<span class="bad hsm">Blocked from help requests</span>' : ''}</p>
+        <p class="hhere" aria-live="polite">${hereHTML(t)}</p>
         <p class="mute hsm">${t.acct ? 'Pathfinder account <b>' + esc(t.acct) + '</b>' + (t.arole === 'tester' ? ' (tester)' : '') : 'Not signed in to a Pathfinder account, so they show as User'}${t.contact ? ' &middot; reply to <b>' + esc(t.contact) + '</b>' : ''} &middot; ${esc(t.where || '')} ${esc(t.ver || '')}</p>
         <div class="hmsgs">${t.msgs.map((m) => `<div class="hb${m.by === 'team' ? ' team' : ''}${RC[m.role] ? ' own r-' + m.role : m.role === 'tester' ? ' r-tester' : ''}"><small>${m.by === 'team' ? esc(m.name || 'Pathfinder team') + (RC[m.role] ? `<em class="hown">${RC[m.role]}</em>` : '') : esc(m.name || t.acct || 'User') + (m.role === 'tester' ? '<em class="hown">Tester</em>' : '')} &middot; ${esc(hWhen(m.at))}</small><div>${hText(m.text)}</div></div>`).join('')}</div>
         ${t.report ? `<details class="hrep"><summary>Problem report</summary><pre>${esc(t.report)}</pre></details>` : ''}
@@ -1753,7 +1764,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
           <textarea id="dnote" maxlength="2000" rows="2" placeholder="Add a note for the team">${esc(DSK.tn)}</textarea><p class="fbb" style="margin:0"><button class="g" data-d="note" type="button"${DSK.busy ? ' disabled' : ''}>Add note</button></p></div>
         <textarea id="dreply" maxlength="3000" rows="4" placeholder="Write a reply. The user sees it in Settings > About & help.">${esc(DSK.reply)}</textarea>
         ${gt.deskCanned ? `<p class="fbb hcan"><select id="dcan" aria-label="Insert a saved reply"><option value="">Insert a saved reply…</option>${(DSK.can || []).map((x) => `<option value="${esc(x.id)}">${esc(x.title)}</option>`).join('')}</select><button class="g" data-d="cansave" type="button" title="Keep what is in the reply box so anyone on the team can insert it later">Save as a saved reply</button>${(DSK.can || []).length ? `<button class="g" data-d="canman" type="button">${DSK.canMan ? 'Done' : 'Manage'}</button>` : ''}</p>${DSK.canMan ? `<div class="adml">${(DSK.can || []).map((x) => `<div class="admr" data-cid="${esc(x.id)}"><div class="admn"><b>${esc(x.title)}</b><small>${esc(x.text.slice(0, 120))}${x.text.length > 120 ? '…' : ''} &middot; ${esc(x.by || '')}</small></div><div class="admc"><button class="g admdel" data-d="candel" type="button">Delete</button></div></div>`).join('')}</div>` : ''}` : ''}
-        <p class="fbb"><button class="b" data-d="reply" type="button"${DSK.busy ? ' disabled' : ''}>${DSK.busy ? 'Sending…' : 'Send reply'}</button><button class="g" data-d="replyclose" type="button"${DSK.busy ? ' disabled' : ''}>Send and mark solved</button>${t.status === 'closed' ? '<button class="g" data-d="reopen" type="button">Reopen</button>' : '<button class="g" data-d="close" type="button">Mark as solved</button>'}${PFA && PFA.founder ? '<button class="g admdel" data-d="del" type="button">Delete</button>' : ''}</p></div>`;
+        <p class="fbb"><button class="b" data-d="reply" type="button"${DSK.busy ? ' disabled' : ''}>${DSK.busy ? 'Sending…' : DSK.moved ? 'Send anyway' : 'Send reply'}</button><button class="g" data-d="replyclose" type="button"${DSK.busy ? ' disabled' : ''}>Send and mark solved</button>${t.status === 'closed' ? '<button class="g" data-d="reopen" type="button">Reopen</button>' : '<button class="g" data-d="close" type="button">Mark as solved</button>'}${PFA && PFA.founder ? '<button class="g admdel" data-d="del" type="button">Delete</button>' : ''}</p></div>`;
     } else {
       const list = L.filter((x) => DSK.f === 'all' || x.status === DSK.f);
       body = `<div class="fbk">${[['open', 'Waiting'], ['answered', 'Open'], ['closed', 'Solved'], ['all', 'All']].map(([k, l]) => `<button class="chip${DSK.f === k ? ' on' : ''}" data-df="${k}" type="button">${l} ${k === 'all' ? L.length : cnt[k]}</button>`).join('')}<button class="g" data-d="refresh" type="button">${DSK.loading ? 'Loading…' : '&#8635; Refresh'}</button></div>${gt.notify ? `<div class="sx hntf"><div class="sxt"><b>Notify me about new requests and replies</b></div><div class="sxc"><label class="tgl"><input type="checkbox" data-ntf="gt_notify_desk"${notifOn('gt_notify_desk') ? ' checked' : ''}><i></i></label></div></div>` : ''}
@@ -1765,21 +1776,29 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     const f = e.target.closest('[data-df]'); if (f) { DSK.f = f.dataset.df; dDraw(); return; }
     // (see the 10-second check below the Help desk)
     const row = e.target.closest('[data-did]');
-    if (row) { const id = row.dataset.did; DSK.reply = ''; DSK.note = ''; if (DSK.can === null) canLoad(); gt.deskGet({ id }).then((t) => { DSK.t = t; const r = (DSK.list || []).find((x) => x.id === id); if (r) r.unread = false; SECN['Help desk'] = (DSK.list || []).filter((x) => x.unread).length; badges(); dDraw(); const m = settingsSec.querySelector('.hmsgs'); if (m) m.scrollTop = m.scrollHeight; }).catch((er) => { DSK.note = clean(er); DSK.bad = true; dDraw(); }); return; }
+    if (row) { const id = row.dataset.did; DSK.reply = ''; DSK.note = ''; if (DSK.can === null) canLoad(); DSK.moved = false; gt.deskGet({ id, here: true }).then((t) => { DSK.t = t; const r = (DSK.list || []).find((x) => x.id === id); if (r) r.unread = false; SECN['Help desk'] = (DSK.list || []).filter((x) => x.unread).length; badges(); dDraw(); const m = settingsSec.querySelector('.hmsgs'); if (m) m.scrollTop = m.scrollHeight; }).catch((er) => { DSK.note = clean(er); DSK.bad = true; dDraw(); }); return; }
     const b = e.target.closest('[data-d]'); if (!b || DSK.busy) return;
     const a = b.dataset.d, sync = (t) => { DSK.t = t; const r = (DSK.list || []).find((x) => x.id === t.id); if (r) Object.assign(r, { status: t.status, upd: t.upd, unread: false, n: t.n }); };
     const act = (fn, ok) => { DSK.busy = true; DSK.note = ''; dDraw(); hTimed(fn()).then((t) => { if (t && t.id) sync(t); DSK.note = (typeof ok === 'function' ? t && ok(t) : ok) || ''; DSK.bad = false; }).catch((er) => { DSK.note = clean(er); DSK.bad = true; }).finally(() => { DSK.busy = false; dDraw(); }); };
-    if (a === 'back') { DSK.t = null; DSK.note = ''; dDraw(); return; }
+    if (a === 'back') { DSK.t = null; DSK.note = ''; DSK.moved = false; dDraw(); return; }
     if (a === 'refresh') { deskLoad(false); return; }
     if (a === 'cansave') { const text = DSK.reply.trim(); if (!text) { DSK.note = 'Write the reply first, then save it.'; DSK.bad = true; dDraw(); return; } gt.deskCannedSave({ text }).then((l) => { DSK.can = l; DSK.note = 'Saved. Anyone on the team can insert it now.'; DSK.bad = false; dDraw(); }).catch((er) => { DSK.note = clean(er); DSK.bad = true; dDraw(); }); return; }
     if (a === 'canman') { DSK.canMan = !DSK.canMan; dDraw(); return; }
     if (a === 'candel') { const id = b.closest('[data-cid]').dataset.cid, x = (DSK.can || []).find((q) => q.id === id); if (!x || !confirm('Delete the saved reply "' + x.title + '" for the whole team?')) return; gt.deskCannedDel({ id }).then((l) => { DSK.can = l; dDraw(); }).catch((er) => { DSK.note = clean(er); DSK.bad = true; dDraw(); }); return; }
     if ((a === 'claim' || a === 'unclaim') && DSK.t) return act(() => gt.deskClaim({ id: DSK.t.id, on: a === 'claim' }), a === 'claim' ? 'Marked as yours. The team sees you are answering it.' : 'Released. Anyone can pick it up.');
     if (a === 'note' && DSK.t) { const text = DSK.tn.trim(); if (!text) { DSK.note = 'Write the note first.'; DSK.bad = true; dDraw(); return; } return act(async () => { const t = await gt.deskNote({ id: DSK.t.id, text }); DSK.tn = ''; return t; }, 'Note added. Only the team sees it.'); }
-    if (a === 'block' && DSK.t) { const on = !DSK.t.blocked; if (on && !confirm('Block this sender from sending help requests?\n\nThey cannot open new requests or reply until someone unblocks them (Founder panel > Help requests).')) return; return act(() => gt.deskBlock({ id: DSK.t.id, on }), on ? 'Blocked. They cannot send help requests now.' : 'Unblocked.'); }
+    if (a === 'block' && DSK.t) { const on = !DSK.t.blocked; if (on && !confirm('Block this sender from sending help requests?\n\nThey cannot open new requests or reply until someone unblocks them (Settings > Founder > Help requests).')) return; return act(() => gt.deskBlock({ id: DSK.t.id, on }), on ? 'Blocked. They cannot send help requests now.' : 'Unblocked.'); }
     if (a === 'tref' && DSK.t) { const n0 = DSK.t.msgs.length, s0 = DSK.t.status; deskLoad(true); return act(() => gt.deskGet({ id: DSK.t.id }), (t) => (t.msgs.length > n0 ? 'New message.' : t.status !== s0 ? 'Updated.' : 'Up to date.')); }
     if (!DSK.t) return;
-    if (a === 'reply' || a === 'replyclose') { if (!DSK.reply.trim()) { DSK.note = 'Write a reply first.'; DSK.bad = true; dDraw(); return; } return act(async () => { const t = await gt.deskReply({ id: DSK.t.id, text: DSK.reply.trim(), close: a === 'replyclose' }); DSK.reply = ''; return t; }, a === 'replyclose' ? 'Reply sent and marked as solved.' : 'Reply sent. The player sees it in Settings > About & help.'); }
+    if (a === 'reply' || a === 'replyclose') {
+      if (!DSK.reply.trim()) { DSK.note = 'Write a reply first.'; DSK.bad = true; dDraw(); return; }
+      const force = DSK.moved; let moved = '';
+      return act(async () => {
+        const t = await gt.deskReply({ id: DSK.t.id, text: DSK.reply.trim(), close: a === 'replyclose', seen: DSK.t.msgs.length, force });
+        if (t && t.moved) { moved = t.moved; DSK.moved = true; delete t.moved; return t; } // nothing sent: read theirs first
+        DSK.reply = ''; DSK.moved = false; return t;
+      }, (t) => (moved ? moved + ' Read it above. Your reply is still here: press Send anyway to send it too, or change it first.' : (a === 'replyclose' ? 'Reply sent and marked as solved.' : 'Reply sent. The player sees it in Settings > About & help.')));
+    }
     if (a === 'close' || a === 'reopen') return act(() => gt.deskStatus({ id: DSK.t.id, status: a === 'close' ? 'closed' : 'open' }), a === 'close' ? 'Marked as solved. If the user writes back, it opens again.' : 'Reopened.');
     if (a === 'del') { if (!confirm('Delete this help request for good? The user will no longer see it.')) return; const id = DSK.t.id; return act(async () => { await gt.deskDelete({ id }); DSK.list = (DSK.list || []).filter((x) => x.id !== id); DSK.t = null; return null; }, 'Deleted.'); }
   });
@@ -1787,14 +1806,6 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   // when something changed, and what you are typing (and where the cursor is) stays as it is.
   setInterval(() => {
     if (document.hidden || !settingsSec.classList.contains('on') || !window.gt) return;
-    if (DSK.t && !DSK.busy && document.getElementById('dreply') && gt.deskGet) {
-      const id = DSK.t.id, n0 = DSK.t.msgs.length, s0 = DSK.t.status;
-      gt.deskGet({ id }).then((t) => {
-        if (!t || !DSK.t || DSK.t.id !== id || DSK.busy || (t.msgs.length === n0 && t.status === s0 && (t.notes || []).length === (DSK.t.notes || []).length && JSON.stringify(t.claim) === JSON.stringify(DSK.t.claim) && t.blocked === DSK.t.blocked)) return;
-        DSK.t = t; const r = (DSK.list || []).find((x) => x.id === id); if (r) Object.assign(r, { status: t.status, upd: t.upd, unread: false, n: t.n });
-        dDraw(); if (t.msgs.length > n0) { const m = settingsSec.querySelector('.hmsgs'); if (m) m.scrollTop = m.scrollHeight; }
-      }).catch(() => {});
-    }
     if (HLP.view === 'ticket' && HLP.t && !HLP.busy && document.getElementById('hreply') && gt.helpGet) {
       const id = HLP.t.id, n0 = HLP.t.msgs.length, s0 = HLP.t.status;
       gt.helpGet({ id }).then((t) => {
@@ -1803,6 +1814,20 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
       }).catch(() => {});
     }
   }, 10000);
+  // The Help desk's open request checks every 4 seconds (and tells the team you are looking at it, and whether you are typing),
+  // so a note or reply from someone else shows up while you work on it. Who else is here updates in place; the rest redraws only
+  // when something changed, and what you are typing stays as it is.
+  setInterval(() => {
+    if (document.hidden || !settingsSec.classList.contains('on') || !window.gt || !DSK.t || DSK.busy || !document.getElementById('dreply') || !gt.deskGet || DSK.polling) return;
+    const id = DSK.t.id, n0 = DSK.t.msgs.length, s0 = DSK.t.status; DSK.polling = true;
+    gt.deskGet({ id, here: true, typing: typingNow() }).then((t) => {
+      if (!t || !DSK.t || DSK.t.id !== id || DSK.busy) return;
+      const same = t.msgs.length === n0 && t.status === s0 && JSON.stringify(t.notes || []) === JSON.stringify(DSK.t.notes || []) && JSON.stringify(t.claim) === JSON.stringify(DSK.t.claim) && t.blocked === DSK.t.blocked;
+      if (same) { DSK.t.here = t.here; DSK.t.live = t.live; const h = settingsSec.querySelector('.hhere'); if (h) { const v = hereHTML(t); if (h.innerHTML !== v) h.innerHTML = v; } return; }
+      DSK.t = t; const r = (DSK.list || []).find((x) => x.id === id); if (r) Object.assign(r, { status: t.status, upd: t.upd, unread: false, n: t.n });
+      dDraw(); if (t.msgs.length > n0) { const m = settingsSec.querySelector('.hmsgs'); if (m) m.scrollTop = m.scrollHeight; }
+    }).catch(() => {}).finally(() => { DSK.polling = false; });
+  }, 4000);
   // Coming back to Pathfinder (a phone app switched back to, a laptop woken up, a tab clicked again): bring everything up to
   // date, because a phone can keep the page asleep for hours. The Pathfinder account (your Bungie accounts) syncs if it has not
   // for 5 minutes, help answers and switches are checked, and the website reloads itself if a newer version came out.
@@ -1849,10 +1874,11 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   { const sb = document.querySelector('#nav button[data-t="settings"]'); if (sb) sb.addEventListener('click', () => { if (SSEC === 'About & help' || SSEC === 'Help') helpLoad(true); if (SSEC === 'Help desk') deskLoad(true); }); }
   // Check for new answers (players) and new requests (the team) shortly after start, then every 10 minutes.
   setTimeout(() => { helpLoad(true); deskLoad(true); setInterval(() => { helpLoad(true); deskLoad(true); }, 6e5); }, 6000);
-  // More often while it matters: a request of yours still open (every 3 minutes); the team's list every 2 minutes while
-  // Pathfinder is on screen (the 10-minute check above covers it when minimised).
+  // More often while it matters: a request of yours still open (every 3 minutes); the team's list every 2 minutes while the
+  // Help desk itself is on screen (the 10-minute check above keeps the dot and alerts going the rest of the time; every copy of
+  // Pathfinder the team has open asks, so this stays light on the token service's free daily limits).
   setInterval(() => { if (HLP.list && HLP.list.some((x) => x.status !== 'closed')) helpLoad(true); }, 18e4);
-  setInterval(() => { if (FLG.dev && !document.hidden) deskLoad(true); }, 12e4);
+  setInterval(() => { if (FLG.dev && !document.hidden && settingsSec.classList.contains('on') && SSEC === 'Help desk' && !DSK.t) deskLoad(true); }, 12e4);
   window.addEventListener('gtflags', () => { if (FLG.dev && DSK.list === null) deskLoad(true); });
   const DEVRN = { from: '', to: '', msg: '', bad: false, busy: false };
   function devCard() {
@@ -1873,7 +1899,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     return `<div class="card sc"><h2>Developer</h2><p class="mute">You are signed in with a developer account (${esc(pdn())}).</p>
       ${apRow}${testH}
       <div class="thh">Tools</div><p>${pc ? '<button class="g" data-dev="tools">Open developer tools</button> ' : ''}<button class="g" data-dev="diag">Copy diagnostics</button> <button class="g" data-dev="bug">Report a bug</button> <button class="g" data-dev="maint">Preview the maintenance bar</button></p>
-      <div class="thh">Rename an account</div><p class="mute">For a display name that breaks the rules. Only the display name changes: they still sign in with the same login name and password. ${PFA && PFA.founder ? 'Other accounts are renamed in the Founder panel.' : 'You can rename user and tester accounts.'}</p>
+      <div class="thh">Rename an account</div><p class="mute">For a display name that breaks the rules. Only the display name changes: they still sign in with the same login name and password. ${PFA && PFA.founder ? 'Other accounts are renamed in Founder.' : 'You can rename user and tester accounts.'}</p>
       <div class="pfaf"><input id="devrnf" type="text" class="pfmask" placeholder="Their login name" autocapitalize="off" spellcheck="false" maxlength="200" value="${esc(DEVRN.from)}"><input id="devrnt" type="text" placeholder="New display name" spellcheck="false" maxlength="32" value="${esc(DEVRN.to)}"><button class="b" data-dev="rename">${DEVRN.busy ? 'Renaming…' : 'Rename'}</button></div>${DEVRN.msg ? `<p class="admmsg${DEVRN.bad ? ' bad' : ''}">${esc(DEVRN.msg)}</p>` : ''}</div>`;
   }
   settingsSec.addEventListener('change', (e) => {
@@ -1922,7 +1948,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   const admLogNow = () => admCall('GET', '/log').then((r) => { if (r && r.log) { ADM.log = r.log; aDraw(); } }).catch(() => {});
   function admCard() {
     if (!PFA || !PFA.founder) return '';
-    if (!ADM.on) return `<div class="card sc"><h2>Founder panel</h2><p class="mute">Manage Pathfinder accounts, feature switches, help requests and announcements. For founder and owner accounts, with an access key from the owner. The key is kept only until you close Pathfinder.</p>
+    if (!ADM.on) return `<div class="card sc"><h2>Founder</h2><p class="mute">Manage Pathfinder accounts, feature switches, help requests and announcements. For founder and owner accounts, with an access key from the owner. The key is kept only until you close Pathfinder.</p>
       <div class="pfaf"><input id="admkey" type="password" placeholder="Access key" autocomplete="off" spellcheck="false"><button class="b" data-adm="unlock">${ADM.busy ? 'Checking…' : 'Unlock'}</button></div>${ADM.msg ? `<p class="admmsg bad">${esc(ADM.msg)}</p>` : ''}</div>`;
     const q = ADM.q.trim().toLowerCase(), RL = { '': 'User', tester: 'Tester', dev: 'Developer', founder: 'Founder', owner: 'Owner' };
     // Founders look after players and developers; the owner also founders; owner accounts only change on the admin page.
@@ -1948,13 +1974,13 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     if (!frows) frows = `<p class="mute">${ADM.cat ? 'No switches.' : 'Deploy the latest token-service/worker.js to see the switches here.'}</p>`;
     const LR = { owner: 'owner', founder: 'founder', dev: 'developer', tester: 'tester' };
     const logH = !ADM.log ? '<p class="mute">Deploy the latest token-service/worker.js to see this.</p>' : `<div class="adml">${ADM.log.slice(0, ADM.logN).map((e) => `<div class="admlog"><small>${esc(admWhen(e.t))}</small><span><b>${esc(e.by || 'Someone')}</b>${LR[e.role] ? ` <span class="mute">(${LR[e.role]})</span>` : ''} ${esc(e.a)}${e.who ? ` <b>${esc(e.who)}</b>` : ''}${e.d ? (e.who ? ' ' : ': ') + esc(e.d) : ''}</span></div>`).join('') || '<p class="mute">Nothing yet.</p>'}</div><p>${ADM.log.length > 5 ? `<button class="g" data-adm="logmore">${ADM.logN > 5 ? 'Show less' : 'Show more (' + Math.min(ADM.log.length, 20) + ')'}</button> ` : ''}${ADM.log.length && gt.saveCsv ? '<button class="g" data-adm="logdl">Download (CSV)</button>' : ''}${PFA.owner && gt.saveCsv ? ' <button class="g" data-adm="backup" title="Accounts (names, roles and dates only), help requests, founder notes, switches, keys (without the keys themselves) and this list, as one file">Download a full backup</button>' : ''}</p>`;
-    const keysH = PFA.owner ? `<p class="mute">Founders open this Founder panel with an access key. Make one for each person, give it to them privately, and take it back whenever you like.</p>
+    const keysH = PFA.owner ? `<p class="mute">Founders open Founder with an access key. Make one for each person, give it to them privately, and take it back whenever you like.</p>
       ${ADM.newKey ? `<div class="admcode"><p>Key for <b>${esc(ADM.newKey.name)}</b>. Copy it now: it is not shown again.</p><code class="admkey">${esc(ADM.newKey.key)}</code><p><button class="g" data-adm="kcopy">Copy key</button></p></div>` : ''}
       <div class="pfaf"><input type="text" id="admkname" maxlength="40" placeholder="Who is it for? (e.g. Manta)"><label class="mute" style="display:flex;gap:6px;align-items:center;white-space:nowrap">Works for${ADM.ku === 'never' ? '' : `<input type="number" id="admkn" min="1" max="99" value="${esc(ADM.kn)}" style="width:64px">`}<select id="admku" aria-label="How long the key works">${[['never', 'Always'], ['day', 'days'], ['week', 'weeks'], ['month', 'months'], ['year', 'years']].map(([v, l]) => `<option value="${v}"${ADM.ku === v ? ' selected' : ''}>${l}</option>`).join('')}</select></label><button class="b" data-adm="kadd">Make key</button></div>
       <div class="adml">${(ADM.keys || []).map((k) => `<div class="admr" data-kid="${esc(k.id)}"><div class="admn"><b>${esc(k.name)}</b><small>Made ${esc(admWhen(k.made))}${k.by ? ' by ' + esc(k.by) : ''} &middot; ${k.used ? 'last used ' + esc(admWhen(k.used)) + (k.usedBy ? ' by ' + esc(k.usedBy) : '') : 'not used yet'} &middot; ${!k.exp ? 'works until taken back' : k.exp < Date.now() ? '<span class="bad">ran out ' + esc(admWhen(k.exp)) + '</span>' : 'works until ' + esc(admWhen(k.exp))}</small></div><div class="admc"><button class="g admdel" data-adm="krev">Take back</button></div></div>`).join('') || '<p class="mute">No access keys yet. Your ADMIN_KEY always works for you.</p>'}</div>` : '';
     const sec = (title, sub, inner) => `<div class="admsec" role="group" aria-label="${title}"><h3 class="admh">${title}${sub ? `<small>${sub}</small>` : ''}</h3>${inner}</div>`;
     const helpN = DSK.list ? DSK.list.filter((x) => x.status === 'open').length : null;
-    return `<div class="card sc"><h2>Founder panel</h2><p class="mute">Signed in as ${PFA.owner ? 'the owner' : 'founder'} ${esc(pdn() || '')}. Passwords are never shown here. ${PFA.owner ? 'Owner accounts are only changed on the admin page.' : 'Founder and owner accounts are changed by the owner.'}</p>
+    return `<div class="card sc"><h2>Founder</h2><p class="mute">Signed in as ${PFA.owner ? 'the owner' : 'founder'} ${esc(pdn() || '')}. Passwords are never shown here. ${PFA.owner ? 'Owner accounts are only changed on the admin page.' : 'Founder and owner accounts are changed by the owner.'}</p>
       ${ADM.msg ? `<p class="admmsg${/^(Could|Wrong|Too|No |Only)/.test(ADM.msg) ? ' bad' : ''}">${esc(ADM.msg)}</p>` : ''}
       ${statsH}
       ${sec('Accounts', String(ADM.acc.length), `${rfH}
@@ -1967,7 +1993,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
       <div class="admrow"><select id="admannlv" aria-label="Style">${[['info', 'Info'], ['warn', 'Warning']].map(([v, l]) => `<option value="${v}"${ADM.annLv === v ? ' selected' : ''}>${l}</option>`).join('')}</select><select id="admannh" aria-label="How long">${[['0', 'Until I remove it'], ['1', 'For 1 hour'], ['6', 'For 6 hours'], ['24', 'For 1 day'], ['72', 'For 3 days'], ['168', 'For 1 week']].map(([v, l]) => `<option value="${v}"${ADM.annH === v ? ' selected' : ''}>${l}</option>`).join('')}</select><button class="b" data-adm="annpost">${ADM.ann ? 'Replace it' : 'Post it'}</button></div>`)}
       ${keysH ? sec('Access keys', '', keysH) : ''}
       ${sec('Recent actions', ADM.log && ADM.log.length ? 'last ' + Math.min(ADM.log.length, ADM.logN) : '', `<p class="mute">Every change made here, on the admin page or with the developer rename tool.</p>${logH}`)}
-      <p class="admfoot"><button class="g" data-adm="lock">Lock the Founder panel</button></p></div>`;
+      <p class="admfoot"><button class="g" data-adm="lock">Lock Founder</button></p></div>`;
   }
   settingsSec.addEventListener('click', async (e) => {
     const b = e.target.closest('[data-adm]'); if (!b || b.tagName === 'SELECT' || b.tagName === 'INPUT') return;
@@ -2012,7 +2038,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     if (!t.dataset || !t.dataset.adm) return;
     if (t.dataset.adm === 'role') {
       const row = t.closest('[data-aid]'), acc = ADM.acc.find((x) => x.id === row.dataset.aid); if (!acc) return;
-      if (t.value === 'founder' && !confirm('Make ' + (acc.name || 'this account') + ' a founder? Founders can use the Founder panel (with an access key you give them): accounts, passwords, renames, help requests and switches.')) { t.value = acc.role || ''; return; }
+      if (t.value === 'founder' && !confirm('Make ' + (acc.name || 'this account') + ' a founder? Founders can use Founder in Settings (with an access key you give them): accounts, passwords, renames, help requests and switches.')) { t.value = acc.role || ''; return; }
       try { Object.assign(acc, (await admCall('POST', '/role', { id: acc.id, role: t.value })).account); admLogNow(); ADM.msg = (acc.name || 'The account') + ' is now ' + ({ '': 'a user', tester: 'a tester', dev: 'a developer', founder: 'a founder' }[t.value] || 'changed') + '.'; } catch (er) { ADM.msg = clean(er); }
       aDraw();
     }
@@ -2127,7 +2153,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   }
   // Settings cards in even columns: each card, in a sensible order, goes into whichever column is shortest, so no side runs
   // far longer than the other. Re-done when cards are added (Farming, Reminders... come from another file) or the window resizes.
-  const SORD = ['Accounts', 'Appearance', 'Item display', 'Inventory display', 'Wish lists', 'Farming', 'Reminders', 'Keyboard shortcuts', 'Backup', 'About & help', 'Help', 'Problems', 'Help desk', 'Developer', 'Tester', 'Founder panel'];
+  const SORD = ['Accounts', 'Appearance', 'Item display', 'Inventory display', 'Wish lists', 'Farming', 'Reminders', 'Shortcuts', 'Backup', 'About & help', 'Help', 'Problems', 'Help desk', 'Developer', 'Tester', 'Founder'];
   // Settings as a menu (like a browser's settings page): the sections are listed on the left and only the one you pick is shown.
   // Cards come from several files (Farming, Reminders, About & help...), so this runs again whenever new cards show up.
   const SICO = {
@@ -2139,14 +2165,14 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     'Wish lists': '<path d="M7 11v9H4v-9zM7 11l4-7c1.5 0 2.5 1 2.5 2.5V10h5a2 2 0 012 2.3l-1.2 6A2 2 0 0117.3 20H7"/>',
     'Farming': '<path d="M12 21V10"/><path d="M12 13c-4 0-7-3-7-7 4 0 7 3 7 7zM12 10c0-3 2.5-6 7-6 0 4-3 6-7 6z"/>',
     'Reminders': '<path d="M6 16V11a6 6 0 0112 0v5l2 2H4z"/><path d="M10 21h4"/>',
-    'Keyboard shortcuts': '<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/>',
+    'Shortcuts': '<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/>',
     'Backup': '<path d="M7 18a5 5 0 01-.6-10A6 6 0 0118 9a4.5 4.5 0 01-1 9z"/><path d="M12 11v6M9.5 13.5L12 11l2.5 2.5"/>',
     'About & help': '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/>',
     'Help': '<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/>',
     'Help desk': '<path d="M4 13a8 8 0 0 1 16 0"/><rect x="3" y="13" width="4" height="6" rx="1.5"/><rect x="17" y="13" width="4" height="6" rx="1.5"/><path d="M20 19c0 1.5-2 2.5-5 2.5"/>',
     'Developer': '<path d="M8 8l-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/>',
     'Tester': '<path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.7 3h10.6a2 2 0 0 0 1.7-3l-5-9V3"/><path d="M7.5 15h9"/>',
-    'Founder panel': '<path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
+    'Founder': '<path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
   };
   const sico = (t) => `<svg viewBox="0 0 24 24" aria-hidden="true">${SICO[t] || '<circle cx="12" cy="12" r="8"/>'}</svg>`;
   let balT = 0, SSEC = (() => { try { return localStorage.getItem('gt_setsec') || 'Accounts'; } catch (e) { return 'Accounts'; } })();
@@ -2167,6 +2193,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     cards.forEach((c) => pane.appendChild(c));
     const names = [...new Set(cards.map(sect).filter(Boolean))];
     if (SSEC === 'Help') SSEC = 'About & help';
+    if (SSEC === 'Founder panel') SSEC = 'Founder'; if (SSEC === 'Keyboard shortcuts') SSEC = 'Shortcuts'; // renamed sections
     if (!names.includes(SSEC)) SSEC = names[0] || 'Accounts';
     cards.forEach((c) => { c.classList.toggle('son', sect(c) === SSEC); });
     const navH = names.map((n) => `<div role="button" tabindex="0" class="sni${n === SSEC ? ' on' : ''}" data-ssec="${esc(n)}"${n === SSEC ? ' aria-current="page"' : ''}>${sico(n)}<span>${esc(n)}</span>${secBadge(n)}</div>`).join('');

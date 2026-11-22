@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.35-beta.16: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.36-beta.1: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -793,8 +793,15 @@ H('fnotes:put', async (e, v) => {
 // The team's side: developer and founder accounts (the token service checks the role).
 const staffOnly = () => { if (!pfaStatus().dev) throw new Error('Developer and founder accounts only.'); };
 H('desk:list', async () => { staffOnly(); return (await helpReq('/acct/help/list', null, true)).tickets || []; });
-H('desk:get', async (e, v) => { staffOnly(); OBJ(v); return (await helpReq('/acct/help/get', { id: HID(v.id) }, true)).ticket; });
-H('desk:reply', async (e, v) => { staffOnly(); OBJ(v); const text = TXT(v.text, 3000).trim(); if (!text) throw new Error('Write a reply first.'); return (await helpReq('/acct/help/reply', { id: HID(v.id), text, close: !!v.close }, true)).ticket; });
+// here: this request is open on your screen (the team sees you are looking, and whether you are typing a reply or a note)
+H('desk:get', async (e, v) => { staffOnly(); OBJ(v); return (await helpReq('/acct/help/get', { id: HID(v.id), here: !!v.here, typing: ['reply', 'note'].includes(v.typing) ? v.typing : '' }, true)).ticket; });
+// seen: how many messages you had on screen. If someone else on the team replied since, nothing is sent and their reply comes
+// back (moved) so you can read it first; force sends anyway.
+H('desk:reply', async (e, v) => {
+  staffOnly(); OBJ(v); const text = TXT(v.text, 3000).trim(); if (!text) throw new Error('Write a reply first.');
+  try { return (await helpReq('/acct/help/reply', { id: HID(v.id), text, close: !!v.close, ...(Number.isInteger(v.seen) ? { seen: v.seen } : {}), force: !!v.force }, true)).ticket; }
+  catch (er) { if (er.code === 'moved' && er.data && er.data.ticket) return { ...er.data.ticket, moved: er.message }; throw er; }
+});
 H('desk:status', async (e, v) => { staffOnly(); OBJ(v); const st = TXT(v.status, 10); if (!['open', 'answered', 'closed'].includes(st)) throw bad(); return (await helpReq('/acct/help/status', { id: HID(v.id), status: st }, true)).ticket; });
 H('desk:delete', async (e, v) => { staffOnly(); OBJ(v); return helpReq('/acct/help/delete', { id: HID(v.id) }, true); });
 H('desk:canned', async () => { staffOnly(); return (await helpReq('/acct/help/canned', null, true)).canned || []; });
@@ -1579,8 +1586,8 @@ app.on('session-created', (s) => { s.setPermissionRequestHandler((wc, p, cb) => 
 app.commandLine.appendSwitch('disk-cache-size', String(64 * 1024 * 1024));
 function tidyDisk() {
   const ud = app.getPath('userData');
-  // item data from older versions of the app (replaced by defs7.json)
-  for (const f of ['defs.json', 'defs2.json', 'defs3.json', 'defs4.json', 'defs5.json', 'defs6.json']) { try { fs.unlinkSync(path.join(ud, f)); } catch (e) { /* not there */ } }
+  // item data from older versions of the app (replaced by defs8.json)
+  for (const f of ['defs.json', 'defs2.json', 'defs3.json', 'defs4.json', 'defs5.json', 'defs6.json', 'defs7.json']) { try { fs.unlinkSync(path.join(ud, f)); } catch (e) { /* not there */ } }
   // logs never grow past a few hundred KB
   for (const f of ['loadout-log.txt', 'art-log.txt', 'auth-log.txt']) { try { const p = path.join(ud, f), st = fs.statSync(p); if (st.size > 300 * 1024) { const t = fs.readFileSync(p, 'utf8'); fs.writeFileSync(p, t.slice(-100 * 1024)); } } catch (e) { /* not there */ } }
   // installers the updater downloaded for versions that are already installed
