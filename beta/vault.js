@@ -1293,6 +1293,8 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   const seesLv = (l, name) => (l === 'on' ? true : l === 'off' || !(l in LVR) ? false : myRank() >= LVR[l] && !devOff().includes(name));
   window.__gtFlag = (name, dflt) => { const l = FLG.flags[name]; if (!l) return dflt === undefined ? true : !!dflt; return seesLv(l, name); };
   window.__gtDev = () => !!FLG.dev;
+  // settings rows that belong to a feature switch ([data-fl]) show or hide when the switches arrive or change
+  window.addEventListener('gtflags', () => { document.querySelectorAll('[data-fl]').forEach((el) => { el.hidden = !window.__gtFlag(el.dataset.fl, true); }); });
   // Tabs have switches too ("tab-optimizer", ...), set on the admin page: Nobody hides the tab for everyone, Developers only shows
   // it just to developer accounts. Not set = everyone. Inventory, Home and Settings always stay.
   window.__gtTabLocked = (id) => !['vault', 'home', 'settings'].includes(id) && !window.__gtFlag('tab-' + id, true);
@@ -1850,7 +1852,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
       ${bgGrid()}</div>
       ${sx('Background picture dimming', 'Higher is darker and easier to read.', rng('bgdim', 25, 90, '%'))}
       <div class="thh">Motion and cards</div>
-      ${sx('Weapon pop-up in Inventory', 'Classic is the full pop-up. God roll style opens weapons in the same view as the God rolls tab: every perk column, wish list picks, Apply, tag, move and equip. Its Classic details button still opens the full pop-up.', opt('wview', [['classic', 'Classic'], ['gr', 'God roll style']]))}
+      ${`<div data-fl="opt-wview"${!window.__gtFlag || window.__gtFlag('opt-wview', true) ? '' : ' hidden'}>` + sx('Weapon pop-up in Inventory', 'Classic is the full pop-up. God roll style opens weapons in the same view as the God rolls tab: every perk column, wish list picks, Apply, tag, move and equip. Its Classic details button still opens the full pop-up.', opt('wview', [['classic', 'Classic'], ['gr', 'God roll style']])) + '</div>'}
       ${sx('Animations', 'Page fades, cards easing in and hover lifts. Off turns every animation off.', opt('anim', [['off', 'Off'], ['subtle', 'Subtle'], ['full', 'Full']]))}
       ${sx('Activity pictures on cards', 'The raid, dungeon and activity art behind cards on Home, Activity and Rotations.', tgl('cardart'))}
       ${sx('Glow strength', 'The soft colored glow around activity cards: purple for raids, bronze for dungeons, and so on.', rng('glow', 0, 100, '%'))}
@@ -3909,7 +3911,7 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
   // (armour, mods, items without their own copy) keeps the classic pop-up.
   function openItemView(id, el) {
     const x = byId(id);
-    if (x && SET.wview === 'gr' && WEAPON.has(x.b) && !x.ro && !noInst(x) && !x.pm) { sel = null; renderPop(); GV.from = 'inv'; gvOpen(id); return; }
+    if (x && SET.wview === 'gr' && (!window.__gtFlag || window.__gtFlag('opt-wview', true)) && WEAPON.has(x.b) && !x.ro && !noInst(x) && !x.pm) { sel = null; renderPop(); GV.from = 'inv'; gvOpen(id); return; }
     return openPop(id, el);
   }
   async function openPop(id, el) {
