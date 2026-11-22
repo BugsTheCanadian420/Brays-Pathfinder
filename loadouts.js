@@ -61,7 +61,30 @@
   }
 
   // Share links: https://d2pathfinder.com/<code>/<name> (or the GitHub address of the website).
-  const linkCode = (t) => { const m = /(?:d2pathfinder\.com|bugsthecanadian420\.github\.io\/Brays-Pathfinder)\/([A-Za-z0-9]{5,12})(?=[/?#\s]|$)/i.exec(String(t || '')); return m ? m[1] : ''; };
+  // Share links: d2pathfinder.com, the old GitHub Pages address, or whatever address this copy of the site runs on (previews).
+  const HERE = (() => { try { return /^https?:$/.test(location.protocol) ? location.host.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') : ''; } catch (e) { return ''; } })();
+  const LINKRE = new RegExp('(?:d2pathfinder\\.com|bugsthecanadian420\\.github\\.io\\/Brays-Pathfinder' + (HERE ? '|' + HERE : '') + ')(?:\\/beta)?\\/([A-Za-z0-9]{5,12})(?=[/?#\\s]|$)', 'i');
+  const linkCode = (t) => { const m = LINKRE.exec(String(t || '')); return m && !/^(status|privacy|download|beta|index|terms)$/i.test(m[1]) ? m[1] : ''; }; // site pages are not share codes
+  // A picture made with Pathfinder has its loadout code inside the file.
+  // A picture on the clipboard, for the Paste button: the app reads it natively, a browser asks for permission.
+  async function clipPic() {
+    try { const b = gt.readClipboardImage && (await gt.readClipboardImage()); if (b) return new Blob([Uint8Array.from(atob(b), (c) => c.charCodeAt(0))], { type: 'image/png' }); } catch (e) { /* the browser way below */ }
+    try { if (navigator.clipboard && navigator.clipboard.read) for (const it of await navigator.clipboard.read()) { const ty = it.types.find((x) => /^image\//.test(x)); if (ty) return await it.getType(ty); } } catch (e) { /* refused or nothing there */ }
+    return null;
+  }
+  async function impPic(file, pasted) {
+    if (!mod || mod.t !== 'imp' || !file) return;
+    try {
+      const code = pngText(new Uint8Array(await file.arrayBuffer()), PNGK);
+      if (!code) {
+        mod.msg = 'Reading the picture...'; drawMod();
+        const sc = await qRead(file);
+        if (sc) { mod.msg = 'Getting the shared loadout...'; drawMod(); const r = await gt.loShareGet({ code: sc }); const l = decode(r.c); if (!l.n && r.n) l.n = r.n; mod = null; drawMod(); importLo(l); return; }
+      }
+      if (!code) throw new Error('Pathfinder can\'t find a loadout in this picture. Pictures made before this update lose their loadout when Discord or another app re-saves them: ask for a new picture (new ones have a small black-and-white code in the bottom corner), use the original picture file, or type the link printed at the bottom of the picture.');
+      const l = decode(code); mod = null; drawMod(); importLo(l);
+    } catch (er) { if (mod) { mod.msg = V.clean(er); drawMod(); } }
+  }
   function importLo(l) {
     l.id = newId(); l.t = l.k = Date.now();
     resolve(l).forEach((r) => { if (r.x) r.en.id = r.x.id; });
@@ -168,6 +191,17 @@
     // Quietly get the other characters ready too, so switching characters is instant.
     (async () => { for (const c of V.chars()) { if (ARC[c.id]) continue; try { const its = artItemsOf(c.id), q = its.find((x) => x.eq) || its[0]; ARC[c.id] = q ? { v: await artDetail(q, c.id, false), e: '' } : { v: { none: 1 }, e: '' }; } catch (e) { ARC[c.id] = { v: null, e: V.clean(e) }; } } })();
   }
+  // A character's equipped artifact, waiting for any read already under way instead of giving up (sharing used to draw the
+  // picture without the artifact the first time, then with it the second time, once the read had finished).
+  async function artFor(cid) {
+    const nap = () => new Promise((ok) => setTimeout(ok, 150));
+    for (let i = 0; i < 120 && !ARC[cid] && ARLOAD; i++) await nap(); // another read is under way
+    if (!ARC[cid] && !ARLOAD) await artLoad(false, cid);
+    for (let i = 0; i < 120 && !ARC[cid]; i++) { await nap(); if (!ARLOAD && i === 40 && !ARC[cid]) await artLoad(false, cid); } // the quiet read of the other characters may be filling it in
+    const a = ARC[cid] && ARC[cid].v;
+    return a && !a.none && a.item && a.socks && a.socks.length ? a : null;
+  }
+  const withArt = (d, a) => { if (a) { d.ai = itemOf(a.item); d.a = a.socks.map((q) => q.cur).filter(Boolean).map(permk); } return d; };
   const artSel = () => { if (ARC[CH]) { AR = ARC[CH].v; ARERR = ARC[CH].e; ARCH = CH; } else { AR = undefined; ARCH = null; ARERR = ''; artLoad(); } };
   const curPerks = () => (AR && AR.socks ? AR.socks.map((q) => q.cur) : []);
   const plugOf = (h) => PL[h] || (AR && AR.plugs && AR.plugs[h]) || null;
@@ -394,11 +428,95 @@
     await gt.loShareImg({ code, d });
     return true;
   }
-  async function loImage(l) {
-    const cv = await drawPic(l);
-    showPic(l, cv);
+  // A Pathfinder picture carries its loadout: the code inside the PNG file (read back by Import), and a short link printed at the
+  // bottom (for screenshots and pictures an app re-saved, which drops the hidden part).
+  const PNGK = 'Pathfinder-Loadout';
+  // A small black-and-white code block at the bottom-right of the picture carries the share link's code. Unlike the hidden part,
+  // it survives Discord, phones and apps that re-save, shrink or convert the picture (JPEG, WebP), so a picture pasted from the
+  // clipboard still imports. Layout (on the 1200 px wide picture): 12 px squares, a black frame of 22 x 6 squares around 20 x 4
+  // data squares, on a white card whose right edge is 32 px and bottom 12 px from the picture's edges. 80 data bits: a fixed
+  // start byte, the code length, up to 10 characters (6 bits each, 0-9 A-Z a-z; share codes are 7) and a check byte.
+  const QB = { W: 1200, m: 12, cols: 22, rows: 6, pad: 10, right: 32, bottom: 12 };
+  const QA = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+  const crc8 = (a) => { let c = 0; for (const v of a) { c ^= v; for (let k = 0; k < 8; k++) c = c & 0x80 ? ((c << 1) ^ 0x07) & 0xff : (c << 1) & 0xff; } return c; };
+  function qBits(code) {
+    const cs = [...code].map((ch) => QA.indexOf(ch)); if (!cs.length || cs.length > 10 || cs.some((v) => v < 0)) return null;
+    const bits = [], put = (v, n) => { for (let i = n - 1; i >= 0; i--) bits.push((v >> i) & 1); };
+    put(0xb2, 8); put(cs.length, 4); for (let i = 0; i < 10; i++) put(cs[i] || 0, 6); put(crc8([cs.length, ...cs]), 8);
+    return bits;
   }
-  async function drawPic(l) {
+  function qDraw(g2, W, H, code) {
+    const bits = qBits(code); if (!bits) return false;
+    const m = QB.m, bw = QB.cols * m + QB.pad * 2, bh = QB.rows * m + QB.pad * 2, x0 = W - QB.right - bw, y0 = H - QB.bottom - bh;
+    g2.fillStyle = '#fff'; g2.fillRect(x0, y0, bw, bh);
+    g2.fillStyle = '#000';
+    for (let r = 0; r < QB.rows; r++) for (let c = 0; c < QB.cols; c++) {
+      const frame = r === 0 || r === QB.rows - 1 || c === 0 || c === QB.cols - 1, on = frame || bits[(r - 1) * (QB.cols - 2) + (c - 1)];
+      if (on) g2.fillRect(x0 + QB.pad + c * m, y0 + QB.pad + r * m, m, m);
+    }
+    return true;
+  }
+  // Reads the block back from a picture of any size (the same layout, scaled), trying small shifts in case the copy moved a pixel or two.
+  async function qRead(file) {
+    let bmp; try { bmp = await createImageBitmap(file); } catch (e) { return ''; }
+    const w = bmp.width, h = bmp.height, sc = w / QB.W; if (w < 300) return '';
+    const cv = document.createElement('canvas'); cv.width = w; cv.height = h; const g2 = cv.getContext('2d', { willReadFrequently: true }); g2.drawImage(bmp, 0, 0);
+    const m = QB.m * sc, bw = (QB.cols * QB.m + QB.pad * 2) * sc, bh = (QB.rows * QB.m + QB.pad * 2) * sc;
+    const bx = w - QB.right * sc - bw, by = h - QB.bottom * sc - bh;
+    const rx = Math.max(0, Math.floor(bx - 6 * sc)), ry = Math.max(0, Math.floor(by - 6 * sc)), rw = Math.min(w - rx, Math.ceil(bw + 12 * sc)), rh = Math.min(h - ry, Math.ceil(bh + 12 * sc));
+    if (rw < 10 || rh < 10) return '';
+    const px = g2.getImageData(rx, ry, rw, rh).data;
+    const lum = (x, y) => { let t = 0, n = 0; const rr = m >= 5 ? Math.round(m * 0.25) : 0; for (let yy = Math.round(y) - rr; yy <= Math.round(y) + rr; yy++) for (let xx = Math.round(x) - rr; xx <= Math.round(x) + rr; xx++) { const X = xx - rx, Y = yy - ry; if (X < 0 || Y < 0 || X >= rw || Y >= rh) continue; const i = (Y * rw + X) * 4; t += px[i] * 0.3 + px[i + 1] * 0.59 + px[i + 2] * 0.11; n++; } return n ? t / n : 255; };
+    const step = Math.max(0.5, sc);
+    for (let dy = -6; dy <= 6; dy++) for (let dx = -6; dx <= 6; dx++) {
+      const ox = bx + QB.pad * sc + dx * step, oy = by + QB.pad * sc + dy * step, ctr = (c, r) => [ox + (c + 0.5) * m, oy + (r + 0.5) * m];
+      // the frame must be dark and the white card around it light
+      let fk = 0, fn = 0; for (let c = 0; c < QB.cols; c++) for (const r of [0, QB.rows - 1]) { fk += lum(...ctr(c, r)); fn++; } for (let r = 1; r < QB.rows - 1; r++) for (const c of [0, QB.cols - 1]) { fk += lum(...ctr(c, r)); fn++; }
+      const black = fk / fn, white = (lum(ox - QB.pad * sc * 0.5, oy - QB.pad * sc * 0.5) + lum(ox + QB.cols * m + QB.pad * sc * 0.5, oy + QB.rows * m + QB.pad * sc * 0.5) + lum(ox + QB.cols * m * 0.5, oy - QB.pad * sc * 0.5)) / 3;
+      if (white - black < 60) continue;
+      const th = (white + black) / 2, bits = [];
+      for (let r = 1; r < QB.rows - 1; r++) for (let c = 1; c < QB.cols - 1; c++) bits.push(lum(...ctr(c, r)) < th ? 1 : 0);
+      const take = (i, n) => { let v = 0; for (let k = 0; k < n; k++) v = (v << 1) | bits[i + k]; return v; };
+      if (take(0, 8) !== 0xb2) continue;
+      const len = take(8, 4); if (len < 1 || len > 10) continue;
+      const cs = []; for (let i = 0; i < len; i++) cs.push(take(12 + i * 6, 6));
+      if (cs.some((v) => v >= QA.length) || crc8([len, ...cs]) !== take(72, 8)) continue;
+      return cs.map((v) => QA[v]).join('');
+    }
+    return '';
+  }
+  let CRCT = null;
+  const crc32 = (u8) => { if (!CRCT) { CRCT = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; CRCT[n] = c >>> 0; } } let c = 0xffffffff; for (let i = 0; i < u8.length; i++) c = CRCT[(c ^ u8[i]) & 255] ^ (c >>> 8); return (c ^ 0xffffffff) >>> 0; };
+  function pngAddText(u8, key, text) {
+    const body = new TextEncoder().encode(key + '\0' + text), td = new Uint8Array(4 + body.length); td.set([116, 69, 88, 116]); td.set(body, 4); // "tEXt"
+    const ch = new Uint8Array(12 + body.length), dv = new DataView(ch.buffer); dv.setUint32(0, body.length); ch.set(td, 4); dv.setUint32(8 + body.length, crc32(td));
+    // goes in just before the IEND chunk (the last 12 bytes)
+    const at = u8.length - 12, out = new Uint8Array(u8.length + ch.length); out.set(u8.subarray(0, at)); out.set(ch, at); out.set(u8.subarray(at), at + ch.length); return out;
+  }
+  function pngText(u8, key) {
+    const sig = [137, 80, 78, 71, 13, 10, 26, 10]; if (u8.length < 20 || sig.some((v, i) => u8[i] !== v)) return '';
+    const dv = new DataView(u8.buffer, u8.byteOffset, u8.byteLength);
+    for (let o = 8; o + 12 <= u8.length;) {
+      const len = dv.getUint32(o), type = String.fromCharCode(u8[o + 4], u8[o + 5], u8[o + 6], u8[o + 7]);
+      if (type === 'tEXt' && o + 12 + len <= u8.length) { const t = new TextDecoder('latin1').decode(u8.subarray(o + 8, o + 8 + len)), z = t.indexOf('\0'); if (z > 0 && t.slice(0, z) === key) return t.slice(z + 1); }
+      if (type === 'IEND') break; o += 12 + len;
+    }
+    return '';
+  }
+  const u8b64 = (u8) => { let s2 = ''; for (let i = 0; i < u8.length; i += 0x8000) s2 += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(s2); };
+  async function loImage(l) {
+    let link = '';
+    try {
+      if (gt.loShare && l.it && l.it.length) {
+        const meta = shareMeta(l);
+        const r = await Promise.race([gt.loShare({ c: codeOf(l), n: l.n || 'Loadout', t: meta.t, d: meta.d }), new Promise((ok) => setTimeout(() => ok(null), 6000))]);
+        if (r && r.url) link = String(r.url).replace(/^https?:\/\//, '').replace(/\/[^/]*$/, ''); // d2pathfinder.com/AbC123
+      }
+    } catch (e) { /* not signed in or offline: the picture still has the loadout hidden inside */ }
+    const cv = await drawPic(l, link);
+    showPic(l, cv, codeOf(l));
+  }
+  async function drawPic(l, link) {
     const res = resolve(l), by = (b) => res.find((r) => r.en.b === b) || null, c = l.c < 3 ? CL[l.c] : 'Any class';
     const sub = by(SUB), weps = WB.map(by), arms = AB.map(by);
     // Mods by where they go: each armor piece's own mods, plus loadout mods that name a piece; the rest go in "Any piece".
@@ -454,7 +572,7 @@
     if (subPl.length) { L.sub = y; y += 50 + subRows * SUBSTEP + 8 + GAP; }
     if (anyRows) { L.mods = y; y += 52 + anyRows * MSTEP + 8 + GAP; }
     if (hasArt || SB.length) { L.art = y; y += 140 + GAP; }
-    const H = y + 24, cv = document.createElement('canvas'); cv.width = W; cv.height = H; const g2 = cv.getContext('2d');
+    const H = y + (link ? 112 : 24), cv = document.createElement('canvas'); cv.width = W; cv.height = H; const g2 = cv.getContext('2d');
     // Background: dark base, a glow in the class colour, a faded subclass emblem, a fine pattern and a vignette.
     // Colours from the subclass (its element), falling back to the class.
     const ELC = { solar: ['#f5862e', '#a3420f'], arc: ['#6fd3ff', '#1d6a96'], void: ['#b07bff', '#4a2a8a'], stasis: ['#7ab0ff', '#26447e'], strand: ['#4fd88a', '#1b6b45'], prismatic: ['#ff7fd0', '#6a3bd1'] };
@@ -593,13 +711,18 @@
         });
       }
     }
-    txt('Made with Pathfinder', W - 220, H - 10, 14, '#6a6f77', 600);
+    // with a link, the code block takes the bottom-right corner and the credit sits just left of it
+    const qOn = !!(link && W === QB.W && qBits(linkCode(link) || '')), qL = W - QB.right - (QB.cols * QB.m + QB.pad * 2);
+    font(14, 600); const mw = g2.measureText('Made with Pathfinder').width, mx = qOn ? qL - 20 - mw : W - 220;
+    txt('Made with Pathfinder', mx, H - 10, 14, '#6a6f77', 600);
+    if (link) { txt('Import this loadout in Pathfinder: ' + link, M + 16, H - 10, 14, '#8b8f97', 600, mx - 24 - (M + 16)); if (qOn) qDraw(g2, W, H, linkCode(link)); }
     return cv;
   }
-  function showPic(l, cv) {
-    const data = cv.toDataURL('image/png');
+  function showPic(l, cv, code) {
+    let data = cv.toDataURL('image/png');
     // The picture as a file, made now: phones only allow copying and sharing straight from a tap, with nothing awaited first.
-    const bin = atob(data.split(',')[1] || ''), u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+    const bin = atob(data.split(',')[1] || ''); let u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+    if (code) { try { u8 = pngAddText(u8, PNGK, code); data = 'data:image/png;base64,' + u8b64(u8); } catch (e) { /* the plain picture still works */ } }
     const blob = new Blob([u8], { type: 'image/png' }), fname = (String(l.n || 'loadout').replace(/[^\w \-]+/g, '').trim().slice(0, 60) || 'loadout') + '.png';
     let file = null; try { file = new File([blob], fname, { type: 'image/png' }); } catch (e) { /* no File constructor */ }
     const canShare = !!(file && navigator.share && navigator.canShare && navigator.canShare({ files: [file] }));
@@ -642,12 +765,7 @@
   async function fullFromChar(cid, name) {
     const d = fromChar(cid, name);
     await Promise.all(d.it.filter((q) => AB.includes(q.b) || q.b === SUB).map(async (en) => { const x = items().find((o) => o.id === en.id); const m = await capture(x); if (m) en.m = m; }));
-    try {
-      for (let i = 0; i < 60 && ARLOAD; i++) await new Promise((ok) => setTimeout(ok, 150)); // another read of the artifact is under way
-      if (!ARC[cid] || !ARC[cid].v) await artLoad(false, cid);
-      const a = ARC[cid] && ARC[cid].v;
-      if (a && !a.none && a.item && a.socks && a.socks.length) { d.ai = itemOf(a.item); d.a = a.socks.map((q) => q.cur).filter(Boolean).map(permk); }
-    } catch (e) { /* shared without the artifact */ }
+    try { withArt(d, await artFor(cid)); } catch (e) { /* shared without the artifact */ }
     return d;
   }
   // Fragments in slots the aspects do not open ("ghosts", greyed out in game) were saved by older versions. When the subclass is
@@ -1033,17 +1151,22 @@ ${mod.msg && mod.cats ? `<p class="dl-msm">${esc(mod.msg)}</p>` : ''}
   function drawMod() {
     let box = g('dlmod');
     if (!mod) { if (box) box.remove(); return; }
-    if (!box) { box = document.createElement('div'); box.id = 'dlmod'; document.body.appendChild(box); box.onclick = modClick; box.onchange = modChange; box.oninput = (e) => { if (mod && mod.t === 'modp' && e.target.id === 'dlmq') { mod.q = e.target.value; const l = g('dlmpl'); if (l) l.innerHTML = modpList(); } if (mod && mod.t === 'msel' && e.target.id === 'dlmsq') { mod.q = e.target.value; const l = g('dlmsl'); if (l) l.innerHTML = mselList(); } }; }
+    if (!box) { box = document.createElement('div'); box.id = 'dlmod'; document.body.appendChild(box); box.onclick = modClick; box.onchange = modChange;
+      // Import: a Pathfinder picture can be dropped on the window, or pasted
+      box.addEventListener('dragover', (e) => { if (mod && mod.t === 'imp') { e.preventDefault(); box.classList.add('dl-drop'); } });
+      box.addEventListener('dragleave', () => box.classList.remove('dl-drop'));
+      box.addEventListener('drop', (e) => { box.classList.remove('dl-drop'); if (mod && mod.t === 'imp' && e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) { e.preventDefault(); impPic(e.dataTransfer.files[0]); } });
+      box.addEventListener('paste', (e) => { if (!mod || mod.t !== 'imp' || !e.clipboardData) return; const it = [...e.clipboardData.items].find((q) => q.kind === 'file' && /^image\//.test(q.type)); if (it) { e.preventDefault(); impPic(it.getAsFile(), true); } }); box.oninput = (e) => { if (mod && mod.t === 'modp' && e.target.id === 'dlmq') { mod.q = e.target.value; const l = g('dlmpl'); if (l) l.innerHTML = modpList(); } if (mod && mod.t === 'msel' && e.target.id === 'dlmsq') { mod.q = e.target.value; const l = g('dlmsl'); if (l) l.innerHTML = mselList(); } }; }
     const D = D0(); let h = '';
     if (mod.t === 'sub') h = subHTML();
     else if (mod.t === 'modp') h = modpHTML();
     else if (mod.t === 'msel') h = mselHTML();
     else if (mod.t === 'imp') {
-      h = `<div class="dl-mc"><h3>Import loadout</h3><p class="mute">Paste a Pathfinder share link (d2pathfinder.com/...), a DIM loadout link (dim.gg/...) or a loadout code (GTL1:...). Items are matched to the closest ones you own.</p><textarea id="dlimp" placeholder="https://d2pathfinder.com/..."" spellcheck="false">${esc(mod.text || '')}</textarea>${mod.msg ? `<div class="dl-wr">${esc(mod.msg)}</div>` : ''}<div class="dl-bt"><button class="g" data-md="paste">Paste from clipboard</button><span class="dl-sp"></span><button class="b" data-md="doimp">Import</button><button class="g" data-md="x">Cancel</button></div></div>`;
+      h = `<div class="dl-mc"><h3>Import loadout</h3><p class="mute">Paste a Pathfinder share link (d2pathfinder.com/...), a DIM loadout link (dim.gg/...) or a loadout code (GTL1:...), or choose or drop a picture made with Pathfinder. Items are matched to the closest ones you own.</p><textarea id="dlimp" placeholder="https://d2pathfinder.com/..."" spellcheck="false">${esc(mod.text || '')}</textarea>${mod.msg ? `<div class="dl-wr">${esc(mod.msg)}</div>` : ''}<div class="dl-bt"><button class="g" data-md="paste">Paste from clipboard</button><button class="g" data-md="pickpic">Choose a picture</button><input type="file" id="dlimpf" accept="image/*" hidden><span class="dl-sp"></span><button class="b" data-md="doimp">Import</button><button class="g" data-md="x">Cancel</button></div></div>`;
     } else if (mod.t === 'shmenu') {
       h = `<div class="dl-mc dl-ig-pop"><h3>Share loadout</h3><p class="mute">A link opens the loadout for anyone, in Pathfinder or in a browser, like a dim.gg link. A picture is easy to post anywhere.</p>${mod.msg ? `<div class="dl-wr">${esc(mod.msg)}</div>` : ''}<div class="dl-bt dl-col"><button class="b" data-md="shlink">Copy share link</button><button class="g" data-md="shpic">Share as a picture</button><button class="g" data-md="shcode">Copy loadout code</button>${navigator.share ? '<button class="g" data-md="shsend">Send the code...</button>' : ''}<button class="g" data-md="x">Close</button></div></div>`;
     } else if (mod.t === 'shlink') {
-      h = `<div class="dl-mc dl-ig-pop"><h3>Share link</h3><p class="mute">${esc(mod.copied ? 'Copied. Paste it anywhere: Discord, a message, a forum post. It shows a preview card with the loadout picture.' : 'Copy it and paste it anywhere: Discord, a message, a forum post. It shows a preview card with the loadout picture.')}</p><input id="dlurl" class="dl-url" readonly value="${esc(mod.url)}"><div class="dl-bt"><button class="b" data-md="lcopy">Copy link</button>${navigator.share ? '<button class="g" data-md="lsend">Share...</button>' : ''}<span class="dl-sp"></span><button class="g" data-md="x">Close</button></div></div>`;
+      h = `<div class="dl-mc dl-ig-pop"><h3>Share link</h3><p class="mute">${esc(mod.copied ? 'Copied. Paste it anywhere: Discord, a message, a forum post. It shows a preview card with the loadout picture.' : mod.copyFail ? 'Your browser blocked copying. The link below is selected: copy it with Ctrl+C, or press and hold it on a phone.' : 'Copy it and paste it anywhere: Discord, a message, a forum post. It shows a preview card with the loadout picture.')}</p><input id="dlurl" class="dl-url" readonly value="${esc(mod.url)}"><div class="dl-bt"><button class="b" data-md="lcopy">Copy link</button>${navigator.share ? '<button class="g" data-md="lsend">Share...</button>' : ''}<span class="dl-sp"></span><button class="g" data-md="x">Close</button></div></div>`;
     } else if (mod.t === 'shin') {
       h = shinHTML();
     } else if (mod.t === 'share') {
@@ -1078,6 +1201,7 @@ ${mod.msg && mod.cats ? `<p class="dl-msm">${esc(mod.msg)}</p>` : ''}
   }
   function modChange(e) {
     if (!mod) return;
+    if (e.target.id === 'dlimpf') { const f = e.target.files && e.target.files[0]; e.target.value = ''; if (f) impPic(f); return; }
     if (e.target.id === 'dlnm') mod.nh = +e.target.value;
     else if (e.target.id === 'dlslot') { mod.i = +e.target.value; }
     else if (e.target.id === 'dlimp') mod.text = e.target.value;
@@ -1140,8 +1264,9 @@ ${mod.msg && mod.cats ? `<p class="dl-msm">${esc(mod.msg)}</p>` : ''}
       if (a === 'lcopy') {
         const u = mod.url, done = () => { if (mod && mod.t === 'shlink') { mod.copied = true; drawMod(); } };
         const inp = g('dlurl'); if (inp) { inp.focus(); inp.select(); }
-        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(u).then(done, () => gt.writeClipboard(u).then(done, () => {}));
-        else gt.writeClipboard(u).then(done, () => {});
+        const fail = () => { if (mod && mod.t === 'shlink') { mod.copyFail = true; drawMod(); const i2 = g('dlurl'); if (i2) { i2.focus(); i2.select(); } } };
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(u).then(done, () => gt.writeClipboard(u).then(done, fail));
+        else gt.writeClipboard(u).then(done, fail);
         return;
       }
       if (a === 'lsend' && navigator.share) { navigator.share({ url: mod.url, title: 'Pathfinder loadout' }).catch(() => {}); return; }
@@ -1158,7 +1283,12 @@ ${mod.msg && mod.cats ? `<p class="dl-msm">${esc(mod.msg)}</p>` : ''}
       const m = await capture(x); if (m && mod && mod.t === 'sub') { mut((d) => { d.it.find((q) => q.b === SUB).m = m; }); mod.msg = ''; drawMod(); }
       return;
     }
-    if (a === 'paste') { try { const t = ((await gt.readClipboard()) || '').trim(); mod.text = t; mod.msg = t ? '' : 'The clipboard is empty.'; } catch (er) { mod.msg = 'Could not read the clipboard.'; } drawMod(); return; }
+    if (a === 'pickpic') { const f = g('dlimpf'); if (f) f.click(); return; }
+    if (a === 'paste') {
+      let t = ''; try { t = ((await gt.readClipboard()) || '').trim(); } catch (er) { /* try for a picture */ }
+      if (!t) { const pic = await clipPic(); if (pic) { mod.text = ''; mod.msg = ''; impPic(pic, true); return; } }
+      mod.text = t || mod.text || ''; mod.msg = t ? '' : 'The clipboard is empty. Copy a share link, a loadout code or a Pathfinder loadout picture first.'; drawMod(); return;
+    }
     if (a === 'doimp') {
       const ta = g('dlimp'); mod.text = ta ? ta.value : mod.text;
       try {
@@ -1207,9 +1337,17 @@ ${mod.msg && mod.cats ? `<p class="dl-msm">${esc(mod.msg)}</p>` : ''}
     if (a === 'igdim') {
       const d = fromChar(c, L.n || 'Loadout ' + (L.i + 1)); d.it = L.items.map((id) => items().find((x) => x.id === id)).filter(Boolean).map(entOf);
       mod = null; drawMod(); if (!d.it.length) return;
-      openEd(d, true); addMods(ed.d, ed.d.it.filter((q) => AB.includes(q.b) || q.b === SUB)); return;
+      openEd(d, true); addMods(ed.d, ed.d.it.filter((q) => AB.includes(q.b) || q.b === SUB)); if (c === CH) artEd('artcur'); return;
     }
-    if (a === 'igsh') { const d = fromChar(c, L.n || 'Loadout ' + (L.i + 1)); d.it = L.items.map((id) => items().find((x) => x.id === id)).filter(Boolean).map(entOf); mod = null; drawMod(); share(d); return; }
+    if (a === 'igsh') {
+      const d = fromChar(c, L.n || 'Loadout ' + (L.i + 1)); d.it = L.items.map((id) => items().find((x) => x.id === id)).filter(Boolean).map(entOf);
+      const m0 = { t: 'shmenu', l: d };
+      m0.wait = Promise.all([
+        ...d.it.filter((q) => AB.includes(q.b) || q.b === SUB).map(async (en) => { const x = items().find((o) => o.id === en.id); const m = await capture(x); if (m) en.m = m; }),
+        artFor(c).then((ar) => withArt(d, ar)), // in-game loadouts do not keep artifact perks, so the character's current artifact comes along
+      ]).then(() => { m0.wait = null; }, () => { m0.wait = null; });
+      mod = m0; drawMod(); return;
+    }
     if (a === 'igclr') { mod = null; drawMod(); V.act('clear loadout ' + (i + 1), () => { L.items = []; L.n = ''; L.ic = ''; L.c = ''; }, () => gt.loClear({ char: c, index: i }), true); return; }
     if (a === 'idok') {
       const nm = g('dlnm'), sl = g('dlslot'); if (nm) mod.nh = +nm.value; if (sl) mod.i = +sl.value;
@@ -1459,7 +1597,7 @@ ${art ? `<div class="dl-mrow"><span class="dl-gl">Artifact &middot; ${esc(AR.ite
 .dl-ph{padding:6px 10px;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#cfd2d8;border-bottom:1px solid #2e3136;background:#1d2024}
 .dl-pb{padding:10px;display:flex;flex-direction:column;gap:8px}.dl-pf{padding:8px 10px;border-top:1px solid #2e3136;display:flex;gap:6px;flex-wrap:wrap}
 .dl-subrow{display:flex;gap:10px;align-items:flex-start}.dl-subpl{display:flex;gap:4px;flex-wrap:wrap}
-.dl-mhint{margin:0 0 8px;font-size:12.5px}
+.dl-mhint{margin:0 0 8px;font-size:12.5px}#dlmod.dl-drop .dl-mc{outline:2px dashed #6fd36f;outline-offset:4px}
 .dl-msel{width:min(760px,96vw)}.dl-msr{margin:0;font-size:13px;color:#c9cdd4;display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}.dl-msr small{flex-basis:100%;color:#9aa0a8;font-size:12px}.dl-mspk{display:flex;flex-wrap:wrap;gap:6px;min-height:40px;align-items:center;padding:8px;border:1px solid #3a3d43;border-radius:4px;background:#0e1013}
 #dlmod button.dl-msp{display:inline-flex;align-items:center;gap:6px;padding:3px 8px 3px 3px;border-radius:20px}#dlmod button.dl-msp img{width:26px;height:26px;border-radius:50%}#dlmod button.dl-msp span{font-size:12.5px;color:#e6e7ea}#dlmod button.dl-msp i{font-style:normal;color:#9aa0a8;font-size:15px}
 #dlmod #dlmsq{background:#0e1013;border:1px solid #3a3d43;border-radius:3px;color:#fff;padding:8px 10px;font:inherit;width:100%;box-sizing:border-box}

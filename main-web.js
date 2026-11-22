@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.34: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.35: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -59,8 +59,9 @@ function rd0() {
     // The Bungie app comes only from app-config.json. Anything saved by older versions is ignored.
     delete o.own;
     o = { ...o, apiKey: preset.apiKey, clientId: preset.clientId, redirect: preset.redirect || 'https://localhost/redirect', clientSecret: '' };
-    // A login made with some other Bungie app does not work with the shared one: ask for a fresh sign-in.
-    if (o.tok && o.tok.cid !== preset.clientId) delete o.tok;
+    // A login made with some other Bungie app does not work with the shared one: ask for a fresh sign-in. A sign-in made by
+    // Pathfinder's other app (website / PC app) carries that app's key and is used with it, so it stays.
+    if (o.tok && o.tok.cid !== preset.clientId && !(o.tok.key && (o.tok.app === 'web' || o.tok.app === 'pc'))) delete o.tok;
   }
   return o;
 }
@@ -140,15 +141,29 @@ async function readJson(r) {
   }
 }
 
+// Pathfinder is two Bungie apps: the PC app and the website (different client IDs and keys). A Pathfinder account carries
+// sign-ins made by either, so a Bungie account added on the website also works in the PC app and the other way round. A sign-in
+// made by the other app ("foreign") is always used with that app's key (and, from the PC, the website's address as Origin), and
+// refreshed through the token service as that app (X-PF-App).
+const APPN = WEB ? 'web' : 'pc';
+let PFA_SOON = 0;
+const isForeign = (t, c) => !!(t && t.cid && t.key && String(t.cid) !== String((c || rd()).clientId || ''));
+function bHead(c, t) {
+  const f = isForeign(t, c), h = { 'X-API-Key': f ? t.key : c.apiKey, 'User-Agent': UA };
+  if (f && t.ori && !WEB) h.Origin = t.ori;
+  return h;
+}
+const pfApp = () => { const c = rd(); return isForeign(c.tok, c) ? { 'X-PF-App': c.tok.app === 'web' ? 'web' : 'pc' } : {}; };
+const myOri = () => { try { return WEB && globalThis.location ? globalThis.location.origin : ''; } catch (e) { return ''; } };
 async function tokenReq(params) {
   const c = rd();
   let j, status;
   if (preset && preset.tokenUrl && /^https:\/\//i.test(preset.tokenUrl)) {
     // The Bungie app is a confidential one: its secret lives only on the token service, never in this app. The service swaps a sign-in
     // code (or a refresh token) for tokens and hands them back, which is what lets a sign-in last 90 days instead of an hour.
-    const isRef = params.grant_type === 'refresh_token';
+    const isRef = params.grant_type === 'refresh_token', ft = isRef && params.ftok;
     const r = await fetch(preset.tokenUrl.replace(/\/+$/, '') + (isRef ? '/refresh' : '/token'), {
-      method: 'POST', headers: { 'Content-Type': 'application/json', 'User-Agent': UA, Accept: 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'User-Agent': UA, Accept: 'application/json', ...(ft ? { 'X-PF-App': ft.app === 'web' ? 'web' : 'pc' } : {}) },
       body: JSON.stringify(isRef ? { refresh_token: params.refresh_token } : { code: params.code }),
     });
     j = await readJson(r); status = r.status;
@@ -175,6 +190,9 @@ async function tokenReq(params) {
     mid: j.membership_id, cid: c.clientId,
     part: PEND_PART || (same ? prev.part : '') || '', m: same ? prev.m : undefined, n: same ? prev.n : '',
   };
+  if (params.grant_type === 'refresh_token' && c.pfa && c.pfa.sess) { clearTimeout(PFA_SOON); PFA_SOON = setTimeout(() => pfaRun().catch(() => {}), 5000); }
+  // a refreshed foreign sign-in stays foreign (same app, key and origin)
+  if (params.ftok && same) Object.assign(c.tok, { cid: params.ftok.cid, app: params.ftok.app, key: params.ftok.key, ...(params.ftok.ori ? { ori: params.ftok.ori } : {}) });
   PEND_PART = '';
   wr(c);
 }
@@ -183,8 +201,10 @@ async function fresh() {
   if (!c.tok) throw new Error('Not signed in');
   if (Date.now() < c.tok.exp - 60000) return;
   if (c.tok.refresh && Date.now() < c.tok.rexp) {
-    try { await tokenReq({ grant_type: 'refresh_token', refresh_token: c.tok.refresh }); return; } catch (e) { /* fall back to a silent sign-in */ }
+    try { await tokenReq({ grant_type: 'refresh_token', refresh_token: c.tok.refresh, ...(isForeign(c.tok, c) ? { ftok: c.tok } : {}) }); return; } catch (e) { /* fall back to a silent sign-in */ }
   }
+  // A sign-in from the other app cannot be renewed with this app's quiet sign-in (it would sign in whoever Bungie remembers here).
+  if (isForeign(c.tok, c)) throw new Error('This Bungie account was added on the ' + (c.tok.app === 'web' ? 'website' : 'PC app') + ' and its sign-in has run out. Sign in to it here once (Settings > Accounts > Add a Bungie account).');
   // Bungie gives public apps no refresh token, so the sign-in lasts an hour. The Bungie web login is remembered,
   // so sign in again quietly in a hidden window; only ask the person if Bungie wants them to log in.
   if (!(await silentAuth())) throw new Error('Session expired. Sign in again.');
@@ -237,7 +257,7 @@ function silentAuth() {
 async function api(p, auth = true) {
   if (auth) await fresh();
   const c = rd();
-  const h = { 'X-API-Key': c.apiKey, 'User-Agent': UA };
+  const h = auth ? bHead(c, c.tok) : { 'X-API-Key': c.apiKey, 'User-Agent': UA };
   if (auth) h.Authorization = 'Bearer ' + c.tok.access;
   // A request Bungie never answers would leave a pop-up loading forever; give up after 20 seconds instead.
   const sig = typeof AbortSignal !== 'undefined' && AbortSignal.timeout ? AbortSignal.timeout(20000) : undefined;
@@ -247,6 +267,7 @@ async function api(p, auth = true) {
   return j.Response;
 }
 let DEFS = null;
+const PSNEED = new Set(), COLNEED = new Set(); // perk pools Finder needs, filled while the item table is read
 // Speed: the manifest index (which game version is live) is asked for once every 10 minutes, not before every lookup.
 let MFQ = null;
 function manifest() {
@@ -256,9 +277,9 @@ function manifest() {
   return p;
 }
 async function defs() {
-  const f = path.join(app.getPath('userData'), 'defs6.json');
+  const f = path.join(app.getPath('userData'), 'defs8.json');
   const m = await manifest();
-  const v = m.version + '.12';
+  const v = m.version + '.15';
   if (DEFS && DEFS.v === v) return DEFS;
   try { const o = JSON.parse(fs.readFileSync(f, 'utf8')); if (o.v === v) return (DEFS = o); } catch (e) { /* download below */ }
   send('Downloading item data. This only happens on the first run and after game updates.');
@@ -287,16 +308,54 @@ async function defs() {
       if (x.breakerType) d[k].bt = x.breakerType;
       else if (TF_WB0.has(b)) { const hs = ((x.sockets && x.sockets.socketEntries) || []).map((e) => e.singleInitialItemHash).filter(Boolean); if (hs.length) needBrk.push([k, hs]); }
       const ifc = x.quality && x.quality.infusionCategoryHashes; if (ifc && ifc.length) d[k].f = ifc[0];
+      // Weapons: which sockets are perk columns (Bungie's "weapon perks" socket category), for the God roll check.
+      if (x.itemType === 3 && x.sockets && Array.isArray(x.sockets.socketCategories)) { const c = x.sockets.socketCategories.find((q) => q.socketCategoryHash === 4241085061); if (c && c.socketIndexes && c.socketIndexes.length) d[k].ps = c.socketIndexes; }
+      // Finder: each perk socket's perk pool (the plug set the game rolls from, or the one fixed perk), the built-in frame and the element.
+      if (x.itemType === 3 && x.sockets && Array.isArray(x.sockets.socketEntries)) {
+        const ents = x.sockets.socketEntries, cats = x.sockets.socketCategories || [];
+        const pi = ((cats.find((q) => q.socketCategoryHash === 4241085061) || {}).socketIndexes) || [], ii = ((cats.find((q) => q.socketCategoryHash === 3956125808) || {}).socketIndexes) || [];
+        const pp = pi.map((si) => { const en = ents[si] || {}, ps = en.randomizedPlugSetHash || en.reusablePlugSetHash || 0; if (ps) PSNEED.add(ps); return [ps, en.singleInitialItemHash || 0]; }).filter((q) => q[0] || q[1]);
+        if (pp.length) d[k].pp = pp;
+        const fi = ii.map((si) => (ents[si] || {}).singleInitialItemHash).find(Boolean); if (fi) d[k].fi = fi;
+        if (x.defaultDamageType) d[k].e = x.defaultDamageType;
+        if (x.collectibleHash) { d[k].ch = x.collectibleHash; COLNEED.add(x.collectibleHash); }
+      }
       const amt = x.equippingBlock && x.equippingBlock.ammoType; if (amt) d[k].am = amt; // 1 primary, 2 special, 3 heavy (is:primary and so on in search)
     }
     else if (x.plug) p[k] = { n: dp.name, i: dp.icon, d: dp.description, c: x.plug.plugCategoryIdentifier, s: (x.investmentStats || []).filter((q) => q.value && !q.isConditionallyActive).map((q) => [q.statTypeHash, q.value]) };
   });
   needBrk.forEach(([k, hs]) => { for (const h of hs) if (plugBrk[h]) { d[k].bt = plugBrk[h]; break; } });
+  // Finder: the perks each weapon perk pool can roll TODAY (Bungie marks perks that no longer drop with currentlyCanRoll false).
+  const psd = {};
+  if (P.DestinyPlugSetDefinition) {
+    try {
+      await table(P.DestinyPlugSetDefinition, (k, x) => {
+        if (!PSNEED.has(+k)) return;
+        const hs = []; for (const q of x.reusablePlugItems || []) if (q.currentlyCanRoll !== false && q.plugItemHash && !hs.includes(q.plugItemHash)) hs.push(q.plugItemHash);
+        psd[k] = hs;
+      });
+    } catch (e) { /* Finder falls back to the fixed perks */ }
+  }
+  PSNEED.clear();
+  // Finder "How to get": the Collections source line for each weapon ("Source: Solo Ops", "Source: Trials of Osiris" ...)
+  const srcs = [], srcI = {}, csrc = {};
+  if (P.DestinyCollectibleDefinition) {
+    try {
+      await table(P.DestinyCollectibleDefinition, (k, x) => {
+        if (!COLNEED.has(+k)) return;
+        const t = String(x.sourceString || '').trim(); if (!t) return;
+        if (!(t in srcI)) { srcI[t] = srcs.length; srcs.push(t); }
+        csrc[k] = srcI[t];
+      });
+    } catch (e) { /* no sources then */ }
+  }
+  for (const k in d) if (d[k].ch !== undefined) { const i = csrc[d[k].ch]; if (i !== undefined) d[k].so = i; delete d[k].ch; }
+  COLNEED.clear();
   for (const k in dtRaw) { const q = dtRaw[k]; if (q.enumValue !== undefined && q.displayProperties && q.displayProperties.icon) dm[q.enumValue] = q.displayProperties.icon; }
   for (const k in btRaw) { const q = btRaw[k]; if (q.enumValue && q.displayProperties && q.displayProperties.icon) bk[q.enumValue] = q.displayProperties.icon; }
   for (const k in stRaw) { const x = stRaw[k]; if (x.displayProperties && x.displayProperties.name) st[k] = { n: x.displayProperties.name, o: x.index }; }
   for (const k in sgRaw) sg[k] = (sgRaw[k].scaledStats || []).map((q) => ({ h: q.statHash, max: q.maximumValue || 100, num: !!q.displayAsNumeric }));
-  const o = { v, d, p, st, sg, a: ar, g: gx, W, dm, bk };
+  const o = { v, d, p, st, sg, a: ar, g: gx, W, dm, bk, psd, srcs };
   fs.writeFileSync(f, JSON.stringify(o));
   return (DEFS = o);
 }
@@ -321,7 +380,9 @@ async function lodefs() {
 
 H('cfg:get', () => { const c = rd(); return { apiKey: !!c.apiKey, clientId: c.clientId || '', redirect: c.redirect || 'https://localhost/redirect', secret: !!c.clientSecret, signedIn: !!c.tok, preset: !!preset, mid: c.tok ? String(c.tok.mid || '') : '', prim: String(c.prim || '') }; });
 H('clip:read', () => clipboard.readText());
-H('clip:write', (e, t) => { clipboard.writeText(String(t || '')); return true; });
+// A picture on the clipboard (Import loadout's Paste button), as PNG base64; '' when there is none or on the website (the page reads it itself).
+H('clip:readimg', () => { try { if (typeof clipboard.readImage !== 'function') return ''; const im = clipboard.readImage(); return im && !im.isEmpty() ? im.toPNG().toString('base64') : ''; } catch (e) { return ''; } });
+H('clip:write', async (e, t) => { await clipboard.writeText(String(t || '')); return true; }); // on the website this can be refused; the page is told
 // Signing out also forgets the Bungie web login, so the next person (or account) gets a fresh sign-in page.
 H('auth:logout', async () => {
   const c = rd(), part = (c.tok && c.tok.part) || 'persist:bungie'; delete c.tok; M = null; farm.on = false; clearInterval(farm.t);
@@ -367,7 +428,7 @@ const syncUrl = () => (preset && preset.tokenUrl && /^https:\/\//i.test(preset.t
 async function syncReq(method, body) {
   const u = syncUrl(); if (!u) throw new Error('sync_unavailable');
   await fresh();
-  const r = await fetch(u, { method, headers: { Authorization: 'Bearer ' + rd().tok.access, Accept: 'application/json', ...(body ? { 'Content-Type': 'application/json' } : {}) }, ...(body ? { body } : {}) });
+  const r = await fetch(u, { method, headers: { Authorization: 'Bearer ' + rd().tok.access, ...pfApp(), Accept: 'application/json', ...(body ? { 'Content-Type': 'application/json' } : {}) }, ...(body ? { body } : {}) });
   const j = await readJson(r).catch(() => ({}));
   if (!r.ok) throw new Error((j && j.error) || 'HTTP ' + r.status);
   return j;
@@ -387,7 +448,7 @@ H('lo:share', async (e, v) => {
   if (!/^GTL1:[A-Za-z0-9+/=]+$/.test(c)) throw bad();
   const u = shareUrl(); if (!u) throw new Error(SHERR.share_unavailable);
   await fresh();
-  const r = await fetch(u, { method: 'POST', headers: { Authorization: 'Bearer ' + rd().tok.access, 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ c, n, t, d }) });
+  const r = await fetch(u, { method: 'POST', headers: { Authorization: 'Bearer ' + rd().tok.access, ...pfApp(), 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ c, n, t, d }) });
   const j = await readJson(r).catch(() => ({}));
   if (!r.ok || !j || !/^[A-Za-z0-9]{5,12}$/.test(String(j.code || ''))) throw new Error(SHERR[j && j.error] || (j && j.error) || 'HTTP ' + r.status);
   return { url: siteBase() + '/' + j.code + '/' + encodeURIComponent(slugOf(n)), code: j.code };
@@ -399,7 +460,7 @@ H('lo:shareimg', async (e, v) => {
   const buf = Buffer.from(m[1], 'base64'); if (!buf.length || buf.length > 1500000) throw bad();
   const u = shareUrl(); if (!u) throw new Error(SHERR.share_unavailable);
   await fresh();
-  const r = await fetch(u + '/' + code + '/img', { method: 'POST', headers: { Authorization: 'Bearer ' + rd().tok.access, 'Content-Type': 'image/jpeg', Accept: 'application/json' }, body: new Uint8Array(buf) });
+  const r = await fetch(u + '/' + code + '/img', { method: 'POST', headers: { Authorization: 'Bearer ' + rd().tok.access, ...pfApp(), 'Content-Type': 'image/jpeg', Accept: 'application/json' }, body: new Uint8Array(buf) });
   const j = await readJson(r).catch(() => ({}));
   if (!r.ok) throw new Error(SHERR[j && j.error] || (j && j.error) || 'HTTP ' + r.status);
   return { ok: true, same: !!j.same };
@@ -420,7 +481,7 @@ function restartApp() {
   setTimeout(() => { try { app.relaunch(); } catch (e) { /* manual start */ } app.exit(0); }, 200);
   return { restart: 1 };
 }
-const acctRow = (t, on) => ({ mid: String(t.mid || ''), n: t.n || (t.m && (t.m.bungieGlobalDisplayName || t.m.displayName)) || 'Bungie account', code: t.m && t.m.bungieGlobalDisplayNameCode ? String(t.m.bungieGlobalDisplayNameCode).padStart(4, '0') : '', on: on ? 1 : 0, ok: t.refresh && Date.now() < (t.rexp || 0) ? 1 : 0 });
+const acctRow = (t, on) => ({ from: isForeign(t) ? (t.app === 'web' ? 'web' : 'pc') : '', mid: String(t.mid || ''), n: t.n || (t.m && (t.m.bungieGlobalDisplayName || t.m.displayName)) || 'Bungie account', code: t.m && t.m.bungieGlobalDisplayNameCode ? String(t.m.bungieGlobalDisplayNameCode).padStart(4, '0') : '', on: on ? 1 : 0, ok: t.refresh && Date.now() < (t.rexp || 0) ? 1 : 0 });
 H('acct:list', () => {
   const c = rd(), out = [];
   if (c.tok) out.push(acctRow(c.tok, true));
@@ -521,8 +582,19 @@ async function pfaReq(method, p, body, sess, extra) {
   if (!r.ok && !(r.status === 409 && j.error === 'changed')) { const er = new Error(j.message || (r.status === 404 || r.status === 501 ? 'Pathfinder accounts are not switched on in the token service yet (see ACCOUNTS-SETUP.txt).' : 'Pathfinder account error (HTTP ' + r.status + ')')); er.code = j.error || r.status; throw er; }
   return { ...j, status: r.status };
 }
-const PFA_FRESH = 3 * 864e5; // a newer Bungie sign-in is sent up when it is at least this much newer than the saved one
 let PFA_ERR = '', PFA_BUSY = null;
+// Before a sign-in made by the other app is added here, check Bungie takes it from this app (its key, and the website's address).
+async function foreignWorks(c, t) {
+  try {
+    if (Date.now() > (t.exp || 0) - 60000) { // its hour is up: renew it as its own app first (the box then gets the new one)
+      const r0 = await fetch(preset.tokenUrl.replace(/\/+$/, '') + '/refresh', { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-PF-App': t.app === 'web' ? 'web' : 'pc' }, body: JSON.stringify({ refresh_token: t.refresh }) });
+      const j0 = await readJson(r0); if (!j0.access_token) return false;
+      Object.assign(t, { access: j0.access_token, refresh: j0.refresh_token || t.refresh, exp: Date.now() + j0.expires_in * 1000, rexp: Date.now() + (j0.refresh_expires_in || 7776000) * 1000 }); t.renewed = 1;
+    }
+    const r = await fetch(BASE + '/Platform/User/GetMembershipsForCurrentUser/', { headers: { ...bHead(c, t), Authorization: 'Bearer ' + t.access } });
+    const j = await readJson(r); return j && j.ErrorCode === 1;
+  } catch (e) { return false; }
+}
 // Bring the box and this device together: Bungie accounts you do not have here are added, newer sign-ins replace older ones,
 // and anything newer here is sent back up.
 async function pfaSync(boxIn, verIn) {
@@ -530,23 +602,36 @@ async function pfaSync(boxIn, verIn) {
   let ver = verIn, box = boxIn;
   // Temporary password (123456): nothing is saved into the account until a new password is picked.
   if (c.pfa.tmp && box !== undefined) return { tmp: 1, added: 0 };
-  if (box === undefined) { const g = await pfaReq('GET', '/box', null, c.pfa.sess); ver = g.ver; box = g.box; if (typeof g.role === 'string' && (c.pfa.role || '') !== g.role) { c.pfa.role = g.role; wr(c); } if (!!g.tmp !== !!c.pfa.tmp) { if (g.tmp) c.pfa.tmp = 1; else delete c.pfa.tmp; wr(c); } if (g.tmp) return { tmp: 1, added: 0 }; }
+  if (box === undefined) { const g = await pfaReq('GET', '/box', null, c.pfa.sess); ver = g.ver; box = g.box; if (typeof g.role === 'string' && (c.pfa.role || '') !== g.role) { c.pfa.role = g.role; wr(c); } if (typeof g.dn === 'string' && g.dn && c.pfa.dn !== g.dn) { c.pfa.dn = g.dn; wr(c); } if (typeof g.pv === 'number' && g.pv !== (c.pfa.pv || 0)) { await pfaPic(c).catch(() => {}); } if (!!g.tmp !== !!c.pfa.tmp) { if (g.tmp) c.pfa.tmp = 1; else delete c.pfa.tmp; wr(c); } if (g.tmp) return { tmp: 1, added: 0 }; }
   for (let round = 0; round < 3; round++) {
     let data; try { data = await pfaOpen(box, c.pfa.key); } catch (e) { throw new Error('Could not open your saved sign-ins with this password. If you changed it on another device, sign out and in again here.'); }
     const B = (data && data.accts) || {}, cid = String(c.clientId || ''), skip = c.pfa.skip || {}, now = Date.now();
     const local = [c.tok, ...Object.values(c.accts || {})].filter((t) => t && t.mid);
     let added = 0, changed = false, push = false;
+    const ok = (e) => e && e.refresh && (e.rexp || 0) > now;
     for (const mid of Object.keys(B)) {
-      const e = B[mid] && B[mid][cid]; if (!e || !e.refresh || (e.rexp || 0) < now || skip[mid]) continue;
+      if (skip[mid]) continue;
+      // this app's own sign-in for the account if there is one, otherwise one made by the other app (website / PC app)
+      const own = ok(B[mid][cid]) ? B[mid][cid] : null;
+      const other = own ? null : Object.values(B[mid] || {}).filter((x) => ok(x) && x.key && String(x.cid) !== cid).sort((a, z) => (z.rexp || 0) - (a.rexp || 0))[0];
+      const e = own || other; if (!e) continue;
       const L = local.find((t) => String(t.mid) === String(mid));
-      if (!L) { const t = { ...e, part: '' }; if (!c.tok) c.tok = t; else { c.accts = c.accts || {}; c.accts[mid] = t; } local.push(t); added++; changed = true; }
-      else if ((e.rexp || 0) > (L.rexp || 0) + 60000) { Object.assign(L, { access: e.access, refresh: e.refresh, exp: e.exp, rexp: e.rexp }); changed = true; }
+      if (!L) {
+        if (other && !(await foreignWorks(c, e))) continue; // Bungie would not take it here: it stays a "sign in here once" account
+        if (e.renewed) { delete e.renewed; push = true; }
+        const t = { ...e, part: '' }; if (!c.tok) c.tok = t; else { c.accts = c.accts || {}; c.accts[mid] = t; } local.push(t); added++; changed = true;
+      } else if (own && isForeign(L, c)) {
+        // signed in on this app somewhere: use that instead of the other app's sign-in
+        ['cid', 'app', 'key', 'ori'].forEach((k) => delete L[k]); Object.assign(L, { access: e.access, refresh: e.refresh, exp: e.exp, rexp: e.rexp, cid }); changed = true;
+      } else if (String(L.cid || cid) === String(e.cid || cid) && (e.rexp || 0) > (L.rexp || 0) + 60000) { Object.assign(L, { access: e.access, refresh: e.refresh, exp: e.exp, rexp: e.rexp }); changed = true; }
     }
     for (const L of local) {
-      if (String(L.cid || cid) !== cid) continue;
-      const mid = String(L.mid), e = B[mid] && B[mid][cid];
-      if (!e || (L.rexp || 0) > (e.rexp || 0) + PFA_FRESH || (!e.n && L.n)) {
-        const { part, ...t } = L; void part; B[mid] = B[mid] || {}; B[mid][cid] = { ...t, cid }; push = true;
+      const lc = String(L.cid || cid), mid = String(L.mid), e = B[mid] && B[mid][lc], mine = lc === cid;
+      if (!e || ((L.rexp || 0) > (e.rexp || 0) + 60000 && L.refresh !== e.refresh) || (!e.n && L.n) || (mine && !e.key)) {
+        const { part, ...t } = L; void part; B[mid] = B[mid] || {};
+        // each sign-in carries its app's key (and the website's address) so the other app can use it
+        B[mid][lc] = mine ? { ...t, cid, app: APPN, key: c.apiKey, ...(myOri() ? { ori: myOri() } : {}) } : { ...t, cid: lc };
+        push = true;
       }
     }
     if (changed) wr(c);
@@ -557,6 +642,18 @@ async function pfaSync(boxIn, verIn) {
   }
   throw new Error('Another device kept saving at the same time. Try "Sync now" again.');
 }
+// Profile picture: fetched again only when the account says it changed (pv), kept with the sign-in so the top bar has it at once.
+async function pfaPic(c) {
+  const r = await pfaReq('GET', '/avatar', null, c.pfa.sess);
+  const c2 = rd(); if (!c2.pfa) return; c2.pfa.pv = r.pv || 0; c2.pfa.av = typeof r.img === 'string' && r.img.length < 90000 ? r.img : ''; wr(c2); c.pfa.pv = c2.pfa.pv; c.pfa.av = c2.pfa.av;
+}
+H('pfa:avatar', async (e, v) => {
+  OBJ(v); const c = rd(); if (!c.pfa || !c.pfa.sess) throw new Error('Sign in to your Pathfinder account first.');
+  const img = typeof v.img === 'string' ? v.img : '';
+  if (img && (img.length > 90000 || !/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(img))) throw new Error('That picture could not be used. Try another one.');
+  const r = await pfaReq('POST', '/avatar', { img }, c.pfa.sess);
+  const c2 = rd(); if (c2.pfa) { c2.pfa.pv = r.pv || 0; c2.pfa.av = img; wr(c2); } return pfaStatus();
+});
 const pfaRun = (boxIn, verIn) => {
   if (PFA_BUSY) return PFA_BUSY;
   PFA_BUSY = pfaSync(boxIn, verIn).catch((e) => { PFA_ERR = e.message; if (e.code === 'signed_out') { const c = rd(); if (c.pfa) { delete c.pfa.sess; wr(c); } } throw e; }).finally(() => { PFA_BUSY = null; });
@@ -565,7 +662,7 @@ const pfaRun = (boxIn, verIn) => {
 // A Pathfinder account is an account name and a password. Accounts made earlier with an email address still sign in with that
 // email typed as the account name (both are matched the same way: trimmed, any capitals ignored).
 const pfaName = (p) => (p && (p.name || p.email)) || '';
-const pfaStatus = () => { const c = rd(), p = c.pfa || {}; return { avail: !!pfaUrl(), on: !!p.sess, tmp: !!(p.sess && p.tmp), name: pfaName(p), at: p.at || 0, n: p.n || 0, err: PFA_ERR, out: !!(pfaName(p) && !p.sess), dev: !!(p.sess && ['dev', 'founder', 'owner'].includes(p.role)), founder: !!(p.sess && ['founder', 'owner'].includes(p.role)), owner: !!(p.sess && p.role === 'owner'), role: p.sess ? p.role || '' : '' }; };
+const pfaStatus = () => { const c = rd(), p = c.pfa || {}; return { avail: !!pfaUrl(), on: !!p.sess, tmp: !!(p.sess && p.tmp), name: pfaName(p), dn: p.dn || pfaName(p), av: p.sess ? p.av || '' : '', at: p.at || 0, n: p.n || 0, err: PFA_ERR, out: !!(pfaName(p) && !p.sess), dev: !!(p.sess && ['dev', 'founder', 'owner'].includes(p.role)), founder: !!(p.sess && ['founder', 'owner'].includes(p.role)), owner: !!(p.sess && p.role === 'owner'), role: p.sess ? p.role || '' : '' }; };
 H('pfa:status', () => pfaStatus());
 const pfaCreds = (v, isNew) => {
   OBJ(v); const name = TXT(v.name, 200).trim(), pw = TXT(v.pw, 200);
@@ -584,51 +681,72 @@ const pfaOld = (er) => { if (er && er.code === 'bad_request') er.message = 'Upda
 H('pfa:signup', async (e, v) => {
   const { name, pw } = pfaCreds(v, true), k = await pfaKeys(name, pw);
   const r = await pfaReq('POST', '/signup', pfaWho(name, k.auth)).catch(pfaOld);
-  const c = rd(); c.pfa = { name, sess: r.sess, key: k.key, skip: {}, role: r.role || '' }; wr(c);
+  const c = rd(); c.pfa = { name, dn: r.dn || name, sess: r.sess, key: k.key, skip: {}, role: r.role || '' }; wr(c);
   await pfaRun(r.box, r.ver).catch(() => {});
   return pfaStatus();
 });
 H('pfa:login', async (e, v) => {
   const { name, pw } = pfaCreds(v, false), k = await pfaKeys(name, pw);
   const r = await pfaReq('POST', '/login', pfaWho(name, k.auth)).catch(pfaOld);
-  const c = rd(), hadTok = !!c.tok, same = c.pfa && pfaName(c.pfa).toLowerCase() === name.toLowerCase(); c.pfa = { name, sess: r.sess, key: k.key, skip: (same && c.pfa.skip) || {}, role: r.role || '', ...(r.tmp ? { tmp: 1 } : {}) }; wr(c);
+  const c = rd(), hadTok = !!c.tok, same = c.pfa && pfaName(c.pfa).toLowerCase() === name.toLowerCase(); c.pfa = { name, dn: r.dn || name, sess: r.sess, key: k.key, skip: (same && c.pfa.skip) || {}, role: r.role || '', ...(r.tmp ? { tmp: 1 } : {}) }; wr(c);
   if (r.tmp) return pfaStatus(); // the Accounts page now asks for a new password
   const s2 = await pfaRun(r.box, r.ver);
   if (!hadTok && rd().tok) { M = null; return { ...pfaStatus(), ...restartApp() }; }
   return { ...pfaStatus(), added: s2.added || 0 };
 });
 H('pfa:sync', async () => { const c = rd(), hadTok = !!c.tok, r = await pfaRun(); if (!hadTok && rd().tok) { M = null; return { ...pfaStatus(), ...restartApp() }; } return { ...pfaStatus(), added: r.added || 0 }; });
-// Forgot the password: the owner makes a one-time reset code on the admin page. The code plus a new password sets a new
-// password. What was locked with the old one cannot be opened, so the saved box starts empty and this device's Bungie sign-ins
-// are saved into it again; other devices are signed out of the Pathfinder account and sign in with the new password.
-H('pfa:reset', async (e, v) => {
-  OBJ(v); const code = TXT(v.code, 40).toUpperCase().replace(/[^A-Z0-9]/g, '');
-  if (code.length !== 12) throw new Error('Reset codes are 12 letters and numbers, like ABCD-EFGH-JKLM.');
-  const { name, pw } = pfaCreds(v, false), k = await pfaKeys(name, pw);
-  const r = await pfaReq('POST', '/reset', { name, code, auth: k.auth }).catch(pfaOld);
-  const c = rd(), hadTok = !!c.tok; c.pfa = { name, sess: r.sess, key: k.key, skip: {}, role: r.role || '' }; wr(c);
-  await pfaRun(null, 0).catch(() => {});
-  if (!hadTok && rd().tok) { M = null; return { ...pfaStatus(), ...restartApp() }; }
-  return pfaStatus();
-});
-// After a quick reset or a rename the password is 123456 until the player picks a new one here.
+// After a quick reset the password is 123456 until the user picks a new one here. (Forgot your password? Open a help request:
+// the team does a quick reset.)
 H('pfa:setpw', async (e, v) => {
   OBJ(v); const c = rd(); if (!c.pfa || !c.pfa.sess) throw new Error('Sign in to your Pathfinder account first.');
   if (!c.pfa.tmp) throw new Error('Your password is not a temporary one.');
   const pw = pfaNewPw(v), name = pfaName(c.pfa), k = await pfaKeys(name, pw);
   const r = await pfaReq('POST', '/password', { auth: k.auth }, c.pfa.sess);
-  const c2 = rd(), hadTok = !!c2.tok; c2.pfa = { name, sess: r.sess, key: k.key, skip: {}, role: r.role || '' }; wr(c2);
+  const c2 = rd(), hadTok = !!c2.tok; c2.pfa = { name, dn: c2.pfa && c2.pfa.dn, sess: r.sess, key: k.key, skip: {}, role: r.role || '' }; wr(c2);
   await pfaRun(null, 0).catch(() => {});
   if (!hadTok && rd().tok) { M = null; return { ...pfaStatus(), ...restartApp() }; }
   return pfaStatus();
 });
-// Developer and founder accounts can rename a player's Pathfinder account (an offensive name, say). The name is part of how the
-// password becomes a key, so a rename also sets the password to 123456; the player picks a new one when they sign in.
-const pfaTo = (v) => { const to = TXT(v.to, 40).trim(); if (!/^[A-Za-z0-9][A-Za-z0-9._-]{2,23}$/.test(to)) throw new Error('Account names are 3 to 24 letters or numbers (you can also use . _ and -), starting with a letter or number.'); return to; };
+// Developer and founder accounts can change a user's display name (an offensive name, say). The login name and password stay, so
+// the user still signs in as before.
+const pfaDn = (v) => { const t = String(v == null ? '' : v).replace(/[^\p{L}\p{N} ._\-'!?]/gu, '').replace(/\s+/g, ' ').trim(); if (t.length < 2 || t.length > 32) throw new Error("Display names are 2 to 32 characters: letters, numbers, spaces and . _ - ' ! ?"); return t; };
 H('dev:rename', async (e, v) => {
   OBJ(v); const c = rd(); if (!pfaStatus().dev) throw new Error('Developer accounts only.');
-  const name = TXT(v.name, 200).trim(), to = pfaTo(v); if (!name) throw new Error('Enter the account name to change.');
-  return pfaReq('POST', '/dev/rename', { name, to, auth: (await pfaKeys(to, PFA_TMP)).auth }, c.pfa.sess);
+  const name = TXT(v.name, 200).trim(), to = pfaDn(TXT(v.to, 60)); if (!name) throw new Error('Enter the login name of the account to change.');
+  return pfaReq('POST', '/dev/rename', { name, to }, c.pfa.sess);
+});
+// ---- Your own Pathfinder account: display name, password and login name (Settings > Accounts > Account settings) ----
+H('pfa:profile', async (e, v) => {
+  OBJ(v); const c = rd(); if (!c.pfa || !c.pfa.sess) throw new Error('Sign in to your Pathfinder account first.');
+  const r = await pfaReq('POST', '/profile', { dn: pfaDn(TXT(v.dn, 60)) }, c.pfa.sess);
+  const c2 = rd(); if (c2.pfa) { c2.pfa.dn = r.dn; wr(c2); } return pfaStatus();
+});
+// Both changes need the current password. The saved box is locked with a key made from the login name and the password, so it
+// is opened here and locked again with the new key before it is sent; other devices are signed out and sign in with the new details.
+async function pfaRekey(c, name, oldPw) {
+  const k0 = await pfaKeys(name, oldPw), g = await pfaReq('GET', '/box', null, c.pfa.sess);
+  let data = { v: 1, accts: {} };
+  if (g.box) { try { data = await pfaOpen(g.box, k0.key); } catch (er) { throw new Error('Your current password is not right.'); } }
+  return { k0, data };
+}
+H('pfa:changepw', async (e, v) => {
+  OBJ(v); const c = rd(); if (!c.pfa || !c.pfa.sess) throw new Error('Sign in to your Pathfinder account first.');
+  const old = TXT(v.old, 200), pw = pfaNewPw(v), name = pfaName(c.pfa); if (!old) throw new Error('Enter your current password.');
+  if (old === pw) throw new Error('The new password is the same as the current one.');
+  const { k0, data } = await pfaRekey(c, name, old), k1 = await pfaKeys(name, pw);
+  const r = await pfaReq('POST', '/password', { old: k0.auth, auth: k1.auth, box: await pfaSeal(data, k1.key) }, c.pfa.sess);
+  const c2 = rd(); c2.pfa = { ...c2.pfa, sess: r.sess, key: k1.key, dn: r.dn || c2.pfa.dn, role: r.role || c2.pfa.role || '' }; delete c2.pfa.tmp; wr(c2);
+  return pfaStatus();
+});
+H('pfa:loginname', async (e, v) => {
+  OBJ(v); const c = rd(); if (!c.pfa || !c.pfa.sess) throw new Error('Sign in to your Pathfinder account first.');
+  const to = TXT(v.to, 40).trim(), pw = TXT(v.pw, 200), name = pfaName(c.pfa);
+  if (!/^[A-Za-z0-9][A-Za-z0-9._-]{2,23}$/.test(to)) throw new Error('Login names are 3 to 24 letters or numbers (you can also use . _ and -), starting with a letter or number.');
+  if (!pw) throw new Error('Enter your current password.');
+  const { k0, data } = await pfaRekey(c, name, pw), k1 = await pfaKeys(to, pw);
+  const r = await pfaReq('POST', '/loginname', { to, old: k0.auth, auth: k1.auth, box: await pfaSeal(data, k1.key) }, c.pfa.sess);
+  const c2 = rd(); c2.pfa = { ...c2.pfa, name: to, sess: r.sess, key: k1.key, dn: r.dn || c2.pfa.dn, role: r.role || c2.pfa.role || '' }; delete c2.pfa.email; wr(c2);
+  return pfaStatus();
 });
 // ---- Help requests (Settings > Help) and the Help desk (developers and founders) ----
 // A request is opened from this device without signing in: the token service hands back a secret key for it, kept here
@@ -675,8 +793,15 @@ H('fnotes:put', async (e, v) => {
 // The team's side: developer and founder accounts (the token service checks the role).
 const staffOnly = () => { if (!pfaStatus().dev) throw new Error('Developer and founder accounts only.'); };
 H('desk:list', async () => { staffOnly(); return (await helpReq('/acct/help/list', null, true)).tickets || []; });
-H('desk:get', async (e, v) => { staffOnly(); OBJ(v); return (await helpReq('/acct/help/get', { id: HID(v.id) }, true)).ticket; });
-H('desk:reply', async (e, v) => { staffOnly(); OBJ(v); const text = TXT(v.text, 3000).trim(); if (!text) throw new Error('Write a reply first.'); return (await helpReq('/acct/help/reply', { id: HID(v.id), text, close: !!v.close }, true)).ticket; });
+// here: this request is open on your screen (the team sees you are looking, and whether you are typing a reply or a note)
+H('desk:get', async (e, v) => { staffOnly(); OBJ(v); return (await helpReq('/acct/help/get', { id: HID(v.id), here: !!v.here, typing: ['reply', 'note'].includes(v.typing) ? v.typing : '' }, true)).ticket; });
+// seen: how many messages you had on screen. If someone else on the team replied since, nothing is sent and their reply comes
+// back (moved) so you can read it first; force sends anyway.
+H('desk:reply', async (e, v) => {
+  staffOnly(); OBJ(v); const text = TXT(v.text, 3000).trim(); if (!text) throw new Error('Write a reply first.');
+  try { return (await helpReq('/acct/help/reply', { id: HID(v.id), text, close: !!v.close, ...(Number.isInteger(v.seen) ? { seen: v.seen } : {}), force: !!v.force }, true)).ticket; }
+  catch (er) { if (er.code === 'moved' && er.data && er.data.ticket) return { ...er.data.ticket, moved: er.message }; throw er; }
+});
 H('desk:status', async (e, v) => { staffOnly(); OBJ(v); const st = TXT(v.status, 10); if (!['open', 'answered', 'closed'].includes(st)) throw bad(); return (await helpReq('/acct/help/status', { id: HID(v.id), status: st }, true)).ticket; });
 H('desk:delete', async (e, v) => { staffOnly(); OBJ(v); return helpReq('/acct/help/delete', { id: HID(v.id) }, true); });
 H('desk:canned', async () => { staffOnly(); return (await helpReq('/acct/help/canned', null, true)).canned || []; });
@@ -687,7 +812,24 @@ H('desk:note', async (e, v) => { staffOnly(); OBJ(v); const text = TXT(v.text, 2
 H('desk:block', async (e, v) => { staffOnly(); OBJ(v); return (await helpReq('/acct/help/block', { id: HID(v.id), on: !!v.on }, true)).ticket; });
 // Feature switches set on the admin page: 'on' (everyone), 'dev' (developer accounts only), 'off' (nobody). Checked every 10 minutes.
 let FLAGS = null, FLAGS_AT = 0;
-let FLAGS_ANN = null; // the team's announcement (Admin > Announcement), shown at the top of the app
+let FLAGS_ANN = null, FLAGS_LOOKS = null, FLAGS_MYLOOK = ''; // the team's announcement (Admin > Announcement), shown at the top of the app
+// The Bray and Manta styles' background picture, changed by their owners for everyone (token service /look).
+H('look:set', async (e, v) => {
+  OBJ(v); const look = TXT(v.look, 10), bg = TXT(v.bg, 40);
+  // the whole look (Bray or Manta locking their style): colour, accent, picture, dimming, animations, card pictures, glow
+  const full = { look, bg };
+  if (typeof v.theme === 'string') full.theme = TXT(v.theme, 20);
+  if (typeof v.accent === 'string') full.accent = TXT(v.accent, 7);
+  ['bgdim', 'glow'].forEach((k) => { if (Number.isFinite(+v[k])) full[k] = Math.round(+v[k]); });
+  if (['off', 'subtle', 'full'].includes(v.anim)) full.anim = v.anim;
+  if (typeof v.cardart === 'boolean') full.cardart = v.cardart;
+  const base = preset && preset.tokenUrl && /^https:\/\//i.test(preset.tokenUrl) ? preset.tokenUrl.replace(/\/+$/, '') : '';
+  const c = rd(), sess = c.pfa && c.pfa.sess; if (!base || !sess) throw new Error('Sign in to your Pathfinder account first (Settings > Accounts).');
+  const r = await fetch(base + '/look', { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json', Authorization: 'Bearer ' + sess }, body: JSON.stringify(full) });
+  const j = await readJson(r).catch(() => ({}));
+  if (!r.ok) throw new Error((j && j.message) || 'The token service said no (' + r.status + ').');
+  FLAGS_LOOKS = j.looks || FLAGS_LOOKS; return { looks: FLAGS_LOOKS || {} };
+});
 H('flags:get', async (e, v) => {
   const base = preset && preset.tokenUrl && /^https:\/\//i.test(preset.tokenUrl) ? preset.tokenUrl.replace(/\/+$/, '') : '';
   const force = !!(v && typeof v === 'object' && v.force);
@@ -697,7 +839,7 @@ H('flags:get', async (e, v) => {
     try {
       const r = await fetch(base + '/flags', { headers: { Accept: 'application/json', ...(sess ? { Authorization: 'Bearer ' + sess } : {}) }, signal: ac.signal });
       if (r.ok) {
-        const j = await r.json(); FLAGS = j && j.flags && typeof j.flags === 'object' ? j.flags : {}; FLAGS_AT = Date.now(); FLAGS_ANN = j && j.ann && typeof j.ann.text === 'string' ? { id: String(j.ann.id || ''), text: j.ann.text.slice(0, 300), level: j.ann.level === 'warn' ? 'warn' : 'info', at: +j.ann.at || 0 } : null;
+        const j = await r.json(); FLAGS = j && j.flags && typeof j.flags === 'object' ? j.flags : {}; FLAGS_AT = Date.now(); FLAGS_LOOKS = j && j.looks && typeof j.looks === 'object' ? j.looks : FLAGS_LOOKS; FLAGS_MYLOOK = j && j.me && typeof j.me.look === 'string' ? j.me.look : sess ? FLAGS_MYLOOK : ''; FLAGS_ANN = j && j.ann && typeof j.ann.text === 'string' ? { id: String(j.ann.id || ''), text: j.ann.text.slice(0, 300), level: j.ann.level === 'warn' ? 'warn' : 'info', at: +j.ann.at || 0 } : null;
         // The account's current role comes along: a role changed on the admin page (or in Admin) takes effect here by itself.
         if (sess && j && 'me' in j) {
           const c2 = rd();
@@ -710,7 +852,7 @@ H('flags:get', async (e, v) => {
     } catch (er) { /* keep the last ones */ } finally { clearTimeout(tm); }
   }
   const st = pfaStatus();
-  return { flags: FLAGS || {}, dev: st.dev, role: st.role, on: st.on, ann: FLAGS_ANN };
+  return { flags: FLAGS || {}, dev: st.dev, role: st.role, on: st.on, ann: FLAGS_ANN, looks: FLAGS_LOOKS || {}, mylook: st.on ? FLAGS_MYLOOK : '' };
 });
 // Bungie's maintenance timeline (its Server and Update Status page), read through the token service; shown in the app while
 // Bungie is down for maintenance.
@@ -723,7 +865,7 @@ H('bungie:status', async () => {
 // Developer tools (the PC app only, developer accounts only).
 // Admin from inside the app (founder accounts only). The admin key is typed in the app each time and only passed along;
 // the token service checks both the founder role and the key.
-const ADMP = { 'GET /ping': 1, 'GET /keys': 1, 'POST /keys': 1, 'POST /keyrevoke': 1, 'GET /accounts': 1, 'POST /find': 1, 'POST /reset': 1, 'POST /quickreset': 1, 'POST /rename': 1, 'POST /cancelreset': 1, 'POST /role': 1, 'POST /unlock': 1, 'POST /delete': 1, 'GET /flags': 1, 'PUT /flags': 1, 'POST /signout': 1, 'GET /log': 1, 'GET /announce': 1, 'POST /announce': 1, 'POST /suspend': 1, 'GET /help/blocks': 1, 'POST /help/unblock': 1, 'GET /backup': 1 };
+const ADMP = { 'GET /ping': 1, 'GET /keys': 1, 'POST /keys': 1, 'POST /keyrevoke': 1, 'GET /accounts': 1, 'POST /find': 1, 'POST /quickreset': 1, 'POST /rename': 1, 'POST /role': 1, 'POST /unlock': 1, 'POST /delete': 1, 'GET /flags': 1, 'PUT /flags': 1, 'POST /signout': 1, 'GET /log': 1, 'GET /announce': 1, 'POST /announce': 1, 'POST /suspend': 1, 'GET /help/blocks': 1, 'POST /help/unblock': 1, 'GET /backup': 1 };
 H('adm:call', async (e, v) => {
   OBJ(v); const method = TXT(v.method, 6).toUpperCase(), p = TXT(v.path, 30), key = TXT(v.key, 200);
   if (!ADMP[method + ' ' + p]) throw bad();
@@ -731,7 +873,7 @@ H('adm:call', async (e, v) => {
   let body = method === 'GET' ? null : (v.body && typeof v.body === 'object' ? { ...v.body } : {});
   // Quick reset and rename set the password to 123456: the login check for it is worked out here, from the (new) name.
   if (p === '/quickreset') { const n = typeof body.name === 'string' ? body.name.slice(0, 200).trim() : ''; if (!n) throw new Error('This account has no saved name yet: find it by name first.'); body = { id: TXT(body.id, 80), auth: (await pfaKeys(n, PFA_TMP)).auth }; }
-  if (p === '/rename') { const to = pfaTo(body); body = { id: TXT(body.id, 80), to, auth: (await pfaKeys(to, PFA_TMP)).auth }; }
+  if (p === '/rename') { body = { id: TXT(body.id, 80), to: pfaDn(TXT(body.to, 60)) }; } // the display name only; the login name and password stay
   return pfaReq(method, '/admin' + p, body, c.pfa.sess, { 'X-Admin-Key': key });
 });
 H('dev:tools', () => { if (!pfaStatus().dev) throw new Error('Developer accounts only.'); if (win && !win.isDestroyed() && win.webContents && win.webContents.openDevTools) win.webContents.openDevTools({ mode: 'detach' }); return true; });
@@ -742,7 +884,7 @@ H('pfa:sessions', async () => { const c = rd(); if (!c.pfa || !c.pfa.sess) throw
 H('pfa:sessEnd', async (e, v) => { OBJ(v); const c = rd(); if (!c.pfa || !c.pfa.sess) throw new Error('Sign in to your Pathfinder account first.'); const r = await pfaReq('POST', '/sessions/end', { id: TXT(v.id, 20) }, c.pfa.sess); if (r.me) { delete c.pfa; wr(c); } return { me: !!r.me }; });
 H('pfa:delete', async () => { const c = rd(); if (!c.pfa || !c.pfa.sess) throw new Error('Sign in to your Pathfinder account first.'); await pfaReq('DELETE', '', null, c.pfa.sess); delete c.pfa; wr(c); return pfaStatus(); });
 // Keep the box up to date: shortly after start, then every six hours.
-setTimeout(() => { if (rd().pfa) pfaRun().catch(() => {}); setInterval(() => { if (rd().pfa) pfaRun().catch(() => {}); }, 6 * 3600e3); }, 8000);
+setInterval(() => { if (rd().pfa) pfaRun().catch(() => {}); }, 6 * 3600e3); // the app also syncs on open and on coming back (vault.js resumeCheck)
 // Website only: the sign-in code Bungie sent back to the site (its state was already checked by the page).
 if (WEB) H('auth:webcode', async (e, v) => { OBJ(v); await tokenReq({ grant_type: 'authorization_code', code: TXT(v.code, 4000) }); const c = rd(); if (c.tok && c.accts && c.accts[c.tok.mid]) { delete c.accts[c.tok.mid]; wr(c); } return true; });
 const PMDEF = {}, TITLES = {}, ENTC = {}, OVR = {};
@@ -843,6 +985,27 @@ H('vault:load', async () => {
     [...o].forEach((h) => { const q = df.p[h]; if (q && q.n && !/^(empty|default)/i.test(q.n)) (df.ix[(q.c || '') + '|' + q.n] || []).forEach((x) => o.add(x)); });
     return [...o];
   };
+  // The weapon's perk columns (barrel or sight, magazine, the two traits, and the like; not the frame or the origin trait): each is every
+  // perk that can go in it, base and enhanced. The God roll check uses them: a god roll has a wish list perk in every column.
+  const PCRE = /^(barrels?|scopes?|magazines?(_gl)?|batter\w*|arrows?|bowstrings?|blades?|guards?|tubes?|hafts?|frames?|grips?|stocks?)$/i;
+  // Uses Bungie's own list of perk sockets for the weapon (so new weapon kinds, like combat bows with rails and bolts, work);
+  // the frame, the origin trait, empty sockets and cosmetics are left out. Without that list, it goes by the perk's category.
+  const PSKIP = /intrinsic|origin|shader|skin|ornament|memento|tracker|masterwork|mod|catalyst|crafting|empty|default/i;
+  const pcol = (id, h) => {
+    const ss = (sk[id] && sk[id].sockets) || [], r = (rp[id] && rp[id].plugs) || {}, out = [], ps = df.d[h] && df.d[h].ps;
+    ss.forEach((q, i) => {
+      const a = q.plugHash && df.p[q.plugHash]; if (!a) return;
+      if (ps ? !ps.includes(i) || PSKIP.test(a.c || '') || /^(empty|default)\b/i.test(a.n || '') : !PCRE.test(a.c || '')) return;
+      const o = new Set([q.plugHash]); (r[i] || []).forEach((p) => p.plugItemHash && o.add(p.plugItemHash));
+      [...o].forEach((h) => { const p = df.p[h]; if (p && p.n) (df.ix[(p.c || '') + '|' + p.n] || []).forEach((x) => o.add(x)); });
+      out.push([...o]);
+    });
+    return out.length ? out : undefined;
+  };
+  // The origin trait in now (og) and every origin trait this copy can switch to (oo), for the God roll check.
+  const ogq = (id) => { const ss = (sk[id] && sk[id].sockets) || []; const i = ss.findIndex((q2) => q2.plugHash && df.p[q2.plugHash] && /^origins?$/i.test(df.p[q2.plugHash].c || '')); return i; };
+  const ogh = (id) => { const i = ogq(id); return i >= 0 ? sk[id].sockets[i].plugHash : undefined; };
+  const ooh = (id) => { const i = ogq(id); if (i < 0) return undefined; const o = new Set([sk[id].sockets[i].plugHash]); (((rp[id] && rp[id].plugs) || {})[i] || []).forEach((p) => p.plugItemHash && o.add(p.plugItemHash)); [...o].forEach((h) => { const p = df.p[h]; if (p && p.n) (df.ix[(p.c || '') + '|' + p.n] || []).forEach((x) => o.add(x)); }); return [...o]; };
   const ist = (pr.itemComponents && pr.itemComponents.stats && pr.itemComponents.stats.data) || {};
   const ARB = new Set([3448274439, 3551918588, 14239492, 20886954, 1585787867]);
   const SH = [2996146975, 392767087, 1943323491, 1735777505, 144602215, 4244567218]; // weapons, health, class, grenade, super, melee
@@ -863,7 +1026,7 @@ H('vault:load', async () => {
     const o = ovd && (ovd.fg || ovd.i) ? { n: ovd.n, i: ovd.fg || ovd.i, fg: !!ovd.fg } : orn(it.itemInstanceId);
     const s = it.itemInstanceId && inst[it.itemInstanceId] && inst[it.itemInstanceId].primaryStat;
     const wmi = f.wl && f.wl.length ? f.wl[Math.min(it.versionNumber || 0, f.wl.length - 1)] : f.w, stt = it.state || 0, gti = it.itemInstanceId && inst[it.itemInstanceId] && inst[it.itemInstanceId].gearTier;
-    return { wm: wmi >= 0 && df.W ? df.W[wmi] : undefined, bt: f.bt || undefined, fc: f.f || undefined, lk: stt & 1 ? 1 : undefined, mw: stt & 4 ? 1 : undefined, cr: stt & 8 ? 1 : undefined, gt: gti || undefined, id: it.itemInstanceId, h: it.itemHash, n: f.n, i: o ? o.i : f.i, bi: o ? f.i : undefined, orn: o ? o.n : undefined, of: o && o.fg ? 1 : undefined, pk: WB.has(f.b) && it.itemInstanceId ? perks(it.itemInstanceId) : undefined, fr: WB.has(f.b) && it.itemInstanceId ? frI(it.itemInstanceId) : undefined, ep: WB.has(f.b) && it.itemInstanceId ? epl(it.itemInstanceId) : undefined, ah: WB.has(f.b) && it.itemInstanceId ? ((sk[it.itemInstanceId] && sk[it.itemInstanceId].sockets) || []).map((q) => (q.isEnabled !== false && q.plugHash) || 0).filter(Boolean) : undefined, st: ARB.has(f.b) && it.itemInstanceId ? astats(it.itemInstanceId) : undefined, ap: (ARB.has(f.b) || f.b === SUBB) && it.itemInstanceId ? aplugs(it.itemInstanceId) : undefined, am: f.am || undefined, en: (ARB.has(f.b) && inst[it.itemInstanceId] && inst[it.itemInstanceId].energy && inst[it.itemInstanceId].energy.energyCapacity) || undefined, ds: stt & 16 ? 1 : undefined, r: f.r, t: f.t, b: f.b, c: f.c, p: s ? s.value : 0, el: (inst[it.itemInstanceId] && inst[it.itemInstanceId].damageType) || 0 };
+    return { wm: wmi >= 0 && df.W ? df.W[wmi] : undefined, bt: f.bt || undefined, fc: f.f || undefined, lk: stt & 1 ? 1 : undefined, mw: stt & 4 ? 1 : undefined, cr: stt & 8 ? 1 : undefined, gt: gti || undefined, id: it.itemInstanceId, h: it.itemHash, n: f.n, i: o ? o.i : f.i, bi: o ? f.i : undefined, orn: o ? o.n : undefined, of: o && o.fg ? 1 : undefined, pk: WB.has(f.b) && it.itemInstanceId ? perks(it.itemInstanceId) : undefined, fr: WB.has(f.b) && it.itemInstanceId ? frI(it.itemInstanceId) : undefined, pc: WB.has(f.b) && it.itemInstanceId && f.r === 'Legendary' ? pcol(it.itemInstanceId, it.itemHash) : undefined, og: WB.has(f.b) && it.itemInstanceId && f.r === 'Legendary' ? ogh(it.itemInstanceId) : undefined, oo: WB.has(f.b) && it.itemInstanceId && f.r === 'Legendary' ? ooh(it.itemInstanceId) : undefined, ep: WB.has(f.b) && it.itemInstanceId ? epl(it.itemInstanceId) : undefined, ah: WB.has(f.b) && it.itemInstanceId ? ((sk[it.itemInstanceId] && sk[it.itemInstanceId].sockets) || []).map((q) => (q.isEnabled !== false && q.plugHash) || 0).filter(Boolean) : undefined, st: ARB.has(f.b) && it.itemInstanceId ? astats(it.itemInstanceId) : undefined, ap: (ARB.has(f.b) || f.b === SUBB) && it.itemInstanceId ? aplugs(it.itemInstanceId) : undefined, am: f.am || undefined, en: (ARB.has(f.b) && inst[it.itemInstanceId] && inst[it.itemInstanceId].energy && inst[it.itemInstanceId].energy.energyCapacity) || undefined, ds: stt & 16 ? 1 : undefined, r: f.r, t: f.t, b: f.b, c: f.c, p: s ? s.value : 0, el: (inst[it.itemInstanceId] && inst[it.itemInstanceId].damageType) || 0 };
   };
   { // ornament definitions the cached item data does not have (new universal ornaments): look them up once
     const all = [...((pr.profileInventory.data || {}).items || [])]; for (const k in pr.characterEquipment.data) all.push(...(pr.characterEquipment.data[k].items || [])); for (const k in pr.characterInventories.data) all.push(...(pr.characterInventories.data[k].items || []));
@@ -1128,7 +1291,16 @@ H('item:stack', async (e, v) => {
 // Lock or unlock an item (the padlock in the game). Needs a character to act through, even for vault items.
 H('item:lock', async (e, v) => { OBJ(v); const id = ID(v.id), char = ID(v.char), state = v.state; await post('/Destiny2/Actions/Items/SetLockState/', { state: !!state, itemId: id, characterId: char }); return true; });
 // Put a perk into a socket for free. Bungie only allows this where the game does (crafted weapons, armor mods you own...).
-H('item:plug', async (e, v) => { await ensureM(); OBJ(v); const id = ID(v.id), char = ID(v.char), socket = INT(v.socket, 0, 200), plug = HASH(v.plug); IDIRTY.add(id); await post('/Destiny2/Actions/Items/InsertSocketPlugFree/', { plug: { socketIndex: socket, socketArrayType: 0, plugItemHash: plug }, itemId: id, characterId: char }); return true; });
+// Bungie answers a perk change with the weapon as the game now has it. That answer is checked, so a change Bungie says it made
+// but did not (the socket still holds the old perk) is reported instead of shown as done. sure = Bungie's answer confirmed it.
+H('item:plug', async (e, v) => {
+  await ensureM(); OBJ(v); const id = ID(v.id), char = ID(v.char), socket = INT(v.socket, 0, 200), plug = HASH(v.plug); IDIRTY.add(id);
+  const j = await post('/Destiny2/Actions/Items/InsertSocketPlugFree/', { plug: { socketIndex: socket, socketArrayType: 0, plugItemHash: plug }, itemId: id, characterId: char });
+  const it = j && j.Response && j.Response.item, sk = it && it.sockets && it.sockets.data && it.sockets.data.sockets;
+  const now = Array.isArray(sk) && sk[socket] ? sk[socket].plugHash : undefined;
+  if (now !== undefined && now !== plug) throw new Error('Bungie answered but the perk did not change (the weapon still has its old perk). Try again from orbit or a social space.');
+  return { ok: 1, sure: now === plug ? 1 : 0 };
+});
 // Every mod or catalyst a weapon socket can take: the ones this account has unlocked (can be put in right away) and the
 // ones it has not, with Bungie's own "Source:" line when there is one. Asked for only when the socket is clicked.
 H('item:modopts', async (e, v) => {
@@ -1173,7 +1345,7 @@ async function post(p, body) {
     const c = rd();
     const r = await fetch(BASE + '/Platform' + p, {
       method: 'POST',
-      headers: { 'X-API-Key': c.apiKey, 'User-Agent': UA, Authorization: 'Bearer ' + c.tok.access, 'Content-Type': 'application/json' },
+      headers: { ...bHead(c, c.tok), Authorization: 'Bearer ' + c.tok.access, 'Content-Type': 'application/json' },
       body: JSON.stringify({ ...body, membershipType: M.membershipType }),
     });
     const j = await readJson(r);
@@ -1414,8 +1586,8 @@ app.on('session-created', (s) => { s.setPermissionRequestHandler((wc, p, cb) => 
 app.commandLine.appendSwitch('disk-cache-size', String(64 * 1024 * 1024));
 function tidyDisk() {
   const ud = app.getPath('userData');
-  // item data from older versions of the app (replaced by defs6.json)
-  for (const f of ['defs.json', 'defs2.json', 'defs3.json', 'defs4.json', 'defs5.json']) { try { fs.unlinkSync(path.join(ud, f)); } catch (e) { /* not there */ } }
+  // item data from older versions of the app (replaced by defs8.json)
+  for (const f of ['defs.json', 'defs2.json', 'defs3.json', 'defs4.json', 'defs5.json', 'defs6.json', 'defs7.json']) { try { fs.unlinkSync(path.join(ud, f)); } catch (e) { /* not there */ } }
   // logs never grow past a few hundred KB
   for (const f of ['loadout-log.txt', 'art-log.txt', 'auth-log.txt']) { try { const p = path.join(ud, f), st = fs.statSync(p); if (st.size > 300 * 1024) { const t = fs.readFileSync(p, 'utf8'); fs.writeFileSync(p, t.slice(-100 * 1024)); } } catch (e) { /* not there */ } }
   // installers the updater downloaded for versions that are already installed
@@ -1645,7 +1817,9 @@ function wlWrite(lists, dropOld) {
 function wlPub(lists) {
   const rolls = {}, notes = [], ix = new Map(); let n = 0;
   const ni = (s) => { s = s || ''; let i = ix.get(s); if (i === undefined) { i = notes.length; notes.push(s); ix.set(s, i); } return i; };
-  for (const l of lists) for (const k in l.rolls || {}) { const dst = (rolls[k] = rolls[k] || []); for (const r of l.rolls[k]) dst.push([r[0].join(','), ni(r[1]), r[2], r[3]]); n += l.rolls[k].length; }
+  // Aegis lists say how many perks per column they allow (PPC=1 is only the single best perk in each column); each roll carries it.
+  const ppc = (l) => { const m = String(l.desc || '').match(/PPC\s*=\s*(\d)/i) || String(l.url || '').match(/_PPC(\d)\b/i); return m ? +m[1] : 0; };
+  for (const l of lists) { const q = ppc(l); for (const k in l.rolls || {}) { const dst = (rolls[k] = rolls[k] || []); for (const r of l.rolls[k]) dst.push(q ? [r[0].join(','), ni(r[1]), r[2], r[3], q] : [r[0].join(','), ni(r[1]), r[2], r[3]]); n += l.rolls[k].length; } }
   return { n, rolls, notes, lists: lists.map(({ rolls: _r, ...meta }) => meta) };
 }
 async function wlRefreshOne(l) {
@@ -1930,6 +2104,213 @@ H('tr:state', async () => {
   return { score: { active: p.activeScore || 0, lifetime: p.lifetimeScore || 0, legacy: p.legacyScore || 0 }, cat: p.recordCategoriesRootNodeHash, seals: p.recordSealsRootNodeHash, tracked: p.trackedRecordHash ? [p.trackedRecordHash] : [], recs };
 });
 
+// ---------------- Clan tab: what the Destiny 2 companion app's clan page does ----------------
+// Roster with ranks, who is online and what they are playing, clan level and XP, join requests, invites and bans, and the
+// admin actions Bungie offers (promote, demote, kick, ban, approve, deny, invite, hand over founder, edit the clan).
+// Bungie decides who may do what. The admin actions also need the Bungie app (bungie.net/en/Application) to have the
+// group permissions turned on; without them Bungie answers with a scope error, sent to the page as 'SCOPE'.
+const CLAN = { g: null, at: 0, p: null, prof: {} };
+const bpath = (p) => (typeof p === 'string' && /^\/[\w./%-]{1,300}$/.test(p) ? p : '');
+const clanErr = (msg) => new Error(/scope/i.test(String(msg || '')) ? 'SCOPE' : String(msg || 'Bungie did not answer.'));
+// When Bungie says the sign-in lacks the clan permission (it was given before the permission was turned on for the app),
+// Pathfinder gets a new sign-in by itself instead of making you sign out: first a fresh token from the saved sign-in, then
+// (PC) a quiet re-approval with your remembered Bungie login, where a Bungie window shows only if Bungie wants you to press
+// Allow. Each step is tried once per run. The website cannot do the quiet step; the Clan tab offers a one-click Allow there.
+let CLANRE = 0;
+async function clanReauth() {
+  const c = rd(); if (!c.tok) return false;
+  if (CLANRE === 0) { CLANRE = 1; if (c.tok.refresh && Date.now() < c.tok.rexp) { try { await tokenReq({ grant_type: 'refresh_token', refresh_token: c.tok.refresh, ...(isForeign(c.tok, c) ? { ftok: c.tok } : {}) }); return true; } catch (e) { /* next step */ } } }
+  if (CLANRE === 1) { CLANRE = 2; if (!WEB && !isForeign(c.tok, c)) { try { return !!(await silentAuth()); } catch (e) { return false; } } }
+  return false;
+}
+async function gget(p) {
+  for (;;) {
+    try { return await api(p); } catch (e) {
+      const er = clanErr(e.message);
+      if (er.message === 'SCOPE' && (await clanReauth())) continue;
+      throw er;
+    }
+  }
+}
+async function gpost(p, body) {
+  for (let t = 0; ; t++) {
+    await fresh(); const c = rd();
+    const r = await fetch(BASE + '/Platform' + p, { method: 'POST', headers: { ...bHead(c, c.tok), Authorization: 'Bearer ' + c.tok.access, 'Content-Type': 'application/json' }, body: JSON.stringify(body || {}) });
+    const j = await readJson(r);
+    if (j.ErrorCode === 1) return j.Response;
+    const thr = (j.ThrottleSeconds || 0) > 0 || /throttl/i.test(String(j.ErrorStatus || ''));
+    if (thr && t < 3) { await new Promise((res) => setTimeout(res, Math.min(5000, Math.max(600, (j.ThrottleSeconds || 1) * 1000)))); continue; }
+    if (/scope/i.test(String(j.ErrorStatus || '') + ' ' + String(j.Message || '')) && (await clanReauth())) continue;
+    throw clanErr((/scope/i.test(String(j.ErrorStatus || '')) ? 'scope ' : '') + (j.Message || 'Bungie error ' + j.ErrorCode));
+  }
+}
+// One person as the page needs them, from any of Bungie's member, application, invite or ban records.
+function clanPerson(m) {
+  const u = (m && m.destinyUserInfo) || {}, b = (m && m.bungieNetUserInfo) || {};
+  return {
+    mt: Number(u.membershipType) || 0, mid: String(u.membershipId || ''), bn: String(b.membershipId || ''),
+    n: String(u.bungieGlobalDisplayName || u.LastSeenDisplayName || u.displayName || b.bungieGlobalDisplayName || b.displayName || 'Guardian').slice(0, 40),
+    code: pad4(u.bungieGlobalDisplayNameCode != null ? u.bungieGlobalDisplayNameCode : b.bungieGlobalDisplayNameCode), icon: bpath(u.iconPath || b.iconPath),
+  };
+}
+async function clanMembers(gid) {
+  const out = [];
+  for (let pg = 1; pg <= 3; pg++) {
+    const r = await gget(`/GroupV2/${gid}/Members/?currentpage=${pg}`);
+    (r.results || []).forEach((m) => out.push({ ...clanPerson(m), type: Number(m.memberType) || 0, on: !!m.isOnline, seen: (Number(m.lastOnlineStatusChange) || 0) * 1000, joined: Date.parse(m.joinDate) || 0 }));
+    if (!r.hasMore) break;
+  }
+  return out.filter((x) => x.mid);
+}
+async function clanRewards(gid) {
+  try {
+    const r = await api(`/Destiny2/Clan/${gid}/WeeklyRewardState/`);
+    if (!r || !r.milestoneHash || !Array.isArray(r.rewards) || !r.rewards.length) return [];
+    const df = await ent('DestinyMilestoneDefinition', r.milestoneHash), out = [];
+    r.rewards.forEach((c) => {
+      const cd = (df.rewards || {})[c.rewardCategoryHash] || {};
+      (c.entries || []).forEach((en) => { const dp = (((cd.rewardEntries || {})[en.rewardEntryHash] || {}).displayProperties) || {}; if (dp.name) out.push({ n: String(dp.name).slice(0, 80), i: bpath(dp.icon), got: en.earned ? 1 : 0 }); });
+    });
+    return out.slice(0, 12);
+  } catch (e) { return []; }
+}
+async function clanLoad(force) {
+  if (!force && CLAN.g && Date.now() - CLAN.at < 60000) return CLAN.g;
+  if (CLAN.p) return CLAN.p;
+  CLAN.p = (async () => {
+    await ensureM();
+    const g = await gget(`/GroupV2/User/${M.membershipType}/${M.membershipId}/0/1/`);
+    const r0 = g && Array.isArray(g.results) && g.results[0];
+    if (!r0 || !r0.group) {
+      let inv = [];
+      try { const pz = await api(`/GroupV2/User/Potential/${M.membershipType}/${M.membershipId}/0/1/`); inv = ((pz && pz.results) || []).map((x) => ({ id: String((x.group || {}).groupId || ''), n: String((x.group || {}).name || '').slice(0, 60), st: (x.member || {}).potentialStatus || 0 })).filter((x) => x.id); } catch (e) { /* nothing pending */ }
+      return { none: 1, inv };
+    }
+    const gid = ID(r0.group.groupId);
+    const [gr, mem, rw] = await Promise.all([gget(`/GroupV2/${gid}/`), clanMembers(gid), clanRewards(gid)]);
+    const d = (gr && gr.detail) || r0.group, ci = d.clanInfo || {}, ft = d.features || {};
+    const ps = ci.d2ClanProgressions || {}, prog = [];
+    await pool(Object.keys(ps), 4, async (h) => {
+      const q = ps[h] || {}; let n = '';
+      try { const df = await entDef('DestinyProgressionDefinition', Number(h)); n = String((df && df.displayProperties && df.displayProperties.name) || ''); } catch (e) { /* nameless */ }
+      if (Number(h) === 584850370 && !n) n = 'Clan level';
+      if (!n) return;
+      prog.push({ h: Number(h), n: n.slice(0, 60), lv: q.level || 0, cap: q.levelCap || 0, cur: q.progressToNextLevel || 0, next: q.nextLevelAt || 0, wk: q.weeklyProgress || 0, wkl: q.weeklyLimit || 0 });
+    });
+    prog.sort((a, b) => (b.h === 584850370) - (a.h === 584850370) || a.n.localeCompare(b.n));
+    const me = mem.find((x) => x.mid === String(M.membershipId));
+    return {
+      id: gid, name: String(d.name || '').slice(0, 80), call: String(ci.clanCallsign || '').slice(0, 8), motto: String(d.motto || '').slice(0, 200), about: String(d.about || '').slice(0, 2000),
+      count: d.memberCount || mem.length, max: ft.maximumMembers || 100, created: Date.parse(d.creationDate) || 0, avatar: bpath(d.avatarPath), banner: bpath(d.bannerPath),
+      join: Number(d.membershipOption) || 0, pub: d.isPublic ? 1 : 0, locale: String(d.locale || ''),
+      me: { mid: String(M.membershipId), mt: M.membershipType, type: me ? me.type : Number((r0.member || {}).memberType) || 0 },
+      members: mem, prog, rw, at: Date.now(),
+    };
+  })();
+  try { CLAN.g = await CLAN.p; CLAN.at = Date.now(); return CLAN.g; } finally { CLAN.p = null; }
+}
+H('clan:get', async (e, v) => clanLoad(!!(v && v.force)));
+// Each member's character, power, emblem and (when online) what they are doing. Kept 3 minutes per member.
+H('clan:prof', async (e, v) => {
+  OBJ(v); const list = ARR(v.list, 120).map((x) => ({ mt: INT(x.mt, 1, 254), mid: ID(x.mid) }));
+  const out = {};
+  await pool(list, 6, async (x) => {
+    const c = CLAN.prof[x.mid]; if (c && Date.now() - c.at < 180000 && !v.force) { out[x.mid] = c; return; }
+    const o = { at: Date.now() };
+    try {
+      const pr = await api(`/Destiny2/${x.mt}/Profile/${x.mid}/?components=100,200,204`);
+      const cd = (pr.characters && pr.characters.data) || {}, ad = (pr.characterActivities && pr.characterActivities.data) || {};
+      const ids = Object.keys(cd).sort((a, b) => String(cd[b].dateLastPlayed).localeCompare(String(cd[a].dateLastPlayed)));
+      const c0 = cd[ids[0]];
+      if (c0) { o.cls = c0.classType; o.emb = bpath(c0.emblemBackgroundPath); o.last = Date.parse(c0.dateLastPlayed) || 0; o.pw = Math.max(0, ...ids.map((id) => cd[id].light || 0)); } else o.priv = 1;
+      const a = ids.map((id) => ad[id]).find((q) => q && q.currentActivityHash);
+      if (a) {
+        const f = await actInfo(a.currentActivityHash); let md = '';
+        if (a.currentActivityModeHash) { try { const m = await entDef('DestinyActivityModeDefinition', a.currentActivityModeHash); md = String((m && m.displayProperties && m.displayProperties.name) || ''); } catch (er) { /* no mode name */ } }
+        o.act = { n: String(f.n || '').slice(0, 80), md: md.slice(0, 60), t: Date.parse(a.dateActivityStarted) || 0 };
+      }
+    } catch (er) { o.priv = 1; }
+    CLAN.prof[x.mid] = o; out[x.mid] = o;
+  });
+  return out;
+});
+// Clan XP each member earned this week (the personal clan XP progression on each character, added up).
+const CLANXP = 540048094;
+H('clan:xp', async (e, v) => {
+  OBJ(v); const list = ARR(v.list, 120).map((x) => ({ mt: INT(x.mt, 1, 254), mid: ID(x.mid) }));
+  let n = ''; try { const df = await entDef('DestinyProgressionDefinition', CLANXP); n = String((df && df.displayProperties && df.displayProperties.name) || ''); } catch (er) { /* checked below */ }
+  const by = {}; let lim = 0, any = 0;
+  await pool(list, 6, async (x) => {
+    try {
+      const pr = await api(`/Destiny2/${x.mt}/Profile/${x.mid}/?components=202`);
+      const cp = (pr.characterProgressions && pr.characterProgressions.data) || {}; let sum = 0, seen = 0;
+      Object.values(cp).forEach((c) => { const q = c && c.progressions && c.progressions[CLANXP]; if (q) { seen = 1; sum += q.weeklyProgress || 0; lim += 0; if (q.weeklyLimit) lim = Math.max(lim, q.weeklyLimit); } });
+      by[x.mid] = seen ? sum : null; if (seen) any = 1;
+    } catch (er) { by[x.mid] = null; }
+  });
+  return { n: n || 'Clan XP', ok: any && (!n || /clan/i.test(n)) ? 1 : 0, by, lim };
+});
+// Join requests, invites sent and bans (admins only; Bungie refuses everyone else).
+H('clan:list', async (e, v) => {
+  OBJ(v); const k = TXT(v.k, 10), g = CLAN.g && CLAN.g.id; if (!g) throw new Error('Open the Clan tab first.');
+  const path0 = { pending: `/GroupV2/${g}/Members/Pending/?currentpage=1`, invited: `/GroupV2/${g}/Members/InvitedIndividuals/?currentpage=1`, banned: `/GroupV2/${g}/Banned/?currentpage=1` }[k];
+  if (!path0) throw bad();
+  const r = await gget(path0);
+  return ((r && r.results) || []).map((x) => ({ ...clanPerson(x), at: Date.parse(x.creationDate || x.dateBanned) || 0, exp: Date.parse(x.dateExpires) || 0, msg: String(x.requestMessage || x.comment || '').slice(0, 300) })).filter((x) => x.mid);
+});
+const CLANA = {
+  rank: (g, x, v) => gpost(`/GroupV2/${g}/Members/${x.mt}/${x.mid}/SetMembershipType/${INT(v.type, 1, 3)}/`),
+  kick: (g, x) => gpost(`/GroupV2/${g}/Members/${x.mt}/${x.mid}/Kick/`),
+  ban: (g, x, v) => gpost(`/GroupV2/${g}/Members/${x.mt}/${x.mid}/Ban/`, { comment: TXT(v.msg || '', 300), length: INT(v.len == null ? 8 : v.len, 0, 11) }),
+  unban: (g, x) => gpost(`/GroupV2/${g}/Members/${x.mt}/${x.mid}/Unban/`),
+  approve: (g, x, v) => gpost(`/GroupV2/${g}/Members/Approve/${x.mt}/${x.mid}/`, { message: TXT(v.msg || '', 300) }),
+  deny: (g, x, v) => gpost(`/GroupV2/${g}/Members/DenyList/`, { memberships: [{ membershipType: x.mt, membershipId: x.mid }], message: TXT(v.msg || '', 300) }),
+  approveall: (g, x, v) => gpost(`/GroupV2/${g}/Members/ApproveAll/`, { message: TXT(v.msg || '', 300) }),
+  denyall: (g, x, v) => gpost(`/GroupV2/${g}/Members/DenyAll/`, { message: TXT(v.msg || '', 300) }),
+  invite: (g, x, v) => gpost(`/GroupV2/${g}/Members/IndividualInvite/${x.mt}/${x.mid}/`, { message: TXT(v.msg || '', 300) }),
+  uninvite: (g, x) => gpost(`/GroupV2/${g}/Members/IndividualInviteCancel/${x.mt}/${x.mid}/`),
+  founder: (g, x) => gpost(`/GroupV2/${g}/Admin/AbdicateFoundership/${x.mt}/${x.mid}/`),
+};
+H('clan:act', async (e, v) => {
+  OBJ(v); const a = TXT(v.a, 12), fn = CLANA[a]; if (!fn) throw bad();
+  const g = CLAN.g && CLAN.g.id; if (!g) throw new Error('Open the Clan tab first.');
+  const x = /all$/.test(a) ? {} : { mt: INT(v.mt, 1, 254), mid: ID(v.mid) };
+  await fn(g, x, v);
+  CLAN.at = 0; // the next read comes fresh from Bungie
+  return { ok: 1 };
+});
+H('clan:edit', async (e, v) => {
+  OBJ(v); const g = CLAN.g && CLAN.g.id; if (!g) throw new Error('Open the Clan tab first.');
+  const b = {};
+  if (v.name != null) b.name = TXT(v.name, 80).trim();
+  if (v.call != null) b.callsign = TXT(v.call, 8).trim();
+  if (v.motto != null) b.motto = TXT(v.motto, 200);
+  if (v.about != null) b.about = TXT(v.about, 2000);
+  if (v.join != null) b.membershipOption = INT(v.join, 0, 2);
+  if (!Object.keys(b).length) return { ok: 1 };
+  await gpost(`/GroupV2/${g}/Edit/`, b);
+  CLAN.at = 0;
+  return { ok: 1 };
+});
+// Find a player to invite: "Name#1234" finds that exact player, a plain name searches by the start of the name.
+H('clan:find', async (e, v) => {
+  OBJ(v); const q = TXT(v.q, 60).trim(); if (q.length < 2) return [];
+  const pick = (ms) => (ms || []).find((d) => !d.crossSaveOverride || d.crossSaveOverride === d.membershipType) || (ms || [])[0];
+  const m = /^(.+)#(\d{1,4})$/.exec(q);
+  if (m) {
+    const r = await gpost('/Destiny2/SearchDestinyPlayerByBungieName/-1/', { displayName: m[1].trim(), displayNameCode: Number(m[2]) });
+    const p = pick(r); return p ? [{ mt: p.membershipType, mid: String(p.membershipId), n: String(p.bungieGlobalDisplayName || p.displayName || '').slice(0, 40), code: pad4(p.bungieGlobalDisplayNameCode), icon: bpath(p.iconPath) }] : [];
+  }
+  const r = await gpost('/User/Search/GlobalName/0/', { displayNamePrefix: q });
+  return ((r && r.searchResults) || []).slice(0, 12).map((u) => { const p = pick(u.destinyMemberships); return p ? { mt: p.membershipType, mid: String(p.membershipId), n: String(u.bungieGlobalDisplayName || '').slice(0, 40), code: pad4(u.bungieGlobalDisplayNameCode), icon: bpath(p.iconPath) } : null; }).filter(Boolean);
+});
+// Not in a clan: search clans by name (joining happens on Bungie.net; Bungie does not let apps send join requests).
+H('clan:search', async (e, v) => {
+  OBJ(v); const q = TXT(v.q, 60).trim(); if (q.length < 2) return [];
+  const r = await gpost('/GroupV2/Search/', { name: q, groupType: 1, creationDate: 0, sortBy: 0, localeFilter: '', tagText: '', itemsPerPage: 20, currentPage: 1, requestContinuationToken: null });
+  return ((r && r.results) || []).slice(0, 20).map((d) => ({ id: String(d.groupId || ''), n: String(d.name || '').slice(0, 80), call: String((d.clanInfo || {}).clanCallsign || '').slice(0, 8), motto: String(d.motto || '').slice(0, 200), count: d.memberCount || 0, avatar: bpath(d.avatarPath), join: Number(d.membershipOption) || 0 })).filter((x) => x.id);
+});
+
 // ---------------- friends and clan on a triumph (like Braytech): who has it done ----------------
 // Loaded once (every clan member and Bungie.net friend, then each one's public triumphs) and kept for 30 minutes,
 // so opening any triumph after that is instant. Nothing about other people is written to disk.
@@ -2154,6 +2535,52 @@ async function actInfo(h) {
     return (ACTD[h] = { n: cz ? rawN.replace(/\s*[:\-]\s*customi[sz]e\s*$/i, '').trim() : rawN, cz: cz ? 1 : 0, d: dp.description || '', tn, lvl: x.activityLightLevel || 0, img: x.pgcrImage || '' });
   } catch (e) { return (ACTD[h] = { n: '', d: '', tn: '', lvl: 0, img: '' }); }
 }
+
+// Checklist: this week's and today's milestones on every character, so Checklist items can tick themselves.
+// One profile request (characters + their milestones); the milestone names are looked up once per session.
+const MSD = {};
+async function msInfo(h) {
+  if (MSD[h]) return MSD[h];
+  const x = await ent('DestinyMilestoneDefinition', h), dp = x.displayProperties || {};
+  let n = dp.name || '', d = dp.description || '', i = dp.icon || '';
+  const q = x.quests && Object.values(x.quests)[0], qd = (q && q.displayProperties) || {};
+  if (!n) n = qd.name || ''; if (!d) d = qd.description || ''; if (!i) i = qd.icon || '';
+  if (!n && Array.isArray(x.activities) && x.activities[0]) n = (await actInfo(x.activities[0].activityHash)).n || '';
+  return (MSD[h] = { n: String(n).trim().slice(0, 120), d: String(d).trim().slice(0, 300), i: /^\/[\w./%-]{1,300}$/.test(i) ? i : '', t: x.milestoneType || 0 });
+}
+// Done = every quest finished, or else every challenge objective complete, or else every reward earned.
+function msState(m) {
+  const qs = m.availableQuests || [], objs = [], rw = [];
+  qs.forEach((q) => ((q.status || {}).stepObjectives || []).forEach((o) => objs.push(o)));
+  (m.activities || []).forEach((a) => (a.challenges || []).forEach((c) => { if (c && c.objective) objs.push(c.objective); }));
+  (m.rewards || []).forEach((r) => (r.entries || []).forEach((en) => rw.push(en)));
+  const dn = qs.length ? qs.every((q) => (q.status || {}).completed || (q.status || {}).redeemed)
+    : objs.length ? objs.every((o) => o.complete) : rw.length ? rw.every((en) => en.earned) : false;
+  let tx = '';
+  if (!dn) {
+    if (objs.length === 1 && (objs[0].completionValue || 0) > 1) tx = Math.min(objs[0].progress || 0, objs[0].completionValue) + '/' + objs[0].completionValue;
+    else if (objs.length > 1) tx = objs.filter((o) => o.complete).length + '/' + objs.length;
+    else if (rw.length > 1) tx = rw.filter((en) => en.earned).length + '/' + rw.length;
+  }
+  return { dn: dn ? 1 : 0, tx };
+}
+H('chk:auto', async () => {
+  const m = await acct();
+  const pr = await api(pbase(m) + '?components=200,202');
+  const cd = (pr.characters || {}).data || {}, pg = (pr.characterProgressions || {}).data || {};
+  const cids = Object.keys(cd), by = {};
+  cids.forEach((cid) => Object.values(((pg[cid] || {}).milestones) || {}).forEach((ms) => {
+    if (!ms || !ms.milestoneHash) return;
+    const h = ms.milestoneHash; (by[h] = by[h] || { h, o: ms.order || 0, ch: {} }).ch[cid] = msState(ms);
+  }));
+  const list = Object.values(by).slice(0, 150);
+  await pool(list, 6, async (x) => { Object.assign(x, await msInfo(x.h)); });
+  // Weekly (3) and daily (4) milestones that have a name; one-time, tutorial and special ones are left out.
+  const ms = list.filter((x) => x.n && (x.t === 3 || x.t === 4)).map((x) => ({ h: x.h, n: x.n, d: x.d, i: x.i, t: x.t === 4 ? 'd' : 'w', o: x.o, ch: x.ch }))
+    .sort((a, b) => a.o - b.o || a.n.localeCompare(b.n));
+  const wk = Math.floor((Date.now() - Date.UTC(1970, 0, 6, 17)) / 604800000), dy = Math.floor((Date.now() - Date.UTC(1970, 0, 1, 17)) / 864e5);
+  return { at: Date.now(), wk, dy, cids, ms };
+});
 
 // Today's rotations: whatever Bungie lists as available to the character right now.
 const OBJN = {};
@@ -2965,6 +3392,97 @@ H('wm:pool', async (e, v) => {
   const d = df.d[h] || {};
   return { h, hs: pools.filter((p) => p.cols.length).map((p) => p.h), n: d.n || base.n, i: d.i || '', t: d.t || '', cols: cols.filter((c) => c.opts.length) };
 });
+// ---------- Finder (like destiny.report) ----------
+// Look up any weapon to see every perk it can ACTUALLY roll today, or any perk to see every weapon that can roll it. Everything
+// comes from the item data (defs): each weapon's perk pools (pp) and the pools' perks that can still drop (psd).
+const FD_SKIP = /intrinsic|tracker|shader|ornament|memento|masterwork|v400\.weapon\.mod|mods?$|catalyst|crafting|empty|default|enhancements/i;
+let FDX = null; // perk name -> { n, i, d, c, w: Set of weapon hashes }
+const fdCols = (df, h) => {
+  const d = df.d[h] || {}, out = [], cnt = {};
+  for (const [ps, init] of d.pp || []) {
+    const hs = ps && df.psd && df.psd[ps] ? df.psd[ps] : init ? [init] : [];
+    const seen = new Set(), opts = [];
+    for (const x of hs) {
+      const p = df.p[x]; if (!p || !p.n || FD_SKIP.test(p.c || '') || /^(empty|default)\b/i.test(p.n)) continue;
+      const k = p.n.toLowerCase(); if (seen.has(k)) continue; seen.add(k);
+      opts.push({ h: x, n: p.n, i: p.i || '', d: String(p.d || '').replace(/\[###[^\]]*\]/g, (m) => (/interact/i.test(m) ? 'Interact' : '')).replace(/(Interact\s*){2,}/g, 'Interact ').replace(/\s{2,}/g, ' ').trim().slice(0, 400), c: p.c || '' });
+    }
+    if (opts.length) out.push({ c: opts[0].c, fixed: !(ps && df.psd && df.psd[ps] && df.psd[ps].length > 1) && opts.length === 1, opts: opts.slice(0, 60) });
+  }
+  const tot = {}; out.forEach((c) => { tot[c.c] = (tot[c.c] || 0) + 1; });
+  out.forEach((c) => { cnt[c.c] = (cnt[c.c] || 0) + 1; const l = WMLBL[c.c] || (c.c ? c.c.replace(/[_-]+/g, ' ').replace(/^./, (m) => m.toUpperCase()).replace(/s$/, '') : 'Perk'); c.label = tot[c.c] > 1 ? l + ' ' + cnt[c.c] : l; });
+  return out;
+};
+const fdIsWeapon = (d) => d && d.pp && TF_WB0.has(d.b) && /legendary|exotic/i.test(d.r || '') && d.n;
+const fdWi = (d) => (d.wl ? d.wl[d.wl.length - 1] : d.w !== undefined ? d.w : -1);
+// one row per weapon name (the game keeps reissues and old copies under the same name); the newest version is shown
+function fdGroups(df, test) {
+  const by = {};
+  for (const k in df.d) {
+    const d = df.d[k]; if (!fdIsWeapon(d) || (test && !test(d, +k))) continue;
+    const key = d.n + '|' + (d.t || '') + '|' + (d.r || ''), wi = fdWi(d);
+    const g = by[key] || (by[key] = { h: +k, n: d.n, i: d.i || '', t: d.t || '', r: d.r || '', e: d.e || 0, am: d.am || 0, wi: -2, hs: [] });
+    g.hs.push(+k);
+    if (wi > g.wi || (wi === g.wi && (d.pp || []).length > ((df.d[g.h] || {}).pp || []).length)) { g.wi = wi; g.h = +k; g.i = d.i || g.i; g.e = d.e || g.e; }
+  }
+  return Object.values(by).map((g) => {
+    const d = df.d[g.h] || {}, fr = d.fi && df.p[d.fi] ? df.p[d.fi].n : '';
+    return { h: g.h, hs: g.hs.slice(0, 12), n: g.n, i: g.i, t: g.t, r: g.r, e: g.e, am: g.am, fr, wm: g.wi >= 0 ? df.W[g.wi] || '' : '' };
+  });
+}
+function fdIndex(df) {
+  if (FDX && FDX.v === df.v) return FDX;
+  const m = new Map();
+  for (const k in df.d) {
+    const d = df.d[k]; if (!fdIsWeapon(d)) continue;
+    for (const [ps, init] of d.pp) {
+      const hs = ps && df.psd && df.psd[ps] ? df.psd[ps] : init ? [init] : [];
+      for (const x of hs) {
+        const p = df.p[x]; if (!p || !p.n || FD_SKIP.test(p.c || '') || /^(empty|default)\b/i.test(p.n)) continue;
+        const key = p.n.toLowerCase(); let e = m.get(key);
+        if (!e) { e = { n: p.n, i: p.i || '', d: String(p.d || '').replace(/\[###[^\]]*\]/g, (q) => (/interact/i.test(q) ? 'Interact' : '')).replace(/(Interact\s*){2,}/g, 'Interact ').replace(/\s{2,}/g, ' ').trim().slice(0, 400), c: p.c || '', w: new Set() }; m.set(key, e); }
+        e.w.add(+k);
+      }
+    }
+  }
+  return (FDX = { v: df.v, m });
+}
+const fdKind = (c) => { const l = WMLBL[c] || ''; return l === 'Trait' ? 'Trait' : l || (c ? c.replace(/[_-]+/g, ' ').replace(/^./, (q) => q.toUpperCase()).replace(/s$/, '') : 'Perk'); };
+H('fd:find', async (e, v) => {
+  OBJ(v); const q = TXT(v.q, 60).trim().toLowerCase(); if (q.length < 2) return { weapons: [], perks: [] };
+  const df = await defs(), words = q.split(/\s+/).filter(Boolean), X = fdIndex(df);
+  const weapons = fdGroups(df, (d) => { const hay = (d.n + ' ' + (d.t || '')).toLowerCase(); return words.every((w) => hay.includes(w)); })
+    .map((g) => ({ ...g, st: g.n.toLowerCase().startsWith(q) ? 0 : 1 })).sort((a, b) => a.st - b.st || a.n.localeCompare(b.n)).slice(0, 80);
+  const perks = [];
+  for (const [k, p] of X.m) {
+    if (!words.every((w) => k.includes(w))) continue;
+    const names = new Set(); p.w.forEach((h) => { const d = df.d[h]; if (d) names.add(d.n + '|' + d.t); });
+    perks.push({ n: p.n, i: p.i, d: p.d, kind: fdKind(p.c), cnt: names.size, st: k.startsWith(q) ? 0 : 1 });
+  }
+  perks.sort((a, b) => a.st - b.st || b.cnt - a.cnt || a.n.localeCompare(b.n));
+  return { weapons, perks: perks.slice(0, 40) };
+});
+H('fd:weapon', async (e, v) => {
+  OBJ(v); const h = HASH(v.h), df = await defs(), d = df.d[h];
+  if (!d) throw new Error('That weapon is not in the item data.');
+  const hs = v.hs === undefined ? [h] : [h].concat(ARR(v.hs, 12).map(HASH)).filter((x, i, a) => x > 0 && a.indexOf(x) === i && df.d[x]);
+  const versions = hs.map((x) => { const q = df.d[x], wi = fdWi(q); return { h: x, wm: wi >= 0 ? df.W[wi] || '' : '', wi, i: q.i || '', cols: (q.pp || []).length }; }).sort((a, b) => b.wi - a.wi || b.cols - a.cols);
+  const fr = d.fi && df.p[d.fi] ? { n: df.p[d.fi].n, i: df.p[d.fi].i || '', d: String(df.p[d.fi].d || '').slice(0, 300) } : null;
+  return { h, src: d.so !== undefined && df.srcs ? df.srcs[d.so] || '' : '', n: d.n, i: d.i || '', t: d.t || '', r: d.r || '', e: d.e || 0, ei: (df.dm && df.dm[d.e]) || '', am: d.am || 0, bt: d.bt || 0, bi: (df.bk && df.bk[d.bt]) || '', wm: fdWi(d) >= 0 ? df.W[fdWi(d)] || '' : '', fr, versions, cols: fdCols(df, h) };
+});
+H('fd:perk', async (e, v) => {
+  OBJ(v); const n = TXT(v.n, 80).trim().toLowerCase(), df = await defs(), X = fdIndex(df), p = X.m.get(n);
+  if (!p) throw new Error('No weapon can roll that perk right now.');
+  // where on each weapon it sits (its column), and whether the newest version of the weapon rolls it
+  const where = (h) => { for (const c of fdCols(df, h)) if (c.opts.some((o) => o.n.toLowerCase() === n)) return c.label; return ''; };
+  const allG = {}; fdGroups(df).forEach((g) => { allG[g.n + '|' + g.t + '|' + g.r] = g; });
+  const weapons = fdGroups(df, (d, h) => p.w.has(h)).map((g) => {
+    const all = allG[g.n + '|' + g.t + '|' + g.r] || g;
+    return { ...g, col: where(g.h), newest: all.h === g.h ? 1 : 0 };
+  }).sort((a, b) => a.t.localeCompare(b.t) || a.n.localeCompare(b.n));
+  return { n: p.n, i: p.i, d: p.d, kind: fdKind(p.c), weapons };
+});
+
 // Every option the game offers for each subclass socket (super, abilities, aspects, fragments), taken from the item data.
 const SUBO = {};
 H('sub:opts', async (e, v) => {

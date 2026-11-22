@@ -28,9 +28,10 @@
 /* motion: small and quick. Pages fade in (opacity only, so pop-ups inside a page are never shifted), cards ease up. */
 @keyframes gtfade{from{opacity:0}to{opacity:1}}
 @keyframes gtup{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-:root:not([data-anim="off"]) main>section.on{animation:gtfade .18s ease-out}
-:root[data-anim="full"] main>section.on{animation-duration:.26s}
+:root:not([data-anim="off"]) main>section.on.gtin{animation:gtfade .18s ease-out}
+:root[data-anim="full"] main>section.on.gtin{animation-duration:.26s}
 :root:not([data-anim="off"]) #home .hm-g>*,:root:not([data-anim="off"]) #activity .agrid>*,:root:not([data-anim="off"]) #hub .hgrid>*{animation:gtup .3s var(--gt-ease) both}
+#home.hm-still .hm-g>*{animation:none!important}
 :root[data-anim="subtle"] #home .hm-g>*,:root[data-anim="subtle"] #activity .agrid>*,:root[data-anim="subtle"] #hub .hgrid>*{animation-duration:.22s}
 ${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((i) => `:root[data-anim="full"] :is(#home .hm-g,#activity .agrid,#hub .hgrid)>:nth-child(${i}){animation-delay:${i * 35}ms}:root[data-anim="subtle"] :is(#home .hm-g,#activity .agrid,#hub .hgrid)>:nth-child(${i}){animation-delay:${i * 15}ms}`).join('')}
 :root:not([data-anim="off"]) .card,:root:not([data-anim="off"]) #home .hm-c,:root:not([data-anim="off"]) #activity .acard{transition:border-color .18s,box-shadow .18s,transform .18s var(--gt-ease),background-color .18s}
@@ -146,7 +147,27 @@ ${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((i) => `:root[data-anim="full"] :i
     setTimeout(() => fitScale(true), 600);
   } catch (e) { /* the chosen scale is used as it is */ }
 
+  // ---------- page fade only when you switch tabs ----------
+  // The fade used to be on every visible page, and this file's styles arrive after the first page is already drawn, so on
+  // every reload the finished page vanished and faded back in (a flash). Now only a page you switch to fades in.
+  try {
+    let booted = false; setTimeout(() => { booted = true; }, 1200);
+    const sh0 = window.show;
+    if (typeof sh0 === 'function') {
+      window.show = function (id) {
+        const was = document.querySelector('main>section.on');
+        const r = sh0.apply(this, arguments);
+        const now = document.getElementById(id);
+        if (booted && now && now !== was && now.tagName === 'SECTION') { now.classList.remove('gtin'); void now.offsetWidth; now.classList.add('gtin'); }
+        return r;
+      };
+      document.addEventListener('animationend', (e) => { if (e.animationName === 'gtfade' && e.target.classList && e.target.classList.contains('gtin')) e.target.classList.remove('gtin'); }, true);
+    }
+  } catch (e) { /* pages just appear without fading */ }
+
   // ---------- which tab the app opens on ----------
+  // The page stays hidden (index.html #gtpre) until the start tab is on screen, so it never flashes Inventory first.
+  function reveal() { requestAnimationFrame(() => document.documentElement.classList.add('gtready')); }
   try {
     const get = window.__gtget || (() => undefined);
     // Settings > Display > "Open the app on" decides. The older "Open the app on Home" box (gt.home.start) only counts for
@@ -155,10 +176,10 @@ ${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((i) => `:root[data-anim="full"] :i
     if (!st) { let homeStart = false; try { homeStart = JSON.parse(localStorage.getItem('gt.home.start') || 'false'); } catch (e) { /* none */ } st = homeStart ? 'home' : 'vault'; }
     if (st === 'last') st = window.__gtLastTab || 'vault';
     if (st && st !== 'vault') {
-      if (st === 'home') { if (window.__gthome) window.__gthome.open(); else if (window.show) window.show('vault'); } else {
+      if (st === 'home') { if (window.__gthome) window.__gthome.open(); else if (window.show) window.show('vault'); reveal(); } else {
         const go = () => { const b = document.querySelector('#nav button[data-t="' + CSS.escape(st) + '"]'); if (b && !b.classList.contains('gthide')) b.click(); else if (window.show) window.show('vault'); };
-        setTimeout(go, 0);
+        setTimeout(() => { try { go(); } finally { reveal(); } }, 0);
       }
-    }
-  } catch (e) { /* stay on Inventory */ }
+    } else reveal();
+  } catch (e) { reveal(); /* stay on Inventory */ }
 })();

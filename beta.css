@@ -67,9 +67,9 @@
 :root[data-ui="beta"] .thh{font-weight:600!important;color:var(--b-mute)!important}
 
 /* ---------- surfaces ---------- */
-:root[data-ui="beta"] .card,:root[data-ui="beta"] section.gdark .card,:root[data-ui="beta"] #home .hm-c,:root[data-ui="beta"] #activity .acard,:root[data-ui="beta"] #hub .hcard,:root[data-ui="beta"] #hub .hhero{
+:root[data-ui="beta"] .card,:root[data-ui="beta"] section.gdark .card,:root[data-ui="beta"] #home .hm-c,:root[data-ui="beta"] #check .gl,:root[data-ui="beta"] #wish .gl,:root[data-ui="beta"] #activity .acard,:root[data-ui="beta"] #hub .hcard,:root[data-ui="beta"] #hub .hhero{
   border-radius:var(--b-r1)!important;border:1px solid var(--b-line)!important;box-shadow:var(--b-lift)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
-:root[data-ui="beta"] .card,:root[data-ui="beta"] section.gdark .card,:root[data-ui="beta"] #home .hm-c{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.015)),rgba(13,17,23,.7)!important}
+:root[data-ui="beta"] .card,:root[data-ui="beta"] section.gdark .card,:root[data-ui="beta"] #home .hm-c,:root[data-ui="beta"] #check .gl,:root[data-ui="beta"] #wish .gl,:root[data-ui="beta"] #organizer .card,:root[data-ui="beta"] #optimizer .card,:root[data-ui="beta"] #clan .clcard{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.015)),rgba(13,17,23,.7)!important}
 :root[data-ui="beta"] #home .hm-c::before,:root[data-ui="beta"] #hub .hcard::before{height:0!important;width:0!important}
 :root[data-ui="beta"] #home .hm-c,:root[data-ui="beta"] #activity .acard,:root[data-ui="beta"] #hub .hcard{transition:border-color .2s,transform .2s,box-shadow .2s}
 :root[data-ui="beta"] #home .hm-c:hover,:root[data-ui="beta"] #activity .acard.clk:hover,:root[data-ui="beta"] #hub .hcard:hover{border-color:var(--b-line2)!important;box-shadow:0 1px 0 rgba(255,255,255,.06) inset,0 22px 44px -24px rgba(0,0,0,.95)!important}

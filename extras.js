@@ -300,11 +300,19 @@
     n.c.forEach((c) => { const x = counts(c); d += x[0]; t += x[1]; });
     return (memo[nh] = [d, t]);
   }
+  // One objective's 0..1 progress. Bungie sometimes flags an objective complete with no progress at all (the per-dungeon
+  // lines under "In Every Corner" are like that), which drew full bars on unfinished triumphs and ranked them as nearly done.
+  // So an objective only counts as done when its progress reaches its target, or when the whole triumph is done.
+  function obFrac(h, ob) {
+    if (isDone(h)) return 1;
+    const [oh, p, m, c] = ob, mm = m || (DEF.obj[oh] && DEF.obj[oh].m) || 1, f = Math.min(1, Math.max(0, p || 0) / mm);
+    return f >= 1 ? 1 : f; // Bungie's own complete flag alone is not trusted
+  }
   // 0..1 how far along a triumph is
   function pct(h) {
     if (isDone(h)) return 1;
     const r = state(h); if (!r || !r[1].length) return 0;
-    let a = 0; r[1].forEach(([oh, p, m, c]) => { const mm = m || (DEF.obj[oh] && DEF.obj[oh].m) || 1; a += c ? 1 : Math.min(1, p / mm); });
+    let a = 0; r[1].forEach((ob) => { a += obFrac(h, ob); });
     return a / r[1].length;
   }
   const sortRecs = (arr) => (sortM === 'close' ? arr.slice().sort((x, y) => { const dx = isDone(x), dy = isDone(y); if (dx !== dy) return dx ? 1 : -1; return pct(y) - pct(x); }) : arr);
@@ -346,9 +354,9 @@
   function recHTML(h) {
     const r = DEF.rec[h]; if (!r) return '';
     const st = state(h), done = isDone(h), obs = st && (st[0] & 8), pins = PIN().includes(+h);
-    const obj = (st ? st[1] : []).map(([oh, p, m, c]) => {
-      const od = DEF.obj[oh] || {}, mm = m || od.m || 1, pc = Math.min(100, Math.round((p / mm) * 100));
-      return `<div class="ob"><span>${esc(od.d || '')} ${mm > 1 ? esc(p + ' / ' + mm) : ''}</span><div class="bar"><i style="width:${c ? 100 : pc}%"></i></div></div>`;
+    const obj = (st ? st[1] : []).map((ob) => {
+      const [oh, p, m] = ob, od = DEF.obj[oh] || {}, mm = m || od.m || 1, pc = Math.round(obFrac(h, ob) * 100);
+      return `<div class="ob"><span>${esc(od.d || '')} ${mm > 1 ? esc(p + ' / ' + mm) : ''}</span><div class="bar"><i style="width:${pc}%"></i></div></div>`;
     }).join('');
     return `<div class="tr${done ? ' done' : ''}" data-r="${h}"><div class="ti">${r.i ? `<img src="${esc(icon(r.i))}" alt="">` : ''}</div><div class="tb"><div class="tt">${obs ? '???' : esc(r.n)}${r.s ? `<span class="pts">${r.s} pts</span>` : ''}${done ? '<span class="ck">&#10003;</span>' : ''}</div><div class="td">${obs ? 'Hidden until unlocked.' : esc(r.d)}</div>${obj ? `<div class="to">${obj}</div>` : ''}${hw[h] ? howHTML(h) : ''}</div><div class="acts2"><button class="pin${pins ? ' on' : ''}" data-pin="${h}" title="${pins ? 'Stop tracking' : 'Track: keeps it in Tracked, the side column and the Inventory page'}"><i class="tkd"></i>${pins ? 'Tracked' : 'Track'}</button><button class="how${hw[h] ? ' on' : ''}" data-how="${h}" title="What you have to do to get this">How to get</button></div></div>`;
   }
@@ -537,7 +545,7 @@ ${quick.length ? `<div class="tcol" style="margin-top:14px">Quick wins: almost d
     }
     const st = state(h), done = isDone(h), obs = st && (st[0] & 8), on = PIN().includes(+h);
     ensureRw(h);
-    const obj = (st ? st[1] : []).map(([oh, p, mx, c]) => { const od = DEF.obj[oh] || {}, mm = mx || od.m || 1, pc = c ? 100 : Math.min(100, Math.round((p / mm) * 100)); return `<div class="dob${c ? ' ok' : ''}"><i class="bx"></i><div class="db"><i style="width:${pc}%"></i><span>${esc(od.d || 'Progress')}</span><em>${esc((p || 0).toLocaleString() + (mm > 1 ? ' / ' + mm.toLocaleString() : ''))}</em></div></div>`; }).join('');
+    const obj = (st ? st[1] : []).map((ob) => { const [oh, p, mx] = ob, od = DEF.obj[oh] || {}, mm = mx || od.m || 1, f = obFrac(h, ob), c = f >= 1, pc = Math.round(f * 100); return `<div class="dob${c ? ' ok' : ''}"><i class="bx"></i><div class="db"><i style="width:${pc}%"></i><span>${esc(od.d || 'Progress')}</span><em>${esc((p || 0).toLocaleString() + (mm > 1 ? ' / ' + mm.toLocaleString() : ''))}</em></div></div>`; }).join('');
     const rw = (r.rw || []).map(([ih, n]) => { const o = RW[ih]; return `<div class="drw">${o && o.i ? `<img src="${esc(icon(o.i))}" alt="">` : '<i></i>'}<span>${o ? esc(o.n || 'Reward') : 'Loading...'}${n > 1 ? ' x' + n : ''}</span></div>`; }).join('');
     const path = crumbs(h);
     m.innerHTML = `<div class="trdp" role="dialog" aria-label="${esc(r.n)}"><button class="dx" data-dx="1" title="Close (Esc)">&times;</button>

@@ -23,7 +23,12 @@
 .gl input,.gl select,.gl textarea{background:var(--g-inp,#0f1114);color:#e6e7ea;border:1px solid #3a3d43;padding:6px 9px;font:inherit;font-size:13px;border-radius:2px;box-sizing:border-box}
 .gl button{border-radius:3px;border:1px solid #3a3d43;color:#cfd2d8;background:var(--g-btn,#202226);padding:5px 12px;cursor:pointer;font-size:12px}
 .gl button:hover{border-color:#8fb3d9;color:#fff}.gl button.pri{background:var(--g-accent2,#2b4a6b);border-color:#8fb3d9;color:var(--g-on-accent,#fff)}
-.gl button.ic{padding:2px 7px;font-size:12px;line-height:1.2}
+.gl button.ic{padding:4px 9px;font-size:12px;line-height:1.2;min-height:26px}
+@media (hover:none){.ck-row .ck-x{opacity:1}}
+@media (max-width:560px){
+.ck-h{display:none}.ck-row{flex-wrap:wrap;gap:6px 10px;padding:8px 10px}.ck-row .ck-ic{order:-2}.ck-row .ck-t{order:-1;flex:1 1 calc(100% - 40px)}.ck-row .ck-t small:not(.ck-au){display:none}.ck-row .ck-cb{flex:1}
+.ck-sh{flex-wrap:wrap;row-gap:4px}.ck-sh>.mute{order:3;flex-basis:100%}.ck-sh .ck-pb{order:4;flex-basis:100%;max-width:none}.ck-st .sp{margin-left:0}
+}
 .gl button{white-space:nowrap;width:auto;margin:0}.gl select{width:auto}.gl input[type=checkbox]{width:auto}
 .ck-add input[type=text]{width:auto}.ck-sh select{padding:3px 6px;font-size:12px}
 .gl .hd{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}.gl .hd .sp{margin-left:auto;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
@@ -40,6 +45,12 @@
 .ck-cb input{width:16px;height:16px;accent-color:#4caf50;margin:0}
 .ck-add{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}.ck-add input[type=text]{flex:1;min-width:200px}
 .ck-row .ck-x{opacity:0}.ck-row:hover .ck-x{opacity:1}
+.ck-st{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:-2px 0 12px;font-size:12px;color:#9aa0a8}.ck-st .sp{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ck-st label{display:flex;gap:5px;align-items:center;cursor:pointer}.ck-st input{width:auto;margin:0}.ck-st .err{color:#e0b64a}
+.ck-ic{width:22px;height:22px;flex:none;border-radius:2px;background:#0d0f12}
+.ck-t small.ck-au{color:#7fc7a0;border:1px solid #2f5a44;border-radius:2px;padding:0 4px;font-size:10px;letter-spacing:.5px}
+.ck-cb em{font-style:normal;color:#e0b64a;font-size:10px}.ck-cb input[data-ad]{cursor:default}
+.ck-ml{display:flex;gap:6px;align-items:center;margin-top:4px;font-size:12px;color:#9aa0a8;flex-wrap:wrap}.ck-ml select{flex:1;min-width:180px}
 .rt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:10px}
 .rt-card{background:var(--g-panel,#1a1c20);border:1px solid var(--g-line,#2b2e33);border-radius:3px;padding:12px 14px}
 .rt-card.hit{border-color:#2f6b3a}.rt-card.full{border-color:#e0b64a}
@@ -82,6 +93,77 @@
   }
   const cs = { edit: '', addS: '', drag: '' };
   const saveC = () => lsSet('gt_chk2', C);
+  // ---- items that tick themselves: Bungie's weekly and daily milestones for each character (main.js chk:auto) ----
+  // Bungie only updates these when the game saves (finishing an activity, or going to orbit), so a tick can take a minute.
+  // A finished milestone often drops out of Bungie's list altogether: one seen earlier this week (or today, for a daily)
+  // that is gone now counts as done.
+  const wkNow = () => Math.floor((Date.now() - Date.UTC(1970, 0, 6, 17)) / 6048e5);
+  const dyNow = () => Math.floor((Date.now() - Date.UTC(1970, 0, 1, 17)) / 864e5);
+  const okI = (p) => (/^\/[\w./%-]{1,300}$/.test(String(p || '')) ? p : '');
+  const idx = (r) => { r.by = {}; (r.ms || []).forEach((m) => { r.by[m.h] = m; }); return r; };
+  let AU = lsGet('gt_chk_auto', null); AU = AU && Array.isArray(AU.ms) ? idx(AU) : null;
+  let SG = lsGet('gt_chk_seen', null); if (!SG || typeof SG !== 'object') SG = { wk: 0, s: {}, g: {} };
+  const au = { busy: 0, err: '', at: 0 };
+  const auOk = () => (AU && AU.wk === wkNow() ? AU : null);
+  const auList = () => { const A = auOk(); return A ? A.ms.filter((m) => m.t === 'w' || A.dy === dyNow()) : []; };
+  function autoSt(it, cid) {
+    const A = auOk(); if (!A || !it.m) return null;
+    const m = A.by[it.m];
+    if (m && !(m.t === 'd' && A.dy !== dyNow()) && m.ch[cid]) return m.ch[cid];
+    const g = SG.wk === wkNow() && SG.g[cid] && SG.g[cid][it.m];
+    return g === 'w' || g === dyNow() ? { dn: 1, tx: '' } : null;
+  }
+  const autoDone = (it, k) => (k === 'all' ? chars().some((c) => (autoSt(it, c.id) || {}).dn) : !!(autoSt(it, k) || {}).dn);
+  function auApply(r) {
+    if (SG.wk !== r.wk) SG = { wk: r.wk, s: {}, g: {} };
+    r.cids.forEach((cid) => {
+      const s = (SG.s[cid] = SG.s[cid] || {}), g = (SG.g[cid] = SG.g[cid] || {}), now = {};
+      r.ms.forEach((m) => { if (m.ch[cid]) now[m.h] = m; });
+      Object.keys(s).forEach((h) => { if (!now[h] && (s[h] === 'w' || s[h] === r.dy)) g[h] = s[h]; });
+      Object.values(now).forEach((m) => { s[m.h] = m.t === 'd' ? r.dy : 'w'; if (!m.ch[cid].dn) delete g[m.h]; });
+    });
+    lsSet('gt_chk_seen', SG);
+  }
+  const ASEC = { bw: { id: 'bw', n: 'This week in game', r: 'w', a: 1 }, bd: { id: 'bd', n: 'Today in game', r: 'd', a: 1 } };
+  // Keeps the "in game" sections in step with what Bungie offers right now. Items you remove stay removed (C.hid).
+  function auSync() {
+    let ch = 0;
+    if (C.auto === 0) {
+      if (C.items.some((i) => i.a) || C.secs.some((q) => q.a)) { C.items = C.items.filter((i) => !i.a); C.secs = C.secs.filter((q) => !q.a); ch = 1; }
+      if (ch) saveC(); return;
+    }
+    const A = auOk(); if (!A) return;
+    const list = auList();
+    // The default "Weekly Nightfall" item ticks itself from the Nightfall milestone (once; unlinking it by hand sticks).
+    C.items.forEach((i) => { if (!i.m && i.ml === undefined && /^weekly nightfall$/i.test(i.t)) { const m = list.find((q) => q.t === 'w' && /nightfall/i.test(q.n)); if (m) { i.m = m.h; i.ml = 1; ch = 1; } } });
+    const linked = new Set(C.items.filter((i) => i.m && !i.a).map((i) => String(i.m))), hid = new Set((C.hid || []).map(String));
+    const want = list.filter((m) => !linked.has(String(m.h)) && !hid.has(String(m.h))), wantH = new Set(want.map((m) => String(m.h)));
+    const goneAny = (h) => chars().some((c) => { const g = SG.wk === wkNow() && SG.g[c.id] && SG.g[c.id][h]; return g === 'w' || g === dyNow(); });
+    const before = C.items.length;
+    C.items = C.items.filter((i) => !i.a || ((wantH.has(String(i.m)) || goneAny(i.m)) && !linked.has(String(i.m)) && !hid.has(String(i.m))));
+    if (C.items.length !== before) ch = 1;
+    const pc = chars().length > 1 ? 1 : 0;
+    want.forEach((m) => {
+      if (C.items.some((i) => i.a && String(i.m) === String(m.h))) return;
+      const sid = m.t === 'd' ? 'bd' : 'bw';
+      if (!C.secs.some((q) => q.id === sid)) { C.secs.splice(sid === 'bd' && C.secs[0] && C.secs[0].id === 'bw' ? 1 : 0, 0, { ...ASEC[sid] }); }
+      C.items.push({ id: uid(), t: m.n.slice(0, 120), s: sid, pc, x: {}, m: m.h, a: 1 }); ch = 1;
+    });
+    C.secs = C.secs.filter((q) => { if (q.a && !C.items.some((i) => i.s === q.id)) { ch = 1; return false; } return true; });
+    if (ch) saveC();
+  }
+  async function auLoad(force) {
+    if (au.busy || !window.gt || !window.gt.chkAuto) return;
+    if (!force && Date.now() - au.at < 90000) return;
+    au.busy = 1; au.at = Date.now(); if (force) drawC();
+    try {
+      const r = await window.gt.chkAuto();
+      if (r && Array.isArray(r.ms) && Array.isArray(r.cids)) { lsSet('gt_chk_auto', r); AU = idx(r); auApply(r); au.err = ''; }
+    } catch (e) { au.err = String((e && e.message) || e || 'unknown error').replace(/^Error invoking remote method '[^']+':\s*(Error:\s*)?/, '').slice(0, 160); }
+    au.busy = 0;
+    if (csec && csec.classList.contains('on') && !cs.edit) drawC();
+  }
+  const ago = (t) => { const m = Math.round((Date.now() - t) / 60000); return m < 1 ? 'just now' : m < 60 ? m + ' min ago' : Math.round(m / 60) + ' h ago'; };
   function rollover() {
     const d = lastReset(false), w = lastReset(true); let ch = 0;
     const clear = (r) => C.items.forEach((i) => { const s = C.secs.find((q) => q.id === i.s); if (s && s.r === r) i.x = {}; });
@@ -90,27 +172,46 @@
     if (ch) saveC();
   }
   const keys = (it) => (it.pc ? chars().map((c) => c.id) : ['all']);
-  const isDone = (it) => { const k = keys(it); return k.length > 0 && k.every((q) => it.x[q]); };
+  const isDone = (it) => { const k = keys(it); return k.length > 0 && k.every((q) => it.x[q] || autoDone(it, q)); };
+  // In the rename box: which of this week's / today's in-game activities ticks this item.
+  function mlPick(it) {
+    const l = auList(); if (!l.length && !it.m) return '';
+    const has = l.some((m) => String(m.h) === String(it.m));
+    return `<label class="ck-ml">Ticks itself when this is done in game:<select id="ckml"><option value="">Nothing (tick it by hand)</option>${it.m && !has ? `<option value="${esc(it.m)}" selected>${esc(it.t)} (not offered right now)</option>` : ''}${l.map((m) => `<option value="${esc(m.h)}"${String(m.h) === String(it.m) ? ' selected' : ''}>${esc(m.n)}${m.t === 'd' ? ' (daily)' : ''}</option>`).join('')}</select></label>`;
+  }
   function drawC() {
     if (!csec) return;
-    rollover();
+    rollover(); auSync(); if (csec.classList.contains('on')) auLoad(false);
     let box = csec.querySelector('.gl'); if (!box) { box = document.createElement('div'); box.className = 'gl'; csec.appendChild(box); }
     const ch = chars(), now = Date.now();
     const rl = (r) => (r === 'd' ? 'Resets in ' + left(lastReset(false) + 864e5 - now) : r === 'w' ? 'Resets in ' + left(lastReset(true) + 6048e5 - now) : 'Never resets');
     const row = (it) => {
       const done = isDone(it);
-      const boxes = it.pc && ch.length ? `<span class="ck-cb">${ch.map((c) => `<label title="${esc(CLN[c.cls] || 'Character')}"><input type="checkbox" data-ck="${it.id}" data-c="${esc(c.id)}" aria-label="${esc(it.t)}: done on ${esc(CLN[c.cls] || 'this character')}"${it.x[c.id] ? ' checked' : ''}>${esc((CLN[c.cls] || '?')[0])}</label>`).join('')}</span>` : `<span class="ck-cb"><input type="checkbox" data-ck="${it.id}" data-c="all" aria-label="${esc(it.t)}: done"${it.x.all ? ' checked' : ''}></span>`;
+      const cbox = (k, label, who) => {
+        const as = k === 'all' ? (autoDone(it, 'all') ? { dn: 1 } : null) : autoSt(it, k), ad = !!(as && as.dn);
+        const tip = who + (ad ? ': done in game (ticks itself)' : as && as.tx ? ': ' + as.tx + ' in game' : it.m ? ': not done in game yet' : '');
+        const inp = `<input type="checkbox" data-ck="${it.id}" data-c="${esc(k)}" aria-label="${esc(it.t)}: done${k === 'all' ? '' : ' on ' + esc(who)}"${it.x[k] || ad ? ' checked' : ''}${ad ? ' data-ad="1"' : ''}>`;
+        return `<label title="${esc(tip)}">${inp}${label}${as && !ad && as.tx ? `<em>${esc(as.tx)}</em>` : ''}</label>`;
+      };
+      const boxes = `<span class="ck-cb">${it.pc && ch.length ? ch.map((c) => cbox(c.id, esc((CLN[c.cls] || '?')[0]), CLN[c.cls] || 'this character')).join('') : cbox('all', '', 'Account')}</span>`;
+      const am = it.m && auOk() ? auOk().by[it.m] : null, ic = okI(am && am.i);
       const text = cs.edit === it.id
-        ? `<span class="ck-t"><input type="text" id="ckin" value="${esc(it.t)}" maxlength="120" style="width:100%"><input type="text" id="ckno" value="${esc(it.n || '')}" maxlength="200" placeholder="Note (optional)" style="width:100%;margin-top:4px"></span><button class="ic pri" data-ca="ok" data-id="${it.id}">Save</button>`
-        : `<span class="ck-t" data-ca="edit" data-id="${it.id}" title="Click to rename">${esc(it.t)}${it.pc ? '<small>per character</small>' : ''}${it.n ? `<span class="ck-n">${esc(it.n)}</span>` : ''}</span>`;
-      return `<div class="ck-row${done ? ' done' : ''}" draggable="true" data-row="${it.id}"><span class="ck-h" title="Drag to reorder">&#8942;&#8942;</span>${boxes}${text}<button class="ic" data-ca="pc" data-id="${it.id}" title="${it.pc ? 'Track once for the account' : 'Track on each character'}">${it.pc ? 'Account' : 'Per char'}</button><button class="ic ck-x" data-ca="del" data-id="${it.id}" title="Remove">&#10005;</button></div>`;
+        ? `<span class="ck-t"><input type="text" id="ckin" value="${esc(it.t)}" maxlength="120" style="width:100%"><input type="text" id="ckno" value="${esc(it.n || '')}" maxlength="200" placeholder="Note (optional)" style="width:100%;margin-top:4px">${mlPick(it)}</span><button class="ic pri" data-ca="ok" data-id="${it.id}">Save</button>`
+        : `<span class="ck-t" data-ca="edit" data-id="${it.id}" title="${esc(am && am.d ? am.d + '\n\nClick to rename or change what ticks it' : 'Click to rename')}">${esc(it.t)}${it.pc ? '<small>per character</small>' : ''}${it.m ? '<small class="ck-au">auto</small>' : ''}${it.n ? `<span class="ck-n">${esc(it.n)}</span>` : ''}</span>`;
+      return `<div class="ck-row${done ? ' done' : ''}" draggable="true" data-row="${it.id}"><span class="ck-h" title="Drag to reorder">&#8942;&#8942;</span>${boxes}${ic ? `<img class="ck-ic" src="https://www.bungie.net${esc(ic)}" alt="" loading="lazy">` : ''}${text}<button class="ic" data-ca="pc" data-id="${it.id}" title="${it.pc ? 'Track once for the account' : 'Track on each character'}">${it.pc ? 'Account' : 'Per char'}</button><button class="ic ck-x" data-ca="del" data-id="${it.id}" title="Remove">&#10005;</button></div>`;
+    };
+    const stLine = () => {
+      if (!window.gt || !window.gt.chkAuto) return '';
+      const nh = (C.hid || []).length;
+      const st = au.busy ? 'Checking your game...' : au.err ? `<span class="err">Could not read your game: ${esc(au.err)}</span>` : AU ? 'Updated ' + ago(AU.at) : 'Not checked yet';
+      return `<div class="ck-st"><span>Items marked <b>auto</b> tick themselves from your game. Bungie updates them when the game saves (finish an activity or go to orbit), so a tick can take a minute.</span><span class="sp"><span>${st}</span><button class="ic" data-ca="aurf"${au.busy ? ' disabled' : ''}>Check now</button><label title="Adds this week's (and today's) activities from the game as their own sections"><input type="checkbox" id="ckauto"${C.auto === 0 ? '' : ' checked'}> Add activities from the game</label>${nh && C.auto !== 0 ? `<button class="ic" data-ca="unhide" title="Bring back the in-game activities you removed">Bring back ${nh} removed</button>` : ''}</span></div>`;
     };
     const secs = C.secs.map((s) => {
       const its = C.items.filter((i) => i.s === s.id), dn = its.filter(isDone).length;
-      return `<div class="ck-sec" data-sec="${s.id}"><div class="ck-sh"><b>${esc(s.n)}</b><span class="mute">${dn}/${its.length} &middot; ${rl(s.r)}</span><div class="ck-pb"><i style="width:${its.length ? Math.round(dn / its.length * 100) : 0}%"></i></div><span class="sp"><select data-sr="${s.id}" title="When this section clears">${[['d', 'Daily'], ['w', 'Weekly'], ['n', 'Never']].map(([k, l]) => `<option value="${k}"${s.r === k ? ' selected' : ''}>${l}</option>`).join('')}</select><button class="ic" data-ca="clr" data-s="${s.id}" title="Untick everything here">Untick all</button>${['d', 'w'].includes(s.id) ? '' : `<button class="ic" data-ca="dels" data-s="${s.id}" title="Delete this section">&#10005;</button>`}</span></div>${its.map(row).join('') || '<div class="mute" style="padding:4px 8px">Nothing here. Add something below or drag an item in.</div>'}</div>`;
+      return `<div class="ck-sec" data-sec="${s.id}"><div class="ck-sh"><b>${esc(s.n)}</b><span class="mute">${dn}/${its.length} &middot; ${rl(s.r)}</span><div class="ck-pb"><i style="width:${its.length ? Math.round(dn / its.length * 100) : 0}%"></i></div><span class="sp">${s.a ? '' : `<select data-sr="${s.id}" title="When this section clears">${[['d', 'Daily'], ['w', 'Weekly'], ['n', 'Never']].map(([k, l]) => `<option value="${k}"${s.r === k ? ' selected' : ''}>${l}</option>`).join('')}</select>`}<button class="ic" data-ca="clr" data-s="${s.id}" title="Untick everything here">Untick all</button>${['d', 'w'].includes(s.id) || s.a ? '' : `<button class="ic" data-ca="dels" data-s="${s.id}" title="Delete this section">&#10005;</button>`}</span></div>${its.map(row).join('') || '<div class="mute" style="padding:4px 8px">Nothing here. Add something below or drag an item in.</div>'}</div>`;
     }).join('');
-    box.innerHTML = `<div class="hd"><h2>Checklist</h2><span class="mute">Click an item to rename it, drag the handle to reorder, or track it on each character.</span><span class="sp"><input type="text" id="cknews" placeholder="New section name" maxlength="40" style="width:170px"><button data-ca="adds">Add section</button><button data-ca="defaults" title="Bring back the default items">Restore defaults</button></span></div>${secs}
-<div class="ck-add"><input type="text" id="cknew" placeholder="Add an item (for example: Farm Ascendant Shards)" maxlength="120"><select id="cksec">${C.secs.map((s) => `<option value="${s.id}">${esc(s.n)}</option>`).join('')}</select><label class="mute" style="display:flex;gap:4px;align-items:center"><input type="checkbox" id="ckpc"> Per character</label><button class="pri" data-ca="add">Add</button></div>`;
+    box.innerHTML = `<div class="hd"><h2>Checklist</h2><span class="mute">Click an item to rename it, drag the handle to reorder, or track it on each character.</span><span class="sp"><input type="text" id="cknews" placeholder="New section name" maxlength="40" style="width:170px"><button data-ca="adds">Add section</button><button data-ca="defaults" title="Bring back the default items">Restore defaults</button></span></div>${stLine()}${secs}
+<div class="ck-add"><input type="text" id="cknew" placeholder="Add an item (for example: Farm Ascendant Shards)" maxlength="120"><select id="cksec">${[...C.secs.filter((s) => !s.a), ...C.secs.filter((s) => s.a)].map((s) => `<option value="${s.id}">${esc(s.n)}</option>`).join('')}</select><label class="mute" style="display:flex;gap:4px;align-items:center"><input type="checkbox" id="ckpc"> Per character</label><button class="pri" data-ca="add">Add</button></div>`;
     const ci = box.querySelector('#ckin'); if (ci) { ci.focus(); ci.setSelectionRange(ci.value.length, ci.value.length); }
   }
   if (csec) {
@@ -118,9 +219,15 @@
       const t = e.target.closest('[data-ca]'); if (!t || !csec.contains(t)) return;
       const a = t.dataset.ca, it = C.items.find((i) => i.id === t.dataset.id);
       if (a === 'edit' && it) { cs.edit = it.id; }
-      else if (a === 'ok' && it) { const v = (csec.querySelector('#ckin') || {}).value, n = (csec.querySelector('#ckno') || {}).value; if (v && v.trim()) it.t = v.trim().slice(0, 120); it.n = String(n || '').trim().slice(0, 200); cs.edit = ''; }
+      else if (a === 'ok' && it) {
+        const v = (csec.querySelector('#ckin') || {}).value, n = (csec.querySelector('#ckno') || {}).value, ml = csec.querySelector('#ckml');
+        if (v && v.trim()) it.t = v.trim().slice(0, 120); it.n = String(n || '').trim().slice(0, 200); cs.edit = '';
+        if (ml) { const h = Number(ml.value) || 0; if (String(h || '') !== String(it.m || '')) { it.m = h; it.ml = h ? 1 : 0; if (it.a) { it.a = 0; if (it.s === 'bw' || it.s === 'bd') it.s = it.s === 'bd' ? 'd' : 'w'; } } }
+      }
+      else if (a === 'aurf') { auLoad(true); return; }
+      else if (a === 'unhide') { C.hid = []; }
       else if (a === 'pc' && it) { it.pc = it.pc ? 0 : 1; it.x = {}; }
-      else if (a === 'del' && it) C.items = C.items.filter((i) => i !== it);
+      else if (a === 'del' && it) { if (it.a && it.m) C.hid = [...new Set([...(C.hid || []), it.m])].slice(-200); C.items = C.items.filter((i) => i !== it); }
       else if (a === 'clr') C.items.forEach((i) => { if (i.s === t.dataset.s) i.x = {}; });
       else if (a === 'dels') { const sid = t.dataset.s; C.items.forEach((i) => { if (i.s === sid) i.s = 'o'; }); C.secs = C.secs.filter((q) => q.id !== sid); if (!C.secs.some((q) => q.id === 'o')) C.secs.push({ id: 'o', n: 'Goals', r: 'n' }); }
       else if (a === 'adds') { const n = (csec.querySelector('#cknews') || {}).value; if (!n || !n.trim()) return; C.secs.push({ id: uid(), n: n.trim().slice(0, 40), r: 'n' }); }
@@ -131,7 +238,8 @@
     });
     csec.addEventListener('change', (e) => {
       const t = e.target;
-      if (t.dataset.ck) { const it = C.items.find((i) => i.id === t.dataset.ck); if (!it) return; if (t.checked) it.x[t.dataset.c] = 1; else delete it.x[t.dataset.c]; saveC(); drawC(); }
+      if (t.dataset.ck) { const it = C.items.find((i) => i.id === t.dataset.ck); if (!it) return; if (t.dataset.ad) { t.checked = true; return; } if (t.checked) it.x[t.dataset.c] = 1; else delete it.x[t.dataset.c]; saveC(); drawC(); }
+      else if (t.id === 'ckauto') { C.auto = t.checked ? 1 : 0; saveC(); drawC(); if (t.checked) auLoad(true); }
       else if (t.dataset.sr) { const s = C.secs.find((q) => q.id === t.dataset.sr); if (s) { s.r = t.value; saveC(); drawC(); } }
     });
     csec.addEventListener('keydown', (e) => {

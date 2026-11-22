@@ -45,9 +45,9 @@
     b.innerHTML = '<img src="icon-192.png" alt=""><div class="tx"><b>Install Pathfinder</b><small>' + howText() + '</small></div>'
       + (deferred ? '<button class="go" data-in="go">Install</button>' : '') + '<button class="x" data-in="x" aria-label="Not now">&times;</button>';
   }
-  function banner() {
-    if (document.getElementById('gtinstb') || standalone() || !phone() || ls.get('gt_inst_done')) return;
-    const hid = +ls.get('gt_inst_hide') || 0; if (hid && Date.now() - hid < 21 * DAY) return; // "not now" lasts three weeks
+  function banner(force) {
+    if (document.getElementById('gtinstb') || standalone() || !phone() || (!force && ls.get('gt_inst_done'))) return;
+    const hid = +ls.get('gt_inst_hide') || 0; if (!force && hid && Date.now() - hid < 21 * DAY) return; // "not now" lasts three weeks
     if (document.querySelector('#gtnews, #junkm, #vsheet .dp, #loimg, #dlmod')) { setTimeout(banner, 8000); return; } // never on top of something open
     const b = document.createElement('div'); b.id = 'gtinstb'; b.setAttribute('role', 'dialog'); b.setAttribute('aria-label', 'Install Pathfinder');
     draw(b);
@@ -74,7 +74,7 @@
     const body = () => '<b>Pathfinder for Windows</b><p>The full app: everything on this site plus farming mode, desktop alerts and automatic updates.</p>'
       + '<p class="mute">' + (info && info.v ? 'Version ' + info.v + (info.size ? ' &middot; ' + mb(info.size) : '') : 'The newest version') + '. Free, no account needed beyond your Bungie sign-in. Windows may ask you to confirm because the app is new.</p>'
       + '<a class="dl" href="' + DL + '" data-dl="go">' + DLI.replace('<svg', '<svg width="14" height="14" style="vertical-align:-2px;margin-right:6px"') + 'Download for Windows</a>'
-      + '<button class="hide" data-dl="hide">Hide this button</button>';
+      + (btn.id === 'gtdl' ? '<button class="hide" data-dl="hide">Hide this button</button>' : '');
     p.innerHTML = body();
     p.addEventListener('click', (e) => {
       const t = e.target.closest('[data-dl]'); if (!t) return;
@@ -138,7 +138,13 @@
   if (window.__GT_BETA__) fetch('beta.json', { cache: 'no-store' }).then((x) => (x.ok ? x.json() : null)).then((j) => { if (j && j.v) window.__GT_BETA_V__ = j.v; }).catch(() => {});
   else fetch('beta/beta.json', { cache: 'no-store' }).then((x) => (x.ok ? x.json() : null)).then((j) => { if (j && j.v) { window.__gtbetaInfo = j; betaChip(); } }).catch(() => {});
 
-  const start = () => { pcButton(); betaChip(); setTimeout(banner, 4000); };
+  // "Get the app" lives in the account menu (top right) now: the PC download on Windows, the add-to-home-screen steps on phones.
+  window.__gtGetApp = {
+    can: () => !standalone() && ((phone() && !ls.get('gt_inst_done')) || (!!DL && isWin && !phone())),
+    label: () => (phone() ? 'Install the app' : 'Get the PC app'),
+    open: (anchor) => { if (phone()) banner(true); else pop(anchor); },
+  };
+  const start = () => { betaChip(); setTimeout(banner, 4000); };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
   window.__gtinstall = { banner, pcButton, state: () => ({ deferred: !!deferred, standalone: standalone(), phone: phone(), isIOS, isAndroid, inApp, isWin }) };
 })();

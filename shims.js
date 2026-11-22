@@ -143,7 +143,11 @@
   const sessionStub = { cookies: { get: async () => [], set: async () => {}, on: noop }, setPermissionRequestHandler: noop, setPermissionCheckHandler: noop, webRequest: { onBeforeRequest: noop }, clearStorageData: async () => {} };
   class BrowserWindow { constructor() { throw new Error('Extra windows are only in the desktop app.'); } }
   BrowserWindow.getAllWindows = () => [];
-  const clip = (t) => { try { navigator.clipboard.writeText(String(t)); } catch (e) { /* needs a tap first */ } };
+  // Copy text: the Clipboard API when the browser allows it, otherwise the older select-and-copy way (older iPhones and some
+  // in-app browsers). It fails out loud, so the page never says "Copied" when nothing was copied.
+  const clipOld = (t) => { const a = document.createElement('textarea'); a.value = t; a.setAttribute('readonly', ''); a.style.cssText = 'position:fixed;top:-1000px;left:0;opacity:0'; document.body.appendChild(a); a.select(); try { a.setSelectionRange(0, t.length); } catch (e) { /* not selectable */ } let ok = false; try { ok = document.execCommand('copy'); } catch (e) { ok = false; } a.remove(); return ok; };
+  const clipFail = () => new Error('This browser blocked copying. Select the text and copy it yourself.');
+  const clip = (t) => { t = String(t); if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(t).catch(() => { if (!clipOld(t)) throw clipFail(); }); return clipOld(t) ? Promise.resolve() : Promise.reject(clipFail()); };
   function nativeImageFromDataURL(s) { const b64 = String(s).split(',')[1] || ''; return { isEmpty: () => !b64, toPNG: () => Buffer.from(b64, 'base64'), toDataURL: () => s, _png: () => Buffer.from(b64, 'base64') }; }
   const electron = {
     app: {
@@ -158,7 +162,7 @@
     clipboard: {
       writeText: clip,
       readText: () => (navigator.clipboard && navigator.clipboard.readText ? navigator.clipboard.readText().catch(() => '') : Promise.resolve('')),
-      writeImage(im) { try { const blob = new Blob([im._png()], { type: 'image/png' }); navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]); } catch (e) { throw new Error('This browser cannot copy pictures. Use Save instead.'); } },
+      writeImage(im) { try { const blob = new Blob([im._png()], { type: 'image/png' }); navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]).catch(() => { /* main.js reads the clipboard back and tells the page */ }); } catch (e) { throw new Error('This browser cannot copy pictures. Use Save instead.'); } },
     },
     session: { fromPartition: () => sessionStub, defaultSession: sessionStub },
     Notification: class { constructor(o) { this.o = o; } static isSupported() { return 'Notification' in window; } show() { try { if (Notification.permission === 'granted') new window.Notification(this.o.title, { body: this.o.body, icon: 'logo.png' }); else if (Notification.permission !== 'denied') Notification.requestPermission(); } catch (e) { /* not allowed */ } } },

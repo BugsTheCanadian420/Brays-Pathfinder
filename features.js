@@ -69,7 +69,7 @@ body.fxbulk .vt{cursor:copy}
 .pfx .wmmsg{color:#9ecb9e}.pfx .wmmsg.bad{color:#ef8a8a}
 .fxcard .wr{display:flex;gap:8px;align-items:center;padding:6px 0;border-top:1px solid #23252a;font-size:13px}
 .fxcard .wr:first-of-type{border-top:0}
-.fxcard .wr .nm{flex:1;min-width:0}
+.fxcard .wr .nm{flex:1;min-width:0}.fxcard .wr label{white-space:nowrap}@media (max-width:560px){.fxcard .wr{flex-wrap:wrap}.fxcard .wr .nm{flex:1 1 100%}}
 .fxcard .wr small{display:block;color:#8b8f97}
 .fxcard .wr .tr{color:#e05b5b;font-weight:700}
 body.ovl header{display:none}

@@ -34,7 +34,7 @@
 #guides .gx-empty{padding:18px;border:1px dashed var(--line);border-radius:var(--gx-r);color:var(--mute)}
 
 /* Guide page */
-#guides #gpage.gx-page{max-width:980px}
+#guides #gpage.gx-page{max-width:980px;margin-left:auto;margin-right:auto}
 #guides .gx-back{margin:0 0 10px}
 #guides .gx-hero{position:relative;min-height:230px;border-radius:var(--gx-r);overflow:hidden;display:flex;align-items:flex-end;color:#fff;background:#0c1118 center/cover no-repeat;border:1px solid var(--line);isolation:isolate}
 #guides .gx-hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(6,9,14,0) 25%,rgba(6,9,14,.9) 100%),linear-gradient(90deg,rgba(6,9,14,.55),rgba(6,9,14,0) 70%)}

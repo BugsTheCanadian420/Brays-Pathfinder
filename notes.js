@@ -1,4 +1,4 @@
-// Notes: a Notes tab (several pages) and a pop-out notepad you can toggle from any tab (Ctrl+Shift+N).
+// Notes: a Notes tab (several pages) and a pop-out notepad you can toggle from any tab (Shift+N).
 // Both show the same notes. Lists use "- [ ] item" lines that turn into clickable checkboxes. Everything is saved on this computer only.
 // Founder notes: founder and owner accounts also get a shield button next to Notes. It opens the same notepad, but its pages are
 // kept by the Pathfinder service and shared by every founder and the owner (see the end of this file).
@@ -132,12 +132,12 @@
 
   // ---- the pop-out notepad ----
   const pop = document.createElement('div'); pop.id = 'gtnp'; pop.hidden = true;
-  pop.innerHTML = '<div class="nph"><b>Notes</b><span class="sp"></span><button data-pp="tab" title="Open the Notes tab">Open tab</button><button data-pp="x" title="Close (Ctrl+Shift+N)" aria-label="Close">&times;</button></div><div class="npb"></div>';
+  pop.innerHTML = '<div class="nph"><b>Notes</b><span class="sp"></span><button data-pp="tab" title="Open the Notes tab">Open tab</button><button data-pp="x" title="Close (Shift+N)" aria-label="Close">&times;</button></div><div class="npb"></div>';
   document.body.appendChild(pop);
   let pp = lsGet('gt.notes.pop', null);
   if (!pp || typeof pp !== 'object') pp = {};
   pp = { open: !!pp.open, x: Number.isFinite(pp.x) ? pp.x : -1, y: Number.isFinite(pp.y) ? pp.y : 90, w: Math.min(900, Math.max(260, +pp.w || 330)), h: Math.min(900, Math.max(240, +pp.h || 400)) };
-  const fab = document.createElement('button'); fab.id = 'gtnfab'; fab.type = 'button'; fab.title = 'Notepad (Ctrl+Shift+N)'; fab.innerHTML = '&#9998; Notes'; document.body.appendChild(fab);
+  const fab = document.createElement('button'); fab.id = 'gtnfab'; fab.type = 'button'; fab.title = 'Notepad (Shift+N)'; fab.innerHTML = '&#9998; Notes'; document.body.appendChild(fab);
   let pe = null;
   const place = () => {
     const vw = window.innerWidth, vh = window.innerHeight;
@@ -154,7 +154,10 @@
   }
   fab.onclick = () => setOpen(pop.hidden);
   pop.addEventListener('click', (e) => { const b = e.target.closest('[data-pp]'); if (!b) return; if (b.dataset.pp === 'x') setOpen(false); else nb.onclick(); });
-  document.addEventListener('keydown', (e) => { if (e.ctrlKey && e.shiftKey && !e.altKey && (e.key === 'N' || e.key === 'n')) { e.preventDefault(); setOpen(pop.hidden); } else if (e.key === 'Escape' && !pop.hidden && pop.contains(document.activeElement)) { setOpen(false); } });
+  // Shift+N (Ctrl+Shift+N is the browser's private window): not while typing in a box, and not when shortcuts are switched off.
+  const typing = (t) => !!(t && (/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || t.isContentEditable));
+  const keysOn = () => !(window.__gtget && window.__gtget('keyson') === false);
+  document.addEventListener('keydown', (e) => { if (e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey && (e.key === 'N' || e.key === 'n') && !typing(e.target) && keysOn()) { e.preventDefault(); setOpen(pop.hidden); } else if (e.key === 'Escape' && !pop.hidden && pop.contains(document.activeElement)) { setOpen(false); } });
   // drag by the header
   pop.querySelector('.nph').addEventListener('pointerdown', (e) => {
     if (e.target.closest('button')) return;

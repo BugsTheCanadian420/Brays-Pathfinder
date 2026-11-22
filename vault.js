@@ -301,7 +301,22 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 .lpk .sw{height:30px}
 @media (max-width:900px){.ltab{flex-direction:column}.lsidec{width:100%;flex-direction:row}.lside{flex:1}}
 /* settings page */
-#settings .card{max-width:760px;margin-left:auto;margin-right:auto}#settings .acl{display:flex;flex-direction:column;gap:6px;margin:10px 0}#settings .acr{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 10px;border:1px solid var(--g-line,#2b2e33);border-radius:6px;background:rgba(255,255,255,.03)}#settings .acr.on{border-color:var(--g-accent,#7ab8e8)}#settings .acr b{flex:1;min-width:140px;color:#fff}#settings .acr b span{color:#8b8f97;font-weight:400;margin-left:2px}#settings .acr em{font-style:normal;font-size:12px;color:var(--g-accent,#7ab8e8)}#settings .syst{color:#cfd2d8}#settings .acr small{flex-basis:100%;color:#e0b64a;font-size:11.5px}.acswm{position:fixed;inset:0;z-index:100000;background:rgba(8,9,12,.85);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;letter-spacing:1px}#settings .navtg{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}#settings .navtg .chip{opacity:.55}#settings .navtg .chip.on{opacity:1}#settings .navtg .chip:disabled{cursor:default;opacity:.8}
+#gtkeys .kyl.off{opacity:.45;pointer-events:none}
+:root header #gtpfn .gtav img{display:block!important}
+#gtcrop{position:fixed;inset:0;z-index:9800;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:16px}
+#gtcrop .gcm{width:min(380px,100%);background:var(--g-solid,#16181d);border:1px solid var(--g-line,#33363c);border-radius:14px;box-shadow:0 24px 60px rgba(0,0,0,.6);padding:16px 18px 16px}
+#gtcrop .gch{display:flex;align-items:center;margin-bottom:12px}#gtcrop .gch b{font-size:17px;color:#fff;flex:1}
+#gtcrop .gcx{background:none!important;border:0!important;color:#cfd5de!important;font-size:24px!important;line-height:1;padding:0 4px!important;cursor:pointer}
+#gtcrop .gcs{border-radius:10px;overflow:hidden;background:#0d0f13}#gtcrop canvas{display:block;width:100%;aspect-ratio:1;cursor:grab;touch-action:none;outline:none}#gtcrop canvas.dr{cursor:grabbing}#gtcrop canvas:focus-visible{box-shadow:inset 0 0 0 2px var(--g-accent,#7ab8e8)}
+#gtcrop .gcz{display:flex;align-items:center;gap:10px;margin:14px 4px 4px}#gtcrop .gcz input{flex:1;accent-color:var(--g-accent,#7ab8e8)}#gtcrop .gcz svg{width:20px;height:20px;flex:none;fill:none;stroke:#cfd5de;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}#gtcrop .gcz svg.sm{width:15px;height:15px}
+#gtcrop .gcr{margin-left:8px;width:34px;height:34px;padding:0!important;display:grid;place-items:center;background:transparent!important;border:1px solid var(--g-line,#3a3d43)!important;border-radius:8px!important;cursor:pointer}#gtcrop .gcr:hover{border-color:var(--g-accent,#7ab8e8)!important}
+#gtcrop .gcb{display:flex;align-items:center;gap:8px;margin-top:14px}#gtcrop .gcb span{flex:1}#gtcrop .gcrs{background:none!important;border:0!important;color:var(--g-accent,#7ab8e8)!important;padding:6px 2px!important;font-weight:600;cursor:pointer;letter-spacing:0!important;text-transform:none!important}
+.pfdots{display:inline-flex;align-items:center;gap:4px;vertical-align:middle;height:1em}.pfdots i{width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
+#settings .card{max-width:760px;margin-left:auto;margin-right:auto}#settings .acl{display:flex;flex-direction:column;gap:6px;margin:10px 0}#settings .pfrows{display:flex;flex-direction:column;gap:2px;margin:6px 0 8px;border:1px solid var(--g-line,#2b2e33);border-radius:12px;overflow:hidden}#settings .pfrow{display:flex;align-items:center;gap:10px;padding:9px 12px;background:rgba(255,255,255,.025)}#settings .pfrow+.pfrow{border-top:1px solid var(--g-line,#2b2e33)}#settings .pfk{width:110px;flex:none;color:var(--mut,#9aa3b2);font-size:13px}#settings .pfv{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#settings .pflg{letter-spacing:.08em;font-variant-numeric:tabular-nums}.pfeye{display:inline-flex!important;align-items:center;justify-content:center;width:34px;min-width:34px;padding:0!important}.pfeye[aria-pressed="true"]{color:var(--g-accent,#7ab8e8)!important}.pfmask:not(.show){-webkit-text-security:disc;text-security:disc}
+#gtpfn{order:8;flex:none;position:relative;display:inline-flex;align-items:center;gap:7px;max-width:220px;height:34px;margin:0 6px 0 auto;padding:0 10px 0 3px!important;border-radius:999px!important;border:1px solid var(--g-line,#33363c)!important;background:rgba(255,255,255,.04)!important;color:#e8ecf2!important;font-size:13px;font-weight:700;letter-spacing:0!important;text-transform:none!important;cursor:pointer}header.gtbar:has(#gtbeta) #gtpfn{margin-left:8px}#gtpfn[hidden]{display:none}#gtpfn:hover,#gtpfn[aria-expanded="true"]{border-color:var(--g-accent,#7ab8e8)!important}#gtpfn.out{padding-right:8px!important}.gtav{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;flex:none;overflow:hidden;font-size:12px;font-weight:800;color:var(--g-on-accent,#0d1015);background:var(--g-accent,#7ab8e8)}.gtav img{width:100%;height:100%;object-fit:cover;display:block}.gtav.out{background:rgba(255,255,255,.08);color:#cfd5de}.gtav svg{width:16px!important;height:16px!important;opacity:1!important}.gtav.big{width:40px;height:40px;font-size:17px}.gtav.big svg{width:22px!important;height:22px!important}.gtav.pfavb{width:44px;height:44px;font-size:18px;margin-right:10px;vertical-align:middle}#gtpfn>svg{width:12px!important;height:12px!important;flex:none;opacity:.7}#gtpfn .gtpft{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#gtpfn.gtdot::after{content:"";position:absolute;top:1px;left:23px;width:9px;height:9px;border-radius:50%;background:var(--g-accent,#7ab8e8);box-shadow:0 0 0 2px var(--g-panel,#1a1c20)}header.gtbar nav button.gtset{display:none!important}header.gtbar #gtbeta{order:7!important;margin-left:auto!important}#gtdl{display:none!important}
+#gtpfm{position:fixed;z-index:9700;min-width:220px;padding:6px;border-radius:14px;border:1px solid var(--g-line,#33363c);background:var(--g-solid,#16181d);box-shadow:0 18px 40px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:2px}#gtpfm .gtpfh{padding:8px 10px 8px;border-bottom:1px solid var(--g-line,#2b2e33);margin-bottom:4px}#gtpfm .gtpfh b{display:block;color:#fff;font-size:14px}#gtpfm .gtpfh small{color:var(--mut,#9aa3b2);font-size:12px}#gtpfm button{display:block;width:100%;text-align:left;padding:9px 10px!important;border:0!important;border-radius:9px!important;background:transparent!important;color:#dfe4ea!important;font-size:13.5px;font-weight:600;letter-spacing:0!important;text-transform:none!important;cursor:pointer}#gtpfm button:hover,#gtpfm button:focus-visible{background:rgba(255,255,255,.07)!important;outline:none}#gtpfm .gtpfh{display:flex;align-items:center;gap:10px}#gtpfm .gtpfh>div{min-width:0}#gtpfm .gtpfh b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#gtpfm{max-width:min(300px,calc(100vw - 16px))}#gtpfm button{display:flex!important;align-items:center;gap:10px}#gtpfm button svg{width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;opacity:.8}#gtpfm button span{flex:1}#gtpfm button[data-pfm=signout]{color:#ffb4ae!important}#gtpfm .gtpfb{font-style:normal;font-size:11px;font-weight:800;color:var(--g-on-accent,#111);background:var(--g-accent,#7ab8e8);border-radius:9px;padding:1px 7px}#gthfab{position:fixed;right:14px;bottom:14px;z-index:44;width:36px;height:34px;display:flex;align-items:center;justify-content:center;background:#1d2026;color:var(--g-accent,#e6e7ea);border:1px solid #4a4d54;border-radius:18px;padding:0!important;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.5)}#gthfab:hover{border-color:var(--g-accent,#8fb3d9);background:#26324a}body.gtfn #gthfab{right:58px}body.gthf #gtnfab{right:58px}body.gtfn.gthf #gtnfab{right:102px}body.ovl #gthfab{display:none}body:has(#vsheet .dp) #gthfab{visibility:hidden}#gthfab.gtdot::after{content:"";position:absolute;top:-2px;right:-2px;width:10px;height:10px;border-radius:50%;background:var(--g-accent,#7ab8e8);box-shadow:0 0 0 2px #1d2026}@media (max-width:760px){html.gtweb #gthfab{bottom:calc(68px + env(safe-area-inset-bottom,0px));right:64px!important;width:44px;height:44px;border-radius:50%}html.gtweb #gthfab svg{width:20px;height:20px}}
+@media (max-width:560px){#settings .pfrow{flex-wrap:wrap;row-gap:4px}#settings .pfk{width:100%;font-size:12px}}@media (max-width:760px){#gtpfn{max-width:44px;padding:0 3px!important}#gtpfn .gtpft,#gtpfn>svg{display:none}}@media (max-width:560px){html[data-gtab="vault"] #gtpfn{margin-left:6px}html[data-gtab="vault"] header.gtbar #gtbeta{margin-left:6px!important}}
+#settings .acfrom{font-size:11.5px;color:var(--mut,#9aa3b2);padding:1px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.12)}#settings .acr{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 10px;border:1px solid var(--g-line,#2b2e33);border-radius:6px;background:rgba(255,255,255,.03)}#settings .acr.on{border-color:var(--g-accent,#7ab8e8)}#settings .acr b{flex:1;min-width:140px;color:#fff}#settings .acr b span{color:#8b8f97;font-weight:400;margin-left:2px}#settings .acr em{font-style:normal;font-size:12px;color:var(--g-accent,#7ab8e8)}#settings .syst{color:#cfd2d8}#settings .acr small{flex-basis:100%;color:#e0b64a;font-size:11.5px}.acswm{position:fixed;inset:0;z-index:100000;background:rgba(8,9,12,.85);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;letter-spacing:1px}#settings .navtg{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}#settings .navtg .chip{opacity:.55}#settings .navtg .chip.on{opacity:1}#settings .navtg .chip:disabled{cursor:default;opacity:.8}
 #settings h2{font-size:15px;letter-spacing:3px;text-transform:uppercase;color:#cfd2d8;margin:0 0 10px}
 .sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
 .th{border:2px solid var(--g-line);padding:8px;cursor:pointer;background:var(--g-btn);text-align:center;font-size:14px}
@@ -310,6 +325,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 .sr{display:flex;align-items:center;gap:12px;padding:7px 0;border-top:1px solid var(--g-line)}.sr:first-of-type{border-top:0}
 .sr label{flex:1;color:#e8e8e8;font-size:15px}.sr input[type=range]{width:200px;margin:0;padding:0}
 .sr output{width:48px;text-align:right;color:#9b9ea5}
+@media (max-width:560px){.sr:has(#wlurl){flex-wrap:wrap}.sr #wlurl{flex:1 1 100%!important;min-width:0}}
 .sr input[type=checkbox]{width:20px;height:20px;margin:0}.sr input[type=color]{width:46px;height:30px;padding:0;margin:0;background:none;border:1px solid #3a3d43}
 .toast{position:fixed;right:14px;bottom:14px;z-index:90;background:#1b1c1f;border:1px solid #4a4d54;padding:10px 14px;display:none;gap:10px;align-items:center;font-size:14px;color:#fff}
 .toast.on{display:flex}
@@ -653,6 +669,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 body.gtann #gtmaint{top:calc(var(--gt-bar-h,56px) + 74px)}
 .sx.hntf{margin:6px 0 0}
 .hnotes{margin:10px 0 4px;padding:8px 10px;border:1px dashed color-mix(in srgb,var(--g-accent,#e8b84a) 55%,#3a3d43);border-radius:10px;background:rgba(255,255,255,.02)}.hnotes .hn{font-size:13px;padding:5px 0;border-top:1px solid var(--g-line,#2b2e33);white-space:pre-wrap;word-break:break-word}.hnotes .hn:first-of-type{border-top:0}.hnotes .hn small{display:block;color:var(--mute,#9aa1ab);font-size:11.5px}.hnotes .hnt{font-size:12px;font-weight:700;color:var(--g-accent,#e8b84a)}
+.hhere{display:flex;flex-wrap:wrap;gap:6px 14px;margin:0 0 6px;font-size:12.5px;color:#dfe4ea}.hhere:empty{display:none}.hhp{display:inline-flex;align-items:center;gap:6px}.hhp i{width:8px;height:8px;border-radius:50%;background:#5fd38a;box-shadow:0 0 0 3px rgba(95,211,138,.18)}.hhp.ty i{background:var(--g-accent,#7ab8e8);box-shadow:0 0 0 3px var(--g-accent-soft,rgba(122,184,232,.2));animation:hhp 1s ease-in-out infinite alternate}@keyframes hhp{to{opacity:.35}}@media (prefers-reduced-motion:reduce){.hhp.ty i{animation:none}}.hslow{color:var(--mute,#9aa1ab);font-size:12px}
 .hclaim{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--mute,#9aa1ab)}.hclaim b{color:var(--g-accent,#e8b84a)}
 .hrow .hcl{font-style:normal;font-size:11px;color:var(--g-accent,#e8b84a);margin-left:6px}
 .admstats{display:flex;flex-wrap:wrap;gap:6px 16px;margin:2px 0 8px;font-size:13px;color:var(--mute,#9aa1ab)}.admstats b{color:var(--text,#e8ecf2);font-size:15px;margin-right:4px}
@@ -752,13 +769,60 @@ body.gtann #gtmaint{top:calc(var(--gt-bar-h,56px) + 74px)}
 #godrolls .gph{position:relative;overflow:hidden;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:22px 24px;border:1px solid var(--g-line,#2b2e33);border-radius:16px;background:radial-gradient(70% 140% at 100% 0,color-mix(in srgb,#f2b441 14%,transparent),transparent 60%),radial-gradient(60% 120% at 0 0,color-mix(in srgb,#8a5cf0 14%,transparent),transparent 60%),var(--g-panel,#16181c)}
 #godrolls .gph h2{margin:0 0 4px!important;padding:0!important;border:0!important;font-size:30px;line-height:1.1;color:#fff;letter-spacing:-.01em;text-transform:none}
 #godrolls .gph p{margin:0;color:#aeb4bd;font-size:14px}
-#godrolls .gptools{display:flex;gap:8px;align-items:center}#godrolls .gptools input,#godrolls .gptools select{width:auto!important;height:38px;margin:0!important;box-sizing:border-box}#godrolls .gptools input{width:240px!important}
-#godrolls .gpfs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:12px 0 6px}
+#godrolls .gptools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}@media (max-width:600px){#godrolls .gph .gptools{width:100%}#godrolls .gph .gptools input{flex:1 1 140px;width:auto!important;min-width:0}#godrolls .gph .gptools select{flex:1 1 100%;width:100%!important}}#godrolls .gptools input,#godrolls .gptools select{width:auto!important;height:38px;margin:0!important;box-sizing:border-box}#godrolls .gptools input{width:240px!important}
+#godrolls .gpfs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:12px 0 6px}
 #godrolls .gpf{--gc:#8b8f97;display:flex!important;flex-direction:column;align-items:flex-start;gap:2px;padding:12px 16px!important;border-radius:14px!important;border:1px solid var(--g-line,#2b2e33)!important;background:var(--g-panel,#16181c)!important;color:#cfd3da!important;text-align:left;cursor:pointer;box-shadow:none!important;text-transform:none!important;letter-spacing:0!important;font-family:inherit}
 #godrolls .gpf b{font-size:26px;line-height:1.1;color:var(--gc);font-weight:800}#godrolls .gpf span{font-size:13px;font-weight:600}
 #godrolls .gpf:hover{border-color:color-mix(in srgb,var(--gc) 60%,transparent)!important}
 #godrolls .gpf.on{border-color:var(--gc)!important;background:linear-gradient(180deg,color-mix(in srgb,var(--gc) 18%,transparent),color-mix(in srgb,var(--gc) 4%,transparent)),var(--g-panel,#16181c)!important;color:#fff!important}
-#godrolls .g-S{--gc:#f2b441}#godrolls .g-A{--gc:#5fd38a}#godrolls .g-C{--gc:#9aa1ab}#godrolls .g-D{--gc:#ef6461}#godrolls .g-q{--gc:#ffd27a}
+#godrolls .g-S{--gc:#f2b441}#godrolls .g-R{--gc:#c58cff}#godrolls .gpmode{display:inline-flex;height:38px;border:1px solid var(--g-line,#2b2e33);border-radius:10px;overflow:hidden;flex:none}#godrolls .gpmode button{border:0!important;border-radius:0!important;padding:0 14px!important;height:100%;font-size:13px;font-weight:700;letter-spacing:0!important;text-transform:none!important;background:transparent!important;color:#aeb4bd!important;box-shadow:none!important}#godrolls .gpmode button.on{background:color-mix(in srgb,#f2b441 20%,transparent)!important;color:#fff!important}#godrolls .gpmd,#gvm .gpmd{display:inline-flex;align-items:center;padding:3px 9px;border-radius:999px;font-size:11.5px;font-weight:800;letter-spacing:.04em;color:#e8ecf2;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16)}#godrolls .g-A{--gc:#5fd38a}#godrolls .g-C{--gc:#9aa1ab}#godrolls .g-D{--gc:#ef6461}#godrolls .g-q{--gc:#ffd27a}
+#gvm{position:fixed;inset:0;z-index:70;background:rgba(4,6,10,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:flex;align-items:flex-start;justify-content:center;padding:max(24px,4vh) 16px 24px;overflow:auto}
+#gvm .g-X{--gc:#e8c25a}#gvm .g-S{--gc:#f2b441}#gvm .g-R{--gc:#c58cff}#gvm .g-A{--gc:#5fd38a}#gvm .g-C{--gc:#9aa1ab}#gvm .g-D{--gc:#ef6461}#gvm .g-q{--gc:#ffd27a}
+#gvm .gvp{position:relative;width:min(1080px,100%);border-radius:20px;border:1px solid color-mix(in srgb,var(--gc) 40%,var(--g-line,#2b2e33));background:radial-gradient(70% 60% at 100% 0,color-mix(in srgb,var(--gc) 14%,transparent),transparent 65%),linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,0) 30%),var(--g-panel,#15171b);box-shadow:0 30px 80px rgba(0,0,0,.6);padding:20px 22px 22px;color:#e8ecf2}
+#gvm .gvh{display:flex;gap:16px;align-items:center}#gvm .gvh .vt{--t:72px;flex:none}
+#gvm .gvn{flex:1;min-width:0}#gvm .gvn h3{margin:0;font-size:24px;line-height:1.15;color:#fff;font-weight:800;letter-spacing:.01em;text-transform:none;border:0;padding:0}
+#gvm .gvn small{display:block;margin:3px 0 8px;color:#a3aab4;font-size:13px}
+#gvm .gpb{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+#gvm .gpg-pill{display:inline-flex;align-items:center;padding:3px 10px;border-radius:999px;font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--gc);background:color-mix(in srgb,var(--gc) 16%,transparent);border:1px solid color-mix(in srgb,var(--gc) 45%,transparent)}
+#gvm .gptag,#gvm .gvfr{display:inline-flex;align-items:center;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600;color:#cfd5de;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)}
+#gvm .gvx{align-self:flex-start;flex:none;width:38px;height:38px;border-radius:12px;padding:0!important;font-size:16px}
+#gvm .gvnote{margin:16px 0 0;padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.035);border:1px solid var(--g-line,#2b2e33);border-left:3px solid var(--gc);font-size:13.5px;line-height:1.5;color:#cdd3dc}
+#gvm .gva{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:16px 0 0}
+#gvm button{letter-spacing:0!important;text-transform:none!important;font-family:inherit}
+#gvm .gva button{border-radius:12px!important;padding:9px 16px!important;font-weight:700;font-size:14px}#gvm .gva .b{background:var(--gc)!important;border-color:var(--gc)!important;color:#141006!important}#gvm .gva .b:disabled{background:rgba(255,255,255,.06)!important;border-color:rgba(255,255,255,.12)!important;color:#8b929c!important;cursor:default}
+#gvm .gvgod{margin:14px 2px 0;font-size:13.5px;font-weight:700;color:var(--gc)}#gvm .gvgod.r{font-weight:600}
+#gvm .gvok{color:#35e3cf;font-weight:600;font-size:13.5px}
+#gvm .gvmsg{margin:12px 0 0;padding:10px 14px;border-radius:12px;font-size:13.5px;background:color-mix(in srgb,#35e3cf 10%,transparent);border:1px solid color-mix(in srgb,#35e3cf 40%,transparent);color:#d6fbf5}
+#gvm .gvmsg.bad{background:rgba(239,100,97,.1);border-color:rgba(239,100,97,.45);color:#ffd6d5}
+#gvm .gvcols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:12px;margin:16px 0 0}
+#gvm .gvc{min-width:0;display:flex;flex-direction:column;gap:6px;padding:12px;border-radius:14px;background:rgba(0,0,0,.18);border:1px solid var(--g-line,#2b2e33)}
+#gvm .gvc h5{margin:0 0 2px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9aa1ab}
+#gvm .gvos{display:flex;flex-direction:column;gap:5px}
+#gvm .gvo{display:flex;align-items:center;gap:9px;width:100%;min-height:40px;padding:5px 8px!important;border-radius:10px!important;border:1px solid transparent!important;background:rgba(255,255,255,.03)!important;color:#dfe4ea!important;text-align:left;font-size:13.5px;font-weight:600;letter-spacing:0!important;text-transform:none!important;cursor:pointer}
+#gvm .gvo:hover:not(:disabled){background:rgba(255,255,255,.07)!important}
+#gvm .gvo img,#gvm .gvo .gvi{width:30px;height:30px;border-radius:50%;flex:none;background:#0d0f13;border:1px solid rgba(255,255,255,.14)}
+#gvm .gvo span{flex:1;min-width:0;overflow:hidden;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:anywhere}
+#gvm .gvo em{flex:none;font-style:normal;font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:2px 6px;border-radius:999px}
+#gvm .gvo em.in{color:var(--gc);background:color-mix(in srgb,var(--gc) 15%,transparent)}#gvm .gvo em.pk{color:#35e3cf;background:color-mix(in srgb,#35e3cf 14%,transparent)}
+#gvm .gvo b.wl{flex:none;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:11px;background:#35e3cf;color:#08221f}
+#gvm .gvo.on{border-color:color-mix(in srgb,var(--gc) 55%,transparent)!important;background:color-mix(in srgb,var(--gc) 10%,transparent)!important;color:#fff!important}
+#gvm .gvo.pick{border-color:#35e3cf!important;background:color-mix(in srgb,#35e3cf 9%,transparent)!important;color:#fff!important}
+#gvm .gvo.lock{opacity:.38;cursor:default}
+#gvm .gvd{overflow-wrap:anywhere;margin:4px 2px 0;font-size:12.5px;line-height:1.45;color:#a3aab4;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+#gvm .gvhint{margin:12px 2px 0;font-size:12.5px;color:#8b929c}
+#gvm .gvlow{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:16px;margin:16px 0 0}
+#gvm .gvst,#gvm .gvside{padding:14px;border-radius:14px;background:rgba(0,0,0,.18);border:1px solid var(--g-line,#2b2e33)}
+#gvm .gvst h5,#gvm .gvside h5{margin:0 0 8px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9aa1ab}#gvm .gvside h5:not(:first-child){margin-top:14px}
+#gvm .gvs{display:grid;grid-template-columns:minmax(0,1fr) 40px minmax(0,1.3fr);align-items:center;gap:10px;padding:3px 0;font-size:13px;color:#c9cfd8}
+#gvm .gvs b{text-align:right;color:#fff;font-variant-numeric:tabular-nums}#gvm .gvs i{height:6px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden}#gvm .gvs i.nb{background:none}#gvm .gvs u{display:block;height:100%;background:linear-gradient(90deg,color-mix(in srgb,var(--gc) 70%,#fff),var(--gc));border-radius:3px}
+#gvm .gvtags,#gvm .gvbtns{display:flex;flex-wrap:wrap;gap:6px}
+#gvm .gvtags button,#gvm .gvbtns button{display:inline-flex;align-items:center;gap:6px;border-radius:10px!important;padding:6px 11px!important;font-size:12.5px;min-height:32px}
+#gvm .gvtags button svg{width:14px;height:14px;color:var(--tc)}#gvm .gvtags button.on{border-color:var(--tc)!important;background:color-mix(in srgb,var(--tc) 16%,transparent)!important;color:#fff!important}
+#gvm .gvl{padding:28px;text-align:center;color:#a3aab4}
+@media (max-width:760px){#gvm .gvlow{grid-template-columns:1fr}}
+@media (max-width:560px){#gvm{padding:0}#gvm .gvp{border-radius:0;min-height:100%;padding:16px 14px 28px;border-left:0;border-right:0}#gvm .gvh .vt{--t:56px}#gvm .gvn h3{font-size:20px}#gvm .gvcols{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}#gvm .gvc{padding:9px}#gvm .gvo{font-size:12.5px;min-height:38px}#gvm .gvo img{width:26px;height:26px}#gvm .gvo em{display:none}}
+@media (prefers-reduced-motion:no-preference){#gvm .gvp.enter{animation:gvIn .2s cubic-bezier(.2,.8,.2,1)}@keyframes gvIn{from{opacity:0;transform:translateY(10px) scale(.99)}to{opacity:1;transform:none}}}
+
 #godrolls .gphint{margin:6px 2px 12px;color:#9aa1ab;font-size:13px}
 #godrolls .gpjunk button{text-transform:none!important;letter-spacing:0!important;padding:7px 16px!important}#godrolls .gpjunk{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:0 0 12px;padding:10px 14px;border-radius:12px;border:1px solid color-mix(in srgb,#ef6461 40%,transparent);background:color-mix(in srgb,#ef6461 8%,transparent);font-size:13px;color:#e7c9c8}
 #godrolls .gpgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
@@ -777,7 +841,7 @@ body.gtann #gtmaint{top:calc(var(--gt-bar-h,56px) + 74px)}
 #godrolls .gpp li em{margin-left:auto;font-style:normal;font-size:11px;font-weight:700;color:#35e3cf}
 #godrolls .gpnote{margin:2px 0 0;padding-top:10px;border-top:1px solid var(--g-line,#2b2e33);font-size:12.5px;line-height:1.45;color:#9aa1ab;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 #godrolls .gpempty{padding:40px 20px;text-align:center;color:#9aa1ab;border:1px dashed var(--g-line,#2b2e33);border-radius:16px}
-@media (max-width:760px){#godrolls .gpfs{grid-template-columns:repeat(2,minmax(0,1fr))}#godrolls .gph h2{font-size:24px}#godrolls .gptools{width:100%}#godrolls .gptools input{flex:1;width:auto!important;min-width:0}#godrolls .gptools select{flex:none;max-width:40%}}
+@media (max-width:760px){#godrolls .gpfs{grid-template-columns:repeat(2,minmax(0,1fr))}#godrolls .gpf:first-child{grid-column:1/-1}#godrolls .gph h2{font-size:24px}#godrolls .gptools{width:100%}#godrolls .gptools input{flex:1;width:auto!important;min-width:0}#godrolls .gptools select{flex:none;max-width:40%}}
 @media (prefers-reduced-motion:reduce){#godrolls .gpc{transition:none}#godrolls .gpc:hover{transform:none}}#godrolls .jk.grfp{background:var(--g-panel,#1a1c20);border:1px solid var(--g-line,#2b2e33);border-radius:12px;max-width:920px;margin:0 auto 24px;padding:16px 20px}#godrolls .jkr{grid-template-columns:26px 48px 1fr auto}#godrolls .grb{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:20px;padding:0 4px;border-radius:4px;font:800 12px/1 'Open Sans',system-ui,sans-serif;font-style:normal;color:#111;background:var(--gc)}#godrolls .jkt .grb{min-width:18px;height:16px;font-size:10.5px;margin-right:2px}#godrolls .jkr{grid-template-columns:26px 44px 1fr}#godrolls .jkh{display:flex;align-items:baseline;gap:12px}#godrolls .jkh b{font-size:16px;color:#fff}#godrolls .jkh button{margin-left:auto}#godrolls .jkl{display:flex;flex-direction:column;gap:4px;margin:8px 0}#godrolls .jkr{display:grid;grid-template-columns:48px 1fr auto;gap:10px;align-items:center;padding:4px;border:1px solid transparent;cursor:pointer}#godrolls .jkr:hover{border-color:var(--g-line,#3a3d43);background:rgba(255,255,255,.03)}#godrolls .jkr .vt{--t:48px;width:48px;height:48px;pointer-events:none}#godrolls .jkr small{display:block;color:#b9bec6;font-size:12px}#godrolls .jkb{position:sticky;bottom:-14px;background:var(--g-panel,#1a1c20);padding:10px 0;margin:0}#godrolls .jkb{position:static}#godrolls .jkr{grid-template-columns:22px 48px 1fr auto}#godrolls .jkr input{width:16px;height:16px;margin:0;cursor:pointer}#godrolls .jkr.sel{background:rgba(255,255,255,.04);border-color:var(--g-line,#3a3d43)}#godrolls .jkt{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}#godrolls .jkt button{background:transparent;border:1px solid var(--g-line,#3a3d43);color:#cfd3da;padding:5px 10px;font:inherit;font-size:12.5px;cursor:pointer}#godrolls .jkt button.on{border-color:var(--acc,#e8b84a);color:#fff;background:rgba(255,255,255,.06)}#godrolls .jkt i{font-style:normal;opacity:.7;margin-left:4px}#godrolls .jkd{margin:6px 0}#godrolls .jks{display:flex;gap:12px;align-items:center;font-size:12.5px;margin:4px 0}#godrolls .jks label{display:flex!important;gap:6px;align-items:center;cursor:pointer;white-space:nowrap;width:auto!important;margin:0!important;padding:0!important}#godrolls .jkb button[disabled]{opacity:.4!important;cursor:default;pointer-events:none}#godrolls .jke{margin:16px 0}#godrolls .jkr{grid-template-columns:22px 44px 1fr}#godrolls .jkr>.mute{display:none}.vt.gtflash{outline:3px solid var(--g-accent,#7ab8e8);outline-offset:2px;border-radius:4px}.vrf{margin-left:10px;flex:none;width:30px;height:30px;padding:0!important;display:inline-flex!important;align-items:center;justify-content:center;border-radius:50%!important;background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.14)!important;color:#d6d9de!important;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
 .vrf:hover{background:rgba(255,255,255,.14)!important;color:#fff!important;border-color:var(--g-accent,#7ab8e8)!important}
 .vrf.spin svg{animation:vrfspin .8s linear infinite}@keyframes vrfspin{to{transform:rotate(360deg)}}
@@ -864,7 +928,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
 
   // ---------------- settings, update toast ----------------
   const DEFSET = { theme: 'dim', accent: '#7ab8e8', accentUser: '', bgdim: 45, tile: 44, scale: 100, power: true, emblems: true, postmaster: true, compact: false, sort: 'rarity',
-    ui: 'pf', ornaments: true, locksync: false, clarity: 'both', single: false, charsort: 'recent', charorder: [], vgroup: 'none', armorsep: false, vaultunder: false, vaultsep: false, matchfirst: true, commrate: true, sharerolls: false, invw: 3, hidecollect: false, pmbadge: true, nrmark: true, dropalert: true, dropover: true, anim: 'subtle', cardart: true, glow: 55, starttab: 'vault', farmspaces: 3, sortkeys: null, cst: { 0: [0, 0, 0, 0, 0, 0], 1: [0, 0, 0, 0, 0, 0], 2: [0, 0, 0, 0, 0, 0] } };
+    ui: 'pf', wview: 'classic', ornaments: true, locksync: false, clarity: 'both', single: false, charsort: 'recent', charorder: [], vgroup: 'none', armorsep: false, vaultunder: false, vaultsep: false, matchfirst: true, commrate: true, sharerolls: false, invw: 3, hidecollect: false, pmbadge: true, nrmark: true, dropalert: true, dropover: true, anim: 'subtle', cardart: true, glow: 55, starttab: 'vault', farmspaces: 3, sortkeys: null, cst: { 0: [0, 0, 0, 0, 0, 0], 1: [0, 0, 0, 0, 0, 0], 2: [0, 0, 0, 0, 0, 0] } };
   // Item sort rules, like DIM: a checked list in order. d = 1 normal, -1 flipped.
   const SORTK = [['power', 'Power level'], ['name', 'Name'], ['type', 'Type'], ['rarity', 'Rarity'], ['stack', 'Stack size'], ['class', 'Required class'], ['tag', 'Tag (favorite, keep, junk, infuse, archive)'], ['season', 'Season'], ['dmg', 'Damage type'], ['champ', 'Anti-champion type'], ['mw', 'Masterworked'], ['crafted', 'Crafted'], ['tier', 'Tier']];
   const sortFromOld = (m) => { const on = m === 'power' ? ['power', 'rarity', 'name'] : m === 'name' ? ['name', 'power'] : m === 'tag' ? ['tag', 'power', 'rarity', 'name'] : ['rarity', 'power', 'name']; return [...on.map((k) => ({ k, d: 1, on: true })), ...SORTK.filter((q) => !on.includes(q[0])).map((q) => ({ k: q[0], d: 1, on: false }))]; };
@@ -893,13 +957,14 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   ];
   const keyOf = (a) => { const u = SET.keys && SET.keys[a]; return u !== undefined ? u : (KEYS.find((k) => k[0] === a) || [])[2] || ''; };
   const keyNorm = (e) => (e.key && e.key.length === 1 ? e.key.toLowerCase() : e.key || '');
-  const keyAct = (e) => { const k = keyNorm(e); if (!k) return ''; const hit = KEYS.find((q) => keyOf(q[0]) && keyOf(q[0]) === k); return hit ? hit[0] : ''; };
+  const keyAct = (e) => { if (SET.keyson === false) return ''; const k = keyNorm(e); if (!k) return ''; const hit = KEYS.find((q) => keyOf(q[0]) && keyOf(q[0]) === k); return hit ? hit[0] : ''; };
   const keyLabel = (k) => (!k ? 'None' : k === ' ' ? 'Space' : k.length === 1 ? k.toUpperCase() : k);
   let keyEdit = '';
-  const keysCard = () => `<div class="card sc" id="gtkeys"><h2>Keyboard shortcuts</h2>
-      <p class="mute" style="margin:0 0 6px">Click a key to change it, then press the new key. Backspace clears it, Escape cancels. Shortcuts do nothing while you are typing in a box.</p>
-      <div class="kyl">${KEYS.map(([a, lbl]) => `<div class="kyr"><span>${esc(lbl)}</span><button type="button" class="kyb${keyEdit === a ? ' ed' : ''}${keyOf(a) ? '' : ' none'}" data-ky="${a}">${keyEdit === a ? 'Press a key' : esc(keyLabel(keyOf(a)))}</button></div>`).join('')}
-      <div class="kyr fx"><span>Open quick notes</span><kbd>Ctrl + Shift + N</kbd></div><div class="kyr fx"><span>Close a pop-up</span><kbd>Esc</kbd></div></div>
+  const keysCard = () => `<div class="card sc" id="gtkeys"><h2>Shortcuts</h2>
+      <div class="sx"><div class="sxt"><b>Use keyboard shortcuts</b><small>Off: no key does anything on its own (Esc still closes pop-ups).</small></div><div class="sxc"><label class="tgl"><input type="checkbox" data-sk="keyson"${SET.keyson !== false ? ' checked' : ''}><i></i></label></div></div>
+      <p class="mute" style="margin:6px 0 6px">Click a key to change it, then press the new key. Backspace clears it, Escape cancels. Shortcuts do nothing while you are typing in a box.</p>
+      <div class="kyl${SET.keyson === false ? ' off' : ''}">${KEYS.map(([a, lbl]) => `<div class="kyr"><span>${esc(lbl)}</span><button type="button" class="kyb${keyEdit === a ? ' ed' : ''}${keyOf(a) ? '' : ' none'}" data-ky="${a}">${keyEdit === a ? 'Press a key' : esc(keyLabel(keyOf(a)))}</button></div>`).join('')}
+      <div class="kyr fx"><span>Open quick notes</span><kbd>Shift + N</kbd></div><div class="kyr fx"><span>Close a pop-up</span><kbd>Esc</kbd></div></div>
       <p><button class="g" data-sa="keyreset">Reset shortcuts</button></p></div>`;
   // ---- themes ----
   // Each theme is a colour family (hue h, saturation s) that fills the panel, button and line colours. Some also paint a background:
@@ -925,13 +990,39 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   // Background pictures. 'topo' is the contour-line drawing; the rest are Destiny 2 places.
   // Pictures that were removed as duplicates: anyone who had one gets the one it duplicated.
   const BGREN = { 'rust-yard': 'cosmodrome-wall' };
-  const BGS = [['', 'None'], ['topo', 'Contour lines'], ['blossom-tower', 'Blossom Tower'], ['memorial-garden', 'Memorial Garden'], ['europa-frost', 'Lunar Frost'], ['crimson-spire', 'Crimson Spire'], ['cube-mist', 'Cube Mist'], ['aurora-grove', 'Aurora Grove'], ['vortex', 'Vortex'], ['emerald-lake', 'Emerald Lake'], ['hanging-gardens', 'Hanging Gardens'], ['jupiter-rise', 'Jupiter Rise'], ['cosmodrome-wall', 'Cosmodrome Wall'], ['throne-marsh', 'Nessus'], ['traveler', 'The Traveler'], ['lantern-gate', 'Lantern Gate']];
-  // Bray and Manta are fixed looks: their colour, accent and picture are set and cannot be changed. Their two pictures are shown last
-  // in the picture list, locked, so the Custom style cannot use them.
+  const BGS = [['', 'None'], ['topo', 'Contour lines'], ['blossom-tower', 'Blossom Tower'], ['memorial-garden', 'Memorial Garden'], ['europa-frost', 'Lunar Frost'], ['crimson-spire', 'Crimson Spire'], ['cube-mist', 'Cube Mist'], ['aurora-grove', 'Aurora Grove'], ['vortex', 'Vortex'], ['emerald-lake', 'Emerald Lake'], ['hanging-gardens', 'Hanging Gardens'], ['jupiter-rise', 'Jupiter Rise'], ['cosmodrome-wall', 'Cosmodrome Wall'], ['throne-marsh', 'Nessus'], ['shrouded-statue', 'Shrouded Statue'], ['frozen-array', 'Frozen Array'], ['europa-pyramid', 'Europa Pyramid'], ['tower-sunrise', 'Tower Sunrise'], ['open-valley', 'Open Valley'], ['traveler', 'The Traveler'], ['lantern-gate', 'Lantern Gate']];
+  // Bray and Manta are looks their owners set for everyone. Each owner unlocks their style, changes anything (colour, accent, picture,
+  // dimming, animations, card pictures, glow), and locking it sends the look to every copy of Pathfinder (it comes with the feature
+  // switches). The picture a locked Bray or Manta look uses is that style's own: nobody else can pick it while it is (anyone who
+  // already had it keeps it until they pick another). These are the built-in looks, used until a published one arrives.
   const LOCK = { bray: { theme: 'beta', accent: '#f2b441', bg: 'traveler', n: 'Bray' }, manta: { theme: 'gold', accent: '#35e3cf', bg: 'lantern-gate', n: 'Manta' } };
-  const LOCKBG = { traveler: 'bray', 'lantern-gate': 'manta' };
-  // The look in use: the locked one for Bray and Manta, otherwise your own picks (Pathfinder Classic and Custom each keep their own).
-  const look = () => LOCK[SET.ui] || { theme: SET.theme, accent: SET.accent, bg: SET.bg };
+  // (FLG is set up further down; until the switches arrive the built-in look is used)
+  const lookBg = (k) => { let v = ''; try { v = FLG.looks[k].bg; } catch (e) { /* not loaded yet */ } return v && BGS.some((b) => b[0] === v) ? v : LOCK[k].bg; };
+  const lockBgOf = (id) => (id ? Object.keys(LOCK).find((k) => lookBg(k) === id) || '' : '');
+  const myLook = () => { try { return !!(LOCK[SET.ui] && FLG.mylook === SET.ui); } catch (e) { return false; } };
+  // While Bray or Manta has their style unlocked, their changes live in SET.lkd[style] (only on their device) until they lock it.
+  const lkDraft = (k) => (myLook() && SET.lkd && SET.lkd[k] && typeof SET.lkd[k] === 'object' ? SET.lkd[k] : null);
+  const ANIMS = ['off', 'subtle', 'full'];
+  const ownMotion = () => ({ bgdim: +SET.bgdim || 45, anim: ANIMS.includes(SET.anim) ? SET.anim : 'subtle', cardart: SET.cardart !== false, glow: SET.glow === undefined ? 55 : +SET.glow });
+  function pubLook(k) {
+    let p = {}; try { p = (FLG.looks && FLG.looks[k]) || {}; } catch (e) { /* not loaded yet */ }
+    const L = { ...LOCK[k], ...ownMotion(), bg: lookBg(k) };
+    if (p.theme && COLS.some((t) => t.id === p.theme)) L.theme = p.theme;
+    if (/^#[0-9a-f]{6}$/i.test(String(p.accent || ''))) L.accent = p.accent;
+    if (Number.isFinite(p.bgdim)) L.bgdim = p.bgdim; if (Number.isFinite(p.glow)) L.glow = p.glow;
+    if (ANIMS.includes(p.anim)) L.anim = p.anim; if (typeof p.cardart === 'boolean') L.cardart = p.cardart;
+    return L;
+  }
+  // The look in use: Bray's or Manta's published look (or the owner's unlocked changes), otherwise your own picks
+  // (Pathfinder Classic and Custom each keep their own colour, accent and picture).
+  const look = () => { const k = SET.ui; if (LOCK[k]) { const d = lkDraft(k); return d ? { ...pubLook(k), ...d } : pubLook(k); } return { theme: SET.theme, accent: SET.accent, bg: SET.bg, ...ownMotion() }; };
+  // Can the look be changed right now? Your own styles: unless you locked them. Bray's and Manta's: only by their owner, while unlocked.
+  const lookEdit = () => (LOCK[SET.ui] ? !!lkDraft(SET.ui) : !(SET.lk && SET.lk[SET.ui]));
+  function setLook(o) {
+    if (!lookEdit()) return false;
+    if (LOCK[SET.ui]) SET.lkd = { ...(SET.lkd || {}), [SET.ui]: { ...lkDraft(SET.ui), ...o } }; else Object.assign(SET, o);
+    return true;
+  }
   const EDIT = ['pf', 'beta'];
   function switchUi(to) {
     const from = SET.ui;
@@ -951,7 +1042,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     if (m) { if (Array.isArray(m)) { SET.theme = m[0]; if (!SET.bg) SET.bg = m[1]; } else SET.theme = m; }
     if (!tById(SET.theme)) SET.theme = 'dim';
     if (BGREN[SET.bg]) SET.bg = BGREN[SET.bg];
-    if (SET.bg === undefined || !BGS.some((b) => b[0] === SET.bg) || LOCKBG[SET.bg]) SET.bg = '';
+    if (SET.bg === undefined || !BGS.some((b) => b[0] === SET.bg)) SET.bg = '';
     if (SET.ui === 'd2') SET.ui = 'bray';
     if (SET.ui === 'dim') SET.ui = 'pf'; // the DIM style was removed
   }
@@ -980,7 +1071,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
 .thh{grid-column:1/-1;margin:10px 0 0;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--mute)}.thh:first-child{margin-top:0}
 .th i.thc{position:relative}.th i.thc b{position:absolute;right:-3px;bottom:-3px;width:11px;height:11px;border-radius:50%;border:2px solid var(--g-solid,#15171b)}
 .acs{display:flex;flex-wrap:wrap;gap:7px;align-items:center}.acs .acw{box-sizing:border-box;width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid transparent;box-shadow:inset 0 0 0 1px rgba(0,0,0,.35);padding:0}.acs .acw.on{border-color:#fff}.acs .acw:focus-visible{outline:2px solid #fff;outline-offset:2px}.acs input[type=color]{width:34px;height:26px;padding:0;border:0;background:none;cursor:pointer}
-.bgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px;margin:6px 0 10px}.bgs .bgo{position:relative;height:64px;border-radius:9px;overflow:hidden;cursor:pointer;border:2px solid transparent;background:#0e1014 center/cover no-repeat;display:flex;align-items:flex-end;padding:6px 8px;font-size:12px;font-weight:600;color:#fff;text-shadow:0 1px 3px #000}.bgs .bgo::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 35%,rgba(0,0,0,.7))}.bgs .bgo span{position:relative}.bgs .bgo.on{border-color:var(--g-accent,#7ab8e8)}.bgs .bgo.lk{cursor:not-allowed}.bgs .bgo.lk::after{content:'';position:absolute;inset:0;background:rgba(0,0,0,.42)}.bgs .bgo.lk.on::after{background:rgba(0,0,0,.12)}.bgs .bgo .lki{position:absolute;top:6px;right:6px;z-index:2;width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;filter:drop-shadow(0 1px 2px #000)}.bgs .bgo span{z-index:2}.bgs .bgo small{display:block;font-size:10.5px;font-weight:600;opacity:.8}.lkw.on .sg,.lkw.on .acs,.lkw.on .bgo{pointer-events:none}.lkw.on .th:not(.on),.lkw.on .acw:not(.on),.lkw.on .bgo:not(.on){opacity:.35}.lkn{display:flex;gap:10px;align-items:flex-start;margin:10px 0 4px;padding:10px 12px;border-radius:10px;background:var(--g-accent-soft,rgba(122,184,232,.16));border:1px solid var(--g-line,#2b2e33);font-size:13px;line-height:1.4}.lkn .lki{flex:none;width:18px;height:18px;fill:none;stroke:var(--g-accent,#7ab8e8);stroke-width:2;stroke-linecap:round;margin-top:1px}.bgs .bgo.none{background:repeating-linear-gradient(135deg,#15171b 0 8px,#1b1e23 8px 16px)}`;
+.bgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px;margin:6px 0 10px}.bgs .bgo{position:relative;height:64px;border-radius:9px;overflow:hidden;cursor:pointer;border:2px solid transparent;background:#0e1014 center/cover no-repeat;display:flex;align-items:flex-end;padding:6px 8px;font-size:12px;font-weight:600;color:#fff;text-shadow:0 1px 3px #000}.bgs .bgo::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 35%,rgba(0,0,0,.7))}.bgs .bgo span{position:relative}.bgs .bgo.on{border-color:var(--g-accent,#7ab8e8)}.bgs .bgo.lk{cursor:not-allowed}.bgs .bgo.lk::after{content:'';position:absolute;inset:0;background:rgba(0,0,0,.42)}.bgs .bgo.lk.on::after{background:rgba(0,0,0,.12)}.bgs .bgo .lki{position:absolute;top:6px;right:6px;z-index:2;width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;filter:drop-shadow(0 1px 2px #000)}.bgs .bgo span{z-index:2}.bgs .bgo small{display:block;font-size:10.5px;font-weight:600;opacity:.8}.lkw.on .sg,.lkw.on .acs>:not(.lkb),.lkw.on .bgo{pointer-events:none}.lkw.on .th:not(.on),.lkw.on .acw:not(.on),.lkw.on .bgo:not(.on){opacity:.35}.lkw.on .sx .sxc{opacity:.5}.bgs .bgo.off{opacity:.3;pointer-events:none}.lkb{margin-left:auto;display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 13px 0 10px!important;border-radius:999px!important;border:1px solid var(--g-line,#3a3d43)!important;background:rgba(255,255,255,.04)!important;color:#dfe4ea!important;font-size:12.5px!important;font-weight:700;letter-spacing:.02em!important;text-transform:none!important;cursor:pointer}.lkb .lki{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}.lkb:hover:not([disabled]){border-color:var(--g-accent,#7ab8e8)!important}.lkb:not(.on){border-color:var(--g-accent,#7ab8e8)!important;background:var(--g-accent-soft,rgba(122,184,232,.16))!important;color:#fff!important}.lkb:not(.on) .lki{stroke:var(--g-accent,#7ab8e8)}.lkb[disabled]{opacity:.55;cursor:default}.lkn.open{border-color:var(--g-accent,#7ab8e8)}.lkn .lkm{display:block;font-style:normal;margin-top:4px;color:#fff;font-weight:600}.lkn{display:flex;gap:10px;align-items:flex-start;margin:10px 0 4px;padding:10px 12px;border-radius:10px;background:var(--g-accent-soft,rgba(122,184,232,.16));border:1px solid var(--g-line,#2b2e33);font-size:13px;line-height:1.4}.lkn .lki{flex:none;width:18px;height:18px;fill:none;stroke:var(--g-accent,#7ab8e8);stroke-width:2;stroke-linecap:round;margin-top:1px}.bgs .bgo.none{background:repeating-linear-gradient(135deg,#15171b 0 8px,#1b1e23 8px 16px)}`;
     document.head.appendChild(el);
   })();
   const ACCS = ['#f2b441', '#7ab8e8', '#6fc7ff', '#b38cff', '#ff8a3d', '#ff5a5a', '#f2c14e', '#5fd38a', '#35e3cf', '#ff7ad9', '#d8dde5'];
@@ -998,12 +1089,12 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     if (L.theme === 'dim') r.removeAttribute('data-gt'); else r.setAttribute('data-gt', L.theme);
     r.setAttribute('data-gx', L.bg ? '1' : '0'); r.setAttribute('data-gan', '0'); r.setAttribute('data-gbg', L.bg || 'none');
     if (L.bg) r.style.setProperty('--g-layers', bgLayers(L)); else r.style.removeProperty('--g-layers');
-    r.style.setProperty('--g-dim', String(Math.max(.25, Math.min(.9, (+SET.bgdim || 45) / 100))));
+    r.style.setProperty('--g-dim', String(Math.max(.25, Math.min(.9, (+L.bgdim || 45) / 100))));
     // Custom, Bray and Manta share the Beta style's rules; data-uin carries which one (Bray has its own lettering).
     const ui = ['pf', 'beta', 'bray', 'manta'].includes(SET.ui) ? SET.ui : 'pf';
     r.setAttribute('data-ui', ui === 'bray' || ui === 'manta' ? 'beta' : ui); r.setAttribute('data-uin', ui);
-    r.setAttribute('data-anim', ['off', 'subtle', 'full'].includes(SET.anim) ? SET.anim : 'subtle'); r.setAttribute('data-cardart', SET.cardart === false ? '0' : '1');
-    r.style.setProperty('--gt-glow', String(Math.max(0, Math.min(100, SET.glow === undefined ? 55 : +SET.glow)) / 100));
+    r.setAttribute('data-anim', ANIMS.includes(L.anim) ? L.anim : 'subtle'); r.setAttribute('data-cardart', L.cardart === false ? '0' : '1');
+    r.style.setProperty('--gt-glow', String(Math.max(0, Math.min(100, +L.glow)) / 100));
     r.setAttribute('data-gcompact', SET.compact ? '1' : '0'); r.setAttribute('data-gpower', SET.power ? '1' : '0');
     r.style.setProperty('--gt-t', SET.tile + 'px'); if (window.__gtfitscale) window.__gtfitscale(); else r.style.setProperty('--gt-z', SET.scale / 100); // polish.js lowers it if this page would not fit the window
     // The accent's dark partner (selected tabs, switches, chips). Mixing a light colour like yellow with black turns it olive,
@@ -1057,11 +1148,65 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     if (!WL || !x || !x.pk || x.r !== 'Legendary' || !WEAPON.has(x.b) || x.pm) return false;
     const a = WL.rolls[x.h]; return !(a && a.length) && !wish(x).v;
   }
-  // The roll grade used by the god roll finder: S (a roll your lists call a god roll), A (any wish list roll),
-  // C (rated, not a match), D (a trash roll), ? (not yet rated).
+  // The roll grade used by the God rolls tab, the finder, search and drop alerts:
+  //  S  God roll: a top wish list roll for this weapon, and the perk IN NOW in every perk column of this copy (barrel or sight,
+  //     magazine or the like, both traits; rails and bolts on combat bows) is a perk that roll names. When the roll names an
+  //     origin trait, the one in now must be it too. A top roll comes from a list that keeps only the single best perk per column
+  //     (Aegis S grade, 1 perk per column) or is tagged by its curator as a god roll. So the card and the God roll view show
+  //     exactly the perks that made it a god roll, all ticked.
+  //  R  S rated: matches a roll for an S tier weapon (Aegis "Tier: S", or a god roll tag) but is not a god roll as it is now.
+  //  A  Keeper: any other wish list roll.  C  rated, not a match.  D  trash roll.  ?  not yet rated.
+  const SRE = /\bTier:\s*S\b/i, GODT = /god/i, GODN = /\bgod ?roll\b/i, NOTGOD = /\b(not|no|isn'?t|never|almost|near)\b[^.]{0,20}\bgod ?roll/i;
+  const gcache = {};
+  // PvE or PvP: a roll's tags (pve, pvp, godpve, godpvp) say which, else its note; the Aegis lists (they say PPC=) are PvE lists.
+  // Rolls that say neither count for both. The God rolls tab can show All, PvE or PvP (Settings: grmode).
+  function rollMode(r, note) {
+    const t = String(r[3] || '').toLowerCase(), e = /pve/.test(t), v = /pvp/.test(t);
+    if (e !== v) return e ? 'pve' : 'pvp';
+    const ne = /\bpve\b/i.test(note), nv = /\bpvp\b/i.test(note);
+    if (ne !== nv) return ne ? 'pve' : 'pvp';
+    return r[4] ? 'pve' : '';
+  }
+  const grMode = () => (SET.grmode === 'pve' || SET.grmode === 'pvp' ? SET.grmode : 'all');
+  function godInfo(x) {
+    if (!WL || !x || !x.pk) return null;
+    const mode = grMode(), k = x.id + ':' + WLV + ':' + mode; if (k in gcache) return gcache[k];
+    if (mode === 'all') {
+      const a = godScan(x, 'pve'), b = godScan(x, 'pvp');
+      const best = !a ? b : !b ? a : b.score > a.score ? b : a;
+      if (best) best.modes = [a, b].filter((q) => q && q.gr === best.gr && q.md).map((q) => q.md).filter((m, i, l) => l.indexOf(m) === i);
+      return (gcache[k] = best);
+    }
+    const one = godScan(x, mode); if (one) one.modes = one.md ? [one.md] : [];
+    return (gcache[k] = one);
+  }
+  function godScan(x, mode) {
+    const P = new Set(x.pk), cols = Array.isArray(x.pc) ? x.pc : [], pn = (D && D.pn) || {}, oo = Array.isArray(x.oo) ? x.oo : [];
+    let best = null;
+    for (const r of WL.rolls[x.h] || []) {
+      if (r[2]) continue;
+      if (typeof r[0] === 'string') r[0] = r[0] ? r[0].split(',').map(Number) : [];
+      if (!r[0].length || !r[0].every((h) => P.has(h))) continue;
+      const note = String(typeof r[1] === 'number' ? (WL.notes || [])[r[1]] || '' : r[1] || '');
+      const md = rollMode(r, note); if (md && md !== mode) continue;
+      const god = GODT.test(r[3] || '') || (GODN.test(note) && !NOTGOD.test(note)), top = god || SRE.test(note);
+      if (!top) continue;
+      const R = new Set(r[0]), RN = new Set(r[0].map((h) => pn[h]).filter(Boolean)), named = (h) => R.has(h) || (!!pn[h] && RN.has(pn[h]));
+      // every column: the perk in now (first in the column) is one the roll names; the origin trait in now too, when the roll names one
+      const inNow = cols.length >= 2 && cols.every((c) => named(c[0])), ogOk = !oo.some((h) => R.has(h)) || (x.og && named(x.og));
+      const canAll = cols.length >= 2 && cols.every((c) => c.some((h) => R.has(h)));
+      const gr = inNow && ogOk && (r[4] === 1 || god) ? 'S' : 'R';
+      const score = (gr === 'S' ? 100 : 0) + (canAll ? 10 : 0) + (r[4] ? 4 - Math.min(3, r[4]) : 0);
+      if (!best || score > best.score) best = { gr, canAll, roll: r, score, md };
+      if (gr === 'S' && r[4] === 1) break;
+    }
+    return best;
+  }
+  const modeChip = (x) => { const gi = godInfo(x), m = (gi && gi.modes) || []; return m.length ? `<span class="gpmd">${m.map((q) => (q === 'pve' ? 'PvE' : 'PvP')).join(' + ')}</span>` : ''; };
   function grade(x) {
+    const gi = godInfo(x); if (gi) return gi.gr;
     const w = wish(x);
-    if (w.v > 0) { const t = (w.tags || []).join(',') + ' ' + (w.notes || []).join(' '); return /god/i.test(t) ? 'S' : 'A'; }
+    if (w.v > 0) return 'A';
     if (w.v < 0) return 'D';
     return unrated(x) ? '?' : 'C';
   }
@@ -1086,7 +1231,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   function wish0(x) {
     if (!WL || !x.pk) return { v: 0, notes: [], tags: [], perks: new Set() };
     const k = x.id + ':' + WLV; if (wcache[k]) return wcache[k];
-    const r = wishRoll(x), perks = new Set();
+    const gi = godInfo(x), r = (gi && gi.roll) || wishRoll(x), perks = new Set();
     if (!r) return (wcache[k] = { v: 0, notes: [], tags: [], perks });
     const note = String(typeof r[1] === 'number' ? (WL.notes || [])[r[1]] || '' : r[1] || '');
     if (!r[2]) r[0].forEach((h) => { perks.add(h); const nm = D && D.pn && D.pn[h]; if (nm) perks.add(nm); });
@@ -1106,7 +1251,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     <div class="sg wlps">${WLPRE.map((p, i) => { const on = have.has(wlKey(p[1])); return `<div class="th${on ? ' on' : ''}" data-wp="${i}" role="switch" aria-checked="${on}" tabindex="0">${on ? '&#10003; ' : '+ '}${esc(p[0])}</div>`; }).join('')}</div>
     <div class="sr"><label>Link</label><input id="wlurl" placeholder="https://.../wishlist.txt (one or several links)" value="${esc(WLD.wlurl)}" style="flex:1"><button class="g" data-sa="wlpl">Paste</button><button class="b" data-sa="wlload">Add list</button></div>
     <p><button class="g" data-sa="wlfile">Upload a file...</button> <button class="g" data-sa="wlrefresh">Refresh all</button> ${lists.length ? '<button class="g" data-sa="wlclear">Remove all</button>' : ''}<input type="file" id="wlfile" accept=".txt,text/plain" hidden></p>
-    <div class="sx"><div class="sxt"><b>Mark weapons no list has rated yet</b><small>A small <b style="color:#ffd27a">?</b> on legendary weapons that none of your lists mention, so a blank tile always means "not a keeper". Search <code>is:unrated</code>.</small></div><div class="sxc"><label class="tgl"><input type="checkbox" data-sk="nrmark"${SET.nrmark !== false ? ' checked' : ''}><i></i></label></div></div>
+    <div class="sx"><div class="sxt"><b>Mark weapons no list has rated yet</b><small>A small <span style="color:#ffd27a;font-weight:700">?</span> on legendary weapons that none of your lists mention, so a blank tile always means "not a keeper". Search <code>is:unrated</code>.</small></div><div class="sxc"><label class="tgl"><input type="checkbox" data-sk="nrmark"${SET.nrmark !== false ? ' checked' : ''}><i></i></label></div></div>
     <div class="sx"><div class="sxt"><b>New drop alerts</b><small>While you are in the game, Pathfinder checks Bungie every 10 seconds and pops up each new weapon as God roll, Keeper, Not a keeper or Not yet rated (plus a Windows notification when the game is in front). Bungie's API only; nothing touches the game.</small></div><div class="sxc"><label class="tgl"><input type="checkbox" data-sk="dropalert"${SET.dropalert !== false ? ' checked' : ''}><i></i></label></div></div>
     ${window.gt && window.gt.dropShow && !document.documentElement.classList.contains('gtweb') ? `<div class="sx"><div class="sxt"><b>Show new drops over the game</b><small>A small card in the bottom-right corner for a few seconds while the game is in front. Works with windowed and borderless games; in exclusive fullscreen only the Windows notification can show. It is a normal window of this app and never touches the game.</small></div><div class="sxc"><label class="tgl"><input type="checkbox" data-sk="dropover"${SET.dropover !== false ? ' checked' : ''}><i></i></label></div></div>` : ''}
     <p><button class="b" data-sa="grf">&#128269; Open the god roll finder</button></p>
@@ -1119,9 +1264,26 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     const L = look();
     return COLS.map((t) => `<div class="th${L.theme === t.id ? ' on' : ''}" data-th="${t.id}"><i class="thc" style="background:${t.sw}"><b style="background:${t.a}"></b></i>${esc(t.n)}</div>`).join('');
   }
-  const accGrid = () => { const L = look(); return `<div class="acs">${ACCS.map((c) => `<div role="button" tabindex="0" class="acw${String(L.accent).toLowerCase() === c ? ' on' : ''}" data-acc="${c}" style="background:${c}" title="${c}" aria-label="Accent ${c}"></div>`).join('')}<input type="color" data-sk="accent" value="${esc(L.accent)}" title="Any colour"${LOCK[SET.ui] ? ' disabled' : ''}></div>`; };
-  const bgGrid = () => { const L = look(); return `<div class="bgs">${BGS.map(([id, n]) => { const lk = LOCKBG[id]; return `<div class="bgo${id ? '' : ' none'}${lk ? ' lk' : ''}${(L.bg || '') === id ? ' on' : ''}" data-bg="${id}"${lk ? ` title="Locked: only the ${LOCK[lk].n} style uses this picture"` : ''}${id === 'topo' ? ' style="background-image:url(topo.svg);background-color:#0b0e13;background-size:180%"' : id ? ` style="background-image:url(themes/${id}_t.jpg)"` : ''}>${lk ? LKI : ''}<span>${esc(n)}${lk ? `<small>${LOCK[lk].n} only</small>` : ''}</span></div>`; }).join('')}</div>`; };
-  const lockNote = () => LOCK[SET.ui] ? `<p class="lkn">${LKI}<span><b>${LOCK[SET.ui].n} has a fixed look.</b> Its colour, accent and background picture are locked. Pick Custom to make your own mix.</span></p>` : '';
+  const LKO = '<svg class="lki" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 017.6-1.8"/></svg>';
+  // The lock at the end of the accent row. Your own styles: locking keeps your look as it is on this device. Bray's and Manta's:
+  // only their owner can unlock, and locking again sends the look to everyone using that style.
+  function lockBtn() {
+    const k = SET.ui, own = LOCK[k], mine = myLook(), on = !lookEdit();
+    if (own && !mine) return `<button type="button" class="lkb on" disabled title="Only ${own.n} can change the ${own.n} style" aria-label="Locked: only ${own.n} can change this style">${LKI}<span>Locked</span></button>`;
+    const tip = on ? (own ? 'Unlock to change your style. Only you see the changes until you lock it again.' : 'Unlock to change your look') : (own ? 'Lock to send this look to everyone using the ' + own.n + ' style' : 'Lock to keep this look as it is');
+    return `<button type="button" class="lkb${on ? ' on' : ''}${LKBUSY ? ' busy' : ''}" data-lk="1" aria-pressed="${on}" title="${tip}"${LKBUSY ? ' disabled' : ''}>${on ? LKI : LKO}<span>${LKBUSY ? 'Sending...' : on ? 'Locked' : 'Unlocked'}</span></button>`;
+  }
+  let LKBUSY = false, LKMSG = '';
+  const accGrid = () => { const L = look(), ed = lookEdit(); return `<div class="acs">${ACCS.map((c) => `<div role="button" tabindex="0" class="acw${String(L.accent).toLowerCase() === c ? ' on' : ''}" data-acc="${c}" style="background:${c}" title="${c}" aria-label="Accent ${c}"${ed ? '' : ' aria-disabled="true"'}></div>`).join('')}<input type="color" data-sk="accent" value="${esc(L.accent)}" title="Any colour"${ed ? '' : ' disabled'}>${lockBtn()}</div>`; };
+  const bgGrid = () => { const L = look(), me = myLook() ? SET.ui : ''; return `<div class="bgs">${BGS.map(([id, n]) => { const lk0 = lockBgOf(id), lk = lk0 && lk0 !== me ? lk0 : ''; return `<div class="bgo${id ? '' : ' none'}${lk ? ' lk' : ''}${(L.bg || '') === id ? ' on' : ''}${!id && LOCK[SET.ui] ? ' off' : ''}" data-bg="${id}"${lk ? ` title="${(L.bg || '') === id ? `You can keep using it, but once you pick another picture it stays ${LOCK[lk].n}'s` : `Locked: only the ${LOCK[lk].n} style uses this picture`}"` : ''}${id === 'topo' ? ' style="background-image:url(topo.svg);background-color:#0b0e13;background-size:180%"' : id ? ` style="background-image:url(themes/${id}_t.jpg)"` : ''}>${lk ? LKI : ''}<span>${esc(n)}${lk ? `<small>${LOCK[lk].n} only</small>` : ''}</span></div>`; }).join('')}</div>`; };
+  function lockNote() {
+    const k = SET.ui, own = LOCK[k], m = LKMSG ? ` <em class="lkm">${esc(LKMSG)}</em>` : '';
+    if (own && myLook()) return lkDraft(k)
+      ? `<p class="lkn open">${LKO}<span><b>Unlocked: only you see these changes, ${own.n}.</b> Change anything below, then lock it to send the look to everyone using the ${own.n} style, on every PC, the website and phones. The picture you lock becomes ${own.n} only.${m}</span></p>`
+      : `<p class="lkn">${LKI}<span><b>This is your style, ${own.n}.</b> Unlock it (the lock by the accent colours) to change anything: colour, accent, picture, dimming, animations, card pictures and glow. Locking it again sends the new look to everyone using the ${own.n} style.${m}</span></p>`;
+    if (own) return `<p class="lkn">${LKI}<span><b>${own.n} has a fixed look.</b> Only ${own.n} can change it, and it updates here when they do. Pick Custom to make your own mix.</span></p>`;
+    return SET.lk && SET.lk[k] ? `<p class="lkn">${LKI}<span><b>Your look is locked.</b> It stays as it is on this device. Unlock it (the lock by the accent colours) to change it.${m}</span></p>` : m ? `<p class="lkn open">${m}</p>` : '';
+  }
   function markLook() {
     const L = look();
     settingsSec.querySelectorAll('[data-th]').forEach((n) => n.classList.toggle('on', n.dataset.th === L.theme));
@@ -1130,37 +1292,196 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     const ac = settingsSec.querySelector('input[data-sk="accent"]'); if (ac) ac.value = L.accent;
   }
   function pickTheme(id) {
-    const t = tById(id), prev = tById(SET.theme);
-    if (!t || LOCK[SET.ui]) return;
+    const L = look(), t = tById(id), prev = tById(L.theme);
+    if (!t || !lookEdit()) return;
     // A colour brings its own accent, unless you picked a different accent yourself: that one stays, so any mix works.
-    if (!prev || String(SET.accent).toLowerCase() === prev.a.toLowerCase() || SET.accent === DEFSET.accent) SET.accent = t.a;
-    SET.theme = id; applySet(); saveSet(); markLook();
+    const o = { theme: id }; if (!prev || String(L.accent).toLowerCase() === prev.a.toLowerCase() || L.accent === DEFSET.accent) o.accent = t.a;
+    setLook(o); applySet(); saveSet(); markLook();
   }
-  function pickBg(id) { if (LOCK[SET.ui] || LOCKBG[id]) return; SET.bg = id; applySet(); saveSet(); markLook(); }
-  function pickAcc(c) { if (LOCK[SET.ui]) return; SET.accent = c; SET.accentUser = ''; applySet(); saveSet(); markLook(); }
+  function pickBg(id) {
+    if (!lookEdit()) return;
+    const lk = lockBgOf(id); if (lk && lk !== (myLook() ? SET.ui : '')) return; // Bray's or Manta's picture
+    if (!id && LOCK[SET.ui]) return; // Bray's and Manta's styles always have a picture
+    setLook({ bg: id }); applySet(); saveSet(); markLook();
+  }
+  function pickAcc(c) { if (!setLook({ accent: c })) return; if (!LOCK[SET.ui]) SET.accentUser = ''; applySet(); saveSet(); markLook(); }
+  // The lock button: your own styles lock on this device; Bray and Manta unlock their style, and locking sends it to everyone.
+  async function lockToggle() {
+    const k = SET.ui; LKMSG = '';
+    if (!LOCK[k]) {
+      SET.lk = { ...(SET.lk || {}), [k]: !(SET.lk && SET.lk[k]) };
+      if (SET.lk[k]) { SET.looks = SET.looks && typeof SET.looks === 'object' ? SET.looks : {}; SET.looks[k] = { theme: SET.theme, accent: SET.accent, bg: SET.bg }; LKMSG = 'Locked. Your look is saved on this device only.'; }
+      saveSet(); drawSettings(); return;
+    }
+    if (!myLook() || LKBUSY) return;
+    const d = lkDraft(k);
+    if (!d) { SET.lkd = { ...(SET.lkd || {}), [k]: { ...pubLook(k) } }; delete SET.lkd[k].n; saveSet(); drawSettings(); return; }
+    const L = look(); LKBUSY = true; drawSettings();
+    try {
+      const r = await gt.lookSet({ look: k, theme: L.theme, accent: L.accent, bg: L.bg, bgdim: L.bgdim, anim: L.anim, cardart: L.cardart, glow: L.glow });
+      FLG.looks = r.looks || { ...(FLG.looks || {}), [k]: { ...L } };
+      SET.lkd = { ...(SET.lkd || {}) }; delete SET.lkd[k]; LKMSG = 'Locked and sent: everyone using the ' + LOCK[k].n + ' style gets this look.';
+    } catch (e) { LKMSG = 'Still unlocked: the look could not be sent (' + clean(e) + '). Try locking again.'; }
+    LKBUSY = false; saveSet(); applySet(); drawSettings();
+  }
   // ---- saved Bungie accounts ----
   let ACL = null, aclBusy = false;
   function aclHTML() {
     if (!window.gt || !gt.acctList) return '';
     if (!ACL) { if (!aclBusy) { aclBusy = true; gt.acctList().then((r) => { ACL = r; aclBusy = false; if (settingsSec.classList.contains('on')) drawSettings(); }).catch(() => { aclBusy = false; }); } return '<p class="mute">Loading accounts...</p>'; }
-    return ACL.list.map((a) => `<div class="acr${a.on ? ' on' : ''}"><b>${esc(a.n)}${a.code ? `<span>#${esc(a.code)}</span>` : ''}</b>${a.on ? '<em>Active</em>' : `<button class="g" data-acsw="${esc(a.mid)}">Switch</button>`}<button class="g" data-acrm="${esc(a.mid)}" title="Remove this account from ${GT_HERE}">Remove</button>${a.ok ? '' : '<small>Sign-in expired: switching asks you to sign in again</small>'}</div>`).join('');
+    return ACL.list.map((a) => `<div class="acr${a.on ? ' on' : ''}"><b>${esc(a.n)}${a.code ? `<span>#${esc(a.code)}</span>` : ''}</b>${a.from ? `<small class="acfrom" title="This Bungie account came from your Pathfinder account. It was signed in on the ${a.from === 'web' ? 'website' : 'PC app'} and works here too.">from the ${a.from === 'web' ? 'website' : 'PC app'}</small>` : ''}${a.on ? '<em>Active</em>' : `<button class="g" data-acsw="${esc(a.mid)}">Switch</button>`}<button class="g" data-acrm="${esc(a.mid)}" title="Remove this account from ${GT_HERE}">Remove</button>${a.ok ? '' : '<small>Sign-in expired: switching asks you to sign in again</small>'}</div>`).join('');
   }
   // ---- Pathfinder account (optional): one login that brings all your Bungie accounts to every device and build ----
-  let PFA = null, pfaBusy = false, PFAMSG = '', PFANM = '', PFARS = false;
+  let PFA = null, pfaBusy = false, PFAMSG = '', PFANM = '', PFAED = '', PFAEYE = false, PFAEYE2 = false;
+  const EYE = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+  const pdn = () => (PFA && (PFA.dn || PFA.name)) || '';
+  // Your profile picture, or the first letter of your name in a circle (signed out: a person outline).
+  const PERSON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8.5" r="4"/><path d="M4.5 20.5c1.4-3.8 4.2-5.7 7.5-5.7s6.1 1.9 7.5 5.7"/></svg>';
+  const avHTML = (cls) => { const on = !!(PFA && PFA.on), av = on && /^data:image\/(jpeg|png|webp);base64,/.test(PFA.av || '') ? PFA.av : ''; return `<span class="gtav ${cls || ''}${on ? '' : ' out'}" aria-hidden="true">${av ? `<img src="${av}" alt="">` : on ? esc((pdn() || '?').slice(0, 1).toUpperCase()) : PERSON}</span>`; };
+  // Picking a profile picture opens an editor (like Discord's): drag to move it, the slider or the mouse wheel to zoom, a button to
+  // turn it. What sits inside the circle becomes a 192 px square (shown round everywhere), small enough to send to every device.
+  const picOut = (cv) => { for (const [ty, q] of [['image/webp', 0.86], ['image/jpeg', 0.84], ['image/jpeg', 0.6]]) { const d = cv.toDataURL(ty, q); if (d.startsWith('data:' + ty) && d.length < 85000) return d; } throw new Error('That picture is too detailed. Try another one.'); };
+  function picEdit(bm) {
+    return new Promise((done) => {
+      const V = 300, R = 122, st = { z: 1, x: 0, y: 0, rot: 0 };
+      const ov = document.createElement('div'); ov.id = 'gtcrop'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', 'Edit image');
+      ov.innerHTML = `<div class="gcm"><div class="gch"><b>Edit image</b><button type="button" class="gcx" data-cr="x" aria-label="Close">&times;</button></div>
+        <div class="gcs"><canvas width="${V * 2}" height="${V * 2}" tabindex="0" aria-label="Drag to move the picture, arrow keys move it too"></canvas></div>
+        <div class="gcz"><svg viewBox="0 0 24 24" aria-hidden="true" class="sm"><rect x="5" y="6" width="14" height="12" rx="2"/><path d="M5 15l4-4 4 4 2-2 4 4"/></svg><input type="range" min="100" max="400" value="100" aria-label="Zoom"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 16l5-5 5 5 3-3 5 5"/><circle cx="16" cy="9" r="1.6"/></svg><button type="button" class="gcr" data-cr="rot" title="Turn it a quarter" aria-label="Turn the picture a quarter turn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button></div>
+        <div class="gcb"><button type="button" class="gcrs" data-cr="reset">Reset</button><span></span><button type="button" class="g" data-cr="x">Cancel</button><button type="button" class="b" data-cr="ok">Apply</button></div></div>`;
+      document.body.appendChild(ov);
+      const cv = ov.querySelector('canvas'), x = cv.getContext('2d'), zr = ov.querySelector('input[type=range]');
+      const dims = () => (st.rot % 2 ? [bm.height, bm.width] : [bm.width, bm.height]);
+      const scale = () => { const [w, h] = dims(); return (2 * R / Math.min(w, h)) * st.z; };
+      const clamp = () => { const [w, h] = dims(), sc = scale(), mx = Math.max(0, (w * sc - 2 * R) / 2), my = Math.max(0, (h * sc - 2 * R) / 2); st.x = Math.max(-mx, Math.min(mx, st.x)); st.y = Math.max(-my, Math.min(my, st.y)); };
+      const paint = (g, size, k) => { const sc = scale() * k; g.save(); g.translate(size / 2 + st.x * k, size / 2 + st.y * k); g.rotate(st.rot * Math.PI / 2); g.drawImage(bm, -bm.width * sc / 2, -bm.height * sc / 2, bm.width * sc, bm.height * sc); g.restore(); };
+      const draw = () => {
+        clamp(); x.setTransform(2, 0, 0, 2, 0, 0); x.clearRect(0, 0, V, V); x.fillStyle = '#0d0f13'; x.fillRect(0, 0, V, V);
+        x.imageSmoothingQuality = 'high'; paint(x, V, 1);
+        x.beginPath(); x.rect(0, 0, V, V); x.arc(V / 2, V / 2, R, 0, Math.PI * 2, true); x.fillStyle = 'rgba(8,9,12,.62)'; x.fill('evenodd');
+        x.beginPath(); x.arc(V / 2, V / 2, R, 0, Math.PI * 2); x.strokeStyle = '#fff'; x.lineWidth = 3; x.stroke();
+      };
+      const close = (v) => { ov.remove(); document.removeEventListener('keydown', onKey, true); done(v); };
+      const onKey = (e) => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(null); } else if (document.activeElement === cv && /^Arrow/.test(e.key)) { e.preventDefault(); const d = e.shiftKey ? 20 : 5; if (e.key === 'ArrowLeft') st.x += d; if (e.key === 'ArrowRight') st.x -= d; if (e.key === 'ArrowUp') st.y += d; if (e.key === 'ArrowDown') st.y -= d; draw(); } };
+      document.addEventListener('keydown', onKey, true);
+      // drag to move (mouse, pen or finger)
+      let drag = null;
+      cv.addEventListener('pointerdown', (e) => { drag = { px: e.clientX, py: e.clientY, x: st.x, y: st.y, k: V / cv.getBoundingClientRect().width }; try { cv.setPointerCapture(e.pointerId); } catch (er) { /* fine */ } cv.classList.add('dr'); });
+      cv.addEventListener('pointermove', (e) => { if (!drag) return; st.x = drag.x + (e.clientX - drag.px) * drag.k; st.y = drag.y + (e.clientY - drag.py) * drag.k; draw(); });
+      const up = () => { drag = null; cv.classList.remove('dr'); }; cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+      const zoomTo = (z) => { const z2 = Math.max(1, Math.min(4, z)), f = z2 / st.z; st.x *= f; st.y *= f; st.z = z2; zr.value = String(Math.round(z2 * 100)); draw(); };
+      zr.addEventListener('input', () => zoomTo(+zr.value / 100));
+      cv.addEventListener('wheel', (e) => { e.preventDefault(); zoomTo(st.z * (e.deltaY < 0 ? 1.08 : 1 / 1.08)); }, { passive: false });
+      ov.addEventListener('click', (e) => {
+        if (e.target === ov) { close(null); return; }
+        const b = e.target.closest('[data-cr]'); if (!b) return; const a = b.dataset.cr;
+        if (a === 'x') close(null);
+        else if (a === 'rot') { st.rot = (st.rot + 1) % 4; const t = st.x; st.x = -st.y; st.y = t; draw(); }
+        else if (a === 'reset') { Object.assign(st, { z: 1, x: 0, y: 0, rot: 0 }); zr.value = '100'; draw(); }
+        else if (a === 'ok') { const o = document.createElement('canvas'); o.width = o.height = 192; const g = o.getContext('2d'); g.imageSmoothingQuality = 'high'; g.fillStyle = '#0d0f13'; g.fillRect(0, 0, 192, 192); paint(g, 192, 192 / (2 * R)); try { close(picOut(o)); } catch (er) { close({ err: er }); } }
+      });
+      draw(); setTimeout(() => cv.focus(), 30);
+    });
+  }
+  // Hidden login names and passwords: always 12 dots of one size, whatever the real length, so the length gives nothing away.
+  const DOTS = '<span class="pfdots" role="img" aria-label="Hidden">' + '<i></i>'.repeat(12) + '</span>';
   function pfaHTML() {
     if (!window.gt || !gt.pfaStatus) return '';
     if (!PFA) { if (!pfaBusy) { pfaBusy = true; gt.pfaStatus().then((r) => { PFA = r; pfaBusy = false; if (settingsSec.classList.contains('on')) drawSettings(); }).catch(() => { pfaBusy = false; }); } return ''; }
     if (!PFA.avail) return '';
     const msg = PFAMSG ? `<p class="pfam">${esc(PFAMSG)}</p>` : '';
     if (PFA.on && PFA.tmp) {
-      return `<div class="pfa"><div class="pfah"><b>Pathfinder account</b><span class="pfaon">Signed in</span></div><p class="pfae">${esc(PFA.name)}: your password was reset to the temporary 123456. Pick a new password to keep using your account. Nothing is saved to your account until you do.</p><div class="pfaf"><input id="pfanpw" type="password" placeholder="New password (8+ characters)" autocomplete="new-password"><input id="pfanpw2" type="password" placeholder="New password again" autocomplete="new-password"><button class="b" data-pfa="setpw">Set new password</button><button class="g" data-pfa="logout">Sign out</button></div>${msg}</div>`;
+      return `<div class="pfa"><div class="pfah"><b>Pathfinder account</b><span class="pfaon">Signed in</span></div><p class="pfae">${esc(pdn())}: your password was reset to the temporary 123456. Pick a new password to keep using your account. Nothing is saved to your account until you do.</p><div class="pfaf"><input id="pfanpw" type="password" placeholder="New password (8+ characters)" autocomplete="new-password"><input id="pfanpw2" type="password" placeholder="New password again" autocomplete="new-password"><button class="b" data-pfa="setpw">Set new password</button><button class="g" data-pfa="logout">Sign out</button></div>${msg}</div>`;
     }
     if (PFA.on) {
       const when = PFA.at ? new Date(PFA.at).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '';
-      return `<div class="pfa"><div class="pfah"><b>Pathfinder account</b><span class="pfaon">Signed in</span></div><p class="mute">${esc(PFA.name)} &middot; ${PFA.n} Bungie account${PFA.n === 1 ? '' : 's'} saved${when ? ' &middot; last synced ' + esc(when) : ''}.${PFA.err ? ' <span class="pfae">Last sync did not work: ' + esc(PFA.err) + '</span>' : ''}</p>${msg}<p><button class="g" data-pfa="sync">Sync now</button> <button class="g" data-pfa="logout">Sign out</button> <button class="g" data-pfa="logoutall">Sign out on all devices</button> <button class="g" data-pfa="del">Delete Pathfinder account</button></p><p class="mute pfan">Every Bungie account you add here is saved to your Pathfinder account, locked with your password before it leaves this device. Removing an account here only removes it from ${GT_HERE}.</p></div>`;
+      // Account settings, Steam style: the display name is what everyone sees; the login name only signs in, so it stays hidden
+      // (stars) unless the eye is pressed, which keeps it off screen on streams.
+      const lg = esc(PFA.name || ''), stars = DOTS;
+      const ed = PFAED === 'dn' ? `<div class="pfaf"><input id="pfadn" type="text" maxlength="32" placeholder="Display name" value="${esc(pdn())}" autocomplete="off"><button class="b" data-pfa="dnsave">Save</button><button class="g" data-pfa="edoff">Cancel</button></div><p class="mute">2 to 32 characters. Everyone sees this name (the team in help requests too). You still sign in with your login name.</p>`
+        : PFAED === 'login' ? `<div class="pfaf"><input id="pfalg" type="text" class="pfmask${PFAEYE2 ? ' show' : ''}" maxlength="24" placeholder="New login name" autocomplete="off" autocapitalize="off" spellcheck="false"><button class="g pfeye" data-pfa="eye2" title="Show or hide" aria-label="Show or hide the new login name">${EYE}</button><input id="pfacur" type="password" placeholder="Current password" autocomplete="current-password"><button class="b" data-pfa="lgsave">Change login name</button><button class="g" data-pfa="edoff">Cancel</button></div><p class="mute">3 to 24 letters or numbers (. _ and - too). You sign in with it from now on; your other devices are signed out and sign in with the new one.</p>`
+        : PFAED === 'pw' ? `<div class="pfaf"><input id="pfacur" type="password" placeholder="Current password" autocomplete="current-password"><input id="pfanpw" type="password" placeholder="New password (8+ characters)" autocomplete="new-password"><input id="pfanpw2" type="password" placeholder="New password again" autocomplete="new-password"><button class="b" data-pfa="pwsave">Change password</button><button class="g" data-pfa="edoff">Cancel</button></div><p class="mute">Your other devices are signed out and sign in with the new password. Your saved Bungie accounts stay.</p>` : '';
+      return `<div class="pfa" id="pfacct"><div class="pfah"><b>Pathfinder account</b><span class="pfaon">Signed in</span></div>
+<div class="pfrows">
+<div class="pfrow"><span class="pfk">Profile picture</span><span class="pfv">${avHTML('pfavb')}<small class="mute">Shown in the top bar on every device you sign in on.</small></span>${PFA.av ? '<button class="g" data-pfa="picrm">Remove</button>' : ''}<button class="g" data-pfa="pic">${PFA.av ? 'Change' : 'Add'}</button><input type="file" id="pfapic" accept="image/*" hidden></div>
+<div class="pfrow"><span class="pfk">Display name</span><b class="pfv">${esc(pdn())}</b><button class="g" data-pfa="ed-dn">Edit</button></div>
+<div class="pfrow"><span class="pfk">Login name</span><span class="pfv pflg">${PFAEYE ? lg : stars}</span><button class="g pfeye" data-pfa="eye" title="${PFAEYE ? 'Hide' : 'Show'} your login name" aria-label="${PFAEYE ? 'Hide' : 'Show'} your login name" aria-pressed="${PFAEYE}">${EYE}</button><button class="g" data-pfa="ed-login">Change</button></div>
+<div class="pfrow"><span class="pfk">Password</span><span class="pfv">${DOTS}</span><button class="g" data-pfa="ed-pw">Change</button></div>
+</div>${ed}
+<p class="mute">${PFA.n} Bungie account${PFA.n === 1 ? '' : 's'} saved${when ? ' &middot; last synced ' + esc(when) : ''}.${PFA.err ? ' <span class="pfae">Last sync did not work: ' + esc(PFA.err) + '</span>' : ''}</p>${msg}<p><button class="g" data-pfa="sync">Sync now</button> <button class="g" data-pfa="logout">Sign out</button> <button class="g" data-pfa="logoutall">Sign out on all devices</button> <button class="g" data-pfa="del">Delete Pathfinder account</button></p><p class="mute pfan">Every Bungie account you add here is saved to your Pathfinder account, locked with your password before it leaves this device. Removing an account here only removes it from ${GT_HERE}.</p></div>`;
     }
-    return `<div class="pfa"><div class="pfah"><b>Pathfinder account</b><span class="mute">Optional</span></div><p class="mute">Sign in once on another PC, the beta, the website or your phone and all your Bungie accounts (alts too) come with you. Everything works without one.</p>${PFA.out ? `<p class="pfae">Your Pathfinder account sign-in ended. Sign in again to keep syncing, or <button class="g pfalink" data-pfa="logout">forget ${esc(PFA.name)} on ${GT_HERE}</button>.</p>` : ''}<div class="pfaf"><input id="pfanm" type="text" placeholder="Account name" autocomplete="username" autocapitalize="off" spellcheck="false" maxlength="200" value="${esc(PFANM || PFA.name || '')}"><input id="pfapw" type="password" placeholder="Password (8+ characters)" autocomplete="current-password"><button class="b" data-pfa="login">Sign in</button><button class="g" data-pfa="signup">Create account</button></div>${PFARS ? `<div class="pfars"><b>Reset your password with a code</b><p class="mute">Ask Bray for a reset code. Enter your account name above, then the code and a new password here. Bungie accounts saved in your Pathfinder account are cleared, so sign in to Bungie again on devices that are not signed in any more.</p><div class="pfaf"><input id="pfacode" type="text" placeholder="Reset code (ABCD-EFGH-JKLM)" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false" maxlength="20"><input id="pfanpw" type="password" placeholder="New password (8+ characters)" autocomplete="new-password"><button class="b" data-pfa="reset">Set new password</button><button class="g" data-pfa="rsoff">Cancel</button></div></div>` : '<p><button class="g pfalink" data-pfa="rson">Forgot your password? Reset it with a code</button></p>'}${msg}<p class="mute pfan">Your password never leaves this device. Your Bungie sign-ins are locked with it before they are saved, so nobody else can open them, including Pathfinder. If you forget it, you just sign in to Bungie again.</p></div>`;
+    return `<div class="pfa"><div class="pfah"><b>Pathfinder account</b><span class="mute">Optional</span></div><p class="mute">Sign in once on another PC, the beta, the website or your phone and all your Bungie accounts (alts too) come with you. Everything works without one.</p>${PFA.out ? `<p class="pfae">Your Pathfinder account sign-in ended. Sign in again to keep syncing, or <button class="g pfalink" data-pfa="logout">forget ${esc(pdn())} on ${GT_HERE}</button>.</p>` : ''}<div class="pfaf"><input id="pfanm" type="text" class="pfmask${PFAEYE ? ' show' : ''}" placeholder="Login name" autocomplete="username" autocapitalize="off" spellcheck="false" maxlength="200" value="${esc(PFANM || PFA.name || '')}"><button class="g pfeye" data-pfa="eye" title="Show or hide the login name" aria-label="Show or hide the login name" aria-pressed="${PFAEYE}">${EYE}</button><input id="pfapw" type="password" placeholder="Password (8+ characters)" autocomplete="current-password"><button class="b" data-pfa="login">Sign in</button><button class="g" data-pfa="signup">Create account</button></div><p><button class="g pfalink" data-pfa="forgot">Forgot your password? Reset it at the Help Desk</button></p>${msg}<p class="mute pfan">Your password never leaves this device. Your Bungie sign-ins are locked with it before they are saved, so nobody else can open them, including Pathfinder. If you forget it, the team can reset it for you from a help request.</p></div>`;
   }
+  // ---- your account in the top right (Steam style): profile picture (or initial) and display name; click it for the menu with
+  // Settings, Help & support, Get the app and Sign in or out. It is also the way into Settings (there is no gear button any more).
+  function pfChip() {
+    const hd = document.querySelector('header.gtbar') || document.querySelector('header'); if (!hd || !window.gt) return;
+    let b = document.getElementById('gtpfn');
+    const on = !!(PFA && PFA.on), dn = on ? pdn() : '';
+    if (!b) {
+      b = document.createElement('button'); b.id = 'gtpfn'; b.type = 'button'; b.setAttribute('aria-haspopup', 'menu'); b.setAttribute('aria-expanded', 'false');
+      hd.appendChild(b); window.dispatchEvent(new Event('resize'));
+      b.onclick = (e) => { e.stopPropagation(); const m = document.getElementById('gtpfm'); if (m) { m.remove(); b.setAttribute('aria-expanded', 'false'); return; } pfMenu(b); };
+      document.addEventListener('click', (e) => { const m = document.getElementById('gtpfm'); if (m && !m.contains(e.target) && !b.contains(e.target)) { m.remove(); b.setAttribute('aria-expanded', 'false'); } });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { const m = document.getElementById('gtpfm'); if (m) { m.remove(); b.setAttribute('aria-expanded', 'false'); b.focus(); } } });
+    }
+    b.hidden = false; b.classList.toggle('out', !on); b.classList.toggle('gtdot', !!((SECN.Help || 0) + (SECN['Help desk'] || 0)));
+    const html = `${avHTML('gtpfa')}${on ? `<span class="gtpft">${esc(dn)}</span>` : ''}<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>`;
+    if (b.dataset.h !== html) { b.innerHTML = html; b.dataset.h = html; const t = on ? dn + ': settings and your Pathfinder account' : 'Settings and sign in'; b.title = t; b.setAttribute('aria-label', t); }
+  }
+  // Settings, at the section given (or wherever you were), then an element in it brought into view.
+  function goSettings(sec, focusId) {
+    const sb = document.querySelector('#nav button[data-t="settings"]'); if (sb) sb.click(); else window.show('settings'); // the (hidden) Settings tab button redraws the page
+    setTimeout(() => {
+      const n = sec && settingsSec.querySelector('.sni[data-ssec="' + sec + '"]'); if (n) n.click();
+      if (focusId) setTimeout(() => { const t = document.getElementById(focusId) || settingsSec.querySelector('.son'); if (t) t.scrollIntoView({ block: 'center', behavior: 'smooth' }); }, 80);
+    }, 30);
+  }
+  const MI = {
+    set: '<circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/>',
+    help: '<path d="M4 13a8 8 0 0 1 16 0"/><rect x="3" y="13" width="4" height="6" rx="1.5"/><rect x="17" y="13" width="4" height="6" rx="1.5"/><path d="M20 19c0 1.5-2 2.5-5 2.5"/>',
+    app: '<path d="M12 4v11M7 10.5l5 5 5-5M5 20h14"/>',
+    out: '<path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 16l-4-4 4-4M6 12h10"/>',
+    in: '<path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3"/><path d="M14 16l4-4-4-4M18 12H8"/>',
+  };
+  const mi = (k, label, extra) => `<button type="button" role="menuitem" data-pfm="${k}"><svg viewBox="0 0 24 24" aria-hidden="true">${MI[k === 'signout' ? 'out' : k === 'signin' ? 'in' : k]}</svg><span>${label}</span>${extra || ''}</button>`;
+  function pfMenu(b) {
+    const m = document.createElement('div'); m.id = 'gtpfm'; m.setAttribute('role', 'menu');
+    const on = !!(PFA && PFA.on), role = { owner: 'Owner', founder: 'Founder', dev: 'Developer', tester: 'Tester' }[FLG && FLG.role] || 'User';
+    const ga = window.__gtGetApp && window.__gtGetApp.can() ? window.__gtGetApp.label() : '';
+    const hn = (SECN.Help || 0) + (SECN['Help desk'] || 0);
+    m.innerHTML = `<div class="gtpfh">${avHTML('gtpfa big')}<div><b>${on ? esc(pdn()) : 'Not signed in'}</b><small>${on ? esc(role) + ' &middot; Pathfinder account' : 'Sign in to bring your Bungie accounts to every device'}</small></div></div>`
+      + mi('set', 'Settings') + mi('help', 'Help &amp; support', hn ? `<em class="gtpfb">${hn > 9 ? '9+' : hn}</em>` : '') + (ga ? mi('app', esc(ga)) : '')
+      + (on ? mi('signout', 'Sign out') : PFA && PFA.avail ? mi('signin', 'Sign in or make an account') : '');
+    document.body.appendChild(m);
+    const r = b.getBoundingClientRect(); m.style.top = Math.round(r.bottom + 6) + 'px'; m.style.right = Math.max(8, Math.round(innerWidth - r.right)) + 'px';
+    b.setAttribute('aria-expanded', 'true'); const f = m.querySelector('button'); if (f) f.focus();
+    m.onclick = (e) => {
+      const it = e.target.closest('[data-pfm]'); if (!it) return; m.remove(); b.setAttribute('aria-expanded', 'false');
+      const k = it.dataset.pfm;
+      if (k === 'set') goSettings('', '');
+      else if (k === 'help') helpGo();
+      else if (k === 'app') window.__gtGetApp.open(b);
+      else if (k === 'signin') goSettings('Accounts', 'pfanm');
+      else if (k === 'signout') pfaAct('logout').then(pfChip);
+    };
+  }
+  // Help: the team (anyone who can see the Help desk) goes to the Help desk; everyone else to Help in About & help.
+  function helpGo() {
+    const desk = settingsSec.querySelector('.sni[data-ssec="Help desk"]') || (FLG && ['dev', 'founder', 'owner'].includes(FLG.role));
+    goSettings(desk ? 'Help desk' : 'About & help', desk ? '' : 'gthelp');
+  }
+  // The headphones button in the bottom-right corner (next to Notes): straight to help. Settings > About & help can hide it.
+  function helpFab() {
+    let f = document.getElementById('gthfab');
+    const want = !!(window.gt && gt.helpNew) && SET.helpfab !== false;
+    document.body.classList.toggle('gthf', want);
+    if (!want) { if (f) f.remove(); return; }
+    if (!f) { f = document.createElement('button'); f.id = 'gthfab'; f.type = 'button'; f.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${MI.help}</svg>`; f.onclick = helpGo; document.body.appendChild(f); }
+    const n = (SECN.Help || 0) + (SECN['Help desk'] || 0), t = n ? 'Help: ' + n + ' new' : 'Help: ask the Pathfinder team, report a bug or suggest an idea';
+    f.classList.toggle('gtdot', !!n); if (f.title !== t) { f.title = t; f.setAttribute('aria-label', t); }
+  }
+  setInterval(() => { pfChip(); helpFab(); }, 2500); setTimeout(() => { pfChip(); helpFab(); }, 600);
   // Signed-in devices: every place this Pathfinder account is signed in, when each was last used, and Sign out for each one.
   const PDEV = { open: false, list: null, busy: false, err: '' };
   function devList() {
@@ -1179,12 +1500,30 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     const run = async (label, fn) => { PFAMSG = label; drawSettings(); try { const r = await fn(); if (r && (r.reload || r.restart)) { afterAcct(r); return; } PFA = r && r.avail !== undefined ? r : await gt.pfaStatus(); flagsLoad(); PFAMSG = r && r.added ? `Added ${r.added} Bungie account${r.added === 1 ? '' : 's'} from your Pathfinder account. Switch to ${r.added === 1 ? 'it' : 'them'} above.` : a === 'sync' ? 'Synced.' : ''; ACL = null; } catch (er) { PFAMSG = clean(er); try { PFA = await gt.pfaStatus(); } catch (e2) { /* keep */ } } drawSettings(); };
     if (a === 'login') return run('Signing in… (locking your key takes a second)', () => gt.pfaLogin({ name: nm, pw }));
     if (a === 'signup') { if (!confirm('Create the Pathfinder account "' + nm + '"?\n\nYour password cannot be recovered. If you forget it, you just sign in to Bungie again on each device.')) return; return run('Creating your account…', () => gt.pfaSignup({ name: nm, pw })); }
-    if (a === 'rson' || a === 'rsoff') { PFARS = a === 'rson'; PFAMSG = ''; drawSettings(); return; }
-    if (a === 'reset') {
-      const code = (document.getElementById('pfacode') || {}).value || '', npw = (document.getElementById('pfanpw') || {}).value || '';
-      if (!confirm('Set a new password for "' + nm + '"?\n\nThe Bungie accounts saved in your Pathfinder account are cleared and saved again from this device. Other devices are signed out of your Pathfinder account.')) return;
-      return run('Setting your new password…', async () => { const r = await gt.pfaReset({ name: nm, code, pw: npw }); PFARS = false; return r; });
+    if (a === 'eye' || a === 'eye2') {
+      if (a === 'eye') PFAEYE = !PFAEYE; else PFAEYE2 = !PFAEYE2; drawSettings();
+      // a shown login name hides itself again after 20 seconds, so it is never left on screen (streams)
+      clearTimeout(pfaAct.eyeT); if (PFAEYE || PFAEYE2) pfaAct.eyeT = setTimeout(() => { if (PFAEYE || PFAEYE2) { PFAEYE = false; PFAEYE2 = false; if (settingsSec.classList.contains('on')) drawSettings(); } }, 20000);
+      return;
     }
+    if (a === 'ed-dn' || a === 'ed-login' || a === 'ed-pw') { PFAED = a.slice(3); PFAMSG = ''; drawSettings(); setTimeout(() => { const i = document.getElementById(PFAED === 'dn' ? 'pfadn' : PFAED === 'login' ? 'pfalg' : 'pfacur'); if (i) { i.focus(); if (i.select) i.select(); } }, 0); return; }
+    if (a === 'edoff') { PFAED = ''; PFAMSG = ''; drawSettings(); return; }
+    if (a === 'pic') { const i = document.getElementById('pfapic'); if (i) i.click(); return; }
+    if (a === 'picrm') { if (!confirm('Remove your profile picture?')) return; return run('Removing…', async () => { const r = await gt.pfaAvatar({ img: '' }); setTimeout(() => { PFAMSG = 'Profile picture removed.'; drawSettings(); }, 0); return r; }); }
+    if (a === 'dnsave') { const dn = ((document.getElementById('pfadn') || {}).value || '').trim(); return run('Saving…', async () => { const r = await gt.pfaProfile({ dn }); PFAED = ''; setTimeout(() => { PFAMSG = 'Display name saved.'; drawSettings(); }, 0); return r; }); }
+    if (a === 'lgsave') {
+      const to = ((document.getElementById('pfalg') || {}).value || '').trim(), cur = (document.getElementById('pfacur') || {}).value || '';
+      if (!to) { PFAMSG = 'Enter the new login name.'; drawSettings(); return; }
+      if (!confirm('Change your login name?\n\nFrom now on you sign in with the new one. Your other devices are signed out.')) return;
+      return run('Changing your login name… (locking your key takes a second)', async () => { const r = await gt.pfaLoginName({ to, pw: cur }); PFAED = ''; PFAEYE2 = false; PFAEYE = false; setTimeout(() => { PFAMSG = 'Login name changed. Sign in with it on your other devices.'; drawSettings(); }, 0); return r; });
+    }
+    if (a === 'pwsave') {
+      const cur = (document.getElementById('pfacur') || {}).value || '', n1 = (document.getElementById('pfanpw') || {}).value || '', n2 = (document.getElementById('pfanpw2') || {}).value || '';
+      if (n1 !== n2) { PFAMSG = 'The two new passwords do not match.'; drawSettings(); return; }
+      return run('Changing your password… (locking your key takes a second)', async () => { const r = await gt.pfaChangePw({ old: cur, pw: n1 }); PFAED = ''; setTimeout(() => { PFAMSG = 'Password changed. Sign in with it on your other devices.'; drawSettings(); }, 0); return r; });
+    }
+    // Forgot the password: there is no self-service reset. A help request goes to the team, who reset it (to 123456, then you pick a new one).
+    if (a === 'forgot') { HLP.view = 'new'; HLP.kind = 'question'; HLP.msg = 'I forgot my Pathfinder password.\nMy login name is: \nSomething that shows the account is mine (my Bungie name, roughly when I made it): '; HLP.note = ''; const s2 = settingsSec.querySelector('.sni[data-ssec="About & help"]'); if (s2) s2.click(); else drawSettings(); setTimeout(() => { const m = document.getElementById('hmsg'); if (m) { m.scrollIntoView({ block: 'center' }); m.focus(); } }, 60); return; }
     if (a === 'setpw') {
       const n1 = (document.getElementById('pfanpw') || {}).value || '', n2 = (document.getElementById('pfanpw2') || {}).value || '';
       if (n1 !== n2) { PFAMSG = 'The two passwords do not match.'; drawSettings(); return; }
@@ -1213,6 +1552,8 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   const seesLv = (l, name) => (l === 'on' ? true : l === 'off' || !(l in LVR) ? false : myRank() >= LVR[l] && !devOff().includes(name));
   window.__gtFlag = (name, dflt) => { const l = FLG.flags[name]; if (!l) return dflt === undefined ? true : !!dflt; return seesLv(l, name); };
   window.__gtDev = () => !!FLG.dev;
+  // settings rows that belong to a feature switch ([data-fl]) show or hide when the switches arrive or change
+  window.addEventListener('gtflags', () => { document.querySelectorAll('[data-fl]').forEach((el) => { el.hidden = !window.__gtFlag(el.dataset.fl, true); }); });
   // Tabs have switches too ("tab-optimizer", ...), set on the admin page: Nobody hides the tab for everyone, Developers only shows
   // it just to developer accounts. Not set = everyone. Inventory, Home and Settings always stay.
   window.__gtTabLocked = (id) => !['vault', 'home', 'settings'].includes(id) && !window.__gtFlag('tab-' + id, true);
@@ -1235,8 +1576,8 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   }
   const flagsLoad = (force) => { if (!window.gt || !gt.flagsGet) return; gt.flagsGet({ force: !!force }).then((r) => {
     annShow(r && r.ann);
-    const was = JSON.stringify(FLG); FLG = { flags: (r && r.flags) || {}, dev: !!(r && r.dev), role: (r && r.role) || '' };
-    if (JSON.stringify(FLG) !== was) { document.documentElement.toggleAttribute('data-gtdev', FLG.dev); document.documentElement.toggleAttribute('data-gttester', FLG.role === 'tester'); window.dispatchEvent(new Event('gtflags')); if (settingsSec.classList.contains('on')) drawSettings(); if (window.__gtRender) window.__gtRender(); }
+    const was = JSON.stringify(FLG); FLG = { flags: (r && r.flags) || {}, dev: !!(r && r.dev), role: (r && r.role) || '', looks: (r && r.looks) || {}, mylook: (r && r.mylook) || '' };
+    if (JSON.stringify(FLG) !== was) { document.documentElement.toggleAttribute('data-gtdev', FLG.dev); document.documentElement.toggleAttribute('data-gttester', FLG.role === 'tester'); window.dispatchEvent(new Event('gtflags')); if (LOCK[SET.ui]) applySet(); if (settingsSec.classList.contains('on')) drawSettings(); if (window.__gtRender) window.__gtRender(); }
     if (r && PFA && ((PFA.role || '') !== (r.role || '') || !!PFA.on !== !!r.on)) roleChanged();
   }).catch(() => {}); };
   function roleChanged() {
@@ -1253,7 +1594,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   // Developer, founder and owner accounts check every minute, so a role taken away closes their tools quickly; anyone else signed
   // in to a Pathfinder account every 5 minutes, so a role given to them shows up without pressing Sync.
   let flT = 0;
-  setInterval(() => { if (document.hidden) return; flT++; if (FLG.dev || FLG.role === 'tester' || (PFA && PFA.on && flT % 5 === 0)) flagsLoad(true); }, 6e4);
+  setInterval(() => { if (document.hidden) return; flT++; if (((FLG.dev || FLG.role === 'tester') && flT % 3 === 0) || (PFA && PFA.on && flT % 5 === 0)) flagsLoad(true); }, 6e4); // the team every 3 minutes, everyone signed in every 5
   window.__gtFlagsNow = () => flagsLoad(true);
   // Redraw just one settings card in place (help, help desk, admin), so clicking around there never rebuilds the whole page.
   function redrawCard(t, fn) {
@@ -1267,7 +1608,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     c.replaceWith(n);
     if (aid) { const f = document.getElementById(aid); if (f) { f.focus(); if (pos != null) { try { f.setSelectionRange(pos, pos); } catch (e) { /* not text */ } } } }
   }
-  const hDraw = () => redrawCard('Help', helpCard), dDraw = () => redrawCard('Help desk', deskCard), aDraw = () => redrawCard('Founder panel', admCard);
+  const hDraw = () => redrawCard('Help', helpCard), dDraw = () => redrawCard('Help desk', deskCard), aDraw = () => redrawCard('Founder', admCard);
   // ---- Help: ask the Pathfinder team, and read their answers here (Settings > About & help) ----
   // Requests opened on this device are kept by key on this device; signed in to a Pathfinder account they also show on every
   // device. The team answers in the Help desk (developer and founder accounts) or on the admin page.
@@ -1294,6 +1635,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   function secBadge(n) { const c = (n === 'About & help' ? SECN.Help : SECN[n]) || 0; return c ? `<em class="snb" aria-label="${c} new">${c > 9 ? '9+' : c}</em>` : ''; }
   function badges() {
     const sb = document.querySelector('#nav button[data-t="settings"]'); if (sb) sb.classList.toggle('gtdot', !!((SECN.Help || 0) + (SECN['Help desk'] || 0)));
+    pfChip(); helpFab();
     if (settingsSec.classList.contains('on')) balanceSettings(true);
   }
   // Desktop notifications: the team answered your help request (anyone), a new help request or reply came in (the team).
@@ -1325,11 +1667,11 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     const note = HLP.note ? `<p class="hnote${HLP.bad ? ' bad' : ''}" role="status">${esc(HLP.note)}</p>` : '';
     let body = '';
     if (HLP.view === 'new') {
-      body = `<div class="hnew">${PFA && PFA.on ? '' : `<p class="hacct">You are not signed in to a Pathfinder account, so the team sees you as <b>User</b>. Sign in or make a free account so they know who they are talking to. <button class="g" data-h="acct" type="button">Sign in or make an account</button></p>`}<div class="fbk" role="radiogroup" aria-label="What is it about">${HK.map(([k, l]) => `<button class="chip${HLP.kind === k ? ' on' : ''}" data-hk="${k}" role="radio" aria-checked="${HLP.kind === k}" type="button">${l}</button>`).join('')}</div>
+      body = `<div class="hnew">${PFA && PFA.on ? '' : `<p class="hacct">You are not signed in to a Pathfinder account, so the team sees you as a numbered user (<b>User 1</b>, <b>User 2</b> and so on, given when you send). Sign in or make a free account so they know who they are talking to. <button class="g" data-h="acct" type="button">Sign in or make an account</button></p>`}<div class="fbk" role="radiogroup" aria-label="What is it about">${HK.map(([k, l]) => `<button class="chip${HLP.kind === k ? ' on' : ''}" data-hk="${k}" role="radio" aria-checked="${HLP.kind === k}" type="button">${l}</button>`).join('')}</div>
         <textarea id="hmsg" maxlength="3000" rows="6" placeholder="${HLP.kind === 'bug' ? 'What happened, and what were you doing when it did?' : HLP.kind === 'idea' ? 'What would you like Pathfinder to do?' : 'Your question or message'}">${esc(HLP.msg)}</textarea>
         <div class="fbr"><input id="hcon" type="text" maxlength="120" placeholder="Discord name or email (optional)" value="${esc(HLP.contact)}" autocomplete="off"><label class="fbc"><input type="checkbox" id="hrep"${HLP.rep ? ' checked' : ''}> Attach the problem report</label></div>
         <p class="fbb"><button class="b" data-h="send" type="button"${HLP.busy ? ' disabled' : ''}>${HLP.busy ? 'Sending…' : 'Send'}</button><button class="g" data-h="list" type="button">Cancel</button></p>
-        <p class="mute hsm">You get the answer right here in Settings &gt; About & help${PFA && PFA.on ? `, on every device signed in as ${esc(PFA.name)}` : ''}. A Discord name or email is only needed if you would also like an answer there. The problem report lists the errors Pathfinder ran into, your version and screen size; nothing about your Destiny account.</p></div>`;
+        <p class="mute hsm">You get the answer right here in Settings &gt; About & help${PFA && PFA.on ? `, on every device signed in as ${esc(pdn())}` : ''}. A Discord name or email is only needed if you would also like an answer there. The problem report lists the errors Pathfinder ran into, your version and screen size; nothing about your Destiny account.</p></div>`;
     } else if (HLP.view === 'ticket' && HLP.t) {
       const t = HLP.t, st = HST[t.status] || HST.open;
       body = `<p class="fbb"><button class="g hback" data-h="list" type="button">&larr; All requests</button><button class="g" data-h="tref" type="button"${HLP.busy ? ' disabled' : ''}>&#8635; Refresh</button></p>
@@ -1342,9 +1684,10 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
       body = `<p class="fbb"><button class="b" data-h="new" type="button">New request</button><button class="g" data-h="refresh" type="button">${HLP.loading ? 'Checking…' : 'Check for answers'}</button></p>
         <div class="hlist">${L.map((x) => { const st = HST[x.status] || HST.open; return `<div class="hrow${x.unread ? ' new' : ''}" data-hid="${esc(x.id)}" role="button" tabindex="0"><span class="hk">${esc(HKN[x.kind] || 'Other')}</span><span class="hf">${esc(x.first)}</span><span class="hst ${st[1]}">${x.unread ? 'New answer' : st[0]}</span><small>${esc(hWhen(x.upd))}</small></div>`; }).join('') || (HLP.list === null ? '<p class="mute">Loading your requests…</p>' : '<p class="mute">You have not asked anything yet. Questions, bugs and ideas are all welcome.</p>')}</div>
         ${gt.notify ? `<div class="sx hntf"><div class="sxt"><b>Notify me when the team answers</b></div><div class="sxc"><label class="tgl"><input type="checkbox" data-ntf="gt_notify_help"${notifOn('gt_notify_help') ? ' checked' : ''}><i></i></label></div></div>` : ''}
-        ${PFA && PFA.on ? '' : '<p class="mute hsm">Requests are kept on this device. Sign in to a Pathfinder account (Settings &gt; Accounts) to see them on all your devices.</p>'}`;
+        ${PFA && PFA.on ? '' : '<p class="mute hsm">Requests are kept on this device. Sign in to a Pathfinder account (Settings &gt; Accounts) to see them on all your devices.</p>'}
+        <div class="sx"><div class="sxt"><b>Help button in the corner</b><small>The headphones button next to Notes. It opens Help from any tab.</small></div><div class="sxc"><label class="tgl"><input type="checkbox" data-sk="helpfab"${SET.helpfab !== false ? ' checked' : ''}><i></i></label></div></div>`;
     }
-    return `<div class="card sc"><h2>Help</h2><p class="mute">Ask a question, report a bug or suggest an idea. The Pathfinder team answers right here, and you can write back.</p>${note}${body}</div>`;
+    return `<div class="card sc" id="gthelp"><h2>Help</h2><p class="mute">Ask a question, report a bug or suggest an idea. The Pathfinder team answers right here, and you can write back.</p>${note}${body}</div>`;
   }
   async function helpOpen(id) {
     HLP.view = 'ticket'; HLP.reply = ''; HLP.note = ''; HLP.t = (HLP.t && HLP.t.id === id) ? HLP.t : null;
@@ -1353,7 +1696,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     hDraw(); const m = settingsSec.querySelector('.hmsgs'); if (m) m.scrollTop = m.scrollHeight;
   }
   const hSync = (t) => { HLP.t = t; const L = HLP.list || (HLP.list = []); const i = L.findIndex((x) => x.id === t.id); const sum = { id: t.id, at: t.at, upd: t.upd, kind: t.kind, status: t.status, first: t.first, n: t.n, unread: false }; if (i >= 0) L[i] = sum; else L.unshift(sum); L.sort((a, b) => b.upd - a.upd); };
-  settingsSec.addEventListener('input', (e) => { const id = e.target.id; if (id === 'hmsg') HLP.msg = e.target.value; if (id === 'hcon') HLP.contact = e.target.value; if (id === 'hreply') HLP.reply = e.target.value; if (id === 'dreply') DSK.reply = e.target.value; if (id === 'dnote') DSK.tn = e.target.value; });
+  settingsSec.addEventListener('input', (e) => { const id = e.target.id; if (id === 'hmsg') HLP.msg = e.target.value; if (id === 'hcon') HLP.contact = e.target.value; if (id === 'hreply') HLP.reply = e.target.value; if (id === 'dreply') { DSK.reply = e.target.value; DSK.typ = { k: 'reply', at: Date.now() }; } if (id === 'dnote') { DSK.tn = e.target.value; DSK.typ = { k: 'note', at: Date.now() }; } });
   settingsSec.addEventListener('change', (e) => {
     if (e.target.id === 'dcan' && e.target.value) { const x = (DSK.can || []).find((q) => q.id === e.target.value); if (x) { DSK.reply = (DSK.reply.trim() ? DSK.reply.replace(/\s+$/, '') + '\n\n' : '') + x.text; dDraw(); const t = document.getElementById('dreply'); if (t) { t.focus(); t.setSelectionRange(t.value.length, t.value.length); } } return; }
     if (e.target.id === 'hrep') HLP.rep = e.target.checked; if (e.target.dataset && e.target.dataset.ntf) { try { localStorage.setItem(e.target.dataset.ntf, e.target.checked ? '1' : '0'); } catch (er) { /* storage off */ } if (e.target.checked) askNotify(); } });
@@ -1379,7 +1722,16 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   settingsSec.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('[data-hid],[data-did]')) { e.preventDefault(); e.target.click(); } });
 
   // ---- Help desk: every help request, for developer and founder accounts (Settings > Help desk) ----
-  const DSK = { list: null, loading: false, f: 'open', t: null, reply: '', busy: false, note: '', bad: false, tn: '', can: null, canMan: false };
+  const DSK = { list: null, loading: false, f: 'open', t: null, reply: '', busy: false, note: '', bad: false, tn: '', can: null, canMan: false, typ: null, moved: false };
+  // Who else on the team has the open request on screen (and is typing), so two people do not answer at once.
+  const RN = { owner: 'Owner', founder: 'Founder', dev: 'Developer', tester: 'Tester' };
+  function hereHTML(t) {
+    const H = (t && t.here) || [];
+    const line = H.map((x) => `<span class="hhp${x.typing ? ' ty' : ''}"><i aria-hidden="true"></i><b>${esc(x.name)}</b>${RN[x.role] ? ' (' + RN[x.role] + ')' : ''} ${x.typing === 'reply' ? 'is typing a reply…' : x.typing === 'note' ? 'is writing a team note…' : 'is looking at this too'}</span>`).join('');
+    const slow = t && t.live === false ? '<span class="hslow">Changes from the rest of the team can take up to a minute to show here. ADMIN-SETUP.txt has the one-time step that makes them show in seconds.</span>' : '';
+    return line + slow;
+  }
+  const typingNow = () => (DSK.typ && Date.now() - DSK.typ.at < 8000 ? DSK.typ.k : '');
   const canLoad = () => { if (!gt.deskCanned) return; gt.deskCanned().then((l) => { DSK.can = l; if (DSK.t) dDraw(); }).catch(() => { DSK.can = DSK.can || []; }); };
   async function deskLoad(quiet) {
     if (!FLG.dev || !window.gt || !gt.deskList || DSK.loading) return;
@@ -1403,56 +1755,57 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
       const t = DSK.t, st = HST[t.status] || HST.open;
       body = `<p class="fbb"><button class="g hback" data-d="back" type="button">&larr; All requests</button><button class="g" data-d="tref" type="button"${DSK.busy ? ' disabled' : ''}>&#8635; Refresh</button></p>
         <div class="hth"><div class="hthh"><b>${esc(HKN[t.kind] || 'Other')}</b><span class="hst ${st[1]}">${DSN(t.status)}</span><small>Opened ${esc(hWhen(t.at))}</small></div>
-        <p class="fbb hsm" style="margin:2px 0 6px"><span class="hclaim">${t.claim ? (t.claim.name === (PFA && PFA.name) ? '<b>You are answering this</b>' : `<b>${esc(t.claim.name)}</b> is answering this`) : 'Nobody is answering this yet'}</span>${t.claim && t.claim.name === (PFA && PFA.name) ? '<button class="g" data-d="unclaim" type="button">Let someone else</button>' : `<button class="g" data-d="claim" type="button">${t.claim ? 'Take it over' : 'I&rsquo;m answering this'}</button>`}${PFA && PFA.founder && t.canBlock ? `<button class="g${t.blocked ? '' : ' admdel'}" data-d="block" type="button">${t.blocked ? 'Unblock sender' : 'Block sender'}</button>` : ''}${t.blocked ? '<span class="bad hsm">Blocked from help requests</span>' : ''}</p>
+        <p class="fbb hsm" style="margin:2px 0 6px"><span class="hclaim">${t.claim ? (t.claim.name === pdn() ? '<b>You are answering this</b>' : `<b>${esc(t.claim.name)}</b> is answering this`) : 'Nobody is answering this yet'}</span>${t.claim && t.claim.name === (PFA && PFA.name) ? '<button class="g" data-d="unclaim" type="button">Let someone else</button>' : `<button class="g" data-d="claim" type="button">${t.claim ? 'Take it over' : 'I&rsquo;m answering this'}</button>`}${PFA && PFA.founder && t.canBlock ? `<button class="g${t.blocked ? '' : ' admdel'}" data-d="block" type="button">${t.blocked ? 'Unblock sender' : 'Block sender'}</button>` : ''}${t.blocked ? '<span class="bad hsm">Blocked from help requests</span>' : ''}</p>
+        <p class="hhere" aria-live="polite">${hereHTML(t)}</p>
         <p class="mute hsm">${t.acct ? 'Pathfinder account <b>' + esc(t.acct) + '</b>' + (t.arole === 'tester' ? ' (tester)' : '') : 'Not signed in to a Pathfinder account, so they show as User'}${t.contact ? ' &middot; reply to <b>' + esc(t.contact) + '</b>' : ''} &middot; ${esc(t.where || '')} ${esc(t.ver || '')}</p>
         <div class="hmsgs">${t.msgs.map((m) => `<div class="hb${m.by === 'team' ? ' team' : ''}${RC[m.role] ? ' own r-' + m.role : m.role === 'tester' ? ' r-tester' : ''}"><small>${m.by === 'team' ? esc(m.name || 'Pathfinder team') + (RC[m.role] ? `<em class="hown">${RC[m.role]}</em>` : '') : esc(m.name || t.acct || 'User') + (m.role === 'tester' ? '<em class="hown">Tester</em>' : '')} &middot; ${esc(hWhen(m.at))}</small><div>${hText(m.text)}</div></div>`).join('')}</div>
         ${t.report ? `<details class="hrep"><summary>Problem report</summary><pre>${esc(t.report)}</pre></details>` : ''}
-        <div class="hnotes"><div class="hnt">Team notes &middot; the player never sees these</div>${(t.notes || []).map((x) => `<div class="hn"><small>${esc(x.name || 'Team')}${x.role === 'owner' ? ' &middot; Owner' : x.role === 'founder' ? ' &middot; Founder' : x.role === 'dev' ? ' &middot; Developer' : x.role === 'tester' ? ' &middot; Tester' : ''} &middot; ${esc(hWhen(x.at))}</small>${esc(x.text)}</div>`).join('')}
+        <div class="hnotes"><div class="hnt">Team notes &middot; the user never sees these</div>${(t.notes || []).map((x) => `<div class="hn"><small>${esc(x.name || 'Team')}${x.role === 'owner' ? ' &middot; Owner' : x.role === 'founder' ? ' &middot; Founder' : x.role === 'dev' ? ' &middot; Developer' : x.role === 'tester' ? ' &middot; Tester' : ''} &middot; ${esc(hWhen(x.at))}</small>${esc(x.text)}</div>`).join('')}
           <textarea id="dnote" maxlength="2000" rows="2" placeholder="Add a note for the team">${esc(DSK.tn)}</textarea><p class="fbb" style="margin:0"><button class="g" data-d="note" type="button"${DSK.busy ? ' disabled' : ''}>Add note</button></p></div>
-        <textarea id="dreply" maxlength="3000" rows="4" placeholder="Write a reply. The player sees it in Settings > About & help.">${esc(DSK.reply)}</textarea>
+        <textarea id="dreply" maxlength="3000" rows="4" placeholder="Write a reply. The user sees it in Settings > About & help.">${esc(DSK.reply)}</textarea>
         ${gt.deskCanned ? `<p class="fbb hcan"><select id="dcan" aria-label="Insert a saved reply"><option value="">Insert a saved reply…</option>${(DSK.can || []).map((x) => `<option value="${esc(x.id)}">${esc(x.title)}</option>`).join('')}</select><button class="g" data-d="cansave" type="button" title="Keep what is in the reply box so anyone on the team can insert it later">Save as a saved reply</button>${(DSK.can || []).length ? `<button class="g" data-d="canman" type="button">${DSK.canMan ? 'Done' : 'Manage'}</button>` : ''}</p>${DSK.canMan ? `<div class="adml">${(DSK.can || []).map((x) => `<div class="admr" data-cid="${esc(x.id)}"><div class="admn"><b>${esc(x.title)}</b><small>${esc(x.text.slice(0, 120))}${x.text.length > 120 ? '…' : ''} &middot; ${esc(x.by || '')}</small></div><div class="admc"><button class="g admdel" data-d="candel" type="button">Delete</button></div></div>`).join('')}</div>` : ''}` : ''}
-        <p class="fbb"><button class="b" data-d="reply" type="button"${DSK.busy ? ' disabled' : ''}>${DSK.busy ? 'Sending…' : 'Send reply'}</button><button class="g" data-d="replyclose" type="button"${DSK.busy ? ' disabled' : ''}>Send and mark solved</button>${t.status === 'closed' ? '<button class="g" data-d="reopen" type="button">Reopen</button>' : '<button class="g" data-d="close" type="button">Mark as solved</button>'}${PFA && PFA.founder ? '<button class="g admdel" data-d="del" type="button">Delete</button>' : ''}</p></div>`;
+        <p class="fbb"><button class="b" data-d="reply" type="button"${DSK.busy ? ' disabled' : ''}>${DSK.busy ? 'Sending…' : DSK.moved ? 'Send anyway' : 'Send reply'}</button><button class="g" data-d="replyclose" type="button"${DSK.busy ? ' disabled' : ''}>Send and mark solved</button>${t.status === 'closed' ? '<button class="g" data-d="reopen" type="button">Reopen</button>' : '<button class="g" data-d="close" type="button">Mark as solved</button>'}${PFA && PFA.founder ? '<button class="g admdel" data-d="del" type="button">Delete</button>' : ''}</p></div>`;
     } else {
       const list = L.filter((x) => DSK.f === 'all' || x.status === DSK.f);
       body = `<div class="fbk">${[['open', 'Waiting'], ['answered', 'Open'], ['closed', 'Solved'], ['all', 'All']].map(([k, l]) => `<button class="chip${DSK.f === k ? ' on' : ''}" data-df="${k}" type="button">${l} ${k === 'all' ? L.length : cnt[k]}</button>`).join('')}<button class="g" data-d="refresh" type="button">${DSK.loading ? 'Loading…' : '&#8635; Refresh'}</button></div>${gt.notify ? `<div class="sx hntf"><div class="sxt"><b>Notify me about new requests and replies</b></div><div class="sxc"><label class="tgl"><input type="checkbox" data-ntf="gt_notify_desk"${notifOn('gt_notify_desk') ? ' checked' : ''}><i></i></label></div></div>` : ''}
         <div class="hlist">${list.map((x) => { const st = HST[x.status] || HST.open; return `<div class="hrow${x.unread ? ' new' : ''}" data-did="${esc(x.id)}" role="button" tabindex="0"><span class="hk">${esc(HKN[x.kind] || 'Other')}</span><span class="hf">${esc(x.first)}</span><span class="hst ${st[1]}">${x.unread ? 'New message' : DSN(x.status)}</span><small>${esc(x.acct || 'User')}${x.arole === 'tester' ? ' (tester)' : ''} &middot; ${esc(hWhen(x.upd))}${x.claim ? `<em class="hcl">${esc(x.claim)}</em>` : ''}</small></div>`; }).join('') || `<p class="mute">${DSK.list === null ? 'Loading…' : 'Nothing here.'}</p>`}</div>`;
     }
-    return `<div class="card sc"><h2>Help desk</h2><p class="mute">Help requests from players, shown with their Pathfinder account name (User when they are not signed in to one). Your reply shows in their Settings &gt; About & help, signed with your account name (${esc((PFA && PFA.name) || '')}).</p>${note}${body}</div>`;
+    return `<div class="card sc"><h2>Help desk</h2><p class="mute">Help requests from users, shown with their Pathfinder display name (User 1, User 2 and so on when they are not signed in to one). Your reply shows in their Settings &gt; About & help, signed with your display name (${esc(pdn())}).</p>${note}${body}</div>`;
   }
   settingsSec.addEventListener('click', (e) => {
     const f = e.target.closest('[data-df]'); if (f) { DSK.f = f.dataset.df; dDraw(); return; }
     // (see the 10-second check below the Help desk)
     const row = e.target.closest('[data-did]');
-    if (row) { const id = row.dataset.did; DSK.reply = ''; DSK.note = ''; if (DSK.can === null) canLoad(); gt.deskGet({ id }).then((t) => { DSK.t = t; const r = (DSK.list || []).find((x) => x.id === id); if (r) r.unread = false; SECN['Help desk'] = (DSK.list || []).filter((x) => x.unread).length; badges(); dDraw(); const m = settingsSec.querySelector('.hmsgs'); if (m) m.scrollTop = m.scrollHeight; }).catch((er) => { DSK.note = clean(er); DSK.bad = true; dDraw(); }); return; }
+    if (row) { const id = row.dataset.did; DSK.reply = ''; DSK.note = ''; if (DSK.can === null) canLoad(); DSK.moved = false; gt.deskGet({ id, here: true }).then((t) => { DSK.t = t; const r = (DSK.list || []).find((x) => x.id === id); if (r) r.unread = false; SECN['Help desk'] = (DSK.list || []).filter((x) => x.unread).length; badges(); dDraw(); const m = settingsSec.querySelector('.hmsgs'); if (m) m.scrollTop = m.scrollHeight; }).catch((er) => { DSK.note = clean(er); DSK.bad = true; dDraw(); }); return; }
     const b = e.target.closest('[data-d]'); if (!b || DSK.busy) return;
     const a = b.dataset.d, sync = (t) => { DSK.t = t; const r = (DSK.list || []).find((x) => x.id === t.id); if (r) Object.assign(r, { status: t.status, upd: t.upd, unread: false, n: t.n }); };
     const act = (fn, ok) => { DSK.busy = true; DSK.note = ''; dDraw(); hTimed(fn()).then((t) => { if (t && t.id) sync(t); DSK.note = (typeof ok === 'function' ? t && ok(t) : ok) || ''; DSK.bad = false; }).catch((er) => { DSK.note = clean(er); DSK.bad = true; }).finally(() => { DSK.busy = false; dDraw(); }); };
-    if (a === 'back') { DSK.t = null; DSK.note = ''; dDraw(); return; }
+    if (a === 'back') { DSK.t = null; DSK.note = ''; DSK.moved = false; dDraw(); return; }
     if (a === 'refresh') { deskLoad(false); return; }
     if (a === 'cansave') { const text = DSK.reply.trim(); if (!text) { DSK.note = 'Write the reply first, then save it.'; DSK.bad = true; dDraw(); return; } gt.deskCannedSave({ text }).then((l) => { DSK.can = l; DSK.note = 'Saved. Anyone on the team can insert it now.'; DSK.bad = false; dDraw(); }).catch((er) => { DSK.note = clean(er); DSK.bad = true; dDraw(); }); return; }
     if (a === 'canman') { DSK.canMan = !DSK.canMan; dDraw(); return; }
     if (a === 'candel') { const id = b.closest('[data-cid]').dataset.cid, x = (DSK.can || []).find((q) => q.id === id); if (!x || !confirm('Delete the saved reply "' + x.title + '" for the whole team?')) return; gt.deskCannedDel({ id }).then((l) => { DSK.can = l; dDraw(); }).catch((er) => { DSK.note = clean(er); DSK.bad = true; dDraw(); }); return; }
     if ((a === 'claim' || a === 'unclaim') && DSK.t) return act(() => gt.deskClaim({ id: DSK.t.id, on: a === 'claim' }), a === 'claim' ? 'Marked as yours. The team sees you are answering it.' : 'Released. Anyone can pick it up.');
     if (a === 'note' && DSK.t) { const text = DSK.tn.trim(); if (!text) { DSK.note = 'Write the note first.'; DSK.bad = true; dDraw(); return; } return act(async () => { const t = await gt.deskNote({ id: DSK.t.id, text }); DSK.tn = ''; return t; }, 'Note added. Only the team sees it.'); }
-    if (a === 'block' && DSK.t) { const on = !DSK.t.blocked; if (on && !confirm('Block this sender from sending help requests?\n\nThey cannot open new requests or reply until someone unblocks them (Founder panel > Help requests).')) return; return act(() => gt.deskBlock({ id: DSK.t.id, on }), on ? 'Blocked. They cannot send help requests now.' : 'Unblocked.'); }
+    if (a === 'block' && DSK.t) { const on = !DSK.t.blocked; if (on && !confirm('Block this sender from sending help requests?\n\nThey cannot open new requests or reply until someone unblocks them (Settings > Founder > Help requests).')) return; return act(() => gt.deskBlock({ id: DSK.t.id, on }), on ? 'Blocked. They cannot send help requests now.' : 'Unblocked.'); }
     if (a === 'tref' && DSK.t) { const n0 = DSK.t.msgs.length, s0 = DSK.t.status; deskLoad(true); return act(() => gt.deskGet({ id: DSK.t.id }), (t) => (t.msgs.length > n0 ? 'New message.' : t.status !== s0 ? 'Updated.' : 'Up to date.')); }
     if (!DSK.t) return;
-    if (a === 'reply' || a === 'replyclose') { if (!DSK.reply.trim()) { DSK.note = 'Write a reply first.'; DSK.bad = true; dDraw(); return; } return act(async () => { const t = await gt.deskReply({ id: DSK.t.id, text: DSK.reply.trim(), close: a === 'replyclose' }); DSK.reply = ''; return t; }, a === 'replyclose' ? 'Reply sent and marked as solved.' : 'Reply sent. The player sees it in Settings > About & help.'); }
-    if (a === 'close' || a === 'reopen') return act(() => gt.deskStatus({ id: DSK.t.id, status: a === 'close' ? 'closed' : 'open' }), a === 'close' ? 'Marked as solved. If the player writes back, it opens again.' : 'Reopened.');
-    if (a === 'del') { if (!confirm('Delete this help request for good? The player will no longer see it.')) return; const id = DSK.t.id; return act(async () => { await gt.deskDelete({ id }); DSK.list = (DSK.list || []).filter((x) => x.id !== id); DSK.t = null; return null; }, 'Deleted.'); }
+    if (a === 'reply' || a === 'replyclose') {
+      if (!DSK.reply.trim()) { DSK.note = 'Write a reply first.'; DSK.bad = true; dDraw(); return; }
+      const force = DSK.moved; let moved = '';
+      return act(async () => {
+        const t = await gt.deskReply({ id: DSK.t.id, text: DSK.reply.trim(), close: a === 'replyclose', seen: DSK.t.msgs.length, force });
+        if (t && t.moved) { moved = t.moved; DSK.moved = true; delete t.moved; return t; } // nothing sent: read theirs first
+        DSK.reply = ''; DSK.moved = false; return t;
+      }, (t) => (moved ? moved + ' Read it above. Your reply is still here: press Send anyway to send it too, or change it first.' : (a === 'replyclose' ? 'Reply sent and marked as solved.' : 'Reply sent. The player sees it in Settings > About & help.')));
+    }
+    if (a === 'close' || a === 'reopen') return act(() => gt.deskStatus({ id: DSK.t.id, status: a === 'close' ? 'closed' : 'open' }), a === 'close' ? 'Marked as solved. If the user writes back, it opens again.' : 'Reopened.');
+    if (a === 'del') { if (!confirm('Delete this help request for good? The user will no longer see it.')) return; const id = DSK.t.id; return act(async () => { await gt.deskDelete({ id }); DSK.list = (DSK.list || []).filter((x) => x.id !== id); DSK.t = null; return null; }, 'Deleted.'); }
   });
   // An open conversation (Help or the Help desk) checks for new messages every 10 seconds while it is on screen. It only redraws
   // when something changed, and what you are typing (and where the cursor is) stays as it is.
   setInterval(() => {
     if (document.hidden || !settingsSec.classList.contains('on') || !window.gt) return;
-    if (DSK.t && !DSK.busy && document.getElementById('dreply') && gt.deskGet) {
-      const id = DSK.t.id, n0 = DSK.t.msgs.length, s0 = DSK.t.status;
-      gt.deskGet({ id }).then((t) => {
-        if (!t || !DSK.t || DSK.t.id !== id || DSK.busy || (t.msgs.length === n0 && t.status === s0 && (t.notes || []).length === (DSK.t.notes || []).length && JSON.stringify(t.claim) === JSON.stringify(DSK.t.claim) && t.blocked === DSK.t.blocked)) return;
-        DSK.t = t; const r = (DSK.list || []).find((x) => x.id === id); if (r) Object.assign(r, { status: t.status, upd: t.upd, unread: false, n: t.n });
-        dDraw(); if (t.msgs.length > n0) { const m = settingsSec.querySelector('.hmsgs'); if (m) m.scrollTop = m.scrollHeight; }
-      }).catch(() => {});
-    }
     if (HLP.view === 'ticket' && HLP.t && !HLP.busy && document.getElementById('hreply') && gt.helpGet) {
       const id = HLP.t.id, n0 = HLP.t.msgs.length, s0 = HLP.t.status;
       gt.helpGet({ id }).then((t) => {
@@ -1461,16 +1814,33 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
       }).catch(() => {});
     }
   }, 10000);
+  // The Help desk's open request checks every 4 seconds (and tells the team you are looking at it, and whether you are typing),
+  // so a note or reply from someone else shows up while you work on it. Who else is here updates in place; the rest redraws only
+  // when something changed, and what you are typing stays as it is.
+  setInterval(() => {
+    if (document.hidden || !settingsSec.classList.contains('on') || !window.gt || !DSK.t || DSK.busy || !document.getElementById('dreply') || !gt.deskGet || DSK.polling) return;
+    const id = DSK.t.id, n0 = DSK.t.msgs.length, s0 = DSK.t.status; DSK.polling = true;
+    gt.deskGet({ id, here: true, typing: typingNow() }).then((t) => {
+      if (!t || !DSK.t || DSK.t.id !== id || DSK.busy) return;
+      const same = t.msgs.length === n0 && t.status === s0 && JSON.stringify(t.notes || []) === JSON.stringify(DSK.t.notes || []) && JSON.stringify(t.claim) === JSON.stringify(DSK.t.claim) && t.blocked === DSK.t.blocked;
+      if (same) { DSK.t.here = t.here; DSK.t.live = t.live; const h = settingsSec.querySelector('.hhere'); if (h) { const v = hereHTML(t); if (h.innerHTML !== v) h.innerHTML = v; } return; }
+      DSK.t = t; const r = (DSK.list || []).find((x) => x.id === id); if (r) Object.assign(r, { status: t.status, upd: t.upd, unread: false, n: t.n });
+      dDraw(); if (t.msgs.length > n0) { const m = settingsSec.querySelector('.hmsgs'); if (m) m.scrollTop = m.scrollHeight; }
+    }).catch(() => {}).finally(() => { DSK.polling = false; });
+  }, 4000);
   // Coming back to Pathfinder (a phone app switched back to, a laptop woken up, a tab clicked again): bring everything up to
   // date, because a phone can keep the page asleep for hours. The Pathfinder account (your Bungie accounts) syncs if it has not
   // for 5 minutes, help answers and switches are checked, and the website reloads itself if a newer version came out.
   let awayAt = 0, verAt = 0;
-  async function resumeCheck(away) {
+  async function resumeCheck(away, force) {
     try {
-      if (PFA && PFA.on && window.gt && gt.pfaSync && Date.now() - (PFA.at || 0) > 3e5) {
+      if (!PFA && window.gt && gt.pfaStatus) PFA = await gt.pfaStatus().catch(() => null);
+      // Your Pathfinder account syncs every time Pathfinder opens and whenever you come back to it after a minute away, so a
+      // Bungie account added on another device (website, phone, PC) shows up here without pressing Sync.
+      if (PFA && PFA.on && window.gt && gt.pfaSync && (force || away >= 6e4 || Date.now() - (PFA.at || 0) > 3e5)) {
         const r = await gt.pfaSync().catch(() => null);
         if (r && (r.reload || r.restart)) { afterAcct(r); return; }
-        if (r && r.avail !== undefined) { PFA = r; ACL = null; if (r.added) PFAMSG = `Added ${r.added} Bungie account${r.added === 1 ? '' : 's'} from your Pathfinder account. Switch to ${r.added === 1 ? 'it' : 'them'} above.`; if (settingsSec.classList.contains('on')) dDraw(); }
+        if (r && r.avail !== undefined) { PFA = r; ACL = null; if (r.added && window.gt && gt.acctList) gt.acctList().then((l) => { ACL = l; window.dispatchEvent(new Event('gtaccts')); }).catch(() => {}); if (r.added) PFAMSG = `Added ${r.added} Bungie account${r.added === 1 ? '' : 's'} from your Pathfinder account. Switch to ${r.added === 1 ? 'it' : 'them'} above.`; if (settingsSec.classList.contains('on')) dDraw(); }
       }
       helpLoad(true); deskLoad(true); flagsLoad(true);
       if (window.__GT_WEB__ && Date.now() - verAt > 6e4) {
@@ -1487,6 +1857,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   document.addEventListener('visibilitychange', () => { if (document.hidden) { awayAt = Date.now(); return; } const away = awayAt ? Date.now() - awayAt : 0; awayAt = 0; if (away > 6e4) resumeCheck(away); });
   window.addEventListener('pageshow', (e) => { if (e.persisted) resumeCheck(6e5); });
   setInterval(() => { if (!document.hidden) resumeCheck(0); }, 18e5);
+  setTimeout(() => resumeCheck(0, true), 2500); // on open
   // While Admin is open, check every 30 seconds that the access key and the role still hold: a key taken back by the owner, or a
   // founder role removed, locks Admin on this screen right away instead of at the next click.
   setInterval(() => {
@@ -1503,10 +1874,11 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   { const sb = document.querySelector('#nav button[data-t="settings"]'); if (sb) sb.addEventListener('click', () => { if (SSEC === 'About & help' || SSEC === 'Help') helpLoad(true); if (SSEC === 'Help desk') deskLoad(true); }); }
   // Check for new answers (players) and new requests (the team) shortly after start, then every 10 minutes.
   setTimeout(() => { helpLoad(true); deskLoad(true); setInterval(() => { helpLoad(true); deskLoad(true); }, 6e5); }, 6000);
-  // More often while it matters: a request of yours still open (every 3 minutes); the team's list every 2 minutes while
-  // Pathfinder is on screen (the 10-minute check above covers it when minimised).
+  // More often while it matters: a request of yours still open (every 3 minutes); the team's list every 2 minutes while the
+  // Help desk itself is on screen (the 10-minute check above keeps the dot and alerts going the rest of the time; every copy of
+  // Pathfinder the team has open asks, so this stays light on the token service's free daily limits).
   setInterval(() => { if (HLP.list && HLP.list.some((x) => x.status !== 'closed')) helpLoad(true); }, 18e4);
-  setInterval(() => { if (FLG.dev && !document.hidden) deskLoad(true); }, 12e4);
+  setInterval(() => { if (FLG.dev && !document.hidden && settingsSec.classList.contains('on') && SSEC === 'Help desk' && !DSK.t) deskLoad(true); }, 12e4);
   window.addEventListener('gtflags', () => { if (FLG.dev && DSK.list === null) deskLoad(true); });
   const DEVRN = { from: '', to: '', msg: '', bad: false, busy: false };
   function devCard() {
@@ -1519,16 +1891,16 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     const ap = asPlayer();
     const rows = names.filter((n) => { const l = dflt(n); return l in lv && rk >= LVR[l]; }).map((n) => { const lvl = dflt(n); return `<div class="sx"><div class="sxt"><b>${esc(fName(n))}</b><small>${lv[lvl] || esc(lvl)}</small></div><div class="sxc">${lvl in lv ? `<label class="mute" style="display:flex;gap:8px;align-items:center">Show for me <label class="tgl"><input type="checkbox" data-devoff="${esc(n)}"${off.includes(n) ? '' : ' checked'}><i></i></label></label>` : ''}</div></div>`; }).join('');
     const pc = !document.documentElement.classList.contains('gtweb');
-    const apRow = `<div class="sx"><div class="sxt"><b>See the app as a player</b><small>Hides everything that is not set to Everyone, on this device.${tester ? '' : ' Your developer tools stay.'}</small></div><div class="sxc"><label class="tgl"><input type="checkbox" data-devap="1"${ap ? ' checked' : ''}><i></i></label></div></div>`;
+    const apRow = `<div class="sx"><div class="sxt"><b>See the app as a user</b><small>Hides everything that is not set to Everyone, on this device.${tester ? '' : ' Your developer tools stay.'}</small></div><div class="sxc"><label class="tgl"><input type="checkbox" data-devap="1"${ap ? ' checked' : ''}><i></i></label></div></div>`;
     const testH = rows && !ap ? `<div class="thh">Being tested</div><p class="mute">Players do not see these yet. Turn one off to see the app the way players do.</p>${rows}` : '';
-    if (tester) return `<div class="card sc"><h2>Tester</h2><p class="mute">You are signed in with a tester account (${esc((PFA && PFA.name) || '')}), so you see parts of Pathfinder before everyone else. Tell the team what works and what does not.</p>
+    if (tester) return `<div class="card sc"><h2>Tester</h2><p class="mute">You are signed in with a tester account (${esc(pdn())}), so you see parts of Pathfinder before everyone else. Tell the team what works and what does not.</p>
       ${apRow}${testH || `<p class="mute">Nothing is being tested right now.</p>`}
       <div class="thh">Tools</div><p><button class="g" data-dev="diag">Copy diagnostics</button> <button class="g" data-dev="bug">Report a bug</button></p></div>`;
-    return `<div class="card sc"><h2>Developer</h2><p class="mute">You are signed in with a developer account (${esc((PFA && PFA.name) || '')}).</p>
+    return `<div class="card sc"><h2>Developer</h2><p class="mute">You are signed in with a developer account (${esc(pdn())}).</p>
       ${apRow}${testH}
       <div class="thh">Tools</div><p>${pc ? '<button class="g" data-dev="tools">Open developer tools</button> ' : ''}<button class="g" data-dev="diag">Copy diagnostics</button> <button class="g" data-dev="bug">Report a bug</button> <button class="g" data-dev="maint">Preview the maintenance bar</button></p>
-      <div class="thh">Rename an account</div><p class="mute">For a name that breaks the rules. The account's password becomes 123456 and they pick a new one when they sign in; their devices are signed out and the Bungie sign-ins saved in it are cleared. ${PFA && PFA.founder ? 'Other accounts are renamed in the Founder panel.' : 'You can rename player and tester accounts.'}</p>
-      <div class="pfaf"><input id="devrnf" type="text" placeholder="Current account name" autocapitalize="off" spellcheck="false" maxlength="200" value="${esc(DEVRN.from)}"><input id="devrnt" type="text" placeholder="New account name" autocapitalize="off" spellcheck="false" maxlength="24" value="${esc(DEVRN.to)}"><button class="b" data-dev="rename">${DEVRN.busy ? 'Renaming…' : 'Rename'}</button></div>${DEVRN.msg ? `<p class="admmsg${DEVRN.bad ? ' bad' : ''}">${esc(DEVRN.msg)}</p>` : ''}</div>`;
+      <div class="thh">Rename an account</div><p class="mute">For a display name that breaks the rules. Only the display name changes: they still sign in with the same login name and password. ${PFA && PFA.founder ? 'Other accounts are renamed in Founder.' : 'You can rename user and tester accounts.'}</p>
+      <div class="pfaf"><input id="devrnf" type="text" class="pfmask" placeholder="Their login name" autocapitalize="off" spellcheck="false" maxlength="200" value="${esc(DEVRN.from)}"><input id="devrnt" type="text" placeholder="New display name" spellcheck="false" maxlength="32" value="${esc(DEVRN.to)}"><button class="b" data-dev="rename">${DEVRN.busy ? 'Renaming…' : 'Rename'}</button></div>${DEVRN.msg ? `<p class="admmsg${DEVRN.bad ? ' bad' : ''}">${esc(DEVRN.msg)}</p>` : ''}</div>`;
   }
   settingsSec.addEventListener('change', (e) => {
     if (e.target.dataset && e.target.dataset.devap) { try { localStorage.setItem('gt_asplayer', e.target.checked ? '1' : '0'); } catch (er) { /* storage off */ } window.dispatchEvent(new Event('gtflags')); if (window.__gtRender) window.__gtRender(); drawSettings(); return; }
@@ -1549,7 +1921,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
       if (!DEVRN.from || !DEVRN.to || DEVRN.busy) return;
       if (!confirm('Rename "' + DEVRN.from + '" to "' + DEVRN.to + '"?\n\nTheir password becomes 123456 and they pick a new one when they sign in. Tell them the new name.')) return;
       DEVRN.busy = true; DEVRN.msg = ''; redrawCard('Developer', devCard);
-      gt.devRename({ name: DEVRN.from, to: DEVRN.to }).then((r) => { DEVRN.msg = `${DEVRN.from} is now ${DEVRN.to}. ${r.note || ''}`; DEVRN.bad = false; DEVRN.from = ''; DEVRN.to = ''; })
+      gt.devRename({ name: DEVRN.from, to: DEVRN.to }).then((r) => { DEVRN.msg = `Now shown as ${DEVRN.to}. ${r.note || ''}`; DEVRN.bad = false; DEVRN.from = ''; DEVRN.to = ''; })
         .catch((er) => { DEVRN.msg = clean(er); DEVRN.bad = true; }).finally(() => { DEVRN.busy = false; redrawCard('Developer', devCard); });
     }
     if (b.dataset.dev === 'diag') {
@@ -1576,22 +1948,22 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   const admLogNow = () => admCall('GET', '/log').then((r) => { if (r && r.log) { ADM.log = r.log; aDraw(); } }).catch(() => {});
   function admCard() {
     if (!PFA || !PFA.founder) return '';
-    if (!ADM.on) return `<div class="card sc"><h2>Founder panel</h2><p class="mute">Manage Pathfinder accounts, feature switches, help requests and announcements. For founder and owner accounts, with an access key from the owner. The key is kept only until you close Pathfinder.</p>
+    if (!ADM.on) return `<div class="card sc"><h2>Founder</h2><p class="mute">Manage Pathfinder accounts, feature switches, help requests and announcements. For founder and owner accounts, with an access key from the owner. The key is kept only until you close Pathfinder.</p>
       <div class="pfaf"><input id="admkey" type="password" placeholder="Access key" autocomplete="off" spellcheck="false"><button class="b" data-adm="unlock">${ADM.busy ? 'Checking…' : 'Unlock'}</button></div>${ADM.msg ? `<p class="admmsg bad">${esc(ADM.msg)}</p>` : ''}</div>`;
-    const q = ADM.q.trim().toLowerCase(), RL = { '': 'Player', tester: 'Tester', dev: 'Developer', founder: 'Founder', owner: 'Owner' };
+    const q = ADM.q.trim().toLowerCase(), RL = { '': 'User', tester: 'Tester', dev: 'Developer', founder: 'Founder', owner: 'Owner' };
     // Founders look after players and developers; the owner also founders; owner accounts only change on the admin page.
     const may = (r) => (r === 'owner' ? false : r === 'founder' ? !!PFA.owner : true);
-    const roleOpts = PFA.owner ? [['', 'Player'], ['tester', 'Tester'], ['dev', 'Developer'], ['founder', 'Founder']] : [['', 'Player'], ['tester', 'Tester'], ['dev', 'Developer']];
+    const roleOpts = PFA.owner ? [['', 'User'], ['tester', 'Tester'], ['dev', 'Developer'], ['founder', 'Founder']] : [['', 'User'], ['tester', 'Tester'], ['dev', 'Developer']];
     const cnt = { all: ADM.acc.length, '': 0, tester: 0, dev: 0, founder: 0, locked: 0, sus: 0 }; ADM.acc.forEach((a) => { cnt[a.role === 'owner' ? 'founder' : a.role || ''] += 1; if (a.locked) cnt.locked += 1; if (a.suspended) cnt.sus += 1; });
     const inRf = (a) => ADM.rf === 'all' || (ADM.rf === 'locked' ? a.locked : ADM.rf === 'sus' ? a.suspended : ADM.rf === 'founder' ? ['founder', 'owner'].includes(a.role) : (a.role || '') === ADM.rf);
     // Quick numbers, from what the service already keeps (nothing new is tracked about players)
     const wk = Date.now() - 7 * 864e5, open = DSK.list ? DSK.list.filter((x) => x.status === 'open').length : null;
     const statsH = `<div class="admstats"><span><b>${ADM.acc.length}</b>accounts</span><span><b>${ADM.acc.filter((a) => a.lastLogin > wk).length}</b>signed in this week</span><span><b>${ADM.acc.filter((a) => a.created > wk).length}</b>new this week</span>${open === null ? '' : `<span><b>${open}</b>help ${open === 1 ? 'request' : 'requests'} waiting</span>`}${cnt.sus ? `<span><b>${cnt.sus}</b>suspended</span>` : ''}</div>`;
-    const rfH = `<div class="admseg admrf" role="group" aria-label="Show accounts">${[['all', 'All'], ['', 'Players'], ['tester', 'Testers'], ['dev', 'Developers'], ['founder', 'Founders'], ['locked', 'Locked'], ['sus', 'Suspended']].filter(([v]) => (v !== 'locked' || cnt.locked) && (v !== 'sus' || cnt.sus) && (v !== 'tester' || cnt.tester)).map(([v, l]) => `<button type="button" data-adm="rf" data-rf="${v}" class="${ADM.rf === v ? 'on' : ''}" aria-pressed="${ADM.rf === v}">${l} ${cnt[v]}</button>`).join('')}</div>`;
-    const rows = ADM.acc.filter((a) => inRf(a) && (!q || (a.name || '').toLowerCase().includes(q))).map((a) => `<div class="admr" data-aid="${esc(a.id)}">
-      <div class="admn"><b>${a.name ? esc(a.name) : '<span class="mute">(name not saved yet)</span>'}</b><small>Created ${esc(admWhen(a.created))} &middot; last sign-in ${esc(admWhen(a.lastLogin))}${a.locked ? ' &middot; <span class="bad">locked 15 min</span>' : ''}${a.codeWaiting ? ' &middot; reset code waiting' : ''}${a.tmp ? ' &middot; password 123456' : ''}${a.suspended ? ' &middot; <span class="bad">suspended</span>' : ''}</small></div>
-      <div class="admc">${!may(a.role) ? `<span class="admtag${a.role === 'owner' ? ' own' : ''}">${RL[a.role] || 'Player'}</span>` : `<select data-adm="role" aria-label="Role for ${esc(a.name || 'account')}">${roleOpts.map(([v, l]) => `<option value="${v}"${(a.role || '') === v ? ' selected' : ''}>${l}</option>`).join('')}</select>`}
-      ${may(a.role) ? '<button class="g" data-adm="reset">Reset code</button><button class="g" data-adm="quick" title="Set the password to 123456">Reset to 123456</button><button class="g" data-adm="rename">Rename</button><button class="g" data-adm="signout" title="End every saved sign-in; the password stays the same">Sign out everywhere</button>' : ''}${a.locked ? '<button class="g" data-adm="unlockacc">Unlock</button>' : ''}${a.codeWaiting ? '<button class="g" data-adm="cancel">Cancel code</button>' : ''}${may(a.role) ? `<button class="g" data-adm="suspend" title="${a.suspended ? 'Let them sign in again' : 'Block sign-in without deleting anything'}">${a.suspended ? 'Unsuspend' : 'Suspend'}</button><button class="g admdel" data-adm="del">Delete</button>` : ''}</div>${ADM.ren === a.id ? `<div class="admc admren"><input type="text" id="admren" maxlength="24" value="${esc(a.name)}" aria-label="New account name" autocapitalize="off" spellcheck="false"><button class="b" data-adm="rensave">Save name</button><button class="g" data-adm="rencancel">Cancel</button><small class="mute">Renaming sets the password to 123456.</small></div>` : ''}</div>`).join('') || '<p class="mute">No accounts.</p>';
+    const rfH = `<div class="admseg admrf" role="group" aria-label="Show accounts">${[['all', 'All'], ['', 'Users'], ['tester', 'Testers'], ['dev', 'Developers'], ['founder', 'Founders'], ['locked', 'Locked'], ['sus', 'Suspended']].filter(([v]) => (v !== 'locked' || cnt.locked) && (v !== 'sus' || cnt.sus) && (v !== 'tester' || cnt.tester)).map(([v, l]) => `<button type="button" data-adm="rf" data-rf="${v}" class="${ADM.rf === v ? 'on' : ''}" aria-pressed="${ADM.rf === v}">${l} ${cnt[v]}</button>`).join('')}</div>`;
+    const rows = ADM.acc.filter((a) => inRf(a) && (!q || (a.name || '').toLowerCase().includes(q) || (a.display || '').toLowerCase().includes(q))).map((a) => `<div class="admr" data-aid="${esc(a.id)}">
+      <div class="admn"><b>${esc(a.display || a.name || '') || '<span class="mute">(name not saved yet)</span>'}</b><small>${a.name ? `Login: <span class="admlg">${ADM.eye ? esc(a.name) : DOTS}</span> &middot; ` : ''}Created ${esc(admWhen(a.created))} &middot; last sign-in ${esc(admWhen(a.lastLogin))}${a.locked ? ' &middot; <span class="bad">locked 15 min</span>' : ''}${a.tmp ? ' &middot; password 123456' : ''}${a.suspended ? ' &middot; <span class="bad">suspended</span>' : ''}</small></div>
+      <div class="admc">${!may(a.role) ? `<span class="admtag${a.role === 'owner' ? ' own' : ''}">${RL[a.role] || 'User'}</span>` : `<select data-adm="role" aria-label="Role for ${esc(a.name || 'account')}">${roleOpts.map(([v, l]) => `<option value="${v}"${(a.role || '') === v ? ' selected' : ''}>${l}</option>`).join('')}</select>`}
+      ${may(a.role) ? '<button class="g" data-adm="quick" title="Set the password to 123456">Reset to 123456</button><button class="g" data-adm="rename" title="Change the display name; their login name and password stay the same">Rename</button><button class="g" data-adm="signout" title="End every saved sign-in; the password stays the same">Sign out everywhere</button>' : ''}${a.locked ? '<button class="g" data-adm="unlockacc">Unlock</button>' : ''}${may(a.role) ? `<button class="g" data-adm="suspend" title="${a.suspended ? 'Let them sign in again' : 'Block sign-in without deleting anything'}">${a.suspended ? 'Unsuspend' : 'Suspend'}</button><button class="g admdel" data-adm="del">Delete</button>` : ''}</div>${ADM.ren === a.id ? `<div class="admc admren"><input type="text" id="admren" maxlength="32" value="${esc(a.display || a.name)}" aria-label="New display name" spellcheck="false"><button class="b" data-adm="rensave">Save name</button><button class="g" data-adm="rencancel">Cancel</button><small class="mute">Changes the display name only. Their login name and password stay the same.</small></div>` : ''}</div>`).join('') || '<p class="mute">No accounts.</p>';
     // Feature switches: every switch the app knows, by name, with three buttons. A click saves it (no typing, no Save button).
     const cat = ADM.cat || [], known = new Set(cat.map((c) => c.k)), LV = ['on', 'tester', 'dev', 'founder', 'owner', 'off'].map((v) => [v, LVNAME[v]]);
     let frows = '', fg = '';
@@ -1602,18 +1974,17 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     if (!frows) frows = `<p class="mute">${ADM.cat ? 'No switches.' : 'Deploy the latest token-service/worker.js to see the switches here.'}</p>`;
     const LR = { owner: 'owner', founder: 'founder', dev: 'developer', tester: 'tester' };
     const logH = !ADM.log ? '<p class="mute">Deploy the latest token-service/worker.js to see this.</p>' : `<div class="adml">${ADM.log.slice(0, ADM.logN).map((e) => `<div class="admlog"><small>${esc(admWhen(e.t))}</small><span><b>${esc(e.by || 'Someone')}</b>${LR[e.role] ? ` <span class="mute">(${LR[e.role]})</span>` : ''} ${esc(e.a)}${e.who ? ` <b>${esc(e.who)}</b>` : ''}${e.d ? (e.who ? ' ' : ': ') + esc(e.d) : ''}</span></div>`).join('') || '<p class="mute">Nothing yet.</p>'}</div><p>${ADM.log.length > 5 ? `<button class="g" data-adm="logmore">${ADM.logN > 5 ? 'Show less' : 'Show more (' + Math.min(ADM.log.length, 20) + ')'}</button> ` : ''}${ADM.log.length && gt.saveCsv ? '<button class="g" data-adm="logdl">Download (CSV)</button>' : ''}${PFA.owner && gt.saveCsv ? ' <button class="g" data-adm="backup" title="Accounts (names, roles and dates only), help requests, founder notes, switches, keys (without the keys themselves) and this list, as one file">Download a full backup</button>' : ''}</p>`;
-    const keysH = PFA.owner ? `<p class="mute">Founders open this Founder panel with an access key. Make one for each person, give it to them privately, and take it back whenever you like.</p>
+    const keysH = PFA.owner ? `<p class="mute">Founders open Founder with an access key. Make one for each person, give it to them privately, and take it back whenever you like.</p>
       ${ADM.newKey ? `<div class="admcode"><p>Key for <b>${esc(ADM.newKey.name)}</b>. Copy it now: it is not shown again.</p><code class="admkey">${esc(ADM.newKey.key)}</code><p><button class="g" data-adm="kcopy">Copy key</button></p></div>` : ''}
       <div class="pfaf"><input type="text" id="admkname" maxlength="40" placeholder="Who is it for? (e.g. Manta)"><label class="mute" style="display:flex;gap:6px;align-items:center;white-space:nowrap">Works for${ADM.ku === 'never' ? '' : `<input type="number" id="admkn" min="1" max="99" value="${esc(ADM.kn)}" style="width:64px">`}<select id="admku" aria-label="How long the key works">${[['never', 'Always'], ['day', 'days'], ['week', 'weeks'], ['month', 'months'], ['year', 'years']].map(([v, l]) => `<option value="${v}"${ADM.ku === v ? ' selected' : ''}>${l}</option>`).join('')}</select></label><button class="b" data-adm="kadd">Make key</button></div>
       <div class="adml">${(ADM.keys || []).map((k) => `<div class="admr" data-kid="${esc(k.id)}"><div class="admn"><b>${esc(k.name)}</b><small>Made ${esc(admWhen(k.made))}${k.by ? ' by ' + esc(k.by) : ''} &middot; ${k.used ? 'last used ' + esc(admWhen(k.used)) + (k.usedBy ? ' by ' + esc(k.usedBy) : '') : 'not used yet'} &middot; ${!k.exp ? 'works until taken back' : k.exp < Date.now() ? '<span class="bad">ran out ' + esc(admWhen(k.exp)) + '</span>' : 'works until ' + esc(admWhen(k.exp))}</small></div><div class="admc"><button class="g admdel" data-adm="krev">Take back</button></div></div>`).join('') || '<p class="mute">No access keys yet. Your ADMIN_KEY always works for you.</p>'}</div>` : '';
     const sec = (title, sub, inner) => `<div class="admsec" role="group" aria-label="${title}"><h3 class="admh">${title}${sub ? `<small>${sub}</small>` : ''}</h3>${inner}</div>`;
     const helpN = DSK.list ? DSK.list.filter((x) => x.status === 'open').length : null;
-    return `<div class="card sc"><h2>Founder panel</h2><p class="mute">Signed in as ${PFA.owner ? 'the owner' : 'founder'} ${esc(PFA.name || '')}. Passwords are never shown here. ${PFA.owner ? 'Owner accounts are only changed on the admin page.' : 'Founder and owner accounts are changed by the owner.'}</p>
+    return `<div class="card sc"><h2>Founder</h2><p class="mute">Signed in as ${PFA.owner ? 'the owner' : 'founder'} ${esc(pdn() || '')}. Passwords are never shown here. ${PFA.owner ? 'Owner accounts are only changed on the admin page.' : 'Founder and owner accounts are changed by the owner.'}</p>
       ${ADM.msg ? `<p class="admmsg${/^(Could|Wrong|Too|No |Only)/.test(ADM.msg) ? ' bad' : ''}">${esc(ADM.msg)}</p>` : ''}
-      ${ADM.code ? `<div class="admcode"><p>Reset code for <b>${esc(ADM.codeFor)}</b>. It works once, for 48 hours. They enter it in Settings &gt; Accounts &gt; "Forgot your password? Reset it with a code".</p><code>${esc(ADM.code)}</code><p class="mute">Using it clears the Bungie accounts saved in their Pathfinder account and signs their other devices out.</p></div>` : ''}
       ${statsH}
       ${sec('Accounts', String(ADM.acc.length), `${rfH}
-      <div class="pfaf"><input type="search" id="admq" placeholder="Filter by name" value="${esc(ADM.q)}"><input type="text" id="admfind" placeholder="Find by exact name"><button class="g" data-adm="find">Find</button><button class="g" data-adm="reload">${ADM.busy ? 'Loading…' : 'Reload'}</button></div>
+      <div class="pfaf"><input type="search" id="admq" placeholder="Filter by display or login name" value="${esc(ADM.q)}"><input type="text" id="admfind" class="pfmask${ADM.eye ? ' show' : ''}" placeholder="Find by exact login name" autocomplete="off" spellcheck="false"><button class="g" data-adm="find">Find</button><button class="g" data-adm="reload">${ADM.busy ? 'Loading…' : 'Reload'}</button><button class="g pfeye" data-adm="eye" title="${ADM.eye ? 'Hide' : 'Show'} login names" aria-label="${ADM.eye ? 'Hide' : 'Show'} login names" aria-pressed="${!!ADM.eye}">${EYE}</button></div>
       <div class="adml">${rows}</div>`)}
       ${sec('Feature switches', '', `<p class="mute">Choose who sees each part of Pathfinder. Each choice also shows to every role above it, so Testers means testers, developers, founders and you. A click saves it; every copy of the app follows within 10 minutes.</p><div class="adml">${frows}</div>`)}
       ${sec('Help requests', helpN ? helpN + ' waiting' : '', `<p class="mute">${DSK.list ? (helpN ? helpN + ' waiting for an answer.' : 'Nothing waiting for an answer.') : 'Answered in the Help desk section.'} <button class="g" data-adm="godesk">Open Help desk</button></p>${ADM.blocks && ADM.blocks.length ? `<div class="admswg">Blocked from help requests</div><div class="adml">${ADM.blocks.map((x) => `<div class="admr" data-bk="${esc(x.k)}"><div class="admn"><b>${esc(x.name)}</b><small>Blocked ${esc(admWhen(x.at))}${x.by ? ' by ' + esc(x.by) : ''}${x.why ? ' &middot; &ldquo;' + esc(x.why) + '&rdquo;' : ''}</small></div><div class="admc"><button class="g" data-adm="unblock">Unblock</button></div></div>`).join('')}</div>` : ''}`)}
@@ -1622,15 +1993,16 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
       <div class="admrow"><select id="admannlv" aria-label="Style">${[['info', 'Info'], ['warn', 'Warning']].map(([v, l]) => `<option value="${v}"${ADM.annLv === v ? ' selected' : ''}>${l}</option>`).join('')}</select><select id="admannh" aria-label="How long">${[['0', 'Until I remove it'], ['1', 'For 1 hour'], ['6', 'For 6 hours'], ['24', 'For 1 day'], ['72', 'For 3 days'], ['168', 'For 1 week']].map(([v, l]) => `<option value="${v}"${ADM.annH === v ? ' selected' : ''}>${l}</option>`).join('')}</select><button class="b" data-adm="annpost">${ADM.ann ? 'Replace it' : 'Post it'}</button></div>`)}
       ${keysH ? sec('Access keys', '', keysH) : ''}
       ${sec('Recent actions', ADM.log && ADM.log.length ? 'last ' + Math.min(ADM.log.length, ADM.logN) : '', `<p class="mute">Every change made here, on the admin page or with the developer rename tool.</p>${logH}`)}
-      <p class="admfoot"><button class="g" data-adm="lock">Lock the Founder panel</button></p></div>`;
+      <p class="admfoot"><button class="g" data-adm="lock">Lock Founder</button></p></div>`;
   }
   settingsSec.addEventListener('click', async (e) => {
     const b = e.target.closest('[data-adm]'); if (!b || b.tagName === 'SELECT' || b.tagName === 'INPUT') return;
-    const a = b.dataset.adm, row = b.closest('[data-aid]'), acc = row && ADM.acc.find((x) => x.id === row.dataset.aid), nm = (acc && acc.name) || 'this account';
+    const a = b.dataset.adm, row = b.closest('[data-aid]'), acc = row && ADM.acc.find((x) => x.id === row.dataset.aid), nm = (acc && (acc.display || acc.name)) || 'this account';
     const run = async (f, ok) => { try { await f(); if (ok) ADM.msg = ok; admLogNow(); } catch (er) { ADM.msg = clean(er); if (/wrong admin key/i.test(ADM.msg)) { ADM.on = false; ADM.key = ''; } } aDraw(); };
     if (a === 'unlock') { ADM.key = (document.getElementById('admkey') || {}).value || ''; if (!ADM.key) return; ADM.msg = ''; admLoad(); return; }
     if (a === 'lock') { ADM.key = ''; ADM.on = false; ADM.code = ''; ADM.msg = ''; ADM.newKey = null; ADM.keys = []; aDraw(); return; }
     if (a === 'reload') { ADM.code = ''; admLoad(); return; }
+    if (a === 'eye') { ADM.eye = !ADM.eye; aDraw(); return; } // login names stay hidden (stars) unless shown, so they never leak on stream
     if (a === 'rf') { ADM.rf = b.dataset.rf; aDraw(); return; }
     if (a === 'logmore') { ADM.logN = ADM.logN > 5 ? 5 : 20; aDraw(); return; }
     if (a === 'logdl') { const q2 = (v) => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"'; const csv = ['When,Who,Role,Did,Account,Details'].concat((ADM.log || []).map((x) => [new Date(x.t).toISOString(), x.by, x.role, x.a, x.who, x.d].map(q2).join(','))).join('\r\n'); gt.saveCsv({ name: 'pathfinder-admin-actions-' + new Date().toISOString().slice(0, 10) + '.csv', text: csv }).then((r) => { if (r && r.ok) { ADM.msg = 'Saved ' + r.file + '.'; aDraw(); } }).catch((er) => { ADM.msg = clean(er); aDraw(); }); return; }
@@ -1642,12 +2014,10 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     if (a === 'godesk') { const d = settingsSec.querySelector('.sni[data-ssec="Help desk"]'); if (d) d.click(); return; }
     if (a === 'signout' && acc) { if (!confirm('Sign ' + nm + ' out on every device?\n\nTheir password stays the same; they just sign in again. Use it when a password was shared or someone else may be signed in.')) return; return run(async () => { Object.assign(acc, (await admCall('POST', '/signout', { id: acc.id })).account); }, nm + ' is signed out on every device.'); }
     if (a === 'find') { const n = ((document.getElementById('admfind') || {}).value || '').trim(); if (!n) return; return run(async () => { const r = await admCall('POST', '/find', { name: n }); const x = r.account; if (!x.name) x.name = n; if (!ADM.acc.some((y) => y.id === x.id)) ADM.acc.unshift(x); ADM.q = ''; }, 'Found it.'); }
-    if (a === 'reset' && acc) { if (!confirm('Make a one-time reset code for ' + nm + '?')) return; return run(async () => { const r = await admCall('POST', '/reset', { id: acc.id }); ADM.code = r.code; ADM.codeFor = nm; acc.codeWaiting = true; }, ''); }
     if (a === 'quick' && acc) { if (!acc.name) { ADM.msg = 'Find this account by its name first.'; aDraw(); return; } if (!confirm('Set the password for ' + nm + ' to 123456?\n\nTheir saved Bungie sign-ins are cleared, every device is signed out, and they must pick a new password when they sign in.')) return; ADM.msg = 'Working…'; aDraw(); return run(async () => { const r = await admCall('POST', '/quickreset', { id: acc.id, name: acc.name }); Object.assign(acc, r.account); }, nm + ': the password is now 123456. They pick a new one when they sign in.'); }
     if (a === 'rename' && acc) { if (!acc.name) { ADM.msg = 'Find this account by its name first.'; aDraw(); return; } ADM.ren = acc.id; ADM.msg = ''; aDraw(); setTimeout(() => { const i = document.getElementById('admren'); if (i) { i.focus(); i.select(); } }, 0); return; }
     if (a === 'rencancel') { ADM.ren = ''; aDraw(); return; }
-    if (a === 'rensave' && acc) { const to = ((document.getElementById('admren') || {}).value || '').trim(); if (!to || to === acc.name) { ADM.ren = ''; aDraw(); return; } if (!confirm('Rename ' + nm + ' to ' + to + '?\n\nRenaming also sets the password to 123456; they pick a new one when they sign in.')) return; ADM.ren = ''; ADM.msg = 'Working…'; aDraw(); return run(async () => { const r = await admCall('POST', '/rename', { id: acc.id, to }); ADM.acc = ADM.acc.filter((x) => x.id !== acc.id); ADM.acc.unshift(r.account); }, nm + ' is now ' + to + '. The password is 123456 until they pick a new one.'); }
-    if (a === 'cancel' && acc) return run(async () => { await admCall('POST', '/cancelreset', { id: acc.id }); acc.codeWaiting = false; if (ADM.codeFor === nm) ADM.code = ''; }, 'Reset code cancelled.');
+    if (a === 'rensave' && acc) { const to = ((document.getElementById('admren') || {}).value || '').trim(); if (!to || to === (acc.display || acc.name)) { ADM.ren = ''; aDraw(); return; } if (!confirm('Show ' + nm + ' as ' + to + '?\n\nOnly the display name changes. They still sign in with the same login name and password.')) return; ADM.ren = ''; ADM.msg = 'Working…'; aDraw(); return run(async () => { const r = await admCall('POST', '/rename', { id: acc.id, to }); Object.assign(acc, r.account); }, nm + ' is now shown as ' + to + '. Their login name and password did not change.'); }
     if (a === 'unlockacc' && acc) return run(async () => { Object.assign(acc, (await admCall('POST', '/unlock', { id: acc.id })).account); }, nm + ' is unlocked.');
     if (a === 'del' && acc) { if (!confirm('Delete ' + nm + ' and the Bungie sign-ins saved in it? This cannot be undone.')) return; return run(async () => { await admCall('POST', '/delete', { id: acc.id }); ADM.acc = ADM.acc.filter((x) => x.id !== acc.id); }, nm + ' was deleted.'); }
     if (a === 'flv' || a === 'frm') {
@@ -1668,8 +2038,8 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     if (!t.dataset || !t.dataset.adm) return;
     if (t.dataset.adm === 'role') {
       const row = t.closest('[data-aid]'), acc = ADM.acc.find((x) => x.id === row.dataset.aid); if (!acc) return;
-      if (t.value === 'founder' && !confirm('Make ' + (acc.name || 'this account') + ' a founder? Founders can use the Founder panel (with an access key you give them): accounts, passwords, renames, help requests and switches.')) { t.value = acc.role || ''; return; }
-      try { Object.assign(acc, (await admCall('POST', '/role', { id: acc.id, role: t.value })).account); admLogNow(); ADM.msg = (acc.name || 'The account') + ' is now ' + ({ '': 'a player', tester: 'a tester', dev: 'a developer', founder: 'a founder' }[t.value] || 'changed') + '.'; } catch (er) { ADM.msg = clean(er); }
+      if (t.value === 'founder' && !confirm('Make ' + (acc.name || 'this account') + ' a founder? Founders can use Founder in Settings (with an access key you give them): accounts, passwords, renames, help requests and switches.')) { t.value = acc.role || ''; return; }
+      try { Object.assign(acc, (await admCall('POST', '/role', { id: acc.id, role: t.value })).account); admLogNow(); ADM.msg = (acc.name || 'The account') + ' is now ' + ({ '': 'a user', tester: 'a tester', dev: 'a developer', founder: 'a founder' }[t.value] || 'changed') + '.'; } catch (er) { ADM.msg = clean(er); }
       aDraw();
     }
   });
@@ -1698,6 +2068,11 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     const tgl = (k) => `<label class="tgl"><input type="checkbox" data-sk="${k}"${SET[k] ? ' checked' : ''}><i></i></label>`;
     const rng = (k, min, max, unit) => `<input type="range" data-sk="${k}" min="${min}" max="${max}" value="${SET[k]}"><output>${SET[k]}${unit}</output>`;
     const opt = (k, list) => `<select data-sk="${k}"${NUMK.has(k) ? ' data-num="1"' : ''}>${list.map((o) => `<option value="${o[0]}"${String(SET[k]) === String(o[0]) ? ' selected' : ''}>${o[1]}</option>`).join('')}</select>`;
+    // Look controls (dimming, animations, card pictures, glow): they show the look in use and follow the appearance lock.
+    const LV = look(), LD = lookEdit() ? '' : ' disabled';
+    const lrng = (k, min, max) => `<input type="range" data-sk="${k}" min="${min}" max="${max}" value="${LV[k]}"${LD}><output>${LV[k]}%</output>`;
+    const ltgl = (k) => `<label class="tgl"><input type="checkbox" data-sk="${k}"${LV[k] ? ' checked' : ''}${LD}><i></i></label>`;
+    const lopt = (k, list) => `<select data-sk="${k}"${LD}>${list.map((o) => `<option value="${o[0]}"${String(LV[k]) === String(o[0]) ? ' selected' : ''}>${o[1]}</option>`).join('')}</select>`;
     const g = window.gt || {};
     let upd = '';
     if (g.updInfo) {
@@ -1721,7 +2096,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     const cst = [0, 1, 2].map((c) => `<div class="cstr"><b>${CL[c]}</b>${CSTN.map((n, i) => `<button class="chip${SET.cst[c][i] ? ' on' : ''}" data-cst="${c}:${i}">${n}</button>`).join('')}</div>`).join('');
     const navL = window.__gtnav ? window.__gtnav.list() : [];
     // Tabs: tick the ones to show and put them in the order you like (drag, or the arrows). The bar fills from the top of the list.
-    const tabsCard = navL.length ? `<div class="sxtabs"><div class="thh">Tabs</div><p class="mute">Untick the tabs you don't use and drag them into the order you like. The bar shows them from the top of the list; any that don't fit go under More. Inventory and Settings always stay.</p><div class="sortl navl">${navL.map(([id, n, h, lock], i) => `<div class="sri${h ? '' : ' on'}" draggable="true" data-ni="${esc(id)}"><span class="grip" title="Drag to reorder">&#8942;&#8942;</span><label><input type="checkbox" data-navc="${esc(id)}"${h ? '' : ' checked'}${lock ? ' disabled title="Always shown"' : ''}> ${esc(n)}</label><button class="g" data-navm="${esc(id)}" data-d="-1"${i ? '' : ' disabled'} title="Move up" aria-label="Move ${esc(n)} up">&#9650;</button><button class="g" data-navm="${esc(id)}" data-d="1"${i < navL.length - 1 ? '' : ' disabled'} title="Move down" aria-label="Move ${esc(n)} down">&#9660;</button></div>`).join('')}</div>${window.__gtnav.custom && window.__gtnav.custom() ? '<p><button class="g" data-navreset="1">Reset tab order</button></p>' : ''}</div>` : '';
+    const tabsCard = navL.length ? `<div class="sxtabs"><div class="thh">Tabs</div><p class="mute">Untick the tabs you don't use and drag them into the order you like (or drag the tabs along the bar at the top). The bar shows them from the top of the list; any that don't fit go under More. Inventory and Settings always stay.</p><div class="sortl navl">${navL.map(([id, n, h, lock], i) => `<div class="sri${h ? '' : ' on'}" draggable="true" data-ni="${esc(id)}"><span class="grip" title="Drag to reorder">&#8942;&#8942;</span><label><input type="checkbox" data-navc="${esc(id)}"${h ? '' : ' checked'}${lock ? ' disabled title="Always shown"' : ''}> ${esc(n)}</label><button class="g" data-navm="${esc(id)}" data-d="-1"${i ? '' : ' disabled'} title="Move up" aria-label="Move ${esc(n)} up">&#9650;</button><button class="g" data-navm="${esc(id)}" data-d="1"${i < navL.length - 1 ? '' : ' disabled'} title="Move down" aria-label="Move ${esc(n)} down">&#9660;</button></div>`).join('')}</div>${window.__gtnav.custom && window.__gtnav.custom() ? '<p><button class="g" data-navreset="1">Reset tab order</button></p>' : ''}</div>` : '';
     const acct = `<div class="card sc"><h2>Accounts</h2><p class="mute">${D && D.name ? 'Signed in as <b>' + esc(D.name) + '</b>.' : 'Signed in with Bungie.'} Add your alts, or a friend's account if they sign in here themselves, and switch between them. Switching ${window.__GT_WEB__ ? 'reloads the page' : 'restarts the app'}. Tags and notes are shared; loadouts are kept per account.</p><div class="acl">${aclHTML()}</div>${pfaHTML()}${syncHTML(sx)}<p><button class="b" data-sa="addacct">Add another account</button> <button class="g" data-sa="out">Sign out of this account</button></p>${window.__GT_WEB__ ? '<p class="mute" style="font-size:12px">If Bungie signs you straight back in as the same account, sign out on bungie.net first, then press Add another account again.</p>' : ''}</div>`;
     settingsSec.innerHTML = `<div class="setgrid">
     <div class="card sc"><h2>Item display</h2>${pv}
@@ -1756,19 +2131,20 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
       ${sx('Open the app on', 'The tab Pathfinder shows when it starts.', opt('starttab', [['vault', 'Inventory'], ['home', 'Home'], ['loadouts', 'Loadouts'], ['activity', 'Activity'], ['last', 'The last tab I used']]))}
       <div class="thh">Interface style</div>
       <div class="uis">${[['pf', 'Pathfinder Classic', 'The classic Pathfinder look.'], ['beta', 'Custom', 'Your own mix of colour, accent and background picture. Saved for this style.'], ['bray', 'Bray', 'The founder\'s style. Bray created Pathfinder and builds it.'], ['manta', 'Manta', 'The dev and tester\'s style. Manta builds and tests Pathfinder.']].map(([k, n, d]) => `<div class="uic u-${k}${(SET.ui || 'pf') === k ? ' on' : ''}" data-uis="${k}"><i></i><b>${n}</b><small>${d}</small></div>`).join('')}</div>
-      ${lockNote()}<div class="lkw${LOCK[SET.ui] ? ' on' : ''}">
+      ${lockNote()}<div class="lkw${lookEdit() ? '' : ' on'}${myLook() ? ' mine' : ''}">
       <div class="thh">Colour</div>
       <p class="mute" style="margin:2px 0 6px">The tint of every panel. Mix it with any accent and any background picture.</p>
       <div class="sg">${themeGrid()}</div>
       <div class="thh">Accent colour</div>
       ${accGrid()}
       <div class="thh">Background picture</div>
-      ${bgGrid()}</div>
-      ${sx('Background picture dimming', 'Higher is darker and easier to read.', rng('bgdim', 25, 90, '%'))}
+      ${bgGrid()}
+      ${sx('Background picture dimming', 'Higher is darker and easier to read.', lrng('bgdim', 25, 90))}
       <div class="thh">Motion and cards</div>
-      ${sx('Animations', 'Page fades, cards easing in and hover lifts. Off turns every animation off.', opt('anim', [['off', 'Off'], ['subtle', 'Subtle'], ['full', 'Full']]))}
-      ${sx('Activity pictures on cards', 'The raid, dungeon and activity art behind cards on Home, Activity and Rotations.', tgl('cardart'))}
-      ${sx('Glow strength', 'The soft colored glow around activity cards: purple for raids, bronze for dungeons, and so on.', rng('glow', 0, 100, '%'))}
+      ${sx('Animations', 'Page fades, cards easing in and hover lifts. Off turns every animation off.', lopt('anim', [['off', 'Off'], ['subtle', 'Subtle'], ['full', 'Full']]))}
+      ${sx('Activity pictures on cards', 'The raid, dungeon and activity art behind cards on Home, Activity and Rotations.', ltgl('cardart'))}
+      ${sx('Glow strength', 'The soft colored glow around activity cards: purple for raids, bronze for dungeons, and so on.', lrng('glow', 0, 100))}</div>
+      ${`<div data-fl="opt-wview"${!window.__gtFlag || window.__gtFlag('opt-wview', true) ? '' : ' hidden'}><div class="thh">Weapons</div>` + sx('Weapon pop-up in Inventory', 'Classic is the full pop-up. Pathfinder Style opens weapons in the same view as the God rolls tab: every perk column, wish list picks, Apply, tag, move and equip. Its Classic details button still opens the full pop-up.', opt('wview', [['classic', 'Classic'], ['gr', 'Pathfinder Style']])) + '</div>'}
       ${tabsCard}
       <div class="thh">Start over</div>
       <p><button class="g" data-sa="reset">Reset all settings</button> <span class="mute">Puts every setting on this page back to its default. Your accounts, tags, notes, loadouts and wish lists stay.</span></p>
@@ -1777,7 +2153,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   }
   // Settings cards in even columns: each card, in a sensible order, goes into whichever column is shortest, so no side runs
   // far longer than the other. Re-done when cards are added (Farming, Reminders... come from another file) or the window resizes.
-  const SORD = ['Accounts', 'Item display', 'Inventory display', 'Appearance', 'Wish lists', 'Farming', 'Reminders', 'Keyboard shortcuts', 'Backup', 'About & help', 'Help', 'Developer', 'Tester', 'Help desk', 'Founder panel'];
+  const SORD = ['Accounts', 'Appearance', 'Item display', 'Inventory display', 'Wish lists', 'Farming', 'Reminders', 'Shortcuts', 'Backup', 'About & help', 'Help', 'Problems', 'Help desk', 'Developer', 'Tester', 'Founder'];
   // Settings as a menu (like a browser's settings page): the sections are listed on the left and only the one you pick is shown.
   // Cards come from several files (Farming, Reminders, About & help...), so this runs again whenever new cards show up.
   const SICO = {
@@ -1789,14 +2165,14 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     'Wish lists': '<path d="M7 11v9H4v-9zM7 11l4-7c1.5 0 2.5 1 2.5 2.5V10h5a2 2 0 012 2.3l-1.2 6A2 2 0 0117.3 20H7"/>',
     'Farming': '<path d="M12 21V10"/><path d="M12 13c-4 0-7-3-7-7 4 0 7 3 7 7zM12 10c0-3 2.5-6 7-6 0 4-3 6-7 6z"/>',
     'Reminders': '<path d="M6 16V11a6 6 0 0112 0v5l2 2H4z"/><path d="M10 21h4"/>',
-    'Keyboard shortcuts': '<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/>',
+    'Shortcuts': '<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/>',
     'Backup': '<path d="M7 18a5 5 0 01-.6-10A6 6 0 0118 9a4.5 4.5 0 01-1 9z"/><path d="M12 11v6M9.5 13.5L12 11l2.5 2.5"/>',
     'About & help': '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/>',
     'Help': '<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/>',
     'Help desk': '<path d="M4 13a8 8 0 0 1 16 0"/><rect x="3" y="13" width="4" height="6" rx="1.5"/><rect x="17" y="13" width="4" height="6" rx="1.5"/><path d="M20 19c0 1.5-2 2.5-5 2.5"/>',
     'Developer': '<path d="M8 8l-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/>',
     'Tester': '<path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.7 3h10.6a2 2 0 0 0 1.7-3l-5-9V3"/><path d="M7.5 15h9"/>',
-    'Founder panel': '<path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
+    'Founder': '<path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
   };
   const sico = (t) => `<svg viewBox="0 0 24 24" aria-hidden="true">${SICO[t] || '<circle cx="12" cy="12" r="8"/>'}</svg>`;
   let balT = 0, SSEC = (() => { try { return localStorage.getItem('gt_setsec') || 'Accounts'; } catch (e) { return 'Accounts'; } })();
@@ -1810,13 +2186,14 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     loose.forEach((c) => { if (c.parentElement && (c.parentElement === root || c.parentElement.classList.contains('setgrid') || c.parentElement.classList.contains('scol') || c.parentElement.classList.contains('scols'))) pane.appendChild(c); });
     root.querySelectorAll(':scope > .setgrid, :scope > .scols').forEach((g2) => { if (!g2.querySelector('.card')) g2.remove(); });
     const title = (c) => ((c.querySelector('h2') || {}).textContent || '').trim();
-    // Help (ask the team) shows at the bottom of About & help, not as a section of its own.
-    const sect = (c) => (title(c) === 'Help' ? 'About & help' : title(c));
+    // Help (ask the team) and Problems (the error log) show under About & help, not as sections of their own.
+    const sect = (c) => (title(c) === 'Help' || title(c) === 'Problems' ? 'About & help' : title(c));
     const key = (c) => { const i = SORD.indexOf(title(c)); return i < 0 ? 99 : i; };
     const cards = [...pane.children].filter((c) => c.classList.contains('card')).sort((a, b) => key(a) - key(b));
     cards.forEach((c) => pane.appendChild(c));
     const names = [...new Set(cards.map(sect).filter(Boolean))];
     if (SSEC === 'Help') SSEC = 'About & help';
+    if (SSEC === 'Founder panel') SSEC = 'Founder'; if (SSEC === 'Keyboard shortcuts') SSEC = 'Shortcuts'; // renamed sections
     if (!names.includes(SSEC)) SSEC = names[0] || 'Accounts';
     cards.forEach((c) => { c.classList.toggle('son', sect(c) === SSEC); });
     const navH = names.map((n) => `<div role="button" tabindex="0" class="sni${n === SSEC ? ' on' : ''}" data-ssec="${esc(n)}"${n === SSEC ? ' aria-current="page"' : ''}>${sico(n)}<span>${esc(n)}</span>${secBadge(n)}</div>`).join('');
@@ -1843,6 +2220,15 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     } catch (er) { WLMSG = wlClean(er); }
     WLV++; drawSettings(); if (window.__gtRender) window.__gtRender();
   }
+  settingsSec.addEventListener('change', async (e) => {
+    if (e.target.id !== 'pfapic' || !e.target.files || !e.target.files[0] || !gt.pfaAvatar) return;
+    const f = e.target.files[0]; e.target.value = '';
+    let bm; try { bm = await createImageBitmap(f); if (!bm.width || !bm.height) throw new Error('empty'); } catch (er) { PFAMSG = 'Could not open that picture. Try a PNG, JPG, WebP or GIF.'; drawSettings(); return; }
+    const img = await picEdit(bm); if (!img) return; // cancelled
+    PFAMSG = 'Saving your picture…'; drawSettings();
+    try { if (img.err) throw img.err; PFA = await gt.pfaAvatar({ img }); PFAMSG = 'Profile picture saved.'; } catch (er) { PFAMSG = 'Could not use that picture: ' + clean(er); }
+    drawSettings(); pfChip();
+  });
   settingsSec.addEventListener('change', (e) => {
     if (e.target.id !== 'wlfile' || !e.target.files || !e.target.files[0]) return;
     const f = e.target.files[0];
@@ -1877,6 +2263,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     if (sdb) { const q = SET.sortkeys[+sdb.dataset.sd]; if (q) { q.d = -q.d; saveSet(); drawSettings(); if (window.__gtRender) window.__gtRender(); } return; }
     const cs = e.target.closest('[data-cst]');
     if (cs) { const [c, i] = cs.dataset.cst.split(':').map(Number); SET.cst[c][i] = SET.cst[c][i] ? 0 : 1; saveSet(); drawSettings(); if (window.__gtRender) window.__gtRender(); return; }
+    if (e.target.closest('[data-lk]')) { lockToggle(); return; }
     const bgo = e.target.closest('[data-bg]'); if (bgo) { pickBg(bgo.dataset.bg); return; }
     const acw = e.target.closest('[data-acc]'); if (acw) { pickAcc(acw.dataset.acc); return; }
     const uis = e.target.closest('[data-uis]'); if (uis) { switchUi(uis.dataset.uis); applySet(); saveSet(); drawSettings(); return; }
@@ -1943,11 +2330,18 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     window.__gtnav.move(id, from < to ? L[to + 1] || null : L[to]); drawSettings();
   });
   const CSSONLY = new Set(['accent', 'bgdim', 'tile', 'scale', 'glow']);
+  const LOOKK = new Set(['accent', 'bgdim', 'anim', 'cardart', 'glow']);
   let cssRaf = 0, cssSave = 0;
   settingsSec.addEventListener('input', (e) => {
     if (e.target.id === 'wlurl' || e.target.id === 'wltext') { WLD[e.target.id] = e.target.value; return; }
     const k = e.target.dataset.sk; if (!k) return;
-    if (k === 'accent' && LOCK[SET.ui]) { markLook(); return; } // Bray and Manta keep their accent
+    // The look (accent, dimming, animations, card pictures, glow) follows the appearance lock, and on Bray's or Manta's style an
+    // unlocked owner's changes go to their unsent look rather than their own settings.
+    if (LOOKK.has(k) && (!lookEdit() || LOCK[SET.ui])) {
+      const v = e.target.type === 'checkbox' ? e.target.checked : e.target.type === 'range' ? +e.target.value : e.target.value;
+      if (setLook({ [k]: v })) { const o = e.target.nextElementSibling; if (o && o.tagName === 'OUTPUT') o.textContent = v + '%'; applySet(); clearTimeout(cssSave); cssSave = setTimeout(saveSet, 300); } else drawSettings();
+      return;
+    }
     SET[k] = e.target.type === 'checkbox' ? e.target.checked : e.target.type === 'range' ? +e.target.value : e.target.dataset.num ? +e.target.value : e.target.value;
     const o = e.target.nextElementSibling; if (o && o.tagName === 'OUTPUT') o.textContent = SET[k] + (k === 'tile' ? 'px' : '%');
     if (k === 'accent') SET.accentUser = SET.accent;
@@ -1963,6 +2357,8 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     if (e.target.type !== 'range' && e.target.type !== 'color' && e.target.type !== 'checkbox') drawSettings();
     if (k === 'farmspaces' && window.gt && gt.farmSet) gt.farmSet({ spaces: SET.farmspaces }).catch(() => {});
     if (k === 'clarity') clarLoad();
+    if (k === 'helpfab') helpFab();
+    if (k === 'keyson') drawSettings();
     if (k === 'starttab') { try { localStorage.setItem('gt.home.start', JSON.stringify(SET.starttab === 'home')); } catch (er) { /* storage off */ } }
   });
   settingsSec.addEventListener('change', (e) => {
@@ -2233,6 +2629,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     if (v === 'trashlist') return wish(x).v === -1;
     if (v === 'unrated') return unrated(x);
     if (v === 'godroll') return grade(x) === 'S';
+    if (v === 'srated') return grade(x) === 'R';
     if (v === 'keeper') return wish(x).v === 1;
     if (v === 'notkeeper') return WEAPON.has(x.b) && x.r === 'Legendary' && !!x.pk && !!WL && (grade(x) === 'C' || grade(x) === 'D');
     if (v === 'inloadout') { if (!LOSET || LOSETq !== q) { LOSET = inLo(); LOSETq = q; } return LOSET.has(x.id); }
@@ -2292,7 +2689,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   const SKEYS = ['is:', 'not:', 'perk:', 'exactperk:', 'name:', 'exactname:', 'notes:', 'tag:', 'element:', 'slot:', 'class:', 'ammo:', 'breaker:', 'power:>=', 'stat:', 'total:>=', 'customtotal:>=', 'energy:>=', 'tier:>=', 'target:', 'wishlistnotes:'];
   const ISV = () => {
     const ty = [...new Set(D.items.filter((x) => (WEAPON.has(x.b) || ARMOR.has(x.b)) && x.t).map((x) => nz(x.t)))];
-    return [...new Set(['exotic', 'legendary', 'rare', 'weapon', 'armor', 'equipped', 'unequipped', 'locked', 'unlocked', 'crafted', 'masterwork', 'deepsight', 'adept', 'duplicate', 'wishlist', 'trashlist', 'unrated', 'godroll', 'keeper', 'notkeeper', 'tagged', 'untagged', 'hasnotes', 'inloadout', 'vault', 'postmaster', 'target', 'kinetic', 'arc', 'solar', 'void', 'stasis', 'strand', 'prismatic', 'primary', 'special', 'heavy', 'barrier', 'overload', 'unstoppable', 'titan', 'hunter', 'warlock', 'kineticslot', 'energyslot', 'powerslot', 'helmet', 'gauntlets', 'chest', 'legs', 'classitem', 'ghost', 'sparrow', 'ship', 'subclass', ...ty])];
+    return [...new Set(['exotic', 'legendary', 'rare', 'weapon', 'armor', 'equipped', 'unequipped', 'locked', 'unlocked', 'crafted', 'masterwork', 'deepsight', 'adept', 'duplicate', 'wishlist', 'trashlist', 'unrated', 'godroll', 'srated', 'keeper', 'notkeeper', 'tagged', 'untagged', 'hasnotes', 'inloadout', 'vault', 'postmaster', 'target', 'kinetic', 'arc', 'solar', 'void', 'stasis', 'strand', 'prismatic', 'primary', 'special', 'heavy', 'barrier', 'overload', 'unstoppable', 'titan', 'hunter', 'warlock', 'kineticslot', 'energyslot', 'powerslot', 'helmet', 'gauntlets', 'chest', 'legs', 'classitem', 'ghost', 'sparrow', 'ship', 'subclass', ...ty])];
   };
   const SVALS = { tag: () => ['favorite', 'keep', 'infuse', 'junk', 'archive', 'none'], element: () => Object.keys(ELN), slot: () => ['kinetic', 'energy', 'power', 'helmet', 'gauntlets', 'chest', 'legs', 'classitem', 'ghost', 'sparrow', 'ship', 'subclass'], class: () => ['titan', 'hunter', 'warlock'], ammo: () => Object.keys(AMMO), breaker: () => ['barrier', 'overload', 'unstoppable'], stat: () => STN.map((n) => n + ':>='), target: () => [] };
   let SUG = { list: [], i: -1 };
@@ -2511,8 +2908,8 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
   // S = a roll your lists call a god roll, A = any wish list roll (both get the thumbs up: keep), C = rated but not a match,
   // D = a trash roll (both safe to dismantle), ? = no list has this weapon yet (keep it until you check).
   let GTAB = 'S';
-  const GTABS = [['S', 'God rolls', 'Rolls your wish lists call a god roll. Keep these.'], ['A', 'Keepers', 'Rolls on your wish lists (thumbs up). Keep these.'], ['CD', 'Not keepers', 'Your lists rate these weapons and this copy is not one of their rolls (or is a trash roll). Safe to dismantle unless you use it.'], ['?', 'Not yet rated', 'No wish list mentions these weapons yet, so keep them until you check them.']];
-  const GCOL = { S: '#e8b84a', A: '#4caf50', C: '#8b8f97', D: '#d9534f', '?': '#ffd27a' };
+  const GTABS = [['S', 'God rolls', 'The best of the best: the perk in every column of this copy (barrel, magazine, both traits, and the origin trait when it matters) is the top pick for an S tier weapon. Keep these.'], ['R', 'S rated', 'S tier weapons that are not a god roll as they are: some columns do not have the top perk in. Worth keeping; the God roll view says which.'], ['A', 'Keepers', 'Rolls on your wish lists (thumbs up). Keep these.'], ['CD', 'Not keepers', 'Your lists rate these weapons and this copy is not one of their rolls (or is a trash roll). Safe to dismantle unless you use it.'], ['?', 'Not yet rated', 'No wish list mentions these weapons yet, so keep them until you check them.']];
+  const GCOL = { S: '#e8b84a', R: '#c58cff', A: '#4caf50', C: '#8b8f97', D: '#d9534f', '?': '#ffd27a' };
   // Opened from the magnifying glass next to the vault refresh, the G key, or Settings. The button and G also close it,
   // and so do Esc, the X and clicking outside it. While it is open the page behind it does not scroll.
   const grfClose = () => { const m = g('junkm'); if (m) m.remove(); };
@@ -2523,12 +2920,12 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
   // Four tiles filter by grade (with counts); each card shows the weapon, where it is, its grade, the perks it rolled (the
   // ones your wish list asks for are ticked) and the wish list's note. Clicking a card opens the weapon's pop-up beside it.
   let GPQ = '', GPS = 'name';
-  const GNAME = { S: 'God roll', A: 'Keeper', C: 'Not a keeper', D: 'Trash roll', '?': 'Not rated yet' };
+  const GNAME = { S: 'God roll', R: 'S rated', A: 'Keeper', C: 'Not a keeper', D: 'Trash roll', '?': 'Not rated yet' };
   function grPage(host) {
     if (!D) { host.innerHTML = '<div class="gpg"><div class="gph"><div><h2>God rolls</h2><p>Sign in on the Inventory tab first.</p></div></div></div>'; return; }
     if (!WL) { host.innerHTML = '<div class="gpg"><div class="gph"><div><h2>God rolls</h2><p>Add a wish list first (Settings, Wish lists): every weapon you own is graded with your wish lists.</p></div></div></div>'; return; }
     const ws = D.items.filter((x) => WEAPON.has(x.b) && x.r === 'Legendary' && x.pk && !x.pm);
-    const by = { S: [], A: [], CD: [], '?': [] };
+    const by = { S: [], R: [], A: [], CD: [], '?': [] };
     ws.forEach((x) => { const gr = grade(x); (by[gr === 'C' || gr === 'D' ? 'CD' : gr]).push({ x, gr }); });
     if (!GTABS.some((t) => t[0] === GTAB)) GTAB = 'S';
     const T = TAGS(), info = GTABS.find((t) => t[0] === GTAB), q = GPQ.trim().toLowerCase();
@@ -2540,7 +2937,15 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
       const x = o.x, w = wish(x), want = new Set([...(w.perks || [])].filter((p2) => typeof p2 === 'string').map((p2) => p2.toLowerCase()));
       const el = ELEM[x.el], ep = Array.isArray(x.ep) ? x.ep : [];
       // frame first, then the two trait perks big, barrel and magazine small
-      const rows = ep.map((n, i) => ({ n, i, want: want.has(String(n).toLowerCase()) }));
+      const pn = (D && D.pn) || {}, wh = w.perks || new Set(), row = (hh) => { const n = pn[hh] || ''; return { n, want: wh.has(hh) || want.has(n.toLowerCase()) }; };
+      // From the perk columns (barrel, magazine, traits) plus the origin trait: the same perks as the God roll view. Older data
+      // without columns falls back to the socket names.
+      let rows;
+      if (Array.isArray(x.pc) && x.pc.length) {
+        const base = [ep.length ? { n: ep[0], want: false } : null, ...x.pc.slice(0, 2).map((c) => row(c[0]))].filter((r) => r && r.n);
+        const tr = [...x.pc.slice(2).map((c) => row(c[0])), ...(x.og ? [row(x.og)] : [])].filter((r) => r.n);
+        rows = [...base.map((r) => ({ ...r, i: 0 })), ...tr.map((r) => ({ ...r, i: 3 }))];
+      } else rows = ep.map((n, i) => ({ n, i, want: want.has(String(n).toLowerCase()) }));
       const perkRow = (r) => `<li class="${r.want ? 'want' : ''}"><i aria-hidden="true">${r.want ? '&#10003;' : ''}</i><span>${esc(r.n)}</span>${r.want ? '<em>wish list</em>' : ''}</li>`;
       // the two trait perks as the main list; frame, barrel and magazine on one quiet line above (ticked when wanted)
       const traits = rows.filter((r) => r.i >= 3), base = rows.filter((r) => r.i < 3);
@@ -2548,7 +2953,7 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
       const tg = T[x.id];
       return `<div class="gpc g-${o.gr === '?' ? 'q' : o.gr}" data-jid="${esc(x.id)}" role="button" tabindex="0" aria-label="${esc(x.n)}: ${esc(GNAME[o.gr])}">
         <div class="gpt">${tile(x)}<div class="gpn"><b>${esc(x.n)}</b><small>${esc(x.t || 'Weapon')}${el ? ` &middot; <span style="color:${el[1]}">${el[0]}</span>` : ''} &middot; ${esc(whereTxt(x))}${x.e ? ' (equipped)' : ''}</small></div></div>
-        <div class="gpb"><span class="gpg-pill">${o.gr === 'S' ? '&#9733; ' : ''}${esc(GNAME[o.gr])}</span>${tg ? `<span class="gptag">${esc(tg)}</span>` : ''}</div>
+        <div class="gpb"><span class="gpg-pill">${o.gr === 'S' ? '&#9733; ' : ''}${esc(GNAME[o.gr])}</span>${o.gr === 'S' || o.gr === 'R' ? modeChip(x) : ''}${tg ? `<span class="gptag">${esc(tg)}</span>` : ''}</div>
         ${base.length ? `<p class="gpbase">${base.map((r) => `<span class="${r.want ? 'want' : ''}">${r.want ? '&#10003; ' : ''}${esc(r.n)}</span>`).join('<i>&middot;</i>')}</p>` : ''}
         ${traits.length ? `<ul class="gpp">${traits.map(perkRow).join('')}</ul>` : ''}
         ${note ? `<p class="gpnote">${esc(note)}</p>` : ''}
@@ -2557,30 +2962,148 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
     const tiles = GTABS.map(([k, lbl]) => `<button type="button" data-gt="${k}" class="gpf g-${k === '?' ? 'q' : k === 'CD' ? 'C' : k}${k === GTAB ? ' on' : ''}" aria-pressed="${k === GTAB}"><b>${by[k].length}</b><span>${k === 'S' ? '&#9733; ' : ''}${esc(lbl)}</span></button>`).join('');
     host.innerHTML = `<div class="gpg">
       <div class="gph"><div><h2>God rolls</h2><p>${ws.length} legendary weapons graded with your wish lists.</p></div>
-        <div class="gptools"><input type="search" id="gpq" placeholder="Search weapons" value="${esc(GPQ)}" aria-label="Search weapons"><select id="gps" aria-label="Sort">${[['name', 'Name'], ['power', 'Power'], ['type', 'Weapon type']].map(([v, l]) => `<option value="${v}"${GPS === v ? ' selected' : ''}>Sort: ${l}</option>`).join('')}</select></div></div>
+        <div class="gptools"><div class="gpmode" role="radiogroup" aria-label="God rolls for">${[['all', 'All'], ['pve', 'PvE'], ['pvp', 'PvP']].map(([v, l]) => `<button type="button" role="radio" data-gmode="${v}" aria-checked="${grMode() === v}" class="${grMode() === v ? 'on' : ''}">${l}</button>`).join('')}</div><input type="search" id="gpq" placeholder="Search weapons" value="${esc(GPQ)}" aria-label="Search weapons"><select id="gps" aria-label="Sort">${[['name', 'Name'], ['power', 'Power'], ['type', 'Weapon type']].map(([v, l]) => `<option value="${v}"${GPS === v ? ' selected' : ''}>Sort: ${l}</option>`).join('')}</select></div></div>
       <div class="gpfs" role="group" aria-label="Show">${tiles}</div>
-      <p class="gphint">${esc(info[2])} Click a weapon for its perks; <b>Apply Perks</b> in its pop-up puts the wish list perks in.</p>
+      <p class="gphint">${esc(info[2])} Click a weapon to see every perk column and put the wish list perks in.</p>
       ${GTAB === 'CD' && junkable.length ? `<div class="gpjunk"><button class="b" data-gk="junk">Tag ${junkable.length} as junk</button><span>Skips equipped items and anything tagged favorite or keep. Dismantle them in game afterwards.</span></div>` : ''}
       ${list.length ? `<div class="gpgrid">${list.map(card).join('')}</div>` : `<div class="gpempty">${q ? 'No weapon here matches "' + esc(GPQ) + '".' : GTAB === '?' ? 'Every weapon you own is rated.' : 'Nothing here yet.'}</div>`}
     </div>`;
     const redraw = () => { const f = document.activeElement && document.activeElement.id === 'gpq', pos = f ? document.activeElement.selectionStart : 0; grPage(host); if (f) { const i = document.getElementById('gpq'); if (i) { i.focus(); i.setSelectionRange(pos, pos); } } };
     host.onclick = (e) => {
+      const gm = e.target.closest('button[data-gmode]'); if (gm && host.contains(gm)) { SET.grmode = gm.dataset.gmode; saveSet(); Object.keys(gcache).forEach((k2) => delete gcache[k2]); Object.keys(wcache).forEach((k2) => delete wcache[k2]); redraw(); return; }
       const tb = e.target.closest('button[data-gt]'); if (tb && host.contains(tb) && GTABS.some((t) => t[0] === tb.dataset.gt)) { GTAB = tb.dataset.gt; redraw(); return; }
       const b = e.target.closest('[data-gk]');
       if (b && b.dataset.gk === 'junk') { const o = TAGS(); junkable.forEach((q2) => { o[q2.x.id] = 'junk'; }); saveTAGS(o); renderGrid(); setNote(junkable.length + ' weapons tagged junk.'); redraw(); return; }
-      const r = e.target.closest('[data-jid]'); if (r && window.__gtx && window.__gtx.openHere) { e.stopPropagation(); window.__gtx.openHere(r.dataset.jid, r.querySelector('.vt') || r); }
+      const r = e.target.closest('[data-jid]'); if (r) { e.stopPropagation(); gvOpen(r.dataset.jid); }
     };
     host.onkeydown = (e) => { const r = e.target.closest && e.target.closest('.gpc[data-jid]'); if (r && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); r.click(); } };
     host.oninput = (e) => { if (e.target.id === 'gpq') { GPQ = e.target.value; clearTimeout(host._t); host._t = setTimeout(redraw, 120); } };
     host.onchange = (e) => { if (e.target.id === 'gps') { GPS = e.target.value; redraw(); } };
   }
+  // ---- A weapon opened from the God rolls tab: its own view, in the page's card style ----
+  // Every perk column side by side: what is in the weapon now, what your wish list wants (ticked) and what this copy can switch
+  // to. One button picks the wish list perks, one puts them in (each change checked against Bungie's answer), with the stats,
+  // tags, lock, move and equip below. Nothing here is the Inventory pop-up.
+  const GV = { id: '', pick: {}, msg: '', bad: 0, busy: 0 };
+  const COLN = [[/^barrels?/, 'Barrel'], [/^scopes?/, 'Sight'], [/^magazines?|^magazines_gl/, 'Magazine'], [/^batter/, 'Battery'], [/^arrows?/, 'Arrow'], [/^bowstrings?/, 'Bowstring'], [/^blades?/, 'Blade'], [/^guards?/, 'Guard'], [/^tubes?/, 'Launcher'], [/^hafts?/, 'Haft'], [/^rails?/, 'Rail'], [/^bolts?/, 'Bolts'], [/^origins?/, 'Origin trait']];
+  function gvCols(d) {
+    const out = []; let tr = 0;
+    (d.groups || []).forEach((g2, gi) => { if (g2.label !== 'Perks') return; g2.cols.forEach((col, ci) => {
+      const on = col.find((p) => p.on) || col[0], c = String((on && on.c) || '').toLowerCase();
+      let name = ''; for (const [re, n] of COLN) if (re.test(c)) { name = n; break; }
+      if (!name) name = /frames?|traits?/.test(c) || !c ? 'Trait ' + (++tr) : /^[a-z]+(_[a-z]+)?$/.test(c) ? c.replace(/_/g, ' ').replace(/^./, (m) => m.toUpperCase()) : 'Perk';
+      out.push({ k: gi + '-' + ci, col, on, name });
+    }); });
+    return out;
+  }
+  function gvChanges(d) { return gvCols(d).map((c) => { const i = GV.pick[c.k]; const p = i === undefined ? null : c.col[i]; return p && p !== c.on && p.ci ? { k: c.k, si: p.si, h: p.h, n: p.n } : null; }).filter(Boolean); }
+  function gvOpen(id) {
+    const x = byId(id); if (!x) return;
+    if (GV.id !== id) { GV.id = id; GV.pick = {}; GV.msg = ''; GV.bad = 0; }
+    gvDraw();
+    if (!DET[id] || DET[id].err) { delete DET[id]; fetchDet(x).then(() => { if (GV.id === id) gvDraw(); }); }
+  }
+  function gvClose() { GV.id = ''; GV.from = ''; const m = g('gvm'); if (m) m.remove(); document.removeEventListener('keydown', gvKey, true); }
+  function gvKey(e) { if (e.key === 'Escape' && g('gvm')) { e.stopPropagation(); gvClose(); } }
+  function gvDraw() {
+    const x = byId(GV.id); if (!x) { gvClose(); return; }
+    let m = g('gvm'); const fresh = !m;
+    if (!m) { m = document.createElement('div'); m.id = 'gvm'; m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); document.body.appendChild(m); m.onclick = gvClick; document.addEventListener('keydown', gvKey, true); }
+    const d = DET[GV.id], exo = x.r === 'Exotic', gr = exo ? 'X' : grade(x), w = exo ? { v: 0, notes: [], tags: [], perks: new Set() } : wish(x), wp = w.perks || new Set(), want = (p) => !!p && (wp.has(p.h) || wp.has(p.n));
+    const el = ELEM[x.el], T = TAGS(), tg = T[x.id];
+    const where = x.loc === 'vault' ? 'Vault' : (() => { const c = D.chars.find((k) => k.id === x.loc); return c ? CL[c.cls] || 'Guardian' : ''; })();
+    const note = exo ? '' : (w.notes && w.notes[0]) || (gr === '?' ? 'No wish list has this weapon yet.' : gr === 'C' ? 'Your lists rate this weapon; this copy is not one of their rolls.' : gr === 'D' ? 'Your wish list marks this roll as trash.' : '');
+    let body;
+    if (!d) body = '<div class="gvl">Loading this weapon from Bungie…</div>';
+    else if (d.err) body = `<div class="gvmsg bad">Could not load this weapon: ${esc(d.err)} <button class="g" data-gv="retry">Try again</button></div>`;
+    else {
+      const cols = gvCols(d), ch = gvChanges(d), best = bestRoll(x, d);
+      const bestDiff = best && Object.keys(best.pick).some((k) => { const c = cols.find((q) => q.k === k); return c && c.col[best.pick[k]] && c.col[best.pick[k]] !== c.on; });
+      const colH = cols.map((c) => {
+        const selI = GV.pick[c.k] !== undefined ? GV.pick[c.k] : c.col.indexOf(c.on), sel2 = c.col[selI] || c.on;
+        const opts = c.col.slice(0, 10).map((p, i) => {
+          const isOn = p === c.on, isPick = i === selI && !isOn, wl = want(p), lock = !p.ci && !isOn;
+          return `<button type="button" class="gvo${isOn ? ' on' : ''}${isPick ? ' pick' : ''}${wl ? ' want' : ''}${lock ? ' lock' : ''}" data-gk="${c.k}" data-gi="${i}"${lock ? ' disabled' : ''} title="${esc(p.n)}${lock ? ': this copy cannot switch to it' : ''}">${p.i ? `<img src="${esc(icon(p.i))}" alt="" loading="lazy">` : '<i class="gvi"></i>'}<span>${esc(p.n)}</span>${isOn ? '<em class="in">In now</em>' : isPick ? '<em class="pk">Picked</em>' : ''}${wl ? '<b class="wl" title="Your wish list wants this">&#10003;</b>' : ''}</button>`;
+        }).join('');
+        const dsc = sel2 && sel2.d ? String(sel2.d).replace(/\[###[^\]]*\]/g, (m) => (/interact/i.test(m) ? 'Interact' : '')).replace(/(Interact\s*){2,}/g, 'Interact ').replace(/\s{2,}/g, ' ').trim() : '';
+        return `<div class="gvc"><h5>${esc(c.name)}</h5><div class="gvos">${opts}</div>${dsc ? `<p class="gvd">${esc(dsc)}</p>` : ''}</div>`;
+      }).join('');
+      const stats = (d.stats || []).filter((q) => q.v !== undefined).map((q) => {
+        const bar = !q.num && q.max !== 0;
+        return `<div class="gvs"><span>${esc(q.n)}</span><b>${esc(q.v)}</b>${bar ? `<i><u style="width:${Math.max(0, Math.min(100, (q.v / (q.max || 100)) * 100))}%"></u></i>` : '<i class="nb"></i>'}</div>`;
+      }).join('');
+      const acts = `<div class="gva"><button class="b" data-gv="apply"${ch.length && !GV.busy ? '' : ' disabled'}>${GV.busy ? 'Applying…' : ch.length ? '&#10003; Apply ' + ch.length + ' perk' + (ch.length > 1 ? 's' : '') : 'Apply perks'}</button>${best && bestDiff ? '<button class="g" data-gv="wish">&#9733; Pick my wish list perks</button>' : best ? '<span class="gvok">&#10003; This copy already has its wish list perks in.</span>' : ''}${Object.keys(GV.pick).length ? '<button class="g" data-gv="undo">Clear picks</button>' : ''}</div>`;
+      // S rated: say which columns keep it from being a full god roll
+      // S rated: which columns keep it from being a god roll, and whether Apply can fix them
+      const offC = gr === 'R' ? cols.filter((c) => !want(c.on) && (c.name !== 'Origin trait' || c.col.some(want))) : [];
+      const noTop = offC.filter((c) => !c.col.some(want)).map((c) => c.name), notIn = offC.filter((c) => c.col.some(want)).map((c) => c.name);
+      const lst = (a) => esc(a.join(', '));
+      const gstat = gr === 'S' ? '<p class="gvgod">&#9733; God roll: every column has the top perk in.</p>' : gr === 'R' ? `<p class="gvgod r">S tier weapon, not a god roll as it is.${noTop.length ? ' No top perk on this copy for ' + lst(noTop) + '.' : ''}${notIn.length ? ' The top perk for ' + lst(notIn) + ' is on this copy but not in: press Pick my wish list perks, then Apply.' : ''}</p>` : '';
+      body = `${gstat}${acts}${GV.msg ? `<div class="gvmsg${GV.bad ? ' bad' : ''}" role="status">${esc(GV.msg)}</div>` : ''}
+<div class="gvcols">${colH || '<p class="gvl">This weapon has no perks to change.</p>'}</div>
+<p class="gvhint">Click a perk to pick it, then Apply. Ticked perks are the ones your wish list wants. Greyed-out perks are not on this copy. Changes only work while you are in orbit, a social space or offline.</p>
+<div class="gvlow">${stats ? `<div class="gvst"><h5>Stats</h5>${stats}</div>` : ''}<div class="gvside">
+<h5>Tag</h5><div class="gvtags">${TG.map(([k, svg, col, lbl]) => `<button type="button" class="g${tg === k ? ' on' : ''}" data-gv="tag" data-v="${k}" style="--tc:${col}" title="${esc(lbl)}">${svg}<span>${esc(lbl)}</span></button>`).join('')}</div>
+<h5>Move to</h5><div class="gvbtns">${sortedChars().map((c) => `<button type="button" class="g" data-gv="mv" data-t="${esc(c.id)}"${x.loc === c.id && !x.e ? ' disabled' : ''}>${esc(CL[c.cls] || 'Guardian')}</button>`).join('')}<button type="button" class="g" data-gv="mv" data-t="vault"${x.loc === 'vault' ? ' disabled' : ''}>Vault</button></div>
+<h5>Equip on</h5><div class="gvbtns">${sortedChars().map((c) => `<button type="button" class="g" data-gv="eq" data-t="${esc(c.id)}"${x.e && x.loc === c.id ? ' disabled' : ''}>${esc(CL[c.cls] || 'Guardian')}</button>`).join('')}</div>
+<div class="gvbtns" style="margin-top:12px"><button type="button" class="g" data-gv="lock">${x.lk ? 'Unlock' : 'Lock'}</button><button type="button" class="g" data-gv="inv">${GV.from === 'inv' ? 'Classic details' : 'Open in Inventory'}</button></div>
+</div></div>`;
+    }
+    const fr = d && !d.err && d.frame ? `<span class="gvfr">${esc(d.frame.n)}</span>` : '';
+    m.innerHTML = `<div class="gvp g-${gr === '?' ? 'q' : gr}${fresh ? ' enter' : ''}">
+<div class="gvh">${tile(x)}<div class="gvn"><h3>${esc(x.n)}</h3><small>${esc(x.t || 'Weapon')}${el ? ` &middot; <span style="color:${el[1]}">${el[0]}</span>` : ''} &middot; ${esc(where)}${x.e ? ' (equipped)' : ''}${x.p ? ' &middot; &#9670; ' + esc(x.p) : ''}</small>
+<div class="gpb">${exo ? '<span class="gpg-pill">Exotic</span>' : `<span class="gpg-pill">${gr === 'S' ? '&#9733; ' : ''}${esc(GNAME[gr] || '')}</span>${gr === 'S' || gr === 'R' ? modeChip(x) : ''}`}${fr}${tg ? `<span class="gptag">${esc(tg)}</span>` : ''}${x.lk ? '<span class="gptag">Locked</span>' : ''}</div></div>
+<button type="button" class="g gvx" data-gv="x" aria-label="Close" title="Close (Esc)">&#10005;</button></div>
+${note ? `<p class="gvnote">${esc(note)}</p>` : ''}
+${body}</div>`;
+  }
+  async function gvClick(e) {
+    const m = g('gvm'); if (!m) return;
+    if (e.target === m) { gvClose(); return; }
+    const x = byId(GV.id); if (!x) { gvClose(); return; }
+    const o = e.target.closest('.gvo[data-gk]');
+    if (o && !o.disabled) { const k = o.dataset.gk, i = +o.dataset.gi, d = DET[GV.id], c = d && gvCols(d).find((q) => q.k === k); if (!c) return; if (c.col[i] === c.on || GV.pick[k] === i) delete GV.pick[k]; else GV.pick[k] = i; GV.msg = ''; gvDraw(); return; }
+    const b = e.target.closest('[data-gv]'); if (!b || b.disabled) return;
+    const a = b.dataset.gv, d = DET[GV.id];
+    if (a === 'x') { gvClose(); return; }
+    if (a === 'retry') { delete DET[GV.id]; delete PEND[GV.id]; gvOpen(GV.id); return; }
+    if (a === 'undo') { GV.pick = {}; GV.msg = ''; gvDraw(); return; }
+    if (a === 'wish' && d) { const best = bestRoll(x, d); if (best) { GV.pick = Object.assign({}, best.pick); const n = gvChanges(d).length; GV.msg = n ? 'Picked your wish list perks. Press Apply to put them in.' : 'This copy cannot switch to its wish list perks (they are not on this roll).'; GV.bad = 0; } gvDraw(); return; }
+    if (a === 'apply' && d) { await gvApply(x, d); return; }
+    if (a === 'tag') { const t = TAGS(), v = b.dataset.v; if (t[x.id] === v) delete t[x.id]; else t[x.id] = v; saveTAGS(t); renderGrid(); grRefresh(); gvDraw(); return; }
+    if (a === 'lock') { await toggleLock(x); GV.msg = PMSG || ''; GV.bad = /^Failed/.test(GV.msg) ? 1 : 0; grRefresh(); gvDraw(); return; }
+    if (a === 'mv') { doMove(x, b.dataset.t); GV.msg = 'Moving…'; GV.bad = 0; gvDraw(); setTimeout(() => { if (GV.id === x.id) { GV.msg = ''; grRefresh(); gvDraw(); } }, 2500); return; }
+    if (a === 'eq') { doEquip(x, b.dataset.t); GV.msg = 'Equipping…'; GV.bad = 0; gvDraw(); setTimeout(() => { if (GV.id === x.id) { GV.msg = ''; grRefresh(); gvDraw(); } }, 2500); return; }
+    if (a === 'inv') { const id = x.id, inv = GV.from === 'inv'; gvClose(); if (inv) openPop(id); else goItem(id); return; }
+  }
+  async function gvApply(x, d) {
+    const list = gvChanges(d); if (!list.length || GV.busy) return;
+    GV.busy = 1; GV.bad = 0; const id = x.id, done = [], bad = []; let sure = true;
+    for (let k = 0; k < list.length; k++) {
+      const c = list[k]; GV.msg = 'Putting in ' + c.n + ' (' + (k + 1) + ' of ' + list.length + ')…'; gvDraw();
+      let tries = 0;
+      for (;;) {
+        try { const r = await gt.itemPlug({ id, char: charFor(x), socket: c.si, plug: c.h }); if (!(r && r.sure)) sure = false; done.push([c.si, c.h]); break; }
+        catch (er) { if (++tries < 2 && !/did not change|orbit|social space/i.test(clean(er))) { await new Promise((r2) => setTimeout(r2, 1200)); continue; } bad.push(c.n + ': ' + clean(er)); break; }
+      }
+      if (k < list.length - 1) await new Promise((r2) => setTimeout(r2, 450));
+    }
+    done.forEach(([si, ph]) => markPlug(id, si, ph));
+    GV.pick = {}; GV.busy = 0;
+    GV.bad = bad.length ? 1 : 0;
+    GV.msg = bad.length ? (done.length ? done.length + ' of ' + list.length + ' perks changed. ' : 'Nothing changed. ') + bad[0] : sure ? 'Done: Bungie confirmed the new perks are in.' : 'Done: Bungie accepted the change. It can take a minute to show everywhere.';
+    renderGrid(); grRefresh(); gvDraw();
+    confirmPlugs(id, x.h, done, sure);
+  }
+  let grT = 0;
+  function grRefresh() { clearTimeout(grT); grT = setTimeout(() => { const h = g('godrolls'); if (h && h.classList.contains('on')) grPage(h); if (GV.id && g('gvm')) gvDraw(); }, 60); }
   function grfRender(host) {
     if (host) { grPage(host); return; }
     let m = host ? null : g('junkm'); const had = !!m; if (m) m.remove();
     if (host && !D) { host.innerHTML = '<div class="jk grfp"><div class="jkh"><b>God rolls</b></div><p class="mute">Sign in on the Inventory tab first.</p></div>'; return; }
     if (!WL) { if (host) host.innerHTML = '<div class="jk grfp"><div class="jkh"><b>God rolls</b></div><p class="mute">Add a wish list first (Settings, Wish lists): every weapon you own is graded with your wish lists.</p></div>'; else setNote('Add a wish list first (Settings, Wish lists): the god roll finder grades your weapons with it.'); return; }
     const ws = D.items.filter((x) => WEAPON.has(x.b) && x.r === 'Legendary' && x.pk && !x.pm);
-    const by = { S: [], A: [], CD: [], '?': [] };
+    const by = { S: [], R: [], A: [], CD: [], '?': [] };
     ws.forEach((x) => { const gr = grade(x); (by[gr === 'C' || gr === 'D' ? 'CD' : gr]).push({ x, gr }); });
     Object.values(by).forEach((a) => a.sort((p, q2) => String(p.x.n).localeCompare(q2.x.n) || (q2.x.p || 0) - (p.x.p || 0)));
     if (!GTABS.some((t) => t[0] === GTAB)) GTAB = 'S';
@@ -3028,7 +3551,7 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
   // says whether each new weapon is a god roll, a keeper, not a keeper, or not yet rated. Only Bungie's API is used, like DIM:
   // nothing reads the screen or touches the game. Bungie itself can take a few seconds to a minute to report a drop.
   let SEEN = null;
-  const DROPW = { S: ['God roll', '#e8b84a'], A: ['Keeper', '#4caf50'], C: ['Not a keeper', '#8b8f97'], D: ['Trash roll', '#d9534f'], '?': ['Not yet rated', '#ffd27a'] };
+  const DROPW = { S: ['God roll', '#e8b84a'], R: ['S rated', '#c58cff'], A: ['Keeper', '#4caf50'], C: ['Not a keeper', '#8b8f97'], D: ['Trash roll', '#d9534f'], '?': ['Not yet rated', '#ffd27a'] };
   function dropCheck(n) {
     if (!n || !n.items) return;
     const ids = n.items.filter((x) => WEAPON.has(x.b) || (x.pm && x.pk)).map((x) => x.id);
@@ -3044,7 +3567,7 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
     let box = document.getElementById('gtdrops'); if (!box) { box = document.createElement('div'); box.id = 'gtdrops'; document.body.appendChild(box); }
     const t = document.createElement('div'); t.className = 'gtdrop'; t.style.setProperty('--dc', w[1]); t.dataset.id = x.id;
     t.innerHTML = `${tile(x).replace(' draggable="true"', '')}<div class="dt"><small>New drop</small><b>${esc(x.n)}</b><span>${esc(x.r === 'Exotic' ? 'Exotic' : w[0])}${nm ? ' &middot; ' + esc(nm) : ''}</span></div><button class="dx" aria-label="Dismiss">&times;</button>`;
-    t.onclick = (e) => { if (!e.target.closest('.dx')) { show('vault'); setTimeout(() => openPop(x.id), 60); } t.remove(); };
+    t.onclick = (e) => { if (!e.target.closest('.dx')) { show('vault'); setTimeout(() => openItemView(x.id), 60); } t.remove(); };
     box.appendChild(t); while (box.children.length > 4) box.firstElementChild.remove();
     setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 400); }, 15000);
     return { n: x.n, s: (x.r === 'Exotic' ? 'Exotic' : w[0]) + (nm ? ' - ' + nm : ''), c: w[1], i: typeof x.i === 'string' && x.i[0] === '/' ? x.i : '' };
@@ -3279,7 +3802,7 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
     const cand = [];
     const T = window.__gtt, th = T && T.hit ? T.hit(x) : null;
     if (th && th.perks && th.perks.size) cand.push({ hs: [...th.perks].filter((v) => typeof v === 'number'), names: [...th.perks].filter((v) => typeof v === 'string'), note: 'Farming target: ' + th.name, pri: 1 });
-    const wr = wishRoll(x); void P;
+    const gi = godInfo(x), wr = (gi && gi.roll) || wishRoll(x); void P;
     if (wr && !wr[2]) cand.push({ hs: wr[0], names: [], note: typeof wr[1] === 'number' ? (WL.notes || [])[wr[1]] || '' : wr[1] || '', pri: 0 });
     let best = null;
     const allH = new Set(); cols.forEach(({ col }) => col.forEach((p) => { if (p.h) allH.add(p.h); }));
@@ -3342,15 +3865,31 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
   }
   function markPlug(id, si, h) {
     const d = DET[id], x = byId(id);
-    if (d && d.groups) d.groups.forEach((gr) => gr.cols.forEach((col) => { if (col.some((q) => q.si === si && q.h === h)) { const old = col.find((q) => q.on); col.forEach((q) => { q.on = q.h === h; }); if (x && x.pk && old && old.h !== h) { const i = x.pk.indexOf(old.h); if (i >= 0) x.pk[i] = h; else x.pk.push(h); } } }));
-    if (x) { Object.keys(wcache).forEach((k) => { if (k.startsWith(id + ':')) delete wcache[k]; }); }
+    if (d && d.groups) d.groups.forEach((gr) => gr.cols.forEach((col) => { if (col.some((q) => q.si === si && q.h === h)) { const old = col.find((q) => q.on); col.forEach((q) => { q.on = q.h === h; }); if (x && x.pk && old && old.h !== h && !x.pk.includes(h)) x.pk.push(h); if (x && x.og && old && x.og === old.h) x.og = h; } }));
+    // the perk columns keep the perk that is in now first (the God roll card reads it)
+    if (x && Array.isArray(x.pc)) x.pc = x.pc.map((c) => (c.includes(h) ? [h, ...c.filter((v) => v !== h)] : c));
+    if (x) { [wcache, gcache].forEach((c) => Object.keys(c).forEach((k) => { if (k.startsWith(id + ':')) delete c[k]; })); }
+    if (x && Array.isArray(x.ep) && d && d.groups) d.groups.forEach((gr) => gr.cols.forEach((col) => { const nw = col.find((q) => q.si === si && q.h === h); if (!nw) return; const pn = D && D.pn ? D.pn : {}; x.ep = x.ep.map((n) => (col.some((q) => q.n === n && q.h !== h) ? nw.n : n)); void pn; }));
+    grRefresh();
   }
-  function confirmPlugs(id, h, want) {
+  // Reads the weapon back from Bungie 6 and 20 seconds later. When Bungie's answer to the change confirmed it (sure), a read
+  // that still shows the old perk is Bungie's copy lagging, so the change stays. When it was never confirmed and Bungie still
+  // shows the old perk after 20 seconds, Bungie's version wins and you are told: it used to keep showing the new perk anyway.
+  function confirmPlugs(id, h, want, sure) {
     if (!want.length) return;
     const agrees = (d) => want.every(([si, ph]) => d && d.groups && d.groups.some((gr) => gr.cols.some((col) => col.some((q) => q.si === si && q.h === ph && q.on))));
     [6000, 20000].forEach((ms, n) => setTimeout(async () => {
       let d; try { d = await gt.itemDetail({ id, h }); } catch (er) { return; }
-      if (agrees(d) || n === 1) { DET[id] = d; if (!agrees(d)) want.forEach(([si, ph]) => markPlug(id, si, ph)); if (sel === id) renderPop(); }
+      if (agrees(d)) { DET[id] = d; if (sel === id) renderPop(); if (GV.id === id) gvDraw(); return; }
+      if (n !== 1) return;
+      if (sure) { DET[id] = d; want.forEach(([si, ph]) => markPlug(id, si, ph)); }
+      else {
+        DET[id] = d;
+        d.groups.forEach((gr) => gr.cols.forEach((col) => { const on = col.find((q) => q.on); if (on && want.some(([si]) => si === on.si)) markPlug(id, on.si, on.h); }));
+        const m = 'Bungie still shows the old perks on this weapon, so the change did not go through. Try again from orbit or a social space.';
+        if (sel === id) PMSG = m; if (GV.id === id) { GV.msg = m; GV.bad = 1; }
+      }
+      if (sel === id) renderPop(); if (GV.id === id) gvDraw();
     }, ms));
   }
   // Perks you have clicked that differ from what is equipped right now.
@@ -3678,6 +4217,13 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
   // Postmaster engrams and other things without an instance id: Bungie has no per-item details for them, only the description.
   const noInst = (x) => !!(x && (x.eg || !/^\d+$/.test(String(x.id))));
   let sbWant = 0;
+  // Inventory clicks: weapons open in the God roll style view when that is picked in Settings > Appearance; everything else
+  // (armour, mods, items without their own copy) keeps the classic pop-up.
+  function openItemView(id, el) {
+    const x = byId(id);
+    if (x && SET.wview === 'gr' && (!window.__gtFlag || window.__gtFlag('opt-wview', true)) && WEAPON.has(x.b) && !x.ro && !noInst(x) && !x.pm) { sel = null; renderPop(); GV.from = 'inv'; gvOpen(id); return; }
+    return openPop(id, el);
+  }
   async function openPop(id, el) {
     const x = byId(id); if (!x) return;
     sel = id; psel = {}; plast = null; pex = ''; noteEdit = false; PMSG = ''; ptab = 'ov'; stq = 0; popEl = el || null;
@@ -3723,7 +4269,7 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
     if (window.__gtf && window.__gtf.onClick(e)) return;
     if (e.target.id === 'vsheet') { sel = null; renderPop(); return; }
     const vt = e.target.closest('.vt');
-    if (vt && D) { openPop(vt.dataset.id, vt); return; }
+    if (vt && D) { openItemView(vt.dataset.id, vt); return; }
     const op = e.target.closest('[data-open]');
     if (op && sel) { openPop(op.dataset.open, popEl); return; }
     const ptb = e.target.closest('[data-a="ptab"]');
@@ -3737,7 +4283,7 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
       const x0 = byId(sel), d = DET[sel]; if (!x0 || !d) return;
       const [gi, ci] = sbp.dataset.sbp.split('-').map(Number), p = d.groups[gi] && d.groups[gi].cols[ci] && d.groups[gi].cols[ci][+sbp.dataset.pi]; if (!p) return;
       const id = x0.id; PMSG = 'Equipping ' + p.n + '...'; pex = ''; renderPop();
-      try { await gt.itemPlug({ id, char: charFor(x0), socket: p.si, plug: p.h }); PMSG = p.n + ' equipped.'; markPlug(id, p.si, p.h); renderPop(); renderGrid(); confirmPlugs(id, x0.h, [[p.si, p.h]]); window.dispatchEvent(new Event('gtsub')); }
+      try { const r = await gt.itemPlug({ id, char: charFor(x0), socket: p.si, plug: p.h }); PMSG = p.n + ' equipped.'; markPlug(id, p.si, p.h); renderPop(); renderGrid(); confirmPlugs(id, x0.h, [[p.si, p.h]], !!(r && r.sure)); window.dispatchEvent(new Event('gtsub')); }
       catch (er) { PMSG = 'Failed: ' + clean(er); renderPop(); }
       return;
     }
@@ -3749,9 +4295,9 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
       const si = +mpp.dataset.msi, h = +mpp.dataset.mpp, got = MODO[x0.id + ':' + si], o = got && got.opts && got.opts.find((q) => q.h === h); if (!o) return;
       const id = x0.id; PMSG = 'Putting in ' + o.n + '...'; renderPop();
       try {
-        await gt.itemPlug({ id, char: charFor(x0), socket: si, plug: h });
+        const r = await gt.itemPlug({ id, char: charFor(x0), socket: si, plug: h });
         d.groups.forEach((gr) => gr.cols.forEach((col) => { if (col.some((q) => q.si === si)) { if (!col.some((q) => q.h === h)) col.push({ h, si, ci: true, n: o.n, i: o.i, d: o.d, s: [], c: col[0].c || '' }); col.forEach((q) => { q.on = q.h === h; }); } }));
-        delete MODO[x0.id + ':' + si]; PMSG = o.n + ' is in.'; pex = ''; renderPop(); renderGrid(); confirmPlugs(id, x0.h, [[si, h]]);
+        delete MODO[x0.id + ':' + si]; PMSG = o.n + ' is in.'; pex = ''; renderPop(); renderGrid(); confirmPlugs(id, x0.h, [[si, h]], !!(r && r.sure));
       } catch (er) { PMSG = 'Failed: ' + clean(er); renderPop(); }
       return;
     }
@@ -3794,27 +4340,27 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
       const d = DET[sel], id = x.id, list = d && !x.ro ? psChanges(d).filter((c) => c.ci) : []; if (!list.length) return;
       // One perk at a time, a short pause between them (Bungie refuses changes sent back to back), carrying on past a refusal.
       // Afterwards the item is always read again, so the pop-up shows what is really equipped, not the preview.
-      const bad = [], done = []; let ok = 0;
+      const bad = [], done = []; let ok = 0, sure = true;
       for (let k = 0; k < list.length; k++) {
         const c = list[k]; PMSG = 'Applying ' + (k + 1) + ' of ' + list.length + '...'; renderPop();
         let tries = 0;
         for (;;) {
-          try { await gt.itemPlug({ id, char: charFor(x), socket: c.si, plug: c.h }); ok++; done.push([c.si, c.h]); break; }
+          try { const r = await gt.itemPlug({ id, char: charFor(x), socket: c.si, plug: c.h }); if (!(r && r.sure)) sure = false; ok++; done.push([c.si, c.h]); break; }
           catch (er) { if (++tries < 2) { await new Promise((r) => setTimeout(r, 1200)); continue; } bad.push(clean(er)); break; }
         }
         if (k < list.length - 1) await new Promise((r) => setTimeout(r, 450));
       }
       const locked = psChanges(d).filter((c) => !c.ci).length;
       psel = {}; plast = null; pex = '';
-      PMSG = (bad.length ? (ok ? ok + ' of ' + list.length + ' perks changed. ' : '') + 'Failed: ' + bad[0] : 'Done. The perks were changed in game.') + (locked ? ' ' + locked + ' picked perk' + (locked > 1 ? 's are' : ' is') + ' not unlocked on this copy, so ' + (locked > 1 ? 'they were' : 'it was') + ' left as is.' : '');
+      PMSG = (bad.length ? (ok ? ok + ' of ' + list.length + ' perks changed. ' : '') + 'Failed: ' + bad[0] : sure ? 'Done: Bungie confirmed the new perks are in.' : 'Done: Bungie accepted the change. It can take a minute to show everywhere.') + (locked ? ' ' + locked + ' picked perk' + (locked > 1 ? 's are' : ' is') + ' not unlocked on this copy, so ' + (locked > 1 ? 'they were' : 'it was') + ' left as is.' : '');
       done.forEach(([si, ph]) => markPlug(id, si, ph));
       renderPop(); renderGrid();
-      confirmPlugs(id, x.h, done);
+      confirmPlugs(id, x.h, done, sure);
       return;
     }
     if (t.dataset.a === 'plug' && x) {
       const id = x.id; PMSG = 'Applying...'; renderPop();
-      try { await gt.itemPlug({ id, char: charFor(x), socket: +t.dataset.s, plug: +t.dataset.h }); PMSG = 'Done. The perk was changed in game.'; psel = {}; plast = null; markPlug(id, +t.dataset.s, +t.dataset.h); renderPop(); renderGrid(); confirmPlugs(id, x.h, [[+t.dataset.s, +t.dataset.h]]); }
+      try { const r = await gt.itemPlug({ id, char: charFor(x), socket: +t.dataset.s, plug: +t.dataset.h }); PMSG = r && r.sure ? 'Done: Bungie confirmed the new perk is in.' : 'Done: Bungie accepted the change.'; psel = {}; plast = null; markPlug(id, +t.dataset.s, +t.dataset.h); renderPop(); renderGrid(); confirmPlugs(id, x.h, [[+t.dataset.s, +t.dataset.h]], !!(r && r.sure)); }
       catch (er) { PMSG = 'Failed: ' + clean(er); renderPop(); }
       return;
     }
