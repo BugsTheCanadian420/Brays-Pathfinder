@@ -302,6 +302,15 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 @media (max-width:900px){.ltab{flex-direction:column}.lsidec{width:100%;flex-direction:row}.lside{flex:1}}
 /* settings page */
 #gtkeys .kyl.off{opacity:.45;pointer-events:none}
+:root header #gtpfn .gtav img{display:block!important}
+#gtcrop{position:fixed;inset:0;z-index:9800;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:16px}
+#gtcrop .gcm{width:min(380px,100%);background:var(--g-solid,#16181d);border:1px solid var(--g-line,#33363c);border-radius:14px;box-shadow:0 24px 60px rgba(0,0,0,.6);padding:16px 18px 16px}
+#gtcrop .gch{display:flex;align-items:center;margin-bottom:12px}#gtcrop .gch b{font-size:17px;color:#fff;flex:1}
+#gtcrop .gcx{background:none!important;border:0!important;color:#cfd5de!important;font-size:24px!important;line-height:1;padding:0 4px!important;cursor:pointer}
+#gtcrop .gcs{border-radius:10px;overflow:hidden;background:#0d0f13}#gtcrop canvas{display:block;width:100%;aspect-ratio:1;cursor:grab;touch-action:none;outline:none}#gtcrop canvas.dr{cursor:grabbing}#gtcrop canvas:focus-visible{box-shadow:inset 0 0 0 2px var(--g-accent,#7ab8e8)}
+#gtcrop .gcz{display:flex;align-items:center;gap:10px;margin:14px 4px 4px}#gtcrop .gcz input{flex:1;accent-color:var(--g-accent,#7ab8e8)}#gtcrop .gcz svg{width:20px;height:20px;flex:none;fill:none;stroke:#cfd5de;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}#gtcrop .gcz svg.sm{width:15px;height:15px}
+#gtcrop .gcr{margin-left:8px;width:34px;height:34px;padding:0!important;display:grid;place-items:center;background:transparent!important;border:1px solid var(--g-line,#3a3d43)!important;border-radius:8px!important;cursor:pointer}#gtcrop .gcr:hover{border-color:var(--g-accent,#7ab8e8)!important}
+#gtcrop .gcb{display:flex;align-items:center;gap:8px;margin-top:14px}#gtcrop .gcb span{flex:1}#gtcrop .gcrs{background:none!important;border:0!important;color:var(--g-accent,#7ab8e8)!important;padding:6px 2px!important;font-weight:600;cursor:pointer;letter-spacing:0!important;text-transform:none!important}
 .pfdots{display:inline-flex;align-items:center;gap:4px;vertical-align:middle;height:1em}.pfdots i{width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
 #settings .card{max-width:760px;margin-left:auto;margin-right:auto}#settings .acl{display:flex;flex-direction:column;gap:6px;margin:10px 0}#settings .pfrows{display:flex;flex-direction:column;gap:2px;margin:6px 0 8px;border:1px solid var(--g-line,#2b2e33);border-radius:12px;overflow:hidden}#settings .pfrow{display:flex;align-items:center;gap:10px;padding:9px 12px;background:rgba(255,255,255,.025)}#settings .pfrow+.pfrow{border-top:1px solid var(--g-line,#2b2e33)}#settings .pfk{width:110px;flex:none;color:var(--mut,#9aa3b2);font-size:13px}#settings .pfv{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#settings .pflg{letter-spacing:.08em;font-variant-numeric:tabular-nums}.pfeye{display:inline-flex!important;align-items:center;justify-content:center;width:34px;min-width:34px;padding:0!important}.pfeye[aria-pressed="true"]{color:var(--g-accent,#7ab8e8)!important}.pfmask:not(.show){-webkit-text-security:disc;text-security:disc}
 #gtpfn{order:8;flex:none;position:relative;display:inline-flex;align-items:center;gap:7px;max-width:220px;height:34px;margin:0 6px 0 auto;padding:0 10px 0 3px!important;border-radius:999px!important;border:1px solid var(--g-line,#33363c)!important;background:rgba(255,255,255,.04)!important;color:#e8ecf2!important;font-size:13px;font-weight:700;letter-spacing:0!important;text-transform:none!important;cursor:pointer}header.gtbar:has(#gtbeta) #gtpfn{margin-left:8px}#gtpfn[hidden]{display:none}#gtpfn:hover,#gtpfn[aria-expanded="true"]{border-color:var(--g-accent,#7ab8e8)!important}#gtpfn.out{padding-right:8px!important}.gtav{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;flex:none;overflow:hidden;font-size:12px;font-weight:800;color:var(--g-on-accent,#0d1015);background:var(--g-accent,#7ab8e8)}.gtav img{width:100%;height:100%;object-fit:cover;display:block}.gtav.out{background:rgba(255,255,255,.08);color:#cfd5de}.gtav svg{width:16px!important;height:16px!important;opacity:1!important}.gtav.big{width:40px;height:40px;font-size:17px}.gtav.big svg{width:22px!important;height:22px!important}.gtav.pfavb{width:44px;height:44px;font-size:18px;margin-right:10px;vertical-align:middle}#gtpfn>svg{width:12px!important;height:12px!important;flex:none;opacity:.7}#gtpfn .gtpft{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#gtpfn.gtdot::after{content:"";position:absolute;top:1px;left:23px;width:9px;height:9px;border-radius:50%;background:var(--g-accent,#7ab8e8);box-shadow:0 0 0 2px var(--g-panel,#1a1c20)}header.gtbar nav button.gtset{display:none!important}header.gtbar #gtbeta{order:7!important;margin-left:auto!important}#gtdl{display:none!important}
@@ -1328,13 +1337,50 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   // Your profile picture, or the first letter of your name in a circle (signed out: a person outline).
   const PERSON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8.5" r="4"/><path d="M4.5 20.5c1.4-3.8 4.2-5.7 7.5-5.7s6.1 1.9 7.5 5.7"/></svg>';
   const avHTML = (cls) => { const on = !!(PFA && PFA.on), av = on && /^data:image\/(jpeg|png|webp);base64,/.test(PFA.av || '') ? PFA.av : ''; return `<span class="gtav ${cls || ''}${on ? '' : ' out'}" aria-hidden="true">${av ? `<img src="${av}" alt="">` : on ? esc((pdn() || '?').slice(0, 1).toUpperCase()) : PERSON}</span>`; };
-  // A picture you pick becomes a small square (centre cut, 192 px) before it is sent, so it stays tiny on every device.
-  async function picSquare(file) {
-    const bm = await createImageBitmap(file), side = Math.min(bm.width, bm.height); if (!side) throw new Error('That picture is empty.');
-    const cv = document.createElement('canvas'); cv.width = cv.height = 192; const x = cv.getContext('2d'); x.imageSmoothingQuality = 'high';
-    x.drawImage(bm, (bm.width - side) / 2, (bm.height - side) / 2, side, side, 0, 0, 192, 192);
-    for (const [ty, q] of [['image/webp', 0.86], ['image/jpeg', 0.84], ['image/jpeg', 0.6]]) { const d = cv.toDataURL(ty, q); if (d.startsWith('data:' + ty) && d.length < 85000) return d; }
-    throw new Error('That picture is too detailed. Try another one.');
+  // Picking a profile picture opens an editor (like Discord's): drag to move it, the slider or the mouse wheel to zoom, a button to
+  // turn it. What sits inside the circle becomes a 192 px square (shown round everywhere), small enough to send to every device.
+  const picOut = (cv) => { for (const [ty, q] of [['image/webp', 0.86], ['image/jpeg', 0.84], ['image/jpeg', 0.6]]) { const d = cv.toDataURL(ty, q); if (d.startsWith('data:' + ty) && d.length < 85000) return d; } throw new Error('That picture is too detailed. Try another one.'); };
+  function picEdit(bm) {
+    return new Promise((done) => {
+      const V = 300, R = 122, st = { z: 1, x: 0, y: 0, rot: 0 };
+      const ov = document.createElement('div'); ov.id = 'gtcrop'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', 'Edit image');
+      ov.innerHTML = `<div class="gcm"><div class="gch"><b>Edit image</b><button type="button" class="gcx" data-cr="x" aria-label="Close">&times;</button></div>
+        <div class="gcs"><canvas width="${V * 2}" height="${V * 2}" tabindex="0" aria-label="Drag to move the picture, arrow keys move it too"></canvas></div>
+        <div class="gcz"><svg viewBox="0 0 24 24" aria-hidden="true" class="sm"><rect x="5" y="6" width="14" height="12" rx="2"/><path d="M5 15l4-4 4 4 2-2 4 4"/></svg><input type="range" min="100" max="400" value="100" aria-label="Zoom"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 16l5-5 5 5 3-3 5 5"/><circle cx="16" cy="9" r="1.6"/></svg><button type="button" class="gcr" data-cr="rot" title="Turn it a quarter" aria-label="Turn the picture a quarter turn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button></div>
+        <div class="gcb"><button type="button" class="gcrs" data-cr="reset">Reset</button><span></span><button type="button" class="g" data-cr="x">Cancel</button><button type="button" class="b" data-cr="ok">Apply</button></div></div>`;
+      document.body.appendChild(ov);
+      const cv = ov.querySelector('canvas'), x = cv.getContext('2d'), zr = ov.querySelector('input[type=range]');
+      const dims = () => (st.rot % 2 ? [bm.height, bm.width] : [bm.width, bm.height]);
+      const scale = () => { const [w, h] = dims(); return (2 * R / Math.min(w, h)) * st.z; };
+      const clamp = () => { const [w, h] = dims(), sc = scale(), mx = Math.max(0, (w * sc - 2 * R) / 2), my = Math.max(0, (h * sc - 2 * R) / 2); st.x = Math.max(-mx, Math.min(mx, st.x)); st.y = Math.max(-my, Math.min(my, st.y)); };
+      const paint = (g, size, k) => { const sc = scale() * k; g.save(); g.translate(size / 2 + st.x * k, size / 2 + st.y * k); g.rotate(st.rot * Math.PI / 2); g.drawImage(bm, -bm.width * sc / 2, -bm.height * sc / 2, bm.width * sc, bm.height * sc); g.restore(); };
+      const draw = () => {
+        clamp(); x.setTransform(2, 0, 0, 2, 0, 0); x.clearRect(0, 0, V, V); x.fillStyle = '#0d0f13'; x.fillRect(0, 0, V, V);
+        x.imageSmoothingQuality = 'high'; paint(x, V, 1);
+        x.beginPath(); x.rect(0, 0, V, V); x.arc(V / 2, V / 2, R, 0, Math.PI * 2, true); x.fillStyle = 'rgba(8,9,12,.62)'; x.fill('evenodd');
+        x.beginPath(); x.arc(V / 2, V / 2, R, 0, Math.PI * 2); x.strokeStyle = '#fff'; x.lineWidth = 3; x.stroke();
+      };
+      const close = (v) => { ov.remove(); document.removeEventListener('keydown', onKey, true); done(v); };
+      const onKey = (e) => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(null); } else if (document.activeElement === cv && /^Arrow/.test(e.key)) { e.preventDefault(); const d = e.shiftKey ? 20 : 5; if (e.key === 'ArrowLeft') st.x += d; if (e.key === 'ArrowRight') st.x -= d; if (e.key === 'ArrowUp') st.y += d; if (e.key === 'ArrowDown') st.y -= d; draw(); } };
+      document.addEventListener('keydown', onKey, true);
+      // drag to move (mouse, pen or finger)
+      let drag = null;
+      cv.addEventListener('pointerdown', (e) => { drag = { px: e.clientX, py: e.clientY, x: st.x, y: st.y, k: V / cv.getBoundingClientRect().width }; try { cv.setPointerCapture(e.pointerId); } catch (er) { /* fine */ } cv.classList.add('dr'); });
+      cv.addEventListener('pointermove', (e) => { if (!drag) return; st.x = drag.x + (e.clientX - drag.px) * drag.k; st.y = drag.y + (e.clientY - drag.py) * drag.k; draw(); });
+      const up = () => { drag = null; cv.classList.remove('dr'); }; cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+      const zoomTo = (z) => { const z2 = Math.max(1, Math.min(4, z)), f = z2 / st.z; st.x *= f; st.y *= f; st.z = z2; zr.value = String(Math.round(z2 * 100)); draw(); };
+      zr.addEventListener('input', () => zoomTo(+zr.value / 100));
+      cv.addEventListener('wheel', (e) => { e.preventDefault(); zoomTo(st.z * (e.deltaY < 0 ? 1.08 : 1 / 1.08)); }, { passive: false });
+      ov.addEventListener('click', (e) => {
+        if (e.target === ov) { close(null); return; }
+        const b = e.target.closest('[data-cr]'); if (!b) return; const a = b.dataset.cr;
+        if (a === 'x') close(null);
+        else if (a === 'rot') { st.rot = (st.rot + 1) % 4; const t = st.x; st.x = -st.y; st.y = t; draw(); }
+        else if (a === 'reset') { Object.assign(st, { z: 1, x: 0, y: 0, rot: 0 }); zr.value = '100'; draw(); }
+        else if (a === 'ok') { const o = document.createElement('canvas'); o.width = o.height = 192; const g = o.getContext('2d'); g.imageSmoothingQuality = 'high'; g.fillStyle = '#0d0f13'; g.fillRect(0, 0, 192, 192); paint(g, 192, 192 / (2 * R)); try { close(picOut(o)); } catch (er) { close({ err: er }); } }
+      });
+      draw(); setTimeout(() => cv.focus(), 30);
+    });
   }
   // Hidden login names and passwords: always 12 dots of one size, whatever the real length, so the length gives nothing away.
   const DOTS = '<span class="pfdots" role="img" aria-label="Hidden">' + '<i></i>'.repeat(12) + '</span>';
@@ -2150,8 +2196,10 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   settingsSec.addEventListener('change', async (e) => {
     if (e.target.id !== 'pfapic' || !e.target.files || !e.target.files[0] || !gt.pfaAvatar) return;
     const f = e.target.files[0]; e.target.value = '';
+    let bm; try { bm = await createImageBitmap(f); if (!bm.width || !bm.height) throw new Error('empty'); } catch (er) { PFAMSG = 'Could not open that picture. Try a PNG, JPG, WebP or GIF.'; drawSettings(); return; }
+    const img = await picEdit(bm); if (!img) return; // cancelled
     PFAMSG = 'Saving your picture…'; drawSettings();
-    try { const img = await picSquare(f); PFA = await gt.pfaAvatar({ img }); PFAMSG = 'Profile picture saved.'; } catch (er) { PFAMSG = 'Could not use that picture: ' + clean(er); }
+    try { if (img.err) throw img.err; PFA = await gt.pfaAvatar({ img }); PFAMSG = 'Profile picture saved.'; } catch (er) { PFAMSG = 'Could not use that picture: ' + clean(er); }
     drawSettings(); pfChip();
   });
   settingsSec.addEventListener('change', (e) => {

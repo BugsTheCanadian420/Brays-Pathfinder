@@ -15,7 +15,7 @@
     { id: 20, draft: true, date: 'Nov 2026', items: [
       'A new look for God rolls: big filter tiles for God rolls, S rated, Keepers, Not keepers and Not rated yet, search and sort, and a card for each weapon with its grade, main perks and which perks your wish list wants.',
       'The Helpful tab is now called Guides.',
-      'Your account in the top right: your profile picture (add one in Settings > Accounts) and display name. Click it for Settings, Help & support, Get the app and Sign out. The gear button is gone, and the Beta switch sits next to your account.',
+      'Your account in the top right: your profile picture (add one in Settings > Accounts, then drag, zoom and turn it to fit the circle) and display name. Click it for Settings, Help & support, Get the app and Sign out. The gear button is gone, and the Beta switch sits next to your account.',
       'A lock by the accent colours in Settings > Appearance keeps your look as it is. Bray and Manta unlock their own styles to change anything about them, and locking sends the new look to everyone using that style.',
       'Hidden login names and passwords always show 12 dots, whatever their length.',
       'A headphones button next to Notes opens Help from any tab (turn it off in Settings > About & help). Help now comes before Problems there.',
