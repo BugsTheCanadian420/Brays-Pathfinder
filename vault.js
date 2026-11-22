@@ -776,7 +776,7 @@ body.gtann #gtmaint{top:calc(var(--gt-bar-h,56px) + 74px)}
 #godrolls .gpf:hover{border-color:color-mix(in srgb,var(--gc) 60%,transparent)!important}
 #godrolls .gpf.on{border-color:var(--gc)!important;background:linear-gradient(180deg,color-mix(in srgb,var(--gc) 18%,transparent),color-mix(in srgb,var(--gc) 4%,transparent)),var(--g-panel,#16181c)!important;color:#fff!important}
 #godrolls .g-S{--gc:#f2b441}#godrolls .g-R{--gc:#c58cff}#godrolls .gpmode{display:inline-flex;height:38px;border:1px solid var(--g-line,#2b2e33);border-radius:10px;overflow:hidden;flex:none}#godrolls .gpmode button{border:0!important;border-radius:0!important;padding:0 14px!important;height:100%;font-size:13px;font-weight:700;letter-spacing:0!important;text-transform:none!important;background:transparent!important;color:#aeb4bd!important;box-shadow:none!important}#godrolls .gpmode button.on{background:color-mix(in srgb,#f2b441 20%,transparent)!important;color:#fff!important}#godrolls .gpmd,#gvm .gpmd{display:inline-flex;align-items:center;padding:3px 9px;border-radius:999px;font-size:11.5px;font-weight:800;letter-spacing:.04em;color:#e8ecf2;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16)}#godrolls .g-A{--gc:#5fd38a}#godrolls .g-C{--gc:#9aa1ab}#godrolls .g-D{--gc:#ef6461}#godrolls .g-q{--gc:#ffd27a}
-#gvm{position:fixed;inset:0;z-index:70;background:rgba(4,6,10,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:flex;align-items:flex-start;justify-content:center;padding:max(24px,4vh) 16px 24px;overflow:auto}
+#gvm{position:fixed;inset:0;z-index:70;background:rgba(4,6,10,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:flex;align-items:flex-start;justify-content:center;padding:calc(max(24px,4vh) + var(--gt-sat,0px)) 16px calc(24px + env(safe-area-inset-bottom,0px));overflow:auto}
 #gvm .g-X{--gc:#e8c25a}#gvm .g-S{--gc:#f2b441}#gvm .g-R{--gc:#c58cff}#gvm .g-A{--gc:#5fd38a}#gvm .g-C{--gc:#9aa1ab}#gvm .g-D{--gc:#ef6461}#gvm .g-q{--gc:#ffd27a}
 #gvm .gvp{position:relative;width:min(1080px,100%);border-radius:20px;border:1px solid color-mix(in srgb,var(--gc) 40%,var(--g-line,#2b2e33));background:radial-gradient(70% 60% at 100% 0,color-mix(in srgb,var(--gc) 14%,transparent),transparent 65%),linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,0) 30%),var(--g-panel,#15171b);box-shadow:0 30px 80px rgba(0,0,0,.6);padding:20px 22px 22px;color:#e8ecf2}
 #gvm .gvh{display:flex;gap:16px;align-items:center}#gvm .gvh .vt{--t:72px;flex:none}
@@ -820,7 +820,7 @@ body.gtann #gtmaint{top:calc(var(--gt-bar-h,56px) + 74px)}
 #gvm .gvtags button svg{width:14px;height:14px;color:var(--tc)}#gvm .gvtags button.on{border-color:var(--tc)!important;background:color-mix(in srgb,var(--tc) 16%,transparent)!important;color:#fff!important}
 #gvm .gvl{padding:28px;text-align:center;color:#a3aab4}
 @media (max-width:760px){#gvm .gvlow{grid-template-columns:1fr}}
-@media (max-width:560px){#gvm{padding:0}#gvm .gvp{border-radius:0;min-height:100%;padding:16px 14px 28px;border-left:0;border-right:0}#gvm .gvh .vt{--t:56px}#gvm .gvn h3{font-size:20px}#gvm .gvcols{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}#gvm .gvc{padding:9px}#gvm .gvo{font-size:12.5px;min-height:38px}#gvm .gvo img{width:26px;height:26px}#gvm .gvo em{display:none}}
+@media (max-width:560px){#gvm{padding:0;z-index:9200}#gvm .gvp{border-radius:0;min-height:100%;padding:calc(var(--gt-sat,0px) + 16px) 14px calc(28px + env(safe-area-inset-bottom,0px));border-left:0;border-right:0}#gvm .gvh{padding-right:50px}#gvm .gvx{position:fixed!important;top:calc(var(--gt-sat,0px) + 10px)!important;right:12px!important;z-index:3;width:44px;height:44px;background:rgba(20,22,28,.92)!important;box-shadow:0 4px 14px rgba(0,0,0,.5)}#gvm .gvh .vt{--t:56px}#gvm .gvn h3{font-size:20px}#gvm .gvcols{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}#gvm .gvc{padding:9px}#gvm .gvo{font-size:12.5px;min-height:38px}#gvm .gvo img{width:26px;height:26px}#gvm .gvo em{display:none}}
 @media (prefers-reduced-motion:no-preference){#gvm .gvp.enter{animation:gvIn .2s cubic-bezier(.2,.8,.2,1)}@keyframes gvIn{from{opacity:0;transform:translateY(10px) scale(.99)}to{opacity:1;transform:none}}}
 
 #godrolls .gphint{margin:6px 2px 12px;color:#9aa1ab;font-size:13px}
@@ -2493,12 +2493,41 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   const setNote = (t) => { if (t && MAINT_RE.test(t)) maintShow(); else if (t && /up to date/i.test(t)) { maintOff = false; maintHide(); } if (t && /^(Failed|Could not|Error)/i.test(t) && window.__gtLog) window.__gtLog(t, 'inventory'); const n = g('vnote'); if (!n) return; n.textContent = t || ''; clearTimeout(noteT); if (t && !/^Working/.test(t)) noteT = setTimeout(() => { if (n.textContent === t) n.textContent = ''; }, /^Failed/.test(t) ? 9000 : 3500); };
   gt.onProgress((m) => { if (sec.dataset.busy) msg(m); });
 
+  // While Bungie's sign-in page is open. On an iPhone or iPad app added to the home screen, iOS opens Bungie's page in Safari and the
+  // sign-in finishes there, so this page would wait for ever: it offers a way out, and (with a Pathfinder account) to bring the Bungie
+  // accounts in from it, which is one small request rather than anything running over and over.
+  const homeApp = () => !!(navigator.standalone || (window.matchMedia && matchMedia('(display-mode: standalone)').matches));
+  function waitSignIn() {
+    noBar();
+    const pf = PFA && PFA.on;
+    sec.innerHTML = `<div class="card gtwait" style="max-width:520px;margin:40px auto;text-align:center"><h2>Vault</h2><p class="mute">Waiting for Bungie sign-in...</p>
+      <div class="gtwx"${homeApp() ? '' : ' hidden'}><p class="mute" style="font-size:13px">Signed in to Bungie but nothing happened? ${homeApp() ? 'On an iPhone or iPad Pathfinder opened from the home screen, Bungie\'s page finishes in Safari instead of here.' : 'The sign-in may have finished in another tab or window.'} ${pf ? 'Get my accounts brings them in from your Pathfinder account.' : 'Try again, or sign in to a Pathfinder account (Settings > Accounts) on a device where Bungie works to bring your accounts here.'}</p>
+      <p>${pf ? '<button class="b" data-act="pfapull" title="Bring in the Bungie accounts saved in your Pathfinder account">Get my accounts</button> ' : ''}<button class="g" data-act="presetlogin">Try again</button> <button class="g" data-act="waitx">Cancel</button></p></div></div>`;
+    // coming back to Pathfinder (from Safari or another tab) or after a few seconds: show the way out
+    const reveal = () => { const x = sec.querySelector('.gtwx'); if (x) x.hidden = false; };
+    setTimeout(reveal, 6000); document.addEventListener('visibilitychange', function f() { if (!document.hidden) { reveal(); document.removeEventListener('visibilitychange', f); } });
+  }
+  // Bring the Bungie accounts saved in your Pathfinder account onto this device now (Settings > Accounts > Sync now does the same).
+  async function pfaPull(btn) {
+    if (!gt.pfaSync) return;
+    if (btn) { btn.disabled = true; btn.textContent = 'Getting your accounts...'; }
+    try {
+      const r = await gt.pfaSync(); if (r && (r.reload || r.restart)) { afterAcct(r); return; }
+      if (r && r.avail !== undefined) PFA = r; ACL = null;
+      const c = await gt.cfgGet();
+      if (c.signedIn) { delete sec.dataset.busy; window.dispatchEvent(new Event('gtaccts')); load(); return; }
+      throw new Error((r && r.err) || 'Your Pathfinder account has no Bungie sign-in that works here yet. Sign in to Bungie on any device that is signed in to your Pathfinder account, then try this again.');
+    } catch (er) { if (btn) { btn.disabled = false; btn.textContent = 'Get my accounts'; } const p0 = sec.querySelector('.gtwerr') || Object.assign(document.createElement('p'), { className: 'pmsg bad gtwerr' }); p0.textContent = clean(er); const card = sec.querySelector('.card'); if (card && !p0.isConnected) card.appendChild(p0); }
+  }
+  // Accounts arriving from the Pathfinder account (the sync when Pathfinder opens or comes back) while the vault is not showing
+  // anything yet: load it straight away instead of leaving the sign-in screen up.
+  window.addEventListener('gtaccts', () => { if (!D && !sec.querySelector('.vt')) gt.cfgGet().then((c) => { if (c.signedIn) { delete sec.dataset.busy; load(); } }).catch(() => {}); });
   async function init() { const c = await gt.cfgGet(); try { localStorage.setItem('gt_acct_ns', acctNs(c.mid, c.prim)); } catch (e) { /* storage off */ } ACL = null; c.signedIn ? load() : setup(c); }
   function setup(c, err) {
     noBar();
     const note = err ? `<p class="pmsg bad" style="margin:0 0 10px">Sign-in did not finish: ${esc(err)}</p>` : '';
     if (c.preset) {
-      sec.innerHTML = `<div class="card" style="max-width:520px;margin:40px auto;text-align:center"><h2>Welcome to Pathfinder</h2>${note}<p class="mute">Sign in with your own Bungie account to see your characters, vault, loadouts and triumphs. Everything stays on ${GT_HERE}, and nothing is shared with anyone.</p><p><button class="b" data-act="presetlogin" style="padding:10px 22px;font-size:15px">Sign in with Bungie</button></p></div>`;
+      sec.innerHTML = `<div class="card" style="max-width:520px;margin:40px auto;text-align:center"><h2>Welcome to Pathfinder</h2>${note}<p class="mute">Sign in with your own Bungie account to see your characters, vault, loadouts and triumphs. Everything stays on ${GT_HERE}, and nothing is shared with anyone.</p><p><button class="b" data-act="presetlogin" style="padding:10px 22px;font-size:15px">Sign in with Bungie</button></p>${PFA && PFA.on ? `<p class="mute" style="font-size:13px;margin-top:14px">Signed in to your Pathfinder account as <b>${esc(pdn())}</b>. Already signed in to Bungie on another device?</p><p><button class="g" data-act="pfapull" title="Bring in the Bungie accounts saved in your Pathfinder account">Get my accounts</button></p>` : ''}</div>`;
       // Accounts saved here (for example after cancelling "Add another account"): one click to go back to one.
       if (gt.acctList) gt.acctList().then((r) => {
         const l = (r && r.list) || []; if (!l.length || !sec.querySelector('.card')) return;
@@ -3003,12 +3032,14 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
     gvDraw();
     if (!DET[id] || DET[id].err) { delete DET[id]; fetchDet(x).then(() => { if (GV.id === id) gvDraw(); }); }
   }
+  // Switching tabs (the bar at the bottom on phones) closes the weapon view, so it can never be left stuck on top.
+  new MutationObserver(() => { const m = g('gvm'); if (m && m.dataset.sec !== document.documentElement.dataset.gsec) gvClose(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-gsec'] });
   function gvClose() { GV.id = ''; GV.from = ''; const m = g('gvm'); if (m) m.remove(); document.removeEventListener('keydown', gvKey, true); }
   function gvKey(e) { if (e.key === 'Escape' && g('gvm')) { e.stopPropagation(); gvClose(); } }
   function gvDraw() {
     const x = byId(GV.id); if (!x) { gvClose(); return; }
     let m = g('gvm'); const fresh = !m;
-    if (!m) { m = document.createElement('div'); m.id = 'gvm'; m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); document.body.appendChild(m); m.onclick = gvClick; document.addEventListener('keydown', gvKey, true); }
+    if (!m) { m = document.createElement('div'); m.id = 'gvm'; m.dataset.sec = document.documentElement.dataset.gsec || ''; m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); document.body.appendChild(m); m.onclick = gvClick; document.addEventListener('keydown', gvKey, true); }
     const d = DET[GV.id], exo = x.r === 'Exotic', gr = exo ? 'X' : grade(x), w = exo ? { v: 0, notes: [], tags: [], perks: new Set() } : wish(x), wp = w.perks || new Set(), want = (p) => !!p && (wp.has(p.h) || wp.has(p.n));
     const el = ELEM[x.el], T = TAGS(), tg = T[x.id];
     const where = x.loc === 'vault' ? 'Vault' : (() => { const c = D.chars.find((k) => k.id === x.loc); return c ? CL[c.cls] || 'Guardian' : ''; })();
@@ -4390,8 +4421,10 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
     } else if (a === 'collect') {
       collectPm(t.dataset.c);
     } else if (a === 'presetlogin') {
-      try { sec.dataset.busy = 1; msg('Waiting for Bungie sign-in...'); await gt.login(); load(); } catch (er) { delete sec.dataset.busy; let c = { preset: true }; try { c = await gt.cfgGet(); } catch (e2) { /* welcome anyway */ } setup(c, clean(er)); }
+      try { sec.dataset.busy = 1; waitSignIn(); await gt.login(); load(); } catch (er) { delete sec.dataset.busy; let c = { preset: true }; try { c = await gt.cfgGet(); } catch (e2) { /* welcome anyway */ } setup(c, clean(er)); }
     }
+    else if (a === 'pfapull') pfaPull(t);
+    else if (a === 'waitx') { delete sec.dataset.busy; init(); }
     else if (a === 'refresh' || a === 'qrefresh') quickLoad();
     else if (a === 'retry') init();
     else if (a === 'out') { await gt.logout(); init(); }
