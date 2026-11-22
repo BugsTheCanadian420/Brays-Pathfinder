@@ -123,7 +123,7 @@
 #fdm .fvo{display:flex;align-items:center;gap:9px;width:100%;min-height:40px;padding:5px 8px!important;border-radius:10px!important;border:1px solid transparent!important;background:rgba(255,255,255,.03)!important;color:#dfe4ea!important;text-align:left;font-size:13.5px;font-weight:600;cursor:pointer}
 #fdm .fvo:hover{background:rgba(255,255,255,.07)!important}
 #fdm .fvo img{width:30px;height:30px;border-radius:50%;flex:none;background:#0d0f13;border:1px solid rgba(255,255,255,.14)}
-#fdm .fvo span{flex:1;min-width:0;line-height:1.2;overflow-wrap:anywhere}
+#fdm .fvo span{flex:1;min-width:0;line-height:1.2;overflow-wrap:break-word;word-break:normal;hyphens:auto}
 #fdm .fvo.on{border-color:color-mix(in srgb,var(--gc) 55%,transparent)!important;background:color-mix(in srgb,var(--gc) 10%,transparent)!important;color:#fff!important}
 #fdm .fvo.hl{border-color:#35e3cf!important;background:color-mix(in srgb,#35e3cf 9%,transparent)!important}
 #fdm .fvd{overflow-wrap:anywhere;margin:4px 2px 0;font-size:12.5px;line-height:1.45;color:#a3aab4}
