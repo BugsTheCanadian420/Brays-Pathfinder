@@ -90,7 +90,7 @@
 #finder .fdfl select{width:auto!important;min-height:40px;height:auto!important;margin:0!important;padding:6px 32px 6px 12px!important;line-height:1.3;box-sizing:border-box}#finder .fdfl input{margin:0!important}
 #finder .fdfl label{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:#aeb4bd;white-space:nowrap;cursor:pointer}#finder .fdfl label input{width:16px!important;height:16px!important;min-width:0!important;flex:none;padding:0!important}
 #finder .fdl{padding:30px;text-align:center;color:#9aa1ab}
-#fdm{position:fixed;inset:0;z-index:70;background:rgba(4,6,10,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:flex;align-items:flex-start;justify-content:center;padding:max(24px,4vh) 16px 24px;overflow:auto}
+#fdm{position:fixed;inset:0;z-index:70;background:rgba(4,6,10,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:flex;align-items:flex-start;justify-content:center;padding:calc(max(24px,4vh) + var(--gt-sat,0px)) 16px calc(24px + env(safe-area-inset-bottom,0px));overflow:auto}
 #fdm .fvp{--gc:#b07cff;position:relative;width:min(1080px,100%);border-radius:20px;border:1px solid color-mix(in srgb,var(--gc) 40%,var(--g-line,#2b2e33));background:radial-gradient(70% 60% at 100% 0,color-mix(in srgb,var(--gc) 14%,transparent),transparent 65%),linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,0) 30%),var(--g-panel,#15171b);box-shadow:0 30px 80px rgba(0,0,0,.6);padding:20px 22px 22px;color:#e8ecf2}
 #fdm.enter .fvp{animation:fdIn .18s ease-out}
 @keyframes fdIn{from{opacity:0;transform:translateY(8px) scale(.99)}to{opacity:1;transform:none}}
@@ -134,7 +134,7 @@
 #fdm .fvhint{margin:12px 2px 0;font-size:12.5px;color:#8b929c}
 #fdm .fdl{padding:28px;text-align:center;color:#a3aab4}
 @media (max-width:760px){#finder .fdgrid{grid-template-columns:1fr}#finder .fdh{padding:18px 16px}#finder .fdh h2{font-size:24px}}
-@media (max-width:560px){#fdm{padding:0}#fdm .fvp{border-radius:0;min-height:100%;padding:16px 14px 28px;border-left:0;border-right:0}#fdm .fvh .fdic{width:56px;height:56px}#fdm .fvn h3{font-size:20px}#fdm .fvcols{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}#fdm .fvc{padding:9px}#fdm .fvo{font-size:12.5px;min-height:38px}#fdm .fvo img{width:26px;height:26px}}
+@media (max-width:560px){#fdm{padding:0;z-index:9200}#fdm .fvp{border-radius:0;min-height:100%;padding:calc(var(--gt-sat,0px) + 16px) 14px calc(28px + env(safe-area-inset-bottom,0px));border-left:0;border-right:0}#fdm .fvh{padding-right:50px}#fdm .fvx{position:fixed!important;top:calc(var(--gt-sat,0px) + 10px)!important;right:12px!important;z-index:3;width:44px;height:44px;background:rgba(20,22,28,.92)!important;box-shadow:0 4px 14px rgba(0,0,0,.5)}#fdm .fvh .fdic{width:56px;height:56px}#fdm .fvn h3{font-size:20px}#fdm .fvcols{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}#fdm .fvc{padding:9px}#fdm .fvo{font-size:12.5px;min-height:38px}#fdm .fvo img{width:26px;height:26px}}
 @media (prefers-reduced-motion:reduce){#finder .fdc,#fdm.enter .fvp{transition:none;animation:none}}
 `;
   document.head.appendChild(css);
@@ -209,11 +209,13 @@ ${list.length ? `<div class="fdgrid">${list.map((w) => wCard(w, `${w.col ? `<spa
     try { WV.d = await gt.fdWeapon({ h, hs }); } catch (e) { WV.err = clean(e); }
     WV.busy = 0; wDraw();
   }
+  // Switching tabs (the bar at the bottom on phones) closes the view, so it can never be left stuck on top.
+  new MutationObserver(() => { const m = document.getElementById('fdm'); if (m && m.dataset.sec !== document.documentElement.dataset.gsec) wClose(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-gsec'] });
   function wClose() { const m = document.getElementById('fdm'); if (m) m.remove(); WV.d = null; document.removeEventListener('keydown', wKey, true); }
   function wKey(e) { if (e.key === 'Escape' && document.getElementById('fdm')) { e.stopPropagation(); e.preventDefault(); wClose(); } }
   function wDraw(fresh) {
     let m = document.getElementById('fdm');
-    if (!m) { m = document.createElement('div'); m.id = 'fdm'; m.className = 'enter'; m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); document.body.appendChild(m); document.addEventListener('keydown', wKey, true); m.addEventListener('animationend', () => m.classList.remove('enter'), { once: true }); }
+    if (!m) { m = document.createElement('div'); m.id = 'fdm'; m.dataset.sec = document.documentElement.dataset.gsec || ''; m.className = 'enter'; m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); document.body.appendChild(m); document.addEventListener('keydown', wKey, true); m.addEventListener('animationend', () => m.classList.remove('enter'), { once: true }); }
     else if (fresh) m.className = '';
     const d = WV.d;
     if (!d) { m.innerHTML = `<div class="fvp"><button type="button" class="fvx" data-fx aria-label="Close" style="position:absolute;right:18px;top:18px">&#10005;</button><div class="fdl">${WV.err ? esc(WV.err) : 'Reading the perk pools…'}</div></div>`; m.setAttribute('aria-label', 'Weapon'); return; }

@@ -22,6 +22,7 @@
       'Keyboard shortcuts can be switched off in Settings > Shortcuts. Quick notes open with Shift+N (Ctrl+Shift+N opens a private window in browsers).',
       'The Weapon pop-up option "God roll style" is now called Pathfinder Style, Settings sections are in a new order (Appearance comes second), and Keyboard shortcuts and Founder panel are now just Shortcuts and Founder.',
       'Help desk (team): an open request updates by itself every few seconds, shows who else on the team has it open and whether they are typing, and a reply you send after someone else already answered waits so you can read theirs first (Send anyway sends it).',
+      'Phones: the weapon views (Finder and God rolls) start below the status bar so their X can always be reached, cover the tab bar, and close when you switch tabs. Signing in to Bungie from Pathfinder on the home screen no longer waits for ever: Get my accounts brings your Bungie accounts in from your Pathfinder account.',
       'Loadout pictures now import even after Discord or another app re-saves them: copy the picture in Discord and paste it into Import loadout (Ctrl+V or the Paste button). New pictures have a small black-and-white code in the bottom corner for this.',
       'The Hub is now Community sites, with a Join our Discord button. You can also join from Settings, About & help.',
       'About Pathfinder: who makes it and the people who helped, in Settings, About & help and on d2pathfinder.com.',
