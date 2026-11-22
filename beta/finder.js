@@ -12,6 +12,30 @@
   const ELEM = { 1: ['Kinetic', '#d8dde4'], 2: ['Arc', '#7bd0ff'], 3: ['Solar', '#ff9a3c'], 4: ['Void', '#b98cff'], 6: ['Stasis', '#6fa8ff'], 7: ['Strand', '#4ee08c'] };
   const AMMO = { 1: 'Primary', 2: 'Special', 3: 'Heavy' };
   const RCOL = (r) => (/exotic/i.test(r) ? '#e8c25a' : '#b07cff');
+  // "How to get": Bungie's Collections source line, plus a short pointer to where that is in the game
+  const HOWTO = [
+    [/no longer|not currently|cannot be (?:earned|obtained)|retired|sunset/i, 'This version does not drop any more. Look at the newest version if there is one.'],
+    [/trials/i, 'Play Trials of Osiris while it is live (weekends).'],
+    [/iron banner/i, 'Play Iron Banner while it is live.'],
+    [/solo ops/i, 'Queue Solo Ops in the Portal.'],
+    [/fireteam ops/i, 'Queue Fireteam Ops in the Portal.'],
+    [/pinnacle ops/i, 'Queue Pinnacle Ops in the Portal.'],
+    [/nightfall|grandmaster/i, 'Play Nightfall strikes.'],
+    [/vanguard|strike/i, 'Play Vanguard strikes and playlists.'],
+    [/crucible|competitive|shaxx/i, 'Play Crucible matches.'],
+    [/gambit|drifter/i, 'Play Gambit matches.'],
+    [/\braid\b/i, 'It drops in that raid: finish its encounters (the weekly featured raid can drop it more often).'],
+    [/dungeon/i, 'It drops in that dungeon: finish its encounters.'],
+    [/x[uû]r/i, 'Sold by Xûr when he visits (weekends).'],
+    [/banshee|gunsmith/i, 'From Banshee-44, the Gunsmith, in the Tower.'],
+    [/exotic (?:quest|mission)|quest|mission/i, 'Comes from a quest or mission: check your Quests.'],
+    [/season pass|rewards pass/i, 'From the season\'s rewards pass.'],
+    [/eververse|bright engram/i, 'From Eververse or Bright Engrams.'],
+    [/festival|dawning|solstice|guardian games|event/i, 'From a seasonal event, while it is running.'],
+    [/exotic engram/i, 'Drops from Exotic Engrams.'],
+    [/engram|world|loot pool/i, 'World loot: drops from engrams and activities all over the game.'],
+  ];
+  const howTo = (src) => { const t = String(src || '').replace(/^source:\s*/i, '').trim(); if (!t) return null; const hit = HOWTO.find(([re]) => re.test(t)); return { t, tip: hit ? hit[1] : '' }; };
   const SUGGEST = ['Rampage', 'Kill Clip', 'Incandescent', 'Repulsor Brace', 'Chill Clip', 'Bait and Switch', 'Destabilizing Rounds', 'Hand Cannon'];
 
   const s = document.createElement('section'); s.id = 'finder'; s.className = 'gdark'; vsec.parentNode.appendChild(s);
@@ -64,7 +88,7 @@
 #finder .fdph p{margin:0;color:#c3c9d2;font-size:14px;line-height:1.5;max-width:80ch}
 #finder .fdfl{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:14px 0 0}
 #finder .fdfl select{width:auto!important;min-height:40px;height:auto!important;margin:0!important;padding:6px 32px 6px 12px!important;line-height:1.3;box-sizing:border-box}#finder .fdfl input{margin:0!important}
-#finder .fdfl label{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#aeb4bd}
+#finder .fdfl label{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:#aeb4bd;white-space:nowrap;cursor:pointer}#finder .fdfl label input{width:16px!important;height:16px!important;min-width:0!important;flex:none;padding:0!important}
 #finder .fdl{padding:30px;text-align:center;color:#9aa1ab}
 #fdm{position:fixed;inset:0;z-index:70;background:rgba(4,6,10,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:flex;align-items:flex-start;justify-content:center;padding:max(24px,4vh) 16px 24px;overflow:auto}
 #fdm .fvp{--gc:#b07cff;position:relative;width:min(1080px,100%);border-radius:20px;border:1px solid color-mix(in srgb,var(--gc) 40%,var(--g-line,#2b2e33));background:radial-gradient(70% 60% at 100% 0,color-mix(in srgb,var(--gc) 14%,transparent),transparent 65%),linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,0) 30%),var(--g-panel,#15171b);box-shadow:0 30px 80px rgba(0,0,0,.6);padding:20px 22px 22px;color:#e8ecf2}
@@ -90,6 +114,7 @@
 #fdm .fvv button.on{border-color:var(--gc)!important;background:color-mix(in srgb,var(--gc) 14%,transparent)!important;color:#fff!important}
 #fdm .fvfr{margin:14px 0 0;padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.035);border:1px solid var(--g-line,#2b2e33);border-left:3px solid var(--gc);font-size:13.5px;line-height:1.5;color:#cdd3dc}
 #fdm .fvfr b{color:#fff}
+#fdm .fvget{margin-top:14px}
 #fdm .fvcols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:12px;margin:16px 0 0}
 #fdm .fvc{min-width:0;display:flex;flex-direction:column;gap:6px;padding:12px;border-radius:14px;background:rgba(0,0,0,.18);border:1px solid var(--g-line,#2b2e33)}
 #fdm .fvc h5{margin:0 0 2px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9aa1ab}
@@ -210,6 +235,7 @@ ${list.length ? `<div class="fdgrid">${list.map((w) => wCard(w, `${w.col ? `<spa
 ${vers}
 ${d.fr && d.fr.d ? `<div class="fvfr"><b>${esc(d.fr.n)}:</b> ${esc(d.fr.d)}</div>` : ''}
 ${d.cols.length ? `<div class="fvcols">${cols}</div>` : '<div class="fdl">This weapon has no random perks.</div>'}
+${(() => { const g = howTo(d.src); return `<div class="fvfr fvget"><b>How to get:</b> ${g ? `${esc(g.t)}${/[.!?]$/.test(g.t) ? '' : '.'}${g.tip ? ' ' + esc(g.tip) : ''}` : 'Bungie does not say where this drops. It may come from an event, a past season or a reissue' + (d.versions.length > 1 ? ': look at the other versions above.' : '.')}</div>`; })()}
 <p class="fvhint">Every perk this version can drop with today. Click a perk for what it does.</p>
 <div class="fva">${n ? `<button type="button" data-finv>Show my copies in Inventory</button>` : ''}${window.__gtTabLocked && !window.__gtTabLocked('wishmaker') ? '<button type="button" data-fwm>Make a wish list roll</button>' : ''}</div></div>`;
   }

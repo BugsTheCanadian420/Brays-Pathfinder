@@ -235,10 +235,10 @@ html.gtwide #gtsrch{flex:1 1 0!important;margin-left:0!important}
 header.gtbar nav button.gtset{order:6;width:42px;padding:0!important;display:inline-flex;align-items:center;justify-content:center;margin-left:2px}
 #gtsrch{order:5;flex:1 1 200px;min-width:0;display:flex;justify-content:flex-end;align-items:center;margin-left:8px}
 #gtsrch .vbar{display:flex;align-items:center;gap:5px;width:100%;max-width:680px}
-html:not([data-gtab="vault"]) #gtsrch .vbar .vtg{visibility:hidden;pointer-events:none}
+html:not([data-gtab="vault"]) #gtsrch .vbar .vtg{display:none!important}
 #gtsrch .vbar input{flex:1;min-width:70px;width:auto;margin:0;height:32px;padding:0 10px 0 32px;font-size:13.5px;color:#fff;background:var(--g-deep,#0f1012) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239b9ea5' stroke-width='2.4' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5'/%3E%3Cpath d='M15.5 15.5L21 21'/%3E%3C/svg%3E") no-repeat 10px center/15px;border:1px solid #3a3d43;border-radius:3px}
 #gtsrch .vbar input:focus{outline:0;border-color:var(--g-accent,#7ab8e8)}
-#gtsrch .vbar .vnm{display:none;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#8d9097;margin-right:4px}
+#gtsrch .vbar .vnm{display:none;flex:none;max-width:min(300px,16vw);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#8d9097;margin-right:4px}
 @media (min-width:2400px){#gtsrch .vbar .vnm{display:block}}
 #gtsrch .vbar .vtg{display:inline-flex;flex:none;background:var(--g-btn,#1b1d21);border:1px solid #33363c;border-radius:6px;padding:2px;gap:2px}
 #gtsrch .vbar button.g{flex:none;width:30px;height:28px;padding:0!important;display:inline-flex;align-items:center;justify-content:center;line-height:1;background:transparent!important;border:0!important;border-radius:4px!important;color:#b4b8bf!important;box-shadow:none!important;min-width:0!important;transition:background .12s,color .12s}

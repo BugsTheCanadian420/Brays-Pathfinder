@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.35-beta.12: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.35-beta.13: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -267,7 +267,7 @@ async function api(p, auth = true) {
   return j.Response;
 }
 let DEFS = null;
-const PSNEED = new Set(); // perk pools Finder needs, filled while the item table is read
+const PSNEED = new Set(), COLNEED = new Set(); // perk pools Finder needs, filled while the item table is read
 // Speed: the manifest index (which game version is live) is asked for once every 10 minutes, not before every lookup.
 let MFQ = null;
 function manifest() {
@@ -279,7 +279,7 @@ function manifest() {
 async function defs() {
   const f = path.join(app.getPath('userData'), 'defs8.json');
   const m = await manifest();
-  const v = m.version + '.14';
+  const v = m.version + '.15';
   if (DEFS && DEFS.v === v) return DEFS;
   try { const o = JSON.parse(fs.readFileSync(f, 'utf8')); if (o.v === v) return (DEFS = o); } catch (e) { /* download below */ }
   send('Downloading item data. This only happens on the first run and after game updates.');
@@ -318,6 +318,7 @@ async function defs() {
         if (pp.length) d[k].pp = pp;
         const fi = ii.map((si) => (ents[si] || {}).singleInitialItemHash).find(Boolean); if (fi) d[k].fi = fi;
         if (x.defaultDamageType) d[k].e = x.defaultDamageType;
+        if (x.collectibleHash) { d[k].ch = x.collectibleHash; COLNEED.add(x.collectibleHash); }
       }
       const amt = x.equippingBlock && x.equippingBlock.ammoType; if (amt) d[k].am = amt; // 1 primary, 2 special, 3 heavy (is:primary and so on in search)
     }
@@ -336,11 +337,25 @@ async function defs() {
     } catch (e) { /* Finder falls back to the fixed perks */ }
   }
   PSNEED.clear();
+  // Finder "How to get": the Collections source line for each weapon ("Source: Solo Ops", "Source: Trials of Osiris" ...)
+  const srcs = [], srcI = {}, csrc = {};
+  if (P.DestinyCollectibleDefinition) {
+    try {
+      await table(P.DestinyCollectibleDefinition, (k, x) => {
+        if (!COLNEED.has(+k)) return;
+        const t = String(x.sourceString || '').trim(); if (!t) return;
+        if (!(t in srcI)) { srcI[t] = srcs.length; srcs.push(t); }
+        csrc[k] = srcI[t];
+      });
+    } catch (e) { /* no sources then */ }
+  }
+  for (const k in d) if (d[k].ch !== undefined) { const i = csrc[d[k].ch]; if (i !== undefined) d[k].so = i; delete d[k].ch; }
+  COLNEED.clear();
   for (const k in dtRaw) { const q = dtRaw[k]; if (q.enumValue !== undefined && q.displayProperties && q.displayProperties.icon) dm[q.enumValue] = q.displayProperties.icon; }
   for (const k in btRaw) { const q = btRaw[k]; if (q.enumValue && q.displayProperties && q.displayProperties.icon) bk[q.enumValue] = q.displayProperties.icon; }
   for (const k in stRaw) { const x = stRaw[k]; if (x.displayProperties && x.displayProperties.name) st[k] = { n: x.displayProperties.name, o: x.index }; }
   for (const k in sgRaw) sg[k] = (sgRaw[k].scaledStats || []).map((q) => ({ h: q.statHash, max: q.maximumValue || 100, num: !!q.displayAsNumeric }));
-  const o = { v, d, p, st, sg, a: ar, g: gx, W, dm, bk, psd };
+  const o = { v, d, p, st, sg, a: ar, g: gx, W, dm, bk, psd, srcs };
   fs.writeFileSync(f, JSON.stringify(o));
   return (DEFS = o);
 }
@@ -3394,7 +3409,7 @@ H('fd:weapon', async (e, v) => {
   const hs = v.hs === undefined ? [h] : [h].concat(ARR(v.hs, 12).map(HASH)).filter((x, i, a) => x > 0 && a.indexOf(x) === i && df.d[x]);
   const versions = hs.map((x) => { const q = df.d[x], wi = fdWi(q); return { h: x, wm: wi >= 0 ? df.W[wi] || '' : '', wi, i: q.i || '', cols: (q.pp || []).length }; }).sort((a, b) => b.wi - a.wi || b.cols - a.cols);
   const fr = d.fi && df.p[d.fi] ? { n: df.p[d.fi].n, i: df.p[d.fi].i || '', d: String(df.p[d.fi].d || '').slice(0, 300) } : null;
-  return { h, n: d.n, i: d.i || '', t: d.t || '', r: d.r || '', e: d.e || 0, ei: (df.dm && df.dm[d.e]) || '', am: d.am || 0, bt: d.bt || 0, bi: (df.bk && df.bk[d.bt]) || '', wm: fdWi(d) >= 0 ? df.W[fdWi(d)] || '' : '', fr, versions, cols: fdCols(df, h) };
+  return { h, src: d.so !== undefined && df.srcs ? df.srcs[d.so] || '' : '', n: d.n, i: d.i || '', t: d.t || '', r: d.r || '', e: d.e || 0, ei: (df.dm && df.dm[d.e]) || '', am: d.am || 0, bt: d.bt || 0, bi: (df.bk && df.bk[d.bt]) || '', wm: fdWi(d) >= 0 ? df.W[fdWi(d)] || '' : '', fr, versions, cols: fdCols(df, h) };
 });
 H('fd:perk', async (e, v) => {
   OBJ(v); const n = TXT(v.n, 80).trim().toLowerCase(), df = await defs(), X = fdIndex(df), p = X.m.get(n);
