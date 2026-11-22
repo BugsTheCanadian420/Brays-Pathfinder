@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.35-beta.13: preload.js for the browser */
+/* Pathfinder 0.3.35-beta.14: preload.js for the browser */
 (function (require) {
 const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('gt', {
@@ -58,7 +58,7 @@ contextBridge.exposeInMainWorld('gt', {
   pfaSync: () => ipcRenderer.invoke('pfa:sync'),
   pfaLogout: () => ipcRenderer.invoke('pfa:logout'),
   pfaDelete: () => ipcRenderer.invoke('pfa:delete'),
-  pfaReset: (v) => ipcRenderer.invoke('pfa:reset', v),
+  pfaProfile: (v) => ipcRenderer.invoke('pfa:profile', v), pfaChangePw: (v) => ipcRenderer.invoke('pfa:changepw', v), pfaLoginName: (v) => ipcRenderer.invoke('pfa:loginname', v),
   flagsGet: (v) => ipcRenderer.invoke('flags:get', v),
   bungieStatus: () => ipcRenderer.invoke('bungie:status'),
   devTools: () => ipcRenderer.invoke('dev:tools'),
@@ -94,6 +94,7 @@ contextBridge.exposeInMainWorld('gt', {
   onFarm: (cb) => ipcRenderer.on('farm', (e, m) => cb(m)),
   actRot: (v) => ipcRenderer.invoke('act:rot', v),
   chkAuto: () => ipcRenderer.invoke('chk:auto'),
+  lookSet: (v) => ipcRenderer.invoke('look:set', v),
   fdFind: (v) => ipcRenderer.invoke('fd:find', v), fdWeapon: (v) => ipcRenderer.invoke('fd:weapon', v), fdPerk: (v) => ipcRenderer.invoke('fd:perk', v),
   clanGet: (v) => ipcRenderer.invoke('clan:get', v),
   clanProf: (v) => ipcRenderer.invoke('clan:prof', v),

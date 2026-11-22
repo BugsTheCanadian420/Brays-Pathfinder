@@ -38,6 +38,10 @@
       'New option in Settings > Appearance: Weapon pop-up in Inventory. Pick God roll style and clicking a weapon in your inventory opens the God roll view (every perk column, wish list picks, Apply, tag, move, equip). Its Classic details button still opens the full pop-up, and armour keeps the classic one.',
       'Pathfinder account: a Bungie account you add on the website now also works in the PC app and the other way round (no second sign-in), and your Pathfinder account syncs every time Pathfinder opens or you come back to it, so new accounts show up on your other devices straight away.',
       'New Finder tab (like destiny.report): search any weapon in the game to see every perk it can roll today, column by column (perks that no longer drop are left out), or search a perk to see every weapon that can roll it and in which column. Filter by weapon type, see which ones you own, and jump to your copies or the Wish list maker.',
+      'God rolls: every God roll and S rated weapon now says whether it is a PvE or PvP roll, and a new All / PvE / PvP switch at the top shows only the ones you are hunting for (Aegis lists count as PvE; other lists go by their pve/pvp tags).',
+      'Five new background pictures in Settings > Appearance: Shrouded Statue, Frozen Array, Europa Pyramid, Tower Sunrise and Open Valley.',
+      'Pathfinder accounts now work like Steam: a display name everyone sees and a private login name you sign in with. Click your name at the top for Account settings, where you can change your display name, login name and password. Your login name stays hidden as dots unless you press the eye (handy on stream).',
+      'Forgot your password? The Accounts page now sends you to the Help Desk, where the team can reset it for you.',
     ] },
     { id: 19, date: 'Nov 2026', items: [
       'When Bungie is down, the vault you loaded last stays on screen (read-only) with a line saying when it is from, and Pathfinder tries again every 2 minutes. A bar under the tabs shows Bungie\'s maintenance timeline in your own time.',
@@ -137,6 +141,9 @@
   window.addEventListener('unhandledrejection', (e) => { const r = e && e.reason; log((r && r.message) || r || 'Unknown error', 'promise'); });
 
   let VER = window.__GT_VER__ || '', UPD = {};
+  // Testers and up, in the regular PC app: a button to the PC beta (Pathfinder Beta) installer on the GitHub releases page.
+  const BETA_APP_URL = 'https://github.com/BugsTheCanadian420/Brays-Pathfinder/releases/tag/beta';
+  const betaAppBtn = () => (!isWeb() && !/-beta/i.test(VER) && (document.documentElement.hasAttribute('data-gttester') || document.documentElement.hasAttribute('data-gtdev')) ? '<button class="g" data-ab="betaapp" title="Pathfinder Beta: the next version early, as its own app next to this one. It copies your settings the first time.">Get the beta app</button> ' : '');
   const isWeb = () => !!window.__GT_WEB__ || document.documentElement.classList.contains('gtweb');
   const HELP = 'help@d2pathfinder.com';
   if (window.gt && window.gt.updInfo) {
@@ -243,7 +250,7 @@ ${list.map((c) => `<div class="gtnv"><small>${esc(c.date)}</small><ul>${c.items.
 <p class="gtabout">A big thank you to <b>Frosty</b> (Founder), <b>Manta</b> (Founder), <b>Zeb</b> (Dev), <b>BabyJosephSayer</b> (Feedback and Ideas), <b>Ryu</b> (Feedback and Ideas) and everyone else who helped with ideas, input and testing. Pathfinder is what it is because of you.</p>
 <p><a class="gtdisc" href="https://discord.gg/rJXsgHdcMY" target="_blank" rel="noopener" data-ab="discord">Join our Discord</a></p>
 <h3 class="gth">Help</h3><p class="mute">Questions, bugs or ideas: <a href="mailto:${HELP}" data-ab="mail">${HELP}</a></p>
-<p><button class="g" data-ab="tour">Take the tour</button> <button class="g" data-ab="news">What's new${(+lsGet('gt_news_seen', 0) || 0) < LATEST ? ' <em class="gtnd">new</em>' : ''}</button> ${window.__gtbetaInfo ? '<button class="g" data-ab="beta" title="Try the next version early. Same sign-in and settings; you can come back any time.">Try the beta</button> ' : window.__GT_BETA__ ? '<button class="g" data-ab="unbeta">Back to the regular site</button> ' : ''}<button class="g" data-ab="status" title="Is Pathfinder, its sign-in service and Bungie's API working right now?">Status</button> <button class="g" data-ab="privacy">Privacy</button>${isWeb() && window.__GT_DL__ ? ' <button class="g" data-ab="pcapp">Get the PC app</button>' : ''}</p>
+<p><button class="g" data-ab="tour">Take the tour</button> <button class="g" data-ab="news">What's new${(+lsGet('gt_news_seen', 0) || 0) < LATEST ? ' <em class="gtnd">new</em>' : ''}</button> ${window.__gtbetaInfo ? '<button class="g" data-ab="beta" title="Try the next version early. Same sign-in and settings; you can come back any time.">Try the beta</button> ' : window.__GT_BETA__ ? '<button class="g" data-ab="unbeta">Back to the regular site</button> ' : ''}${betaAppBtn()}<button class="g" data-ab="status" title="Is Pathfinder, its sign-in service and Bungie's API working right now?">Status</button> <button class="g" data-ab="privacy">Privacy</button>${isWeb() && window.__GT_DL__ ? ' <button class="g" data-ab="pcapp">Get the PC app</button>' : ''}</p>
 <div class="sx gtna"><div class="sxt"><b>Show What's new after updates</b><small>The list of changes after each update. What's new above always shows it.</small></div><div class="sxc"><label class="tgl"><input type="checkbox" data-ab="auto"${auto() ? ' checked' : ''}><i></i></label></div></div>
 <h3 class="gth">Problems</h3><p class="mute">Errors the app ran into, newest first. If something breaks, copy the report and send it along with what you were doing.</p>${rows}
 <p><button class="b" data-ab="copy">Copy problem report</button> <button class="g" data-ab="clear"${L.length ? '' : ' disabled'}>Clear</button> <span class="mute" id="gtabm"></span></p></div>`;
@@ -262,6 +269,7 @@ ${list.map((c) => `<div class="gtnv"><small>${esc(c.date)}</small><ul>${c.items.
       if (a === 'tour') { if (window.show) window.show('vault'); setTimeout(() => tour(0), 400); return; }
       if (a === 'auto') { lsSet('gt_news_auto', !!b.checked); return; }
       if (a === 'beta') { location.href = 'beta/'; return; }
+      if (a === 'betaapp') { window.open(BETA_APP_URL, '_blank', 'noopener'); return; }
       if (a === 'unbeta') { location.href = '../'; return; }
       if (a === 'status') { openLink(SITE + '/status'); return; }
       if (a === 'privacy') { openLink(SITE + '/privacy'); return; }

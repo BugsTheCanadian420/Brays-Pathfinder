@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.35-beta.13: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.35-beta.14: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -600,7 +600,7 @@ async function pfaSync(boxIn, verIn) {
   let ver = verIn, box = boxIn;
   // Temporary password (123456): nothing is saved into the account until a new password is picked.
   if (c.pfa.tmp && box !== undefined) return { tmp: 1, added: 0 };
-  if (box === undefined) { const g = await pfaReq('GET', '/box', null, c.pfa.sess); ver = g.ver; box = g.box; if (typeof g.role === 'string' && (c.pfa.role || '') !== g.role) { c.pfa.role = g.role; wr(c); } if (!!g.tmp !== !!c.pfa.tmp) { if (g.tmp) c.pfa.tmp = 1; else delete c.pfa.tmp; wr(c); } if (g.tmp) return { tmp: 1, added: 0 }; }
+  if (box === undefined) { const g = await pfaReq('GET', '/box', null, c.pfa.sess); ver = g.ver; box = g.box; if (typeof g.role === 'string' && (c.pfa.role || '') !== g.role) { c.pfa.role = g.role; wr(c); } if (typeof g.dn === 'string' && g.dn && c.pfa.dn !== g.dn) { c.pfa.dn = g.dn; wr(c); } if (!!g.tmp !== !!c.pfa.tmp) { if (g.tmp) c.pfa.tmp = 1; else delete c.pfa.tmp; wr(c); } if (g.tmp) return { tmp: 1, added: 0 }; }
   for (let round = 0; round < 3; round++) {
     let data; try { data = await pfaOpen(box, c.pfa.key); } catch (e) { throw new Error('Could not open your saved sign-ins with this password. If you changed it on another device, sign out and in again here.'); }
     const B = (data && data.accts) || {}, cid = String(c.clientId || ''), skip = c.pfa.skip || {}, now = Date.now();
@@ -648,7 +648,7 @@ const pfaRun = (boxIn, verIn) => {
 // A Pathfinder account is an account name and a password. Accounts made earlier with an email address still sign in with that
 // email typed as the account name (both are matched the same way: trimmed, any capitals ignored).
 const pfaName = (p) => (p && (p.name || p.email)) || '';
-const pfaStatus = () => { const c = rd(), p = c.pfa || {}; return { avail: !!pfaUrl(), on: !!p.sess, tmp: !!(p.sess && p.tmp), name: pfaName(p), at: p.at || 0, n: p.n || 0, err: PFA_ERR, out: !!(pfaName(p) && !p.sess), dev: !!(p.sess && ['dev', 'founder', 'owner'].includes(p.role)), founder: !!(p.sess && ['founder', 'owner'].includes(p.role)), owner: !!(p.sess && p.role === 'owner'), role: p.sess ? p.role || '' : '' }; };
+const pfaStatus = () => { const c = rd(), p = c.pfa || {}; return { avail: !!pfaUrl(), on: !!p.sess, tmp: !!(p.sess && p.tmp), name: pfaName(p), dn: p.dn || pfaName(p), at: p.at || 0, n: p.n || 0, err: PFA_ERR, out: !!(pfaName(p) && !p.sess), dev: !!(p.sess && ['dev', 'founder', 'owner'].includes(p.role)), founder: !!(p.sess && ['founder', 'owner'].includes(p.role)), owner: !!(p.sess && p.role === 'owner'), role: p.sess ? p.role || '' : '' }; };
 H('pfa:status', () => pfaStatus());
 const pfaCreds = (v, isNew) => {
   OBJ(v); const name = TXT(v.name, 200).trim(), pw = TXT(v.pw, 200);
@@ -667,51 +667,72 @@ const pfaOld = (er) => { if (er && er.code === 'bad_request') er.message = 'Upda
 H('pfa:signup', async (e, v) => {
   const { name, pw } = pfaCreds(v, true), k = await pfaKeys(name, pw);
   const r = await pfaReq('POST', '/signup', pfaWho(name, k.auth)).catch(pfaOld);
-  const c = rd(); c.pfa = { name, sess: r.sess, key: k.key, skip: {}, role: r.role || '' }; wr(c);
+  const c = rd(); c.pfa = { name, dn: r.dn || name, sess: r.sess, key: k.key, skip: {}, role: r.role || '' }; wr(c);
   await pfaRun(r.box, r.ver).catch(() => {});
   return pfaStatus();
 });
 H('pfa:login', async (e, v) => {
   const { name, pw } = pfaCreds(v, false), k = await pfaKeys(name, pw);
   const r = await pfaReq('POST', '/login', pfaWho(name, k.auth)).catch(pfaOld);
-  const c = rd(), hadTok = !!c.tok, same = c.pfa && pfaName(c.pfa).toLowerCase() === name.toLowerCase(); c.pfa = { name, sess: r.sess, key: k.key, skip: (same && c.pfa.skip) || {}, role: r.role || '', ...(r.tmp ? { tmp: 1 } : {}) }; wr(c);
+  const c = rd(), hadTok = !!c.tok, same = c.pfa && pfaName(c.pfa).toLowerCase() === name.toLowerCase(); c.pfa = { name, dn: r.dn || name, sess: r.sess, key: k.key, skip: (same && c.pfa.skip) || {}, role: r.role || '', ...(r.tmp ? { tmp: 1 } : {}) }; wr(c);
   if (r.tmp) return pfaStatus(); // the Accounts page now asks for a new password
   const s2 = await pfaRun(r.box, r.ver);
   if (!hadTok && rd().tok) { M = null; return { ...pfaStatus(), ...restartApp() }; }
   return { ...pfaStatus(), added: s2.added || 0 };
 });
 H('pfa:sync', async () => { const c = rd(), hadTok = !!c.tok, r = await pfaRun(); if (!hadTok && rd().tok) { M = null; return { ...pfaStatus(), ...restartApp() }; } return { ...pfaStatus(), added: r.added || 0 }; });
-// Forgot the password: the owner makes a one-time reset code on the admin page. The code plus a new password sets a new
-// password. What was locked with the old one cannot be opened, so the saved box starts empty and this device's Bungie sign-ins
-// are saved into it again; other devices are signed out of the Pathfinder account and sign in with the new password.
-H('pfa:reset', async (e, v) => {
-  OBJ(v); const code = TXT(v.code, 40).toUpperCase().replace(/[^A-Z0-9]/g, '');
-  if (code.length !== 12) throw new Error('Reset codes are 12 letters and numbers, like ABCD-EFGH-JKLM.');
-  const { name, pw } = pfaCreds(v, false), k = await pfaKeys(name, pw);
-  const r = await pfaReq('POST', '/reset', { name, code, auth: k.auth }).catch(pfaOld);
-  const c = rd(), hadTok = !!c.tok; c.pfa = { name, sess: r.sess, key: k.key, skip: {}, role: r.role || '' }; wr(c);
-  await pfaRun(null, 0).catch(() => {});
-  if (!hadTok && rd().tok) { M = null; return { ...pfaStatus(), ...restartApp() }; }
-  return pfaStatus();
-});
-// After a quick reset or a rename the password is 123456 until the player picks a new one here.
+// After a quick reset the password is 123456 until the user picks a new one here. (Forgot your password? Open a help request:
+// the team does a quick reset.)
 H('pfa:setpw', async (e, v) => {
   OBJ(v); const c = rd(); if (!c.pfa || !c.pfa.sess) throw new Error('Sign in to your Pathfinder account first.');
   if (!c.pfa.tmp) throw new Error('Your password is not a temporary one.');
   const pw = pfaNewPw(v), name = pfaName(c.pfa), k = await pfaKeys(name, pw);
   const r = await pfaReq('POST', '/password', { auth: k.auth }, c.pfa.sess);
-  const c2 = rd(), hadTok = !!c2.tok; c2.pfa = { name, sess: r.sess, key: k.key, skip: {}, role: r.role || '' }; wr(c2);
+  const c2 = rd(), hadTok = !!c2.tok; c2.pfa = { name, dn: c2.pfa && c2.pfa.dn, sess: r.sess, key: k.key, skip: {}, role: r.role || '' }; wr(c2);
   await pfaRun(null, 0).catch(() => {});
   if (!hadTok && rd().tok) { M = null; return { ...pfaStatus(), ...restartApp() }; }
   return pfaStatus();
 });
-// Developer and founder accounts can rename a player's Pathfinder account (an offensive name, say). The name is part of how the
-// password becomes a key, so a rename also sets the password to 123456; the player picks a new one when they sign in.
-const pfaTo = (v) => { const to = TXT(v.to, 40).trim(); if (!/^[A-Za-z0-9][A-Za-z0-9._-]{2,23}$/.test(to)) throw new Error('Account names are 3 to 24 letters or numbers (you can also use . _ and -), starting with a letter or number.'); return to; };
+// Developer and founder accounts can change a user's display name (an offensive name, say). The login name and password stay, so
+// the user still signs in as before.
+const pfaDn = (v) => { const t = String(v == null ? '' : v).replace(/[^\p{L}\p{N} ._\-'!?]/gu, '').replace(/\s+/g, ' ').trim(); if (t.length < 2 || t.length > 32) throw new Error("Display names are 2 to 32 characters: letters, numbers, spaces and . _ - ' ! ?"); return t; };
 H('dev:rename', async (e, v) => {
   OBJ(v); const c = rd(); if (!pfaStatus().dev) throw new Error('Developer accounts only.');
-  const name = TXT(v.name, 200).trim(), to = pfaTo(v); if (!name) throw new Error('Enter the account name to change.');
-  return pfaReq('POST', '/dev/rename', { name, to, auth: (await pfaKeys(to, PFA_TMP)).auth }, c.pfa.sess);
+  const name = TXT(v.name, 200).trim(), to = pfaDn(TXT(v.to, 60)); if (!name) throw new Error('Enter the login name of the account to change.');
+  return pfaReq('POST', '/dev/rename', { name, to }, c.pfa.sess);
+});
+// ---- Your own Pathfinder account: display name, password and login name (Settings > Accounts > Account settings) ----
+H('pfa:profile', async (e, v) => {
+  OBJ(v); const c = rd(); if (!c.pfa || !c.pfa.sess) throw new Error('Sign in to your Pathfinder account first.');
+  const r = await pfaReq('POST', '/profile', { dn: pfaDn(TXT(v.dn, 60)) }, c.pfa.sess);
+  const c2 = rd(); if (c2.pfa) { c2.pfa.dn = r.dn; wr(c2); } return pfaStatus();
+});
+// Both changes need the current password. The saved box is locked with a key made from the login name and the password, so it
+// is opened here and locked again with the new key before it is sent; other devices are signed out and sign in with the new details.
+async function pfaRekey(c, name, oldPw) {
+  const k0 = await pfaKeys(name, oldPw), g = await pfaReq('GET', '/box', null, c.pfa.sess);
+  let data = { v: 1, accts: {} };
+  if (g.box) { try { data = await pfaOpen(g.box, k0.key); } catch (er) { throw new Error('Your current password is not right.'); } }
+  return { k0, data };
+}
+H('pfa:changepw', async (e, v) => {
+  OBJ(v); const c = rd(); if (!c.pfa || !c.pfa.sess) throw new Error('Sign in to your Pathfinder account first.');
+  const old = TXT(v.old, 200), pw = pfaNewPw(v), name = pfaName(c.pfa); if (!old) throw new Error('Enter your current password.');
+  if (old === pw) throw new Error('The new password is the same as the current one.');
+  const { k0, data } = await pfaRekey(c, name, old), k1 = await pfaKeys(name, pw);
+  const r = await pfaReq('POST', '/password', { old: k0.auth, auth: k1.auth, box: await pfaSeal(data, k1.key) }, c.pfa.sess);
+  const c2 = rd(); c2.pfa = { ...c2.pfa, sess: r.sess, key: k1.key, dn: r.dn || c2.pfa.dn, role: r.role || c2.pfa.role || '' }; delete c2.pfa.tmp; wr(c2);
+  return pfaStatus();
+});
+H('pfa:loginname', async (e, v) => {
+  OBJ(v); const c = rd(); if (!c.pfa || !c.pfa.sess) throw new Error('Sign in to your Pathfinder account first.');
+  const to = TXT(v.to, 40).trim(), pw = TXT(v.pw, 200), name = pfaName(c.pfa);
+  if (!/^[A-Za-z0-9][A-Za-z0-9._-]{2,23}$/.test(to)) throw new Error('Login names are 3 to 24 letters or numbers (you can also use . _ and -), starting with a letter or number.');
+  if (!pw) throw new Error('Enter your current password.');
+  const { k0, data } = await pfaRekey(c, name, pw), k1 = await pfaKeys(to, pw);
+  const r = await pfaReq('POST', '/loginname', { to, old: k0.auth, auth: k1.auth, box: await pfaSeal(data, k1.key) }, c.pfa.sess);
+  const c2 = rd(); c2.pfa = { ...c2.pfa, name: to, sess: r.sess, key: k1.key, dn: r.dn || c2.pfa.dn, role: r.role || c2.pfa.role || '' }; delete c2.pfa.email; wr(c2);
+  return pfaStatus();
 });
 // ---- Help requests (Settings > Help) and the Help desk (developers and founders) ----
 // A request is opened from this device without signing in: the token service hands back a secret key for it, kept here
@@ -770,7 +791,17 @@ H('desk:note', async (e, v) => { staffOnly(); OBJ(v); const text = TXT(v.text, 2
 H('desk:block', async (e, v) => { staffOnly(); OBJ(v); return (await helpReq('/acct/help/block', { id: HID(v.id), on: !!v.on }, true)).ticket; });
 // Feature switches set on the admin page: 'on' (everyone), 'dev' (developer accounts only), 'off' (nobody). Checked every 10 minutes.
 let FLAGS = null, FLAGS_AT = 0;
-let FLAGS_ANN = null; // the team's announcement (Admin > Announcement), shown at the top of the app
+let FLAGS_ANN = null, FLAGS_LOOKS = null, FLAGS_MYLOOK = ''; // the team's announcement (Admin > Announcement), shown at the top of the app
+// The Bray and Manta styles' background picture, changed by their owners for everyone (token service /look).
+H('look:set', async (e, v) => {
+  OBJ(v); const look = TXT(v.look, 10), bg = TXT(v.bg, 40);
+  const base = preset && preset.tokenUrl && /^https:\/\//i.test(preset.tokenUrl) ? preset.tokenUrl.replace(/\/+$/, '') : '';
+  const c = rd(), sess = c.pfa && c.pfa.sess; if (!base || !sess) throw new Error('Sign in to your Pathfinder account first (Settings > Accounts).');
+  const r = await fetch(base + '/look', { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json', Authorization: 'Bearer ' + sess }, body: JSON.stringify({ look, bg }) });
+  const j = await readJson(r).catch(() => ({}));
+  if (!r.ok) throw new Error((j && j.message) || 'The token service said no (' + r.status + ').');
+  FLAGS_LOOKS = j.looks || FLAGS_LOOKS; return { looks: FLAGS_LOOKS || {} };
+});
 H('flags:get', async (e, v) => {
   const base = preset && preset.tokenUrl && /^https:\/\//i.test(preset.tokenUrl) ? preset.tokenUrl.replace(/\/+$/, '') : '';
   const force = !!(v && typeof v === 'object' && v.force);
@@ -780,7 +811,7 @@ H('flags:get', async (e, v) => {
     try {
       const r = await fetch(base + '/flags', { headers: { Accept: 'application/json', ...(sess ? { Authorization: 'Bearer ' + sess } : {}) }, signal: ac.signal });
       if (r.ok) {
-        const j = await r.json(); FLAGS = j && j.flags && typeof j.flags === 'object' ? j.flags : {}; FLAGS_AT = Date.now(); FLAGS_ANN = j && j.ann && typeof j.ann.text === 'string' ? { id: String(j.ann.id || ''), text: j.ann.text.slice(0, 300), level: j.ann.level === 'warn' ? 'warn' : 'info', at: +j.ann.at || 0 } : null;
+        const j = await r.json(); FLAGS = j && j.flags && typeof j.flags === 'object' ? j.flags : {}; FLAGS_AT = Date.now(); FLAGS_LOOKS = j && j.looks && typeof j.looks === 'object' ? j.looks : FLAGS_LOOKS; FLAGS_MYLOOK = j && j.me && typeof j.me.look === 'string' ? j.me.look : sess ? FLAGS_MYLOOK : ''; FLAGS_ANN = j && j.ann && typeof j.ann.text === 'string' ? { id: String(j.ann.id || ''), text: j.ann.text.slice(0, 300), level: j.ann.level === 'warn' ? 'warn' : 'info', at: +j.ann.at || 0 } : null;
         // The account's current role comes along: a role changed on the admin page (or in Admin) takes effect here by itself.
         if (sess && j && 'me' in j) {
           const c2 = rd();
@@ -793,7 +824,7 @@ H('flags:get', async (e, v) => {
     } catch (er) { /* keep the last ones */ } finally { clearTimeout(tm); }
   }
   const st = pfaStatus();
-  return { flags: FLAGS || {}, dev: st.dev, role: st.role, on: st.on, ann: FLAGS_ANN };
+  return { flags: FLAGS || {}, dev: st.dev, role: st.role, on: st.on, ann: FLAGS_ANN, looks: FLAGS_LOOKS || {}, mylook: st.on ? FLAGS_MYLOOK : '' };
 });
 // Bungie's maintenance timeline (its Server and Update Status page), read through the token service; shown in the app while
 // Bungie is down for maintenance.
@@ -806,7 +837,7 @@ H('bungie:status', async () => {
 // Developer tools (the PC app only, developer accounts only).
 // Admin from inside the app (founder accounts only). The admin key is typed in the app each time and only passed along;
 // the token service checks both the founder role and the key.
-const ADMP = { 'GET /ping': 1, 'GET /keys': 1, 'POST /keys': 1, 'POST /keyrevoke': 1, 'GET /accounts': 1, 'POST /find': 1, 'POST /reset': 1, 'POST /quickreset': 1, 'POST /rename': 1, 'POST /cancelreset': 1, 'POST /role': 1, 'POST /unlock': 1, 'POST /delete': 1, 'GET /flags': 1, 'PUT /flags': 1, 'POST /signout': 1, 'GET /log': 1, 'GET /announce': 1, 'POST /announce': 1, 'POST /suspend': 1, 'GET /help/blocks': 1, 'POST /help/unblock': 1, 'GET /backup': 1 };
+const ADMP = { 'GET /ping': 1, 'GET /keys': 1, 'POST /keys': 1, 'POST /keyrevoke': 1, 'GET /accounts': 1, 'POST /find': 1, 'POST /quickreset': 1, 'POST /rename': 1, 'POST /role': 1, 'POST /unlock': 1, 'POST /delete': 1, 'GET /flags': 1, 'PUT /flags': 1, 'POST /signout': 1, 'GET /log': 1, 'GET /announce': 1, 'POST /announce': 1, 'POST /suspend': 1, 'GET /help/blocks': 1, 'POST /help/unblock': 1, 'GET /backup': 1 };
 H('adm:call', async (e, v) => {
   OBJ(v); const method = TXT(v.method, 6).toUpperCase(), p = TXT(v.path, 30), key = TXT(v.key, 200);
   if (!ADMP[method + ' ' + p]) throw bad();
@@ -814,7 +845,7 @@ H('adm:call', async (e, v) => {
   let body = method === 'GET' ? null : (v.body && typeof v.body === 'object' ? { ...v.body } : {});
   // Quick reset and rename set the password to 123456: the login check for it is worked out here, from the (new) name.
   if (p === '/quickreset') { const n = typeof body.name === 'string' ? body.name.slice(0, 200).trim() : ''; if (!n) throw new Error('This account has no saved name yet: find it by name first.'); body = { id: TXT(body.id, 80), auth: (await pfaKeys(n, PFA_TMP)).auth }; }
-  if (p === '/rename') { const to = pfaTo(body); body = { id: TXT(body.id, 80), to, auth: (await pfaKeys(to, PFA_TMP)).auth }; }
+  if (p === '/rename') { body = { id: TXT(body.id, 80), to: pfaDn(TXT(body.to, 60)) }; } // the display name only; the login name and password stay
   return pfaReq(method, '/admin' + p, body, c.pfa.sess, { 'X-Admin-Key': key });
 });
 H('dev:tools', () => { if (!pfaStatus().dev) throw new Error('Developer accounts only.'); if (win && !win.isDestroyed() && win.webContents && win.webContents.openDevTools) win.webContents.openDevTools({ mode: 'detach' }); return true; });

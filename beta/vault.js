@@ -301,7 +301,11 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 .lpk .sw{height:30px}
 @media (max-width:900px){.ltab{flex-direction:column}.lsidec{width:100%;flex-direction:row}.lside{flex:1}}
 /* settings page */
-#settings .card{max-width:760px;margin-left:auto;margin-right:auto}#settings .acl{display:flex;flex-direction:column;gap:6px;margin:10px 0}#settings .acfrom{font-size:11.5px;color:var(--mut,#9aa3b2);padding:1px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.12)}#settings .acr{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 10px;border:1px solid var(--g-line,#2b2e33);border-radius:6px;background:rgba(255,255,255,.03)}#settings .acr.on{border-color:var(--g-accent,#7ab8e8)}#settings .acr b{flex:1;min-width:140px;color:#fff}#settings .acr b span{color:#8b8f97;font-weight:400;margin-left:2px}#settings .acr em{font-style:normal;font-size:12px;color:var(--g-accent,#7ab8e8)}#settings .syst{color:#cfd2d8}#settings .acr small{flex-basis:100%;color:#e0b64a;font-size:11.5px}.acswm{position:fixed;inset:0;z-index:100000;background:rgba(8,9,12,.85);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;letter-spacing:1px}#settings .navtg{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}#settings .navtg .chip{opacity:.55}#settings .navtg .chip.on{opacity:1}#settings .navtg .chip:disabled{cursor:default;opacity:.8}
+#settings .card{max-width:760px;margin-left:auto;margin-right:auto}#settings .acl{display:flex;flex-direction:column;gap:6px;margin:10px 0}#settings .pfrows{display:flex;flex-direction:column;gap:2px;margin:6px 0 8px;border:1px solid var(--g-line,#2b2e33);border-radius:12px;overflow:hidden}#settings .pfrow{display:flex;align-items:center;gap:10px;padding:9px 12px;background:rgba(255,255,255,.025)}#settings .pfrow+.pfrow{border-top:1px solid var(--g-line,#2b2e33)}#settings .pfk{width:110px;flex:none;color:var(--mut,#9aa3b2);font-size:13px}#settings .pfv{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#settings .pflg{letter-spacing:.08em;font-variant-numeric:tabular-nums}.pfeye{display:inline-flex!important;align-items:center;justify-content:center;width:34px;min-width:34px;padding:0!important}.pfeye[aria-pressed="true"]{color:var(--g-accent,#7ab8e8)!important}.pfmask:not(.show){-webkit-text-security:disc;text-security:disc}
+#gtpfn{order:6;flex:none;display:inline-flex;align-items:center;gap:7px;max-width:220px;height:32px;margin:0 4px 0 8px;padding:0 10px 0 4px!important;border-radius:999px!important;border:1px solid var(--g-line,#33363c)!important;background:rgba(255,255,255,.04)!important;color:#e8ecf2!important;font-size:13px;font-weight:700;letter-spacing:0!important;text-transform:none!important;cursor:pointer}#gtpfn[hidden]{display:none}#gtpfn:hover,#gtpfn[aria-expanded="true"]{border-color:var(--g-accent,#7ab8e8)!important}#gtpfn .gtpfa{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;flex:none;font-size:12px;font-weight:800;color:#0d1015;background:var(--g-accent,#7ab8e8)}#gtpfn svg{width:12px!important;height:12px!important;flex:none;opacity:.7}#gtpfn .gtpft{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#gtpfm{position:fixed;z-index:9700;min-width:220px;padding:6px;border-radius:14px;border:1px solid var(--g-line,#33363c);background:var(--g-solid,#16181d);box-shadow:0 18px 40px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:2px}#gtpfm .gtpfh{padding:8px 10px 8px;border-bottom:1px solid var(--g-line,#2b2e33);margin-bottom:4px}#gtpfm .gtpfh b{display:block;color:#fff;font-size:14px}#gtpfm .gtpfh small{color:var(--mut,#9aa3b2);font-size:12px}#gtpfm button{display:block;width:100%;text-align:left;padding:9px 10px!important;border:0!important;border-radius:9px!important;background:transparent!important;color:#dfe4ea!important;font-size:13.5px;font-weight:600;letter-spacing:0!important;text-transform:none!important;cursor:pointer}#gtpfm button:hover,#gtpfm button:focus-visible{background:rgba(255,255,255,.07)!important;outline:none}
+@media (max-width:560px){#settings .pfrow{flex-wrap:wrap;row-gap:4px}#settings .pfk{width:100%;font-size:12px}}@media (max-width:760px){#gtpfn{max-width:44px;padding:0 4px!important}#gtpfn .gtpft,#gtpfn svg{display:none}}
+#settings .acfrom{font-size:11.5px;color:var(--mut,#9aa3b2);padding:1px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.12)}#settings .acr{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 10px;border:1px solid var(--g-line,#2b2e33);border-radius:6px;background:rgba(255,255,255,.03)}#settings .acr.on{border-color:var(--g-accent,#7ab8e8)}#settings .acr b{flex:1;min-width:140px;color:#fff}#settings .acr b span{color:#8b8f97;font-weight:400;margin-left:2px}#settings .acr em{font-style:normal;font-size:12px;color:var(--g-accent,#7ab8e8)}#settings .syst{color:#cfd2d8}#settings .acr small{flex-basis:100%;color:#e0b64a;font-size:11.5px}.acswm{position:fixed;inset:0;z-index:100000;background:rgba(8,9,12,.85);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;letter-spacing:1px}#settings .navtg{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}#settings .navtg .chip{opacity:.55}#settings .navtg .chip.on{opacity:1}#settings .navtg .chip:disabled{cursor:default;opacity:.8}
 #settings h2{font-size:15px;letter-spacing:3px;text-transform:uppercase;color:#cfd2d8;margin:0 0 10px}
 .sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
 .th{border:2px solid var(--g-line);padding:8px;cursor:pointer;background:var(--g-btn);text-align:center;font-size:14px}
@@ -753,13 +757,13 @@ body.gtann #gtmaint{top:calc(var(--gt-bar-h,56px) + 74px)}
 #godrolls .gph{position:relative;overflow:hidden;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:22px 24px;border:1px solid var(--g-line,#2b2e33);border-radius:16px;background:radial-gradient(70% 140% at 100% 0,color-mix(in srgb,#f2b441 14%,transparent),transparent 60%),radial-gradient(60% 120% at 0 0,color-mix(in srgb,#8a5cf0 14%,transparent),transparent 60%),var(--g-panel,#16181c)}
 #godrolls .gph h2{margin:0 0 4px!important;padding:0!important;border:0!important;font-size:30px;line-height:1.1;color:#fff;letter-spacing:-.01em;text-transform:none}
 #godrolls .gph p{margin:0;color:#aeb4bd;font-size:14px}
-#godrolls .gptools{display:flex;gap:8px;align-items:center}#godrolls .gptools input,#godrolls .gptools select{width:auto!important;height:38px;margin:0!important;box-sizing:border-box}#godrolls .gptools input{width:240px!important}
+#godrolls .gptools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}@media (max-width:600px){#godrolls .gph .gptools{width:100%}#godrolls .gph .gptools input{flex:1 1 140px;width:auto!important;min-width:0}#godrolls .gph .gptools select{flex:1 1 100%;width:100%!important}}#godrolls .gptools input,#godrolls .gptools select{width:auto!important;height:38px;margin:0!important;box-sizing:border-box}#godrolls .gptools input{width:240px!important}
 #godrolls .gpfs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:12px 0 6px}
 #godrolls .gpf{--gc:#8b8f97;display:flex!important;flex-direction:column;align-items:flex-start;gap:2px;padding:12px 16px!important;border-radius:14px!important;border:1px solid var(--g-line,#2b2e33)!important;background:var(--g-panel,#16181c)!important;color:#cfd3da!important;text-align:left;cursor:pointer;box-shadow:none!important;text-transform:none!important;letter-spacing:0!important;font-family:inherit}
 #godrolls .gpf b{font-size:26px;line-height:1.1;color:var(--gc);font-weight:800}#godrolls .gpf span{font-size:13px;font-weight:600}
 #godrolls .gpf:hover{border-color:color-mix(in srgb,var(--gc) 60%,transparent)!important}
 #godrolls .gpf.on{border-color:var(--gc)!important;background:linear-gradient(180deg,color-mix(in srgb,var(--gc) 18%,transparent),color-mix(in srgb,var(--gc) 4%,transparent)),var(--g-panel,#16181c)!important;color:#fff!important}
-#godrolls .g-S{--gc:#f2b441}#godrolls .g-R{--gc:#c58cff}#godrolls .g-A{--gc:#5fd38a}#godrolls .g-C{--gc:#9aa1ab}#godrolls .g-D{--gc:#ef6461}#godrolls .g-q{--gc:#ffd27a}
+#godrolls .g-S{--gc:#f2b441}#godrolls .g-R{--gc:#c58cff}#godrolls .gpmode{display:inline-flex;height:38px;border:1px solid var(--g-line,#2b2e33);border-radius:10px;overflow:hidden;flex:none}#godrolls .gpmode button{border:0!important;border-radius:0!important;padding:0 14px!important;height:100%;font-size:13px;font-weight:700;letter-spacing:0!important;text-transform:none!important;background:transparent!important;color:#aeb4bd!important;box-shadow:none!important}#godrolls .gpmode button.on{background:color-mix(in srgb,#f2b441 20%,transparent)!important;color:#fff!important}#godrolls .gpmd,#gvm .gpmd{display:inline-flex;align-items:center;padding:3px 9px;border-radius:999px;font-size:11.5px;font-weight:800;letter-spacing:.04em;color:#e8ecf2;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16)}#godrolls .g-A{--gc:#5fd38a}#godrolls .g-C{--gc:#9aa1ab}#godrolls .g-D{--gc:#ef6461}#godrolls .g-q{--gc:#ffd27a}
 #gvm{position:fixed;inset:0;z-index:70;background:rgba(4,6,10,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:flex;align-items:flex-start;justify-content:center;padding:max(24px,4vh) 16px 24px;overflow:auto}
 #gvm .g-X{--gc:#e8c25a}#gvm .g-S{--gc:#f2b441}#gvm .g-R{--gc:#c58cff}#gvm .g-A{--gc:#5fd38a}#gvm .g-C{--gc:#9aa1ab}#gvm .g-D{--gc:#ef6461}#gvm .g-q{--gc:#ffd27a}
 #gvm .gvp{position:relative;width:min(1080px,100%);border-radius:20px;border:1px solid color-mix(in srgb,var(--gc) 40%,var(--g-line,#2b2e33));background:radial-gradient(70% 60% at 100% 0,color-mix(in srgb,var(--gc) 14%,transparent),transparent 65%),linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,0) 30%),var(--g-panel,#15171b);box-shadow:0 30px 80px rgba(0,0,0,.6);padding:20px 22px 22px;color:#e8ecf2}
@@ -973,13 +977,17 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   // Background pictures. 'topo' is the contour-line drawing; the rest are Destiny 2 places.
   // Pictures that were removed as duplicates: anyone who had one gets the one it duplicated.
   const BGREN = { 'rust-yard': 'cosmodrome-wall' };
-  const BGS = [['', 'None'], ['topo', 'Contour lines'], ['blossom-tower', 'Blossom Tower'], ['memorial-garden', 'Memorial Garden'], ['europa-frost', 'Lunar Frost'], ['crimson-spire', 'Crimson Spire'], ['cube-mist', 'Cube Mist'], ['aurora-grove', 'Aurora Grove'], ['vortex', 'Vortex'], ['emerald-lake', 'Emerald Lake'], ['hanging-gardens', 'Hanging Gardens'], ['jupiter-rise', 'Jupiter Rise'], ['cosmodrome-wall', 'Cosmodrome Wall'], ['throne-marsh', 'Nessus'], ['traveler', 'The Traveler'], ['lantern-gate', 'Lantern Gate']];
+  const BGS = [['', 'None'], ['topo', 'Contour lines'], ['blossom-tower', 'Blossom Tower'], ['memorial-garden', 'Memorial Garden'], ['europa-frost', 'Lunar Frost'], ['crimson-spire', 'Crimson Spire'], ['cube-mist', 'Cube Mist'], ['aurora-grove', 'Aurora Grove'], ['vortex', 'Vortex'], ['emerald-lake', 'Emerald Lake'], ['hanging-gardens', 'Hanging Gardens'], ['jupiter-rise', 'Jupiter Rise'], ['cosmodrome-wall', 'Cosmodrome Wall'], ['throne-marsh', 'Nessus'], ['shrouded-statue', 'Shrouded Statue'], ['frozen-array', 'Frozen Array'], ['europa-pyramid', 'Europa Pyramid'], ['tower-sunrise', 'Tower Sunrise'], ['open-valley', 'Open Valley'], ['traveler', 'The Traveler'], ['lantern-gate', 'Lantern Gate']];
   // Bray and Manta are fixed looks: their colour, accent and picture are set and cannot be changed. Their two pictures are shown last
   // in the picture list, locked, so the Custom style cannot use them.
   const LOCK = { bray: { theme: 'beta', accent: '#f2b441', bg: 'traveler', n: 'Bray' }, manta: { theme: 'gold', accent: '#35e3cf', bg: 'lantern-gate', n: 'Manta' } };
   const LOCKBG = { traveler: 'bray', 'lantern-gate': 'manta' };
   // The look in use: the locked one for Bray and Manta, otherwise your own picks (Pathfinder Classic and Custom each keep their own).
-  const look = () => LOCK[SET.ui] || { theme: SET.theme, accent: SET.accent, bg: SET.bg };
+  // Bray's and Manta's pictures can be changed by them (and only them) for everyone: the choice comes with the feature switches.
+  // (FLG is set up further down; until the switches arrive the built-in picture is used)
+  const lookBg = (k) => { let v = ''; try { v = FLG.looks[k].bg; } catch (e) { /* not loaded yet */ } return v && BGS.some((b) => b[0] === v) ? v : LOCK[k].bg; };
+  const myLook = () => { try { return !!(LOCK[SET.ui] && FLG.mylook === SET.ui); } catch (e) { return false; } };
+  const look = () => (LOCK[SET.ui] ? { ...LOCK[SET.ui], bg: lookBg(SET.ui) } : { theme: SET.theme, accent: SET.accent, bg: SET.bg });
   const EDIT = ['pf', 'beta'];
   function switchUi(to) {
     const from = SET.ui;
@@ -1028,7 +1036,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
 .thh{grid-column:1/-1;margin:10px 0 0;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--mute)}.thh:first-child{margin-top:0}
 .th i.thc{position:relative}.th i.thc b{position:absolute;right:-3px;bottom:-3px;width:11px;height:11px;border-radius:50%;border:2px solid var(--g-solid,#15171b)}
 .acs{display:flex;flex-wrap:wrap;gap:7px;align-items:center}.acs .acw{box-sizing:border-box;width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid transparent;box-shadow:inset 0 0 0 1px rgba(0,0,0,.35);padding:0}.acs .acw.on{border-color:#fff}.acs .acw:focus-visible{outline:2px solid #fff;outline-offset:2px}.acs input[type=color]{width:34px;height:26px;padding:0;border:0;background:none;cursor:pointer}
-.bgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px;margin:6px 0 10px}.bgs .bgo{position:relative;height:64px;border-radius:9px;overflow:hidden;cursor:pointer;border:2px solid transparent;background:#0e1014 center/cover no-repeat;display:flex;align-items:flex-end;padding:6px 8px;font-size:12px;font-weight:600;color:#fff;text-shadow:0 1px 3px #000}.bgs .bgo::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 35%,rgba(0,0,0,.7))}.bgs .bgo span{position:relative}.bgs .bgo.on{border-color:var(--g-accent,#7ab8e8)}.bgs .bgo.lk{cursor:not-allowed}.bgs .bgo.lk::after{content:'';position:absolute;inset:0;background:rgba(0,0,0,.42)}.bgs .bgo.lk.on::after{background:rgba(0,0,0,.12)}.bgs .bgo .lki{position:absolute;top:6px;right:6px;z-index:2;width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;filter:drop-shadow(0 1px 2px #000)}.bgs .bgo span{z-index:2}.bgs .bgo small{display:block;font-size:10.5px;font-weight:600;opacity:.8}.lkw.on .sg,.lkw.on .acs,.lkw.on .bgo{pointer-events:none}.lkw.on .th:not(.on),.lkw.on .acw:not(.on),.lkw.on .bgo:not(.on){opacity:.35}.lkn{display:flex;gap:10px;align-items:flex-start;margin:10px 0 4px;padding:10px 12px;border-radius:10px;background:var(--g-accent-soft,rgba(122,184,232,.16));border:1px solid var(--g-line,#2b2e33);font-size:13px;line-height:1.4}.lkn .lki{flex:none;width:18px;height:18px;fill:none;stroke:var(--g-accent,#7ab8e8);stroke-width:2;stroke-linecap:round;margin-top:1px}.bgs .bgo.none{background:repeating-linear-gradient(135deg,#15171b 0 8px,#1b1e23 8px 16px)}`;
+.bgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px;margin:6px 0 10px}.bgs .bgo{position:relative;height:64px;border-radius:9px;overflow:hidden;cursor:pointer;border:2px solid transparent;background:#0e1014 center/cover no-repeat;display:flex;align-items:flex-end;padding:6px 8px;font-size:12px;font-weight:600;color:#fff;text-shadow:0 1px 3px #000}.bgs .bgo::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 35%,rgba(0,0,0,.7))}.bgs .bgo span{position:relative}.bgs .bgo.on{border-color:var(--g-accent,#7ab8e8)}.bgs .bgo.lk{cursor:not-allowed}.bgs .bgo.lk::after{content:'';position:absolute;inset:0;background:rgba(0,0,0,.42)}.bgs .bgo.lk.on::after{background:rgba(0,0,0,.12)}.bgs .bgo .lki{position:absolute;top:6px;right:6px;z-index:2;width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;filter:drop-shadow(0 1px 2px #000)}.bgs .bgo span{z-index:2}.bgs .bgo small{display:block;font-size:10.5px;font-weight:600;opacity:.8}.lkw.on .sg,.lkw.on .acs,.lkw.on .bgo{pointer-events:none}.lkw.on.mine .bgo:not(.none){pointer-events:auto;opacity:1!important;cursor:pointer}.lkw.on .th:not(.on),.lkw.on .acw:not(.on),.lkw.on .bgo:not(.on){opacity:.35}.lkn{display:flex;gap:10px;align-items:flex-start;margin:10px 0 4px;padding:10px 12px;border-radius:10px;background:var(--g-accent-soft,rgba(122,184,232,.16));border:1px solid var(--g-line,#2b2e33);font-size:13px;line-height:1.4}.lkn .lki{flex:none;width:18px;height:18px;fill:none;stroke:var(--g-accent,#7ab8e8);stroke-width:2;stroke-linecap:round;margin-top:1px}.bgs .bgo.none{background:repeating-linear-gradient(135deg,#15171b 0 8px,#1b1e23 8px 16px)}`;
     document.head.appendChild(el);
   })();
   const ACCS = ['#f2b441', '#7ab8e8', '#6fc7ff', '#b38cff', '#ff8a3d', '#ff5a5a', '#f2c14e', '#5fd38a', '#35e3cf', '#ff7ad9', '#d8dde5'];
@@ -1115,9 +1123,29 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   //  A  Keeper: any other wish list roll.  C  rated, not a match.  D  trash roll.  ?  not yet rated.
   const SRE = /\bTier:\s*S\b/i, GODT = /god/i, GODN = /\bgod ?roll\b/i, NOTGOD = /\b(not|no|isn'?t|never|almost|near)\b[^.]{0,20}\bgod ?roll/i;
   const gcache = {};
+  // PvE or PvP: a roll's tags (pve, pvp, godpve, godpvp) say which, else its note; the Aegis lists (they say PPC=) are PvE lists.
+  // Rolls that say neither count for both. The God rolls tab can show All, PvE or PvP (Settings: grmode).
+  function rollMode(r, note) {
+    const t = String(r[3] || '').toLowerCase(), e = /pve/.test(t), v = /pvp/.test(t);
+    if (e !== v) return e ? 'pve' : 'pvp';
+    const ne = /\bpve\b/i.test(note), nv = /\bpvp\b/i.test(note);
+    if (ne !== nv) return ne ? 'pve' : 'pvp';
+    return r[4] ? 'pve' : '';
+  }
+  const grMode = () => (SET.grmode === 'pve' || SET.grmode === 'pvp' ? SET.grmode : 'all');
   function godInfo(x) {
     if (!WL || !x || !x.pk) return null;
-    const k = x.id + ':' + WLV; if (k in gcache) return gcache[k];
+    const mode = grMode(), k = x.id + ':' + WLV + ':' + mode; if (k in gcache) return gcache[k];
+    if (mode === 'all') {
+      const a = godScan(x, 'pve'), b = godScan(x, 'pvp');
+      const best = !a ? b : !b ? a : b.score > a.score ? b : a;
+      if (best) best.modes = [a, b].filter((q) => q && q.gr === best.gr && q.md).map((q) => q.md).filter((m, i, l) => l.indexOf(m) === i);
+      return (gcache[k] = best);
+    }
+    const one = godScan(x, mode); if (one) one.modes = one.md ? [one.md] : [];
+    return (gcache[k] = one);
+  }
+  function godScan(x, mode) {
     const P = new Set(x.pk), cols = Array.isArray(x.pc) ? x.pc : [], pn = (D && D.pn) || {}, oo = Array.isArray(x.oo) ? x.oo : [];
     let best = null;
     for (const r of WL.rolls[x.h] || []) {
@@ -1125,6 +1153,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
       if (typeof r[0] === 'string') r[0] = r[0] ? r[0].split(',').map(Number) : [];
       if (!r[0].length || !r[0].every((h) => P.has(h))) continue;
       const note = String(typeof r[1] === 'number' ? (WL.notes || [])[r[1]] || '' : r[1] || '');
+      const md = rollMode(r, note); if (md && md !== mode) continue;
       const god = GODT.test(r[3] || '') || (GODN.test(note) && !NOTGOD.test(note)), top = god || SRE.test(note);
       if (!top) continue;
       const R = new Set(r[0]), RN = new Set(r[0].map((h) => pn[h]).filter(Boolean)), named = (h) => R.has(h) || (!!pn[h] && RN.has(pn[h]));
@@ -1133,11 +1162,12 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
       const canAll = cols.length >= 2 && cols.every((c) => c.some((h) => R.has(h)));
       const gr = inNow && ogOk && (r[4] === 1 || god) ? 'S' : 'R';
       const score = (gr === 'S' ? 100 : 0) + (canAll ? 10 : 0) + (r[4] ? 4 - Math.min(3, r[4]) : 0);
-      if (!best || score > best.score) best = { gr, canAll, roll: r, score };
+      if (!best || score > best.score) best = { gr, canAll, roll: r, score, md };
       if (gr === 'S' && r[4] === 1) break;
     }
-    return (gcache[k] = best);
+    return best;
   }
+  const modeChip = (x) => { const gi = godInfo(x), m = (gi && gi.modes) || []; return m.length ? `<span class="gpmd">${m.map((q) => (q === 'pve' ? 'PvE' : 'PvP')).join(' + ')}</span>` : ''; };
   function grade(x) {
     const gi = godInfo(x); if (gi) return gi.gr;
     const w = wish(x);
@@ -1201,7 +1231,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   }
   const accGrid = () => { const L = look(); return `<div class="acs">${ACCS.map((c) => `<div role="button" tabindex="0" class="acw${String(L.accent).toLowerCase() === c ? ' on' : ''}" data-acc="${c}" style="background:${c}" title="${c}" aria-label="Accent ${c}"></div>`).join('')}<input type="color" data-sk="accent" value="${esc(L.accent)}" title="Any colour"${LOCK[SET.ui] ? ' disabled' : ''}></div>`; };
   const bgGrid = () => { const L = look(); return `<div class="bgs">${BGS.map(([id, n]) => { const lk = LOCKBG[id]; return `<div class="bgo${id ? '' : ' none'}${lk ? ' lk' : ''}${(L.bg || '') === id ? ' on' : ''}" data-bg="${id}"${lk ? ` title="Locked: only the ${LOCK[lk].n} style uses this picture"` : ''}${id === 'topo' ? ' style="background-image:url(topo.svg);background-color:#0b0e13;background-size:180%"' : id ? ` style="background-image:url(themes/${id}_t.jpg)"` : ''}>${lk ? LKI : ''}<span>${esc(n)}${lk ? `<small>${LOCK[lk].n} only</small>` : ''}</span></div>`; }).join('')}</div>`; };
-  const lockNote = () => LOCK[SET.ui] ? `<p class="lkn">${LKI}<span><b>${LOCK[SET.ui].n} has a fixed look.</b> Its colour, accent and background picture are locked. Pick Custom to make your own mix.</span></p>` : '';
+  const lockNote = () => !LOCK[SET.ui] ? '' : myLook() ? `<p class="lkn">${LKI}<span><b>This is your style, ${LOCK[SET.ui].n}.</b> Pick a background picture below: it changes for everyone using the ${LOCK[SET.ui].n} style, on every PC, the website and phones. Its colour and accent stay fixed.</span></p>` : `<p class="lkn">${LKI}<span><b>${LOCK[SET.ui].n} has a fixed look.</b> Its colour, accent and background picture are locked (only ${LOCK[SET.ui].n} can change the picture). Pick Custom to make your own mix.</span></p>`;
   function markLook() {
     const L = look();
     settingsSec.querySelectorAll('[data-th]').forEach((n) => n.classList.toggle('on', n.dataset.th === L.theme));
@@ -1216,7 +1246,16 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     if (!prev || String(SET.accent).toLowerCase() === prev.a.toLowerCase() || SET.accent === DEFSET.accent) SET.accent = t.a;
     SET.theme = id; applySet(); saveSet(); markLook();
   }
-  function pickBg(id) { if (LOCK[SET.ui] || LOCKBG[id]) return; SET.bg = id; applySet(); saveSet(); markLook(); }
+  async function pickBg(id) {
+    if (myLook()) { // Bray or Manta changing their own style's picture, for everyone
+      if (!id) return;
+      const k = SET.ui, was = lookBg(k);
+      FLG.looks = { ...(FLG.looks || {}), [k]: { bg: id } }; applySet(); markLook();
+      try { const r = await gt.lookSet({ look: k, bg: id }); FLG.looks = r.looks || FLG.looks; } catch (e) { FLG.looks = { ...(FLG.looks || {}), [k]: { bg: was } }; applySet(); markLook(); alert('Could not change the picture: ' + clean(e)); }
+      return;
+    }
+    if (LOCK[SET.ui] || LOCKBG[id]) return; SET.bg = id; applySet(); saveSet(); markLook();
+  }
   function pickAcc(c) { if (LOCK[SET.ui]) return; SET.accent = c; SET.accentUser = ''; applySet(); saveSet(); markLook(); }
   // ---- saved Bungie accounts ----
   let ACL = null, aclBusy = false;
@@ -1226,21 +1265,69 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     return ACL.list.map((a) => `<div class="acr${a.on ? ' on' : ''}"><b>${esc(a.n)}${a.code ? `<span>#${esc(a.code)}</span>` : ''}</b>${a.from ? `<small class="acfrom" title="This Bungie account came from your Pathfinder account. It was signed in on the ${a.from === 'web' ? 'website' : 'PC app'} and works here too.">from the ${a.from === 'web' ? 'website' : 'PC app'}</small>` : ''}${a.on ? '<em>Active</em>' : `<button class="g" data-acsw="${esc(a.mid)}">Switch</button>`}<button class="g" data-acrm="${esc(a.mid)}" title="Remove this account from ${GT_HERE}">Remove</button>${a.ok ? '' : '<small>Sign-in expired: switching asks you to sign in again</small>'}</div>`).join('');
   }
   // ---- Pathfinder account (optional): one login that brings all your Bungie accounts to every device and build ----
-  let PFA = null, pfaBusy = false, PFAMSG = '', PFANM = '', PFARS = false;
+  let PFA = null, pfaBusy = false, PFAMSG = '', PFANM = '', PFAED = '', PFAEYE = false, PFAEYE2 = false;
+  const EYE = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+  const pdn = () => (PFA && (PFA.dn || PFA.name)) || '';
   function pfaHTML() {
     if (!window.gt || !gt.pfaStatus) return '';
     if (!PFA) { if (!pfaBusy) { pfaBusy = true; gt.pfaStatus().then((r) => { PFA = r; pfaBusy = false; if (settingsSec.classList.contains('on')) drawSettings(); }).catch(() => { pfaBusy = false; }); } return ''; }
     if (!PFA.avail) return '';
     const msg = PFAMSG ? `<p class="pfam">${esc(PFAMSG)}</p>` : '';
     if (PFA.on && PFA.tmp) {
-      return `<div class="pfa"><div class="pfah"><b>Pathfinder account</b><span class="pfaon">Signed in</span></div><p class="pfae">${esc(PFA.name)}: your password was reset to the temporary 123456. Pick a new password to keep using your account. Nothing is saved to your account until you do.</p><div class="pfaf"><input id="pfanpw" type="password" placeholder="New password (8+ characters)" autocomplete="new-password"><input id="pfanpw2" type="password" placeholder="New password again" autocomplete="new-password"><button class="b" data-pfa="setpw">Set new password</button><button class="g" data-pfa="logout">Sign out</button></div>${msg}</div>`;
+      return `<div class="pfa"><div class="pfah"><b>Pathfinder account</b><span class="pfaon">Signed in</span></div><p class="pfae">${esc(pdn())}: your password was reset to the temporary 123456. Pick a new password to keep using your account. Nothing is saved to your account until you do.</p><div class="pfaf"><input id="pfanpw" type="password" placeholder="New password (8+ characters)" autocomplete="new-password"><input id="pfanpw2" type="password" placeholder="New password again" autocomplete="new-password"><button class="b" data-pfa="setpw">Set new password</button><button class="g" data-pfa="logout">Sign out</button></div>${msg}</div>`;
     }
     if (PFA.on) {
       const when = PFA.at ? new Date(PFA.at).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '';
-      return `<div class="pfa"><div class="pfah"><b>Pathfinder account</b><span class="pfaon">Signed in</span></div><p class="mute">${esc(PFA.name)} &middot; ${PFA.n} Bungie account${PFA.n === 1 ? '' : 's'} saved${when ? ' &middot; last synced ' + esc(when) : ''}.${PFA.err ? ' <span class="pfae">Last sync did not work: ' + esc(PFA.err) + '</span>' : ''}</p>${msg}<p><button class="g" data-pfa="sync">Sync now</button> <button class="g" data-pfa="logout">Sign out</button> <button class="g" data-pfa="logoutall">Sign out on all devices</button> <button class="g" data-pfa="del">Delete Pathfinder account</button></p><p class="mute pfan">Every Bungie account you add here is saved to your Pathfinder account, locked with your password before it leaves this device. Removing an account here only removes it from ${GT_HERE}.</p></div>`;
+      // Account settings, Steam style: the display name is what everyone sees; the login name only signs in, so it stays hidden
+      // (stars) unless the eye is pressed, which keeps it off screen on streams.
+      const lg = esc(PFA.name || ''), stars = '•'.repeat(Math.max(6, Math.min(14, (PFA.name || '').length)));
+      const ed = PFAED === 'dn' ? `<div class="pfaf"><input id="pfadn" type="text" maxlength="32" placeholder="Display name" value="${esc(pdn())}" autocomplete="off"><button class="b" data-pfa="dnsave">Save</button><button class="g" data-pfa="edoff">Cancel</button></div><p class="mute">2 to 32 characters. Everyone sees this name (the team in help requests too). You still sign in with your login name.</p>`
+        : PFAED === 'login' ? `<div class="pfaf"><input id="pfalg" type="text" class="pfmask${PFAEYE2 ? ' show' : ''}" maxlength="24" placeholder="New login name" autocomplete="off" autocapitalize="off" spellcheck="false"><button class="g pfeye" data-pfa="eye2" title="Show or hide" aria-label="Show or hide the new login name">${EYE}</button><input id="pfacur" type="password" placeholder="Current password" autocomplete="current-password"><button class="b" data-pfa="lgsave">Change login name</button><button class="g" data-pfa="edoff">Cancel</button></div><p class="mute">3 to 24 letters or numbers (. _ and - too). You sign in with it from now on; your other devices are signed out and sign in with the new one.</p>`
+        : PFAED === 'pw' ? `<div class="pfaf"><input id="pfacur" type="password" placeholder="Current password" autocomplete="current-password"><input id="pfanpw" type="password" placeholder="New password (8+ characters)" autocomplete="new-password"><input id="pfanpw2" type="password" placeholder="New password again" autocomplete="new-password"><button class="b" data-pfa="pwsave">Change password</button><button class="g" data-pfa="edoff">Cancel</button></div><p class="mute">Your other devices are signed out and sign in with the new password. Your saved Bungie accounts stay.</p>` : '';
+      return `<div class="pfa" id="pfacct"><div class="pfah"><b>Pathfinder account</b><span class="pfaon">Signed in</span></div>
+<div class="pfrows">
+<div class="pfrow"><span class="pfk">Display name</span><b class="pfv">${esc(pdn())}</b><button class="g" data-pfa="ed-dn">Edit</button></div>
+<div class="pfrow"><span class="pfk">Login name</span><span class="pfv pflg">${PFAEYE ? lg : stars}</span><button class="g pfeye" data-pfa="eye" title="${PFAEYE ? 'Hide' : 'Show'} your login name" aria-label="${PFAEYE ? 'Hide' : 'Show'} your login name" aria-pressed="${PFAEYE}">${EYE}</button><button class="g" data-pfa="ed-login">Change</button></div>
+<div class="pfrow"><span class="pfk">Password</span><span class="pfv">••••••••</span><button class="g" data-pfa="ed-pw">Change</button></div>
+</div>${ed}
+<p class="mute">${PFA.n} Bungie account${PFA.n === 1 ? '' : 's'} saved${when ? ' &middot; last synced ' + esc(when) : ''}.${PFA.err ? ' <span class="pfae">Last sync did not work: ' + esc(PFA.err) + '</span>' : ''}</p>${msg}<p><button class="g" data-pfa="sync">Sync now</button> <button class="g" data-pfa="logout">Sign out</button> <button class="g" data-pfa="logoutall">Sign out on all devices</button> <button class="g" data-pfa="del">Delete Pathfinder account</button></p><p class="mute pfan">Every Bungie account you add here is saved to your Pathfinder account, locked with your password before it leaves this device. Removing an account here only removes it from ${GT_HERE}.</p></div>`;
     }
-    return `<div class="pfa"><div class="pfah"><b>Pathfinder account</b><span class="mute">Optional</span></div><p class="mute">Sign in once on another PC, the beta, the website or your phone and all your Bungie accounts (alts too) come with you. Everything works without one.</p>${PFA.out ? `<p class="pfae">Your Pathfinder account sign-in ended. Sign in again to keep syncing, or <button class="g pfalink" data-pfa="logout">forget ${esc(PFA.name)} on ${GT_HERE}</button>.</p>` : ''}<div class="pfaf"><input id="pfanm" type="text" placeholder="Account name" autocomplete="username" autocapitalize="off" spellcheck="false" maxlength="200" value="${esc(PFANM || PFA.name || '')}"><input id="pfapw" type="password" placeholder="Password (8+ characters)" autocomplete="current-password"><button class="b" data-pfa="login">Sign in</button><button class="g" data-pfa="signup">Create account</button></div>${PFARS ? `<div class="pfars"><b>Reset your password with a code</b><p class="mute">Ask Bray for a reset code. Enter your account name above, then the code and a new password here. Bungie accounts saved in your Pathfinder account are cleared, so sign in to Bungie again on devices that are not signed in any more.</p><div class="pfaf"><input id="pfacode" type="text" placeholder="Reset code (ABCD-EFGH-JKLM)" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false" maxlength="20"><input id="pfanpw" type="password" placeholder="New password (8+ characters)" autocomplete="new-password"><button class="b" data-pfa="reset">Set new password</button><button class="g" data-pfa="rsoff">Cancel</button></div></div>` : '<p><button class="g pfalink" data-pfa="rson">Forgot your password? Reset it with a code</button></p>'}${msg}<p class="mute pfan">Your password never leaves this device. Your Bungie sign-ins are locked with it before they are saved, so nobody else can open them, including Pathfinder. If you forget it, you just sign in to Bungie again.</p></div>`;
+    return `<div class="pfa"><div class="pfah"><b>Pathfinder account</b><span class="mute">Optional</span></div><p class="mute">Sign in once on another PC, the beta, the website or your phone and all your Bungie accounts (alts too) come with you. Everything works without one.</p>${PFA.out ? `<p class="pfae">Your Pathfinder account sign-in ended. Sign in again to keep syncing, or <button class="g pfalink" data-pfa="logout">forget ${esc(pdn())} on ${GT_HERE}</button>.</p>` : ''}<div class="pfaf"><input id="pfanm" type="text" class="pfmask${PFAEYE ? ' show' : ''}" placeholder="Login name" autocomplete="username" autocapitalize="off" spellcheck="false" maxlength="200" value="${esc(PFANM || PFA.name || '')}"><button class="g pfeye" data-pfa="eye" title="Show or hide the login name" aria-label="Show or hide the login name" aria-pressed="${PFAEYE}">${EYE}</button><input id="pfapw" type="password" placeholder="Password (8+ characters)" autocomplete="current-password"><button class="b" data-pfa="login">Sign in</button><button class="g" data-pfa="signup">Create account</button></div><p><button class="g pfalink" data-pfa="forgot">Forgot your password? Reset it at the Help Desk</button></p>${msg}<p class="mute pfan">Your password never leaves this device. Your Bungie sign-ins are locked with it before they are saved, so nobody else can open them, including Pathfinder. If you forget it, the team can reset it for you from a help request.</p></div>`;
   }
+  // ---- your Pathfinder display name in the top bar (Steam style): click it for a small menu with Account settings ----
+  function pfChip() {
+    const hd = document.querySelector('header.gtbar') || document.querySelector('header'); if (!hd) return;
+    let b = document.getElementById('gtpfn');
+    const on = !!(PFA && PFA.on), dn = pdn();
+    if (!on) { if (b) b.hidden = true; const m0 = document.getElementById('gtpfm'); if (m0) m0.remove(); return; }
+    if (!b) {
+      b = document.createElement('button'); b.id = 'gtpfn'; b.type = 'button'; b.setAttribute('aria-haspopup', 'menu'); b.setAttribute('aria-expanded', 'false');
+      hd.appendChild(b);
+      b.onclick = (e) => { e.stopPropagation(); const m = document.getElementById('gtpfm'); if (m) { m.remove(); b.setAttribute('aria-expanded', 'false'); return; } pfMenu(b); };
+      document.addEventListener('click', (e) => { const m = document.getElementById('gtpfm'); if (m && !m.contains(e.target) && e.target !== b) { m.remove(); b.setAttribute('aria-expanded', 'false'); } });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { const m = document.getElementById('gtpfm'); if (m) { m.remove(); b.setAttribute('aria-expanded', 'false'); b.focus(); } } });
+    }
+    b.hidden = false;
+    const html = `<span class="gtpfa" aria-hidden="true">${esc((dn || '?').slice(0, 1).toUpperCase())}</span><span class="gtpft">${esc(dn)}</span><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>`;
+    if (b.dataset.h !== html) { b.innerHTML = html; b.dataset.h = html; b.title = dn + ': your Pathfinder account'; b.setAttribute('aria-label', 'Pathfinder account: ' + dn); }
+  }
+  function pfMenu(b) {
+    const m = document.createElement('div'); m.id = 'gtpfm'; m.setAttribute('role', 'menu');
+    const role = { owner: 'Owner', founder: 'Founder', dev: 'Developer', tester: 'Tester' }[FLG && FLG.role] || 'User';
+    m.innerHTML = `<div class="gtpfh"><b>${esc(pdn())}</b><small>${esc(role)} &middot; Pathfinder account</small></div><button type="button" role="menuitem" data-pfm="acct">Account settings</button><button type="button" role="menuitem" data-pfm="help">Help &amp; support</button>`;
+    document.body.appendChild(m);
+    const r = b.getBoundingClientRect(); m.style.top = Math.round(r.bottom + 6) + 'px'; m.style.right = Math.max(8, Math.round(innerWidth - r.right)) + 'px';
+    b.setAttribute('aria-expanded', 'true'); const f = m.querySelector('button'); if (f) f.focus();
+    m.onclick = (e) => {
+      const it = e.target.closest('[data-pfm]'); if (!it) return; m.remove(); b.setAttribute('aria-expanded', 'false');
+      window.show('settings');
+      setTimeout(() => {
+        const sec = it.dataset.pfm === 'acct' ? 'Accounts' : 'About & help', n = settingsSec.querySelector('.sni[data-ssec="' + sec + '"]'); if (n) n.click();
+        setTimeout(() => { const t = document.getElementById(it.dataset.pfm === 'acct' ? 'pfacct' : 'hmsg') || settingsSec.querySelector('.son'); if (t) t.scrollIntoView({ block: 'center', behavior: 'smooth' }); }, 80);
+      }, 30);
+    };
+  }
+  setInterval(pfChip, 2500); setTimeout(pfChip, 600);
   // Signed-in devices: every place this Pathfinder account is signed in, when each was last used, and Sign out for each one.
   const PDEV = { open: false, list: null, busy: false, err: '' };
   function devList() {
@@ -1259,12 +1346,28 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     const run = async (label, fn) => { PFAMSG = label; drawSettings(); try { const r = await fn(); if (r && (r.reload || r.restart)) { afterAcct(r); return; } PFA = r && r.avail !== undefined ? r : await gt.pfaStatus(); flagsLoad(); PFAMSG = r && r.added ? `Added ${r.added} Bungie account${r.added === 1 ? '' : 's'} from your Pathfinder account. Switch to ${r.added === 1 ? 'it' : 'them'} above.` : a === 'sync' ? 'Synced.' : ''; ACL = null; } catch (er) { PFAMSG = clean(er); try { PFA = await gt.pfaStatus(); } catch (e2) { /* keep */ } } drawSettings(); };
     if (a === 'login') return run('Signing in… (locking your key takes a second)', () => gt.pfaLogin({ name: nm, pw }));
     if (a === 'signup') { if (!confirm('Create the Pathfinder account "' + nm + '"?\n\nYour password cannot be recovered. If you forget it, you just sign in to Bungie again on each device.')) return; return run('Creating your account…', () => gt.pfaSignup({ name: nm, pw })); }
-    if (a === 'rson' || a === 'rsoff') { PFARS = a === 'rson'; PFAMSG = ''; drawSettings(); return; }
-    if (a === 'reset') {
-      const code = (document.getElementById('pfacode') || {}).value || '', npw = (document.getElementById('pfanpw') || {}).value || '';
-      if (!confirm('Set a new password for "' + nm + '"?\n\nThe Bungie accounts saved in your Pathfinder account are cleared and saved again from this device. Other devices are signed out of your Pathfinder account.')) return;
-      return run('Setting your new password…', async () => { const r = await gt.pfaReset({ name: nm, code, pw: npw }); PFARS = false; return r; });
+    if (a === 'eye' || a === 'eye2') {
+      if (a === 'eye') PFAEYE = !PFAEYE; else PFAEYE2 = !PFAEYE2; drawSettings();
+      // a shown login name hides itself again after 20 seconds, so it is never left on screen (streams)
+      clearTimeout(pfaAct.eyeT); if (PFAEYE || PFAEYE2) pfaAct.eyeT = setTimeout(() => { if (PFAEYE || PFAEYE2) { PFAEYE = false; PFAEYE2 = false; if (settingsSec.classList.contains('on')) drawSettings(); } }, 20000);
+      return;
     }
+    if (a === 'ed-dn' || a === 'ed-login' || a === 'ed-pw') { PFAED = a.slice(3); PFAMSG = ''; drawSettings(); setTimeout(() => { const i = document.getElementById(PFAED === 'dn' ? 'pfadn' : PFAED === 'login' ? 'pfalg' : 'pfacur'); if (i) { i.focus(); if (i.select) i.select(); } }, 0); return; }
+    if (a === 'edoff') { PFAED = ''; PFAMSG = ''; drawSettings(); return; }
+    if (a === 'dnsave') { const dn = ((document.getElementById('pfadn') || {}).value || '').trim(); return run('Saving…', async () => { const r = await gt.pfaProfile({ dn }); PFAED = ''; setTimeout(() => { PFAMSG = 'Display name saved.'; drawSettings(); }, 0); return r; }); }
+    if (a === 'lgsave') {
+      const to = ((document.getElementById('pfalg') || {}).value || '').trim(), cur = (document.getElementById('pfacur') || {}).value || '';
+      if (!to) { PFAMSG = 'Enter the new login name.'; drawSettings(); return; }
+      if (!confirm('Change your login name?\n\nFrom now on you sign in with the new one. Your other devices are signed out.')) return;
+      return run('Changing your login name… (locking your key takes a second)', async () => { const r = await gt.pfaLoginName({ to, pw: cur }); PFAED = ''; PFAEYE2 = false; PFAEYE = false; setTimeout(() => { PFAMSG = 'Login name changed. Sign in with it on your other devices.'; drawSettings(); }, 0); return r; });
+    }
+    if (a === 'pwsave') {
+      const cur = (document.getElementById('pfacur') || {}).value || '', n1 = (document.getElementById('pfanpw') || {}).value || '', n2 = (document.getElementById('pfanpw2') || {}).value || '';
+      if (n1 !== n2) { PFAMSG = 'The two new passwords do not match.'; drawSettings(); return; }
+      return run('Changing your password… (locking your key takes a second)', async () => { const r = await gt.pfaChangePw({ old: cur, pw: n1 }); PFAED = ''; setTimeout(() => { PFAMSG = 'Password changed. Sign in with it on your other devices.'; drawSettings(); }, 0); return r; });
+    }
+    // Forgot the password: there is no self-service reset. A help request goes to the team, who reset it (to 123456, then you pick a new one).
+    if (a === 'forgot') { HLP.view = 'new'; HLP.kind = 'question'; HLP.msg = 'I forgot my Pathfinder password.\nMy login name is: \nSomething that shows the account is mine (my Bungie name, roughly when I made it): '; HLP.note = ''; const s2 = settingsSec.querySelector('.sni[data-ssec="About & help"]'); if (s2) s2.click(); else drawSettings(); setTimeout(() => { const m = document.getElementById('hmsg'); if (m) { m.scrollIntoView({ block: 'center' }); m.focus(); } }, 60); return; }
     if (a === 'setpw') {
       const n1 = (document.getElementById('pfanpw') || {}).value || '', n2 = (document.getElementById('pfanpw2') || {}).value || '';
       if (n1 !== n2) { PFAMSG = 'The two passwords do not match.'; drawSettings(); return; }
@@ -1317,8 +1420,8 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   }
   const flagsLoad = (force) => { if (!window.gt || !gt.flagsGet) return; gt.flagsGet({ force: !!force }).then((r) => {
     annShow(r && r.ann);
-    const was = JSON.stringify(FLG); FLG = { flags: (r && r.flags) || {}, dev: !!(r && r.dev), role: (r && r.role) || '' };
-    if (JSON.stringify(FLG) !== was) { document.documentElement.toggleAttribute('data-gtdev', FLG.dev); document.documentElement.toggleAttribute('data-gttester', FLG.role === 'tester'); window.dispatchEvent(new Event('gtflags')); if (settingsSec.classList.contains('on')) drawSettings(); if (window.__gtRender) window.__gtRender(); }
+    const was = JSON.stringify(FLG); FLG = { flags: (r && r.flags) || {}, dev: !!(r && r.dev), role: (r && r.role) || '', looks: (r && r.looks) || {}, mylook: (r && r.mylook) || '' };
+    if (JSON.stringify(FLG) !== was) { document.documentElement.toggleAttribute('data-gtdev', FLG.dev); document.documentElement.toggleAttribute('data-gttester', FLG.role === 'tester'); window.dispatchEvent(new Event('gtflags')); if (LOCK[SET.ui]) applySet(); if (settingsSec.classList.contains('on')) drawSettings(); if (window.__gtRender) window.__gtRender(); }
     if (r && PFA && ((PFA.role || '') !== (r.role || '') || !!PFA.on !== !!r.on)) roleChanged();
   }).catch(() => {}); };
   function roleChanged() {
@@ -1407,11 +1510,11 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     const note = HLP.note ? `<p class="hnote${HLP.bad ? ' bad' : ''}" role="status">${esc(HLP.note)}</p>` : '';
     let body = '';
     if (HLP.view === 'new') {
-      body = `<div class="hnew">${PFA && PFA.on ? '' : `<p class="hacct">You are not signed in to a Pathfinder account, so the team sees you as <b>User</b>. Sign in or make a free account so they know who they are talking to. <button class="g" data-h="acct" type="button">Sign in or make an account</button></p>`}<div class="fbk" role="radiogroup" aria-label="What is it about">${HK.map(([k, l]) => `<button class="chip${HLP.kind === k ? ' on' : ''}" data-hk="${k}" role="radio" aria-checked="${HLP.kind === k}" type="button">${l}</button>`).join('')}</div>
+      body = `<div class="hnew">${PFA && PFA.on ? '' : `<p class="hacct">You are not signed in to a Pathfinder account, so the team sees you as a numbered user (<b>User 1</b>, <b>User 2</b> and so on, given when you send). Sign in or make a free account so they know who they are talking to. <button class="g" data-h="acct" type="button">Sign in or make an account</button></p>`}<div class="fbk" role="radiogroup" aria-label="What is it about">${HK.map(([k, l]) => `<button class="chip${HLP.kind === k ? ' on' : ''}" data-hk="${k}" role="radio" aria-checked="${HLP.kind === k}" type="button">${l}</button>`).join('')}</div>
         <textarea id="hmsg" maxlength="3000" rows="6" placeholder="${HLP.kind === 'bug' ? 'What happened, and what were you doing when it did?' : HLP.kind === 'idea' ? 'What would you like Pathfinder to do?' : 'Your question or message'}">${esc(HLP.msg)}</textarea>
         <div class="fbr"><input id="hcon" type="text" maxlength="120" placeholder="Discord name or email (optional)" value="${esc(HLP.contact)}" autocomplete="off"><label class="fbc"><input type="checkbox" id="hrep"${HLP.rep ? ' checked' : ''}> Attach the problem report</label></div>
         <p class="fbb"><button class="b" data-h="send" type="button"${HLP.busy ? ' disabled' : ''}>${HLP.busy ? 'Sending…' : 'Send'}</button><button class="g" data-h="list" type="button">Cancel</button></p>
-        <p class="mute hsm">You get the answer right here in Settings &gt; About & help${PFA && PFA.on ? `, on every device signed in as ${esc(PFA.name)}` : ''}. A Discord name or email is only needed if you would also like an answer there. The problem report lists the errors Pathfinder ran into, your version and screen size; nothing about your Destiny account.</p></div>`;
+        <p class="mute hsm">You get the answer right here in Settings &gt; About & help${PFA && PFA.on ? `, on every device signed in as ${esc(pdn())}` : ''}. A Discord name or email is only needed if you would also like an answer there. The problem report lists the errors Pathfinder ran into, your version and screen size; nothing about your Destiny account.</p></div>`;
     } else if (HLP.view === 'ticket' && HLP.t) {
       const t = HLP.t, st = HST[t.status] || HST.open;
       body = `<p class="fbb"><button class="g hback" data-h="list" type="button">&larr; All requests</button><button class="g" data-h="tref" type="button"${HLP.busy ? ' disabled' : ''}>&#8635; Refresh</button></p>
@@ -1485,13 +1588,13 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
       const t = DSK.t, st = HST[t.status] || HST.open;
       body = `<p class="fbb"><button class="g hback" data-d="back" type="button">&larr; All requests</button><button class="g" data-d="tref" type="button"${DSK.busy ? ' disabled' : ''}>&#8635; Refresh</button></p>
         <div class="hth"><div class="hthh"><b>${esc(HKN[t.kind] || 'Other')}</b><span class="hst ${st[1]}">${DSN(t.status)}</span><small>Opened ${esc(hWhen(t.at))}</small></div>
-        <p class="fbb hsm" style="margin:2px 0 6px"><span class="hclaim">${t.claim ? (t.claim.name === (PFA && PFA.name) ? '<b>You are answering this</b>' : `<b>${esc(t.claim.name)}</b> is answering this`) : 'Nobody is answering this yet'}</span>${t.claim && t.claim.name === (PFA && PFA.name) ? '<button class="g" data-d="unclaim" type="button">Let someone else</button>' : `<button class="g" data-d="claim" type="button">${t.claim ? 'Take it over' : 'I&rsquo;m answering this'}</button>`}${PFA && PFA.founder && t.canBlock ? `<button class="g${t.blocked ? '' : ' admdel'}" data-d="block" type="button">${t.blocked ? 'Unblock sender' : 'Block sender'}</button>` : ''}${t.blocked ? '<span class="bad hsm">Blocked from help requests</span>' : ''}</p>
+        <p class="fbb hsm" style="margin:2px 0 6px"><span class="hclaim">${t.claim ? (t.claim.name === pdn() ? '<b>You are answering this</b>' : `<b>${esc(t.claim.name)}</b> is answering this`) : 'Nobody is answering this yet'}</span>${t.claim && t.claim.name === (PFA && PFA.name) ? '<button class="g" data-d="unclaim" type="button">Let someone else</button>' : `<button class="g" data-d="claim" type="button">${t.claim ? 'Take it over' : 'I&rsquo;m answering this'}</button>`}${PFA && PFA.founder && t.canBlock ? `<button class="g${t.blocked ? '' : ' admdel'}" data-d="block" type="button">${t.blocked ? 'Unblock sender' : 'Block sender'}</button>` : ''}${t.blocked ? '<span class="bad hsm">Blocked from help requests</span>' : ''}</p>
         <p class="mute hsm">${t.acct ? 'Pathfinder account <b>' + esc(t.acct) + '</b>' + (t.arole === 'tester' ? ' (tester)' : '') : 'Not signed in to a Pathfinder account, so they show as User'}${t.contact ? ' &middot; reply to <b>' + esc(t.contact) + '</b>' : ''} &middot; ${esc(t.where || '')} ${esc(t.ver || '')}</p>
         <div class="hmsgs">${t.msgs.map((m) => `<div class="hb${m.by === 'team' ? ' team' : ''}${RC[m.role] ? ' own r-' + m.role : m.role === 'tester' ? ' r-tester' : ''}"><small>${m.by === 'team' ? esc(m.name || 'Pathfinder team') + (RC[m.role] ? `<em class="hown">${RC[m.role]}</em>` : '') : esc(m.name || t.acct || 'User') + (m.role === 'tester' ? '<em class="hown">Tester</em>' : '')} &middot; ${esc(hWhen(m.at))}</small><div>${hText(m.text)}</div></div>`).join('')}</div>
         ${t.report ? `<details class="hrep"><summary>Problem report</summary><pre>${esc(t.report)}</pre></details>` : ''}
-        <div class="hnotes"><div class="hnt">Team notes &middot; the player never sees these</div>${(t.notes || []).map((x) => `<div class="hn"><small>${esc(x.name || 'Team')}${x.role === 'owner' ? ' &middot; Owner' : x.role === 'founder' ? ' &middot; Founder' : x.role === 'dev' ? ' &middot; Developer' : x.role === 'tester' ? ' &middot; Tester' : ''} &middot; ${esc(hWhen(x.at))}</small>${esc(x.text)}</div>`).join('')}
+        <div class="hnotes"><div class="hnt">Team notes &middot; the user never sees these</div>${(t.notes || []).map((x) => `<div class="hn"><small>${esc(x.name || 'Team')}${x.role === 'owner' ? ' &middot; Owner' : x.role === 'founder' ? ' &middot; Founder' : x.role === 'dev' ? ' &middot; Developer' : x.role === 'tester' ? ' &middot; Tester' : ''} &middot; ${esc(hWhen(x.at))}</small>${esc(x.text)}</div>`).join('')}
           <textarea id="dnote" maxlength="2000" rows="2" placeholder="Add a note for the team">${esc(DSK.tn)}</textarea><p class="fbb" style="margin:0"><button class="g" data-d="note" type="button"${DSK.busy ? ' disabled' : ''}>Add note</button></p></div>
-        <textarea id="dreply" maxlength="3000" rows="4" placeholder="Write a reply. The player sees it in Settings > About & help.">${esc(DSK.reply)}</textarea>
+        <textarea id="dreply" maxlength="3000" rows="4" placeholder="Write a reply. The user sees it in Settings > About & help.">${esc(DSK.reply)}</textarea>
         ${gt.deskCanned ? `<p class="fbb hcan"><select id="dcan" aria-label="Insert a saved reply"><option value="">Insert a saved reply…</option>${(DSK.can || []).map((x) => `<option value="${esc(x.id)}">${esc(x.title)}</option>`).join('')}</select><button class="g" data-d="cansave" type="button" title="Keep what is in the reply box so anyone on the team can insert it later">Save as a saved reply</button>${(DSK.can || []).length ? `<button class="g" data-d="canman" type="button">${DSK.canMan ? 'Done' : 'Manage'}</button>` : ''}</p>${DSK.canMan ? `<div class="adml">${(DSK.can || []).map((x) => `<div class="admr" data-cid="${esc(x.id)}"><div class="admn"><b>${esc(x.title)}</b><small>${esc(x.text.slice(0, 120))}${x.text.length > 120 ? '…' : ''} &middot; ${esc(x.by || '')}</small></div><div class="admc"><button class="g admdel" data-d="candel" type="button">Delete</button></div></div>`).join('')}</div>` : ''}` : ''}
         <p class="fbb"><button class="b" data-d="reply" type="button"${DSK.busy ? ' disabled' : ''}>${DSK.busy ? 'Sending…' : 'Send reply'}</button><button class="g" data-d="replyclose" type="button"${DSK.busy ? ' disabled' : ''}>Send and mark solved</button>${t.status === 'closed' ? '<button class="g" data-d="reopen" type="button">Reopen</button>' : '<button class="g" data-d="close" type="button">Mark as solved</button>'}${PFA && PFA.founder ? '<button class="g admdel" data-d="del" type="button">Delete</button>' : ''}</p></div>`;
     } else {
@@ -1499,7 +1602,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
       body = `<div class="fbk">${[['open', 'Waiting'], ['answered', 'Open'], ['closed', 'Solved'], ['all', 'All']].map(([k, l]) => `<button class="chip${DSK.f === k ? ' on' : ''}" data-df="${k}" type="button">${l} ${k === 'all' ? L.length : cnt[k]}</button>`).join('')}<button class="g" data-d="refresh" type="button">${DSK.loading ? 'Loading…' : '&#8635; Refresh'}</button></div>${gt.notify ? `<div class="sx hntf"><div class="sxt"><b>Notify me about new requests and replies</b></div><div class="sxc"><label class="tgl"><input type="checkbox" data-ntf="gt_notify_desk"${notifOn('gt_notify_desk') ? ' checked' : ''}><i></i></label></div></div>` : ''}
         <div class="hlist">${list.map((x) => { const st = HST[x.status] || HST.open; return `<div class="hrow${x.unread ? ' new' : ''}" data-did="${esc(x.id)}" role="button" tabindex="0"><span class="hk">${esc(HKN[x.kind] || 'Other')}</span><span class="hf">${esc(x.first)}</span><span class="hst ${st[1]}">${x.unread ? 'New message' : DSN(x.status)}</span><small>${esc(x.acct || 'User')}${x.arole === 'tester' ? ' (tester)' : ''} &middot; ${esc(hWhen(x.upd))}${x.claim ? `<em class="hcl">${esc(x.claim)}</em>` : ''}</small></div>`; }).join('') || `<p class="mute">${DSK.list === null ? 'Loading…' : 'Nothing here.'}</p>`}</div>`;
     }
-    return `<div class="card sc"><h2>Help desk</h2><p class="mute">Help requests from players, shown with their Pathfinder account name (User when they are not signed in to one). Your reply shows in their Settings &gt; About & help, signed with your account name (${esc((PFA && PFA.name) || '')}).</p>${note}${body}</div>`;
+    return `<div class="card sc"><h2>Help desk</h2><p class="mute">Help requests from users, shown with their Pathfinder display name (User 1, User 2 and so on when they are not signed in to one). Your reply shows in their Settings &gt; About & help, signed with your display name (${esc(pdn())}).</p>${note}${body}</div>`;
   }
   settingsSec.addEventListener('click', (e) => {
     const f = e.target.closest('[data-df]'); if (f) { DSK.f = f.dataset.df; dDraw(); return; }
@@ -1520,8 +1623,8 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     if (a === 'tref' && DSK.t) { const n0 = DSK.t.msgs.length, s0 = DSK.t.status; deskLoad(true); return act(() => gt.deskGet({ id: DSK.t.id }), (t) => (t.msgs.length > n0 ? 'New message.' : t.status !== s0 ? 'Updated.' : 'Up to date.')); }
     if (!DSK.t) return;
     if (a === 'reply' || a === 'replyclose') { if (!DSK.reply.trim()) { DSK.note = 'Write a reply first.'; DSK.bad = true; dDraw(); return; } return act(async () => { const t = await gt.deskReply({ id: DSK.t.id, text: DSK.reply.trim(), close: a === 'replyclose' }); DSK.reply = ''; return t; }, a === 'replyclose' ? 'Reply sent and marked as solved.' : 'Reply sent. The player sees it in Settings > About & help.'); }
-    if (a === 'close' || a === 'reopen') return act(() => gt.deskStatus({ id: DSK.t.id, status: a === 'close' ? 'closed' : 'open' }), a === 'close' ? 'Marked as solved. If the player writes back, it opens again.' : 'Reopened.');
-    if (a === 'del') { if (!confirm('Delete this help request for good? The player will no longer see it.')) return; const id = DSK.t.id; return act(async () => { await gt.deskDelete({ id }); DSK.list = (DSK.list || []).filter((x) => x.id !== id); DSK.t = null; return null; }, 'Deleted.'); }
+    if (a === 'close' || a === 'reopen') return act(() => gt.deskStatus({ id: DSK.t.id, status: a === 'close' ? 'closed' : 'open' }), a === 'close' ? 'Marked as solved. If the user writes back, it opens again.' : 'Reopened.');
+    if (a === 'del') { if (!confirm('Delete this help request for good? The user will no longer see it.')) return; const id = DSK.t.id; return act(async () => { await gt.deskDelete({ id }); DSK.list = (DSK.list || []).filter((x) => x.id !== id); DSK.t = null; return null; }, 'Deleted.'); }
   });
   // An open conversation (Help or the Help desk) checks for new messages every 10 seconds while it is on screen. It only redraws
   // when something changed, and what you are typing (and where the cursor is) stays as it is.
@@ -1605,16 +1708,16 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     const ap = asPlayer();
     const rows = names.filter((n) => { const l = dflt(n); return l in lv && rk >= LVR[l]; }).map((n) => { const lvl = dflt(n); return `<div class="sx"><div class="sxt"><b>${esc(fName(n))}</b><small>${lv[lvl] || esc(lvl)}</small></div><div class="sxc">${lvl in lv ? `<label class="mute" style="display:flex;gap:8px;align-items:center">Show for me <label class="tgl"><input type="checkbox" data-devoff="${esc(n)}"${off.includes(n) ? '' : ' checked'}><i></i></label></label>` : ''}</div></div>`; }).join('');
     const pc = !document.documentElement.classList.contains('gtweb');
-    const apRow = `<div class="sx"><div class="sxt"><b>See the app as a player</b><small>Hides everything that is not set to Everyone, on this device.${tester ? '' : ' Your developer tools stay.'}</small></div><div class="sxc"><label class="tgl"><input type="checkbox" data-devap="1"${ap ? ' checked' : ''}><i></i></label></div></div>`;
+    const apRow = `<div class="sx"><div class="sxt"><b>See the app as a user</b><small>Hides everything that is not set to Everyone, on this device.${tester ? '' : ' Your developer tools stay.'}</small></div><div class="sxc"><label class="tgl"><input type="checkbox" data-devap="1"${ap ? ' checked' : ''}><i></i></label></div></div>`;
     const testH = rows && !ap ? `<div class="thh">Being tested</div><p class="mute">Players do not see these yet. Turn one off to see the app the way players do.</p>${rows}` : '';
-    if (tester) return `<div class="card sc"><h2>Tester</h2><p class="mute">You are signed in with a tester account (${esc((PFA && PFA.name) || '')}), so you see parts of Pathfinder before everyone else. Tell the team what works and what does not.</p>
+    if (tester) return `<div class="card sc"><h2>Tester</h2><p class="mute">You are signed in with a tester account (${esc(pdn())}), so you see parts of Pathfinder before everyone else. Tell the team what works and what does not.</p>
       ${apRow}${testH || `<p class="mute">Nothing is being tested right now.</p>`}
       <div class="thh">Tools</div><p><button class="g" data-dev="diag">Copy diagnostics</button> <button class="g" data-dev="bug">Report a bug</button></p></div>`;
-    return `<div class="card sc"><h2>Developer</h2><p class="mute">You are signed in with a developer account (${esc((PFA && PFA.name) || '')}).</p>
+    return `<div class="card sc"><h2>Developer</h2><p class="mute">You are signed in with a developer account (${esc(pdn())}).</p>
       ${apRow}${testH}
       <div class="thh">Tools</div><p>${pc ? '<button class="g" data-dev="tools">Open developer tools</button> ' : ''}<button class="g" data-dev="diag">Copy diagnostics</button> <button class="g" data-dev="bug">Report a bug</button> <button class="g" data-dev="maint">Preview the maintenance bar</button></p>
-      <div class="thh">Rename an account</div><p class="mute">For a name that breaks the rules. The account's password becomes 123456 and they pick a new one when they sign in; their devices are signed out and the Bungie sign-ins saved in it are cleared. ${PFA && PFA.founder ? 'Other accounts are renamed in the Founder panel.' : 'You can rename player and tester accounts.'}</p>
-      <div class="pfaf"><input id="devrnf" type="text" placeholder="Current account name" autocapitalize="off" spellcheck="false" maxlength="200" value="${esc(DEVRN.from)}"><input id="devrnt" type="text" placeholder="New account name" autocapitalize="off" spellcheck="false" maxlength="24" value="${esc(DEVRN.to)}"><button class="b" data-dev="rename">${DEVRN.busy ? 'Renaming…' : 'Rename'}</button></div>${DEVRN.msg ? `<p class="admmsg${DEVRN.bad ? ' bad' : ''}">${esc(DEVRN.msg)}</p>` : ''}</div>`;
+      <div class="thh">Rename an account</div><p class="mute">For a display name that breaks the rules. Only the display name changes: they still sign in with the same login name and password. ${PFA && PFA.founder ? 'Other accounts are renamed in the Founder panel.' : 'You can rename user and tester accounts.'}</p>
+      <div class="pfaf"><input id="devrnf" type="text" class="pfmask" placeholder="Their login name" autocapitalize="off" spellcheck="false" maxlength="200" value="${esc(DEVRN.from)}"><input id="devrnt" type="text" placeholder="New display name" spellcheck="false" maxlength="32" value="${esc(DEVRN.to)}"><button class="b" data-dev="rename">${DEVRN.busy ? 'Renaming…' : 'Rename'}</button></div>${DEVRN.msg ? `<p class="admmsg${DEVRN.bad ? ' bad' : ''}">${esc(DEVRN.msg)}</p>` : ''}</div>`;
   }
   settingsSec.addEventListener('change', (e) => {
     if (e.target.dataset && e.target.dataset.devap) { try { localStorage.setItem('gt_asplayer', e.target.checked ? '1' : '0'); } catch (er) { /* storage off */ } window.dispatchEvent(new Event('gtflags')); if (window.__gtRender) window.__gtRender(); drawSettings(); return; }
@@ -1635,7 +1738,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
       if (!DEVRN.from || !DEVRN.to || DEVRN.busy) return;
       if (!confirm('Rename "' + DEVRN.from + '" to "' + DEVRN.to + '"?\n\nTheir password becomes 123456 and they pick a new one when they sign in. Tell them the new name.')) return;
       DEVRN.busy = true; DEVRN.msg = ''; redrawCard('Developer', devCard);
-      gt.devRename({ name: DEVRN.from, to: DEVRN.to }).then((r) => { DEVRN.msg = `${DEVRN.from} is now ${DEVRN.to}. ${r.note || ''}`; DEVRN.bad = false; DEVRN.from = ''; DEVRN.to = ''; })
+      gt.devRename({ name: DEVRN.from, to: DEVRN.to }).then((r) => { DEVRN.msg = `Now shown as ${DEVRN.to}. ${r.note || ''}`; DEVRN.bad = false; DEVRN.from = ''; DEVRN.to = ''; })
         .catch((er) => { DEVRN.msg = clean(er); DEVRN.bad = true; }).finally(() => { DEVRN.busy = false; redrawCard('Developer', devCard); });
     }
     if (b.dataset.dev === 'diag') {
@@ -1664,20 +1767,20 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     if (!PFA || !PFA.founder) return '';
     if (!ADM.on) return `<div class="card sc"><h2>Founder panel</h2><p class="mute">Manage Pathfinder accounts, feature switches, help requests and announcements. For founder and owner accounts, with an access key from the owner. The key is kept only until you close Pathfinder.</p>
       <div class="pfaf"><input id="admkey" type="password" placeholder="Access key" autocomplete="off" spellcheck="false"><button class="b" data-adm="unlock">${ADM.busy ? 'Checking…' : 'Unlock'}</button></div>${ADM.msg ? `<p class="admmsg bad">${esc(ADM.msg)}</p>` : ''}</div>`;
-    const q = ADM.q.trim().toLowerCase(), RL = { '': 'Player', tester: 'Tester', dev: 'Developer', founder: 'Founder', owner: 'Owner' };
+    const q = ADM.q.trim().toLowerCase(), RL = { '': 'User', tester: 'Tester', dev: 'Developer', founder: 'Founder', owner: 'Owner' };
     // Founders look after players and developers; the owner also founders; owner accounts only change on the admin page.
     const may = (r) => (r === 'owner' ? false : r === 'founder' ? !!PFA.owner : true);
-    const roleOpts = PFA.owner ? [['', 'Player'], ['tester', 'Tester'], ['dev', 'Developer'], ['founder', 'Founder']] : [['', 'Player'], ['tester', 'Tester'], ['dev', 'Developer']];
+    const roleOpts = PFA.owner ? [['', 'User'], ['tester', 'Tester'], ['dev', 'Developer'], ['founder', 'Founder']] : [['', 'User'], ['tester', 'Tester'], ['dev', 'Developer']];
     const cnt = { all: ADM.acc.length, '': 0, tester: 0, dev: 0, founder: 0, locked: 0, sus: 0 }; ADM.acc.forEach((a) => { cnt[a.role === 'owner' ? 'founder' : a.role || ''] += 1; if (a.locked) cnt.locked += 1; if (a.suspended) cnt.sus += 1; });
     const inRf = (a) => ADM.rf === 'all' || (ADM.rf === 'locked' ? a.locked : ADM.rf === 'sus' ? a.suspended : ADM.rf === 'founder' ? ['founder', 'owner'].includes(a.role) : (a.role || '') === ADM.rf);
     // Quick numbers, from what the service already keeps (nothing new is tracked about players)
     const wk = Date.now() - 7 * 864e5, open = DSK.list ? DSK.list.filter((x) => x.status === 'open').length : null;
     const statsH = `<div class="admstats"><span><b>${ADM.acc.length}</b>accounts</span><span><b>${ADM.acc.filter((a) => a.lastLogin > wk).length}</b>signed in this week</span><span><b>${ADM.acc.filter((a) => a.created > wk).length}</b>new this week</span>${open === null ? '' : `<span><b>${open}</b>help ${open === 1 ? 'request' : 'requests'} waiting</span>`}${cnt.sus ? `<span><b>${cnt.sus}</b>suspended</span>` : ''}</div>`;
-    const rfH = `<div class="admseg admrf" role="group" aria-label="Show accounts">${[['all', 'All'], ['', 'Players'], ['tester', 'Testers'], ['dev', 'Developers'], ['founder', 'Founders'], ['locked', 'Locked'], ['sus', 'Suspended']].filter(([v]) => (v !== 'locked' || cnt.locked) && (v !== 'sus' || cnt.sus) && (v !== 'tester' || cnt.tester)).map(([v, l]) => `<button type="button" data-adm="rf" data-rf="${v}" class="${ADM.rf === v ? 'on' : ''}" aria-pressed="${ADM.rf === v}">${l} ${cnt[v]}</button>`).join('')}</div>`;
-    const rows = ADM.acc.filter((a) => inRf(a) && (!q || (a.name || '').toLowerCase().includes(q))).map((a) => `<div class="admr" data-aid="${esc(a.id)}">
-      <div class="admn"><b>${a.name ? esc(a.name) : '<span class="mute">(name not saved yet)</span>'}</b><small>Created ${esc(admWhen(a.created))} &middot; last sign-in ${esc(admWhen(a.lastLogin))}${a.locked ? ' &middot; <span class="bad">locked 15 min</span>' : ''}${a.codeWaiting ? ' &middot; reset code waiting' : ''}${a.tmp ? ' &middot; password 123456' : ''}${a.suspended ? ' &middot; <span class="bad">suspended</span>' : ''}</small></div>
-      <div class="admc">${!may(a.role) ? `<span class="admtag${a.role === 'owner' ? ' own' : ''}">${RL[a.role] || 'Player'}</span>` : `<select data-adm="role" aria-label="Role for ${esc(a.name || 'account')}">${roleOpts.map(([v, l]) => `<option value="${v}"${(a.role || '') === v ? ' selected' : ''}>${l}</option>`).join('')}</select>`}
-      ${may(a.role) ? '<button class="g" data-adm="reset">Reset code</button><button class="g" data-adm="quick" title="Set the password to 123456">Reset to 123456</button><button class="g" data-adm="rename">Rename</button><button class="g" data-adm="signout" title="End every saved sign-in; the password stays the same">Sign out everywhere</button>' : ''}${a.locked ? '<button class="g" data-adm="unlockacc">Unlock</button>' : ''}${a.codeWaiting ? '<button class="g" data-adm="cancel">Cancel code</button>' : ''}${may(a.role) ? `<button class="g" data-adm="suspend" title="${a.suspended ? 'Let them sign in again' : 'Block sign-in without deleting anything'}">${a.suspended ? 'Unsuspend' : 'Suspend'}</button><button class="g admdel" data-adm="del">Delete</button>` : ''}</div>${ADM.ren === a.id ? `<div class="admc admren"><input type="text" id="admren" maxlength="24" value="${esc(a.name)}" aria-label="New account name" autocapitalize="off" spellcheck="false"><button class="b" data-adm="rensave">Save name</button><button class="g" data-adm="rencancel">Cancel</button><small class="mute">Renaming sets the password to 123456.</small></div>` : ''}</div>`).join('') || '<p class="mute">No accounts.</p>';
+    const rfH = `<div class="admseg admrf" role="group" aria-label="Show accounts">${[['all', 'All'], ['', 'Users'], ['tester', 'Testers'], ['dev', 'Developers'], ['founder', 'Founders'], ['locked', 'Locked'], ['sus', 'Suspended']].filter(([v]) => (v !== 'locked' || cnt.locked) && (v !== 'sus' || cnt.sus) && (v !== 'tester' || cnt.tester)).map(([v, l]) => `<button type="button" data-adm="rf" data-rf="${v}" class="${ADM.rf === v ? 'on' : ''}" aria-pressed="${ADM.rf === v}">${l} ${cnt[v]}</button>`).join('')}</div>`;
+    const rows = ADM.acc.filter((a) => inRf(a) && (!q || (a.name || '').toLowerCase().includes(q) || (a.display || '').toLowerCase().includes(q))).map((a) => `<div class="admr" data-aid="${esc(a.id)}">
+      <div class="admn"><b>${esc(a.display || a.name || '') || '<span class="mute">(name not saved yet)</span>'}</b><small>${a.name ? `Login: <span class="admlg">${ADM.eye ? esc(a.name) : '••••••'}</span> &middot; ` : ''}Created ${esc(admWhen(a.created))} &middot; last sign-in ${esc(admWhen(a.lastLogin))}${a.locked ? ' &middot; <span class="bad">locked 15 min</span>' : ''}${a.tmp ? ' &middot; password 123456' : ''}${a.suspended ? ' &middot; <span class="bad">suspended</span>' : ''}</small></div>
+      <div class="admc">${!may(a.role) ? `<span class="admtag${a.role === 'owner' ? ' own' : ''}">${RL[a.role] || 'User'}</span>` : `<select data-adm="role" aria-label="Role for ${esc(a.name || 'account')}">${roleOpts.map(([v, l]) => `<option value="${v}"${(a.role || '') === v ? ' selected' : ''}>${l}</option>`).join('')}</select>`}
+      ${may(a.role) ? '<button class="g" data-adm="quick" title="Set the password to 123456">Reset to 123456</button><button class="g" data-adm="rename" title="Change the display name; their login name and password stay the same">Rename</button><button class="g" data-adm="signout" title="End every saved sign-in; the password stays the same">Sign out everywhere</button>' : ''}${a.locked ? '<button class="g" data-adm="unlockacc">Unlock</button>' : ''}${may(a.role) ? `<button class="g" data-adm="suspend" title="${a.suspended ? 'Let them sign in again' : 'Block sign-in without deleting anything'}">${a.suspended ? 'Unsuspend' : 'Suspend'}</button><button class="g admdel" data-adm="del">Delete</button>` : ''}</div>${ADM.ren === a.id ? `<div class="admc admren"><input type="text" id="admren" maxlength="32" value="${esc(a.display || a.name)}" aria-label="New display name" spellcheck="false"><button class="b" data-adm="rensave">Save name</button><button class="g" data-adm="rencancel">Cancel</button><small class="mute">Changes the display name only. Their login name and password stay the same.</small></div>` : ''}</div>`).join('') || '<p class="mute">No accounts.</p>';
     // Feature switches: every switch the app knows, by name, with three buttons. A click saves it (no typing, no Save button).
     const cat = ADM.cat || [], known = new Set(cat.map((c) => c.k)), LV = ['on', 'tester', 'dev', 'founder', 'owner', 'off'].map((v) => [v, LVNAME[v]]);
     let frows = '', fg = '';
@@ -1694,12 +1797,11 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
       <div class="adml">${(ADM.keys || []).map((k) => `<div class="admr" data-kid="${esc(k.id)}"><div class="admn"><b>${esc(k.name)}</b><small>Made ${esc(admWhen(k.made))}${k.by ? ' by ' + esc(k.by) : ''} &middot; ${k.used ? 'last used ' + esc(admWhen(k.used)) + (k.usedBy ? ' by ' + esc(k.usedBy) : '') : 'not used yet'} &middot; ${!k.exp ? 'works until taken back' : k.exp < Date.now() ? '<span class="bad">ran out ' + esc(admWhen(k.exp)) + '</span>' : 'works until ' + esc(admWhen(k.exp))}</small></div><div class="admc"><button class="g admdel" data-adm="krev">Take back</button></div></div>`).join('') || '<p class="mute">No access keys yet. Your ADMIN_KEY always works for you.</p>'}</div>` : '';
     const sec = (title, sub, inner) => `<div class="admsec" role="group" aria-label="${title}"><h3 class="admh">${title}${sub ? `<small>${sub}</small>` : ''}</h3>${inner}</div>`;
     const helpN = DSK.list ? DSK.list.filter((x) => x.status === 'open').length : null;
-    return `<div class="card sc"><h2>Founder panel</h2><p class="mute">Signed in as ${PFA.owner ? 'the owner' : 'founder'} ${esc(PFA.name || '')}. Passwords are never shown here. ${PFA.owner ? 'Owner accounts are only changed on the admin page.' : 'Founder and owner accounts are changed by the owner.'}</p>
+    return `<div class="card sc"><h2>Founder panel</h2><p class="mute">Signed in as ${PFA.owner ? 'the owner' : 'founder'} ${esc(pdn() || '')}. Passwords are never shown here. ${PFA.owner ? 'Owner accounts are only changed on the admin page.' : 'Founder and owner accounts are changed by the owner.'}</p>
       ${ADM.msg ? `<p class="admmsg${/^(Could|Wrong|Too|No |Only)/.test(ADM.msg) ? ' bad' : ''}">${esc(ADM.msg)}</p>` : ''}
-      ${ADM.code ? `<div class="admcode"><p>Reset code for <b>${esc(ADM.codeFor)}</b>. It works once, for 48 hours. They enter it in Settings &gt; Accounts &gt; "Forgot your password? Reset it with a code".</p><code>${esc(ADM.code)}</code><p class="mute">Using it clears the Bungie accounts saved in their Pathfinder account and signs their other devices out.</p></div>` : ''}
       ${statsH}
       ${sec('Accounts', String(ADM.acc.length), `${rfH}
-      <div class="pfaf"><input type="search" id="admq" placeholder="Filter by name" value="${esc(ADM.q)}"><input type="text" id="admfind" placeholder="Find by exact name"><button class="g" data-adm="find">Find</button><button class="g" data-adm="reload">${ADM.busy ? 'Loading…' : 'Reload'}</button></div>
+      <div class="pfaf"><input type="search" id="admq" placeholder="Filter by display or login name" value="${esc(ADM.q)}"><input type="text" id="admfind" class="pfmask${ADM.eye ? ' show' : ''}" placeholder="Find by exact login name" autocomplete="off" spellcheck="false"><button class="g" data-adm="find">Find</button><button class="g" data-adm="reload">${ADM.busy ? 'Loading…' : 'Reload'}</button><button class="g pfeye" data-adm="eye" title="${ADM.eye ? 'Hide' : 'Show'} login names" aria-label="${ADM.eye ? 'Hide' : 'Show'} login names" aria-pressed="${!!ADM.eye}">${EYE}</button></div>
       <div class="adml">${rows}</div>`)}
       ${sec('Feature switches', '', `<p class="mute">Choose who sees each part of Pathfinder. Each choice also shows to every role above it, so Testers means testers, developers, founders and you. A click saves it; every copy of the app follows within 10 minutes.</p><div class="adml">${frows}</div>`)}
       ${sec('Help requests', helpN ? helpN + ' waiting' : '', `<p class="mute">${DSK.list ? (helpN ? helpN + ' waiting for an answer.' : 'Nothing waiting for an answer.') : 'Answered in the Help desk section.'} <button class="g" data-adm="godesk">Open Help desk</button></p>${ADM.blocks && ADM.blocks.length ? `<div class="admswg">Blocked from help requests</div><div class="adml">${ADM.blocks.map((x) => `<div class="admr" data-bk="${esc(x.k)}"><div class="admn"><b>${esc(x.name)}</b><small>Blocked ${esc(admWhen(x.at))}${x.by ? ' by ' + esc(x.by) : ''}${x.why ? ' &middot; &ldquo;' + esc(x.why) + '&rdquo;' : ''}</small></div><div class="admc"><button class="g" data-adm="unblock">Unblock</button></div></div>`).join('')}</div>` : ''}`)}
@@ -1712,11 +1814,12 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   }
   settingsSec.addEventListener('click', async (e) => {
     const b = e.target.closest('[data-adm]'); if (!b || b.tagName === 'SELECT' || b.tagName === 'INPUT') return;
-    const a = b.dataset.adm, row = b.closest('[data-aid]'), acc = row && ADM.acc.find((x) => x.id === row.dataset.aid), nm = (acc && acc.name) || 'this account';
+    const a = b.dataset.adm, row = b.closest('[data-aid]'), acc = row && ADM.acc.find((x) => x.id === row.dataset.aid), nm = (acc && (acc.display || acc.name)) || 'this account';
     const run = async (f, ok) => { try { await f(); if (ok) ADM.msg = ok; admLogNow(); } catch (er) { ADM.msg = clean(er); if (/wrong admin key/i.test(ADM.msg)) { ADM.on = false; ADM.key = ''; } } aDraw(); };
     if (a === 'unlock') { ADM.key = (document.getElementById('admkey') || {}).value || ''; if (!ADM.key) return; ADM.msg = ''; admLoad(); return; }
     if (a === 'lock') { ADM.key = ''; ADM.on = false; ADM.code = ''; ADM.msg = ''; ADM.newKey = null; ADM.keys = []; aDraw(); return; }
     if (a === 'reload') { ADM.code = ''; admLoad(); return; }
+    if (a === 'eye') { ADM.eye = !ADM.eye; aDraw(); return; } // login names stay hidden (stars) unless shown, so they never leak on stream
     if (a === 'rf') { ADM.rf = b.dataset.rf; aDraw(); return; }
     if (a === 'logmore') { ADM.logN = ADM.logN > 5 ? 5 : 20; aDraw(); return; }
     if (a === 'logdl') { const q2 = (v) => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"'; const csv = ['When,Who,Role,Did,Account,Details'].concat((ADM.log || []).map((x) => [new Date(x.t).toISOString(), x.by, x.role, x.a, x.who, x.d].map(q2).join(','))).join('\r\n'); gt.saveCsv({ name: 'pathfinder-admin-actions-' + new Date().toISOString().slice(0, 10) + '.csv', text: csv }).then((r) => { if (r && r.ok) { ADM.msg = 'Saved ' + r.file + '.'; aDraw(); } }).catch((er) => { ADM.msg = clean(er); aDraw(); }); return; }
@@ -1728,12 +1831,10 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     if (a === 'godesk') { const d = settingsSec.querySelector('.sni[data-ssec="Help desk"]'); if (d) d.click(); return; }
     if (a === 'signout' && acc) { if (!confirm('Sign ' + nm + ' out on every device?\n\nTheir password stays the same; they just sign in again. Use it when a password was shared or someone else may be signed in.')) return; return run(async () => { Object.assign(acc, (await admCall('POST', '/signout', { id: acc.id })).account); }, nm + ' is signed out on every device.'); }
     if (a === 'find') { const n = ((document.getElementById('admfind') || {}).value || '').trim(); if (!n) return; return run(async () => { const r = await admCall('POST', '/find', { name: n }); const x = r.account; if (!x.name) x.name = n; if (!ADM.acc.some((y) => y.id === x.id)) ADM.acc.unshift(x); ADM.q = ''; }, 'Found it.'); }
-    if (a === 'reset' && acc) { if (!confirm('Make a one-time reset code for ' + nm + '?')) return; return run(async () => { const r = await admCall('POST', '/reset', { id: acc.id }); ADM.code = r.code; ADM.codeFor = nm; acc.codeWaiting = true; }, ''); }
     if (a === 'quick' && acc) { if (!acc.name) { ADM.msg = 'Find this account by its name first.'; aDraw(); return; } if (!confirm('Set the password for ' + nm + ' to 123456?\n\nTheir saved Bungie sign-ins are cleared, every device is signed out, and they must pick a new password when they sign in.')) return; ADM.msg = 'Working…'; aDraw(); return run(async () => { const r = await admCall('POST', '/quickreset', { id: acc.id, name: acc.name }); Object.assign(acc, r.account); }, nm + ': the password is now 123456. They pick a new one when they sign in.'); }
     if (a === 'rename' && acc) { if (!acc.name) { ADM.msg = 'Find this account by its name first.'; aDraw(); return; } ADM.ren = acc.id; ADM.msg = ''; aDraw(); setTimeout(() => { const i = document.getElementById('admren'); if (i) { i.focus(); i.select(); } }, 0); return; }
     if (a === 'rencancel') { ADM.ren = ''; aDraw(); return; }
-    if (a === 'rensave' && acc) { const to = ((document.getElementById('admren') || {}).value || '').trim(); if (!to || to === acc.name) { ADM.ren = ''; aDraw(); return; } if (!confirm('Rename ' + nm + ' to ' + to + '?\n\nRenaming also sets the password to 123456; they pick a new one when they sign in.')) return; ADM.ren = ''; ADM.msg = 'Working…'; aDraw(); return run(async () => { const r = await admCall('POST', '/rename', { id: acc.id, to }); ADM.acc = ADM.acc.filter((x) => x.id !== acc.id); ADM.acc.unshift(r.account); }, nm + ' is now ' + to + '. The password is 123456 until they pick a new one.'); }
-    if (a === 'cancel' && acc) return run(async () => { await admCall('POST', '/cancelreset', { id: acc.id }); acc.codeWaiting = false; if (ADM.codeFor === nm) ADM.code = ''; }, 'Reset code cancelled.');
+    if (a === 'rensave' && acc) { const to = ((document.getElementById('admren') || {}).value || '').trim(); if (!to || to === (acc.display || acc.name)) { ADM.ren = ''; aDraw(); return; } if (!confirm('Show ' + nm + ' as ' + to + '?\n\nOnly the display name changes. They still sign in with the same login name and password.')) return; ADM.ren = ''; ADM.msg = 'Working…'; aDraw(); return run(async () => { const r = await admCall('POST', '/rename', { id: acc.id, to }); Object.assign(acc, r.account); }, nm + ' is now shown as ' + to + '. Their login name and password did not change.'); }
     if (a === 'unlockacc' && acc) return run(async () => { Object.assign(acc, (await admCall('POST', '/unlock', { id: acc.id })).account); }, nm + ' is unlocked.');
     if (a === 'del' && acc) { if (!confirm('Delete ' + nm + ' and the Bungie sign-ins saved in it? This cannot be undone.')) return; return run(async () => { await admCall('POST', '/delete', { id: acc.id }); ADM.acc = ADM.acc.filter((x) => x.id !== acc.id); }, nm + ' was deleted.'); }
     if (a === 'flv' || a === 'frm') {
@@ -1755,7 +1856,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     if (t.dataset.adm === 'role') {
       const row = t.closest('[data-aid]'), acc = ADM.acc.find((x) => x.id === row.dataset.aid); if (!acc) return;
       if (t.value === 'founder' && !confirm('Make ' + (acc.name || 'this account') + ' a founder? Founders can use the Founder panel (with an access key you give them): accounts, passwords, renames, help requests and switches.')) { t.value = acc.role || ''; return; }
-      try { Object.assign(acc, (await admCall('POST', '/role', { id: acc.id, role: t.value })).account); admLogNow(); ADM.msg = (acc.name || 'The account') + ' is now ' + ({ '': 'a player', tester: 'a tester', dev: 'a developer', founder: 'a founder' }[t.value] || 'changed') + '.'; } catch (er) { ADM.msg = clean(er); }
+      try { Object.assign(acc, (await admCall('POST', '/role', { id: acc.id, role: t.value })).account); admLogNow(); ADM.msg = (acc.name || 'The account') + ' is now ' + ({ '': 'a user', tester: 'a tester', dev: 'a developer', founder: 'a founder' }[t.value] || 'changed') + '.'; } catch (er) { ADM.msg = clean(er); }
       aDraw();
     }
   });
@@ -1842,7 +1943,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
       ${sx('Open the app on', 'The tab Pathfinder shows when it starts.', opt('starttab', [['vault', 'Inventory'], ['home', 'Home'], ['loadouts', 'Loadouts'], ['activity', 'Activity'], ['last', 'The last tab I used']]))}
       <div class="thh">Interface style</div>
       <div class="uis">${[['pf', 'Pathfinder Classic', 'The classic Pathfinder look.'], ['beta', 'Custom', 'Your own mix of colour, accent and background picture. Saved for this style.'], ['bray', 'Bray', 'The founder\'s style. Bray created Pathfinder and builds it.'], ['manta', 'Manta', 'The dev and tester\'s style. Manta builds and tests Pathfinder.']].map(([k, n, d]) => `<div class="uic u-${k}${(SET.ui || 'pf') === k ? ' on' : ''}" data-uis="${k}"><i></i><b>${n}</b><small>${d}</small></div>`).join('')}</div>
-      ${lockNote()}<div class="lkw${LOCK[SET.ui] ? ' on' : ''}">
+      ${lockNote()}<div class="lkw${LOCK[SET.ui] ? ' on' : ''}${myLook() ? ' mine' : ''}">
       <div class="thh">Colour</div>
       <p class="mute" style="margin:2px 0 6px">The tint of every panel. Mix it with any accent and any background picture.</p>
       <div class="sg">${themeGrid()}</div>
@@ -2644,7 +2745,7 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
       const tg = T[x.id];
       return `<div class="gpc g-${o.gr === '?' ? 'q' : o.gr}" data-jid="${esc(x.id)}" role="button" tabindex="0" aria-label="${esc(x.n)}: ${esc(GNAME[o.gr])}">
         <div class="gpt">${tile(x)}<div class="gpn"><b>${esc(x.n)}</b><small>${esc(x.t || 'Weapon')}${el ? ` &middot; <span style="color:${el[1]}">${el[0]}</span>` : ''} &middot; ${esc(whereTxt(x))}${x.e ? ' (equipped)' : ''}</small></div></div>
-        <div class="gpb"><span class="gpg-pill">${o.gr === 'S' ? '&#9733; ' : ''}${esc(GNAME[o.gr])}</span>${tg ? `<span class="gptag">${esc(tg)}</span>` : ''}</div>
+        <div class="gpb"><span class="gpg-pill">${o.gr === 'S' ? '&#9733; ' : ''}${esc(GNAME[o.gr])}</span>${o.gr === 'S' || o.gr === 'R' ? modeChip(x) : ''}${tg ? `<span class="gptag">${esc(tg)}</span>` : ''}</div>
         ${base.length ? `<p class="gpbase">${base.map((r) => `<span class="${r.want ? 'want' : ''}">${r.want ? '&#10003; ' : ''}${esc(r.n)}</span>`).join('<i>&middot;</i>')}</p>` : ''}
         ${traits.length ? `<ul class="gpp">${traits.map(perkRow).join('')}</ul>` : ''}
         ${note ? `<p class="gpnote">${esc(note)}</p>` : ''}
@@ -2653,7 +2754,7 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
     const tiles = GTABS.map(([k, lbl]) => `<button type="button" data-gt="${k}" class="gpf g-${k === '?' ? 'q' : k === 'CD' ? 'C' : k}${k === GTAB ? ' on' : ''}" aria-pressed="${k === GTAB}"><b>${by[k].length}</b><span>${k === 'S' ? '&#9733; ' : ''}${esc(lbl)}</span></button>`).join('');
     host.innerHTML = `<div class="gpg">
       <div class="gph"><div><h2>God rolls</h2><p>${ws.length} legendary weapons graded with your wish lists.</p></div>
-        <div class="gptools"><input type="search" id="gpq" placeholder="Search weapons" value="${esc(GPQ)}" aria-label="Search weapons"><select id="gps" aria-label="Sort">${[['name', 'Name'], ['power', 'Power'], ['type', 'Weapon type']].map(([v, l]) => `<option value="${v}"${GPS === v ? ' selected' : ''}>Sort: ${l}</option>`).join('')}</select></div></div>
+        <div class="gptools"><div class="gpmode" role="radiogroup" aria-label="God rolls for">${[['all', 'All'], ['pve', 'PvE'], ['pvp', 'PvP']].map(([v, l]) => `<button type="button" role="radio" data-gmode="${v}" aria-checked="${grMode() === v}" class="${grMode() === v ? 'on' : ''}">${l}</button>`).join('')}</div><input type="search" id="gpq" placeholder="Search weapons" value="${esc(GPQ)}" aria-label="Search weapons"><select id="gps" aria-label="Sort">${[['name', 'Name'], ['power', 'Power'], ['type', 'Weapon type']].map(([v, l]) => `<option value="${v}"${GPS === v ? ' selected' : ''}>Sort: ${l}</option>`).join('')}</select></div></div>
       <div class="gpfs" role="group" aria-label="Show">${tiles}</div>
       <p class="gphint">${esc(info[2])} Click a weapon to see every perk column and put the wish list perks in.</p>
       ${GTAB === 'CD' && junkable.length ? `<div class="gpjunk"><button class="b" data-gk="junk">Tag ${junkable.length} as junk</button><span>Skips equipped items and anything tagged favorite or keep. Dismantle them in game afterwards.</span></div>` : ''}
@@ -2661,6 +2762,7 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
     </div>`;
     const redraw = () => { const f = document.activeElement && document.activeElement.id === 'gpq', pos = f ? document.activeElement.selectionStart : 0; grPage(host); if (f) { const i = document.getElementById('gpq'); if (i) { i.focus(); i.setSelectionRange(pos, pos); } } };
     host.onclick = (e) => {
+      const gm = e.target.closest('button[data-gmode]'); if (gm && host.contains(gm)) { SET.grmode = gm.dataset.gmode; saveSet(); Object.keys(gcache).forEach((k2) => delete gcache[k2]); Object.keys(wcache).forEach((k2) => delete wcache[k2]); redraw(); return; }
       const tb = e.target.closest('button[data-gt]'); if (tb && host.contains(tb) && GTABS.some((t) => t[0] === tb.dataset.gt)) { GTAB = tb.dataset.gt; redraw(); return; }
       const b = e.target.closest('[data-gk]');
       if (b && b.dataset.gk === 'junk') { const o = TAGS(); junkable.forEach((q2) => { o[q2.x.id] = 'junk'; }); saveTAGS(o); renderGrid(); setNote(junkable.length + ' weapons tagged junk.'); redraw(); return; }
@@ -2742,7 +2844,7 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
     const fr = d && !d.err && d.frame ? `<span class="gvfr">${esc(d.frame.n)}</span>` : '';
     m.innerHTML = `<div class="gvp g-${gr === '?' ? 'q' : gr}${fresh ? ' enter' : ''}">
 <div class="gvh">${tile(x)}<div class="gvn"><h3>${esc(x.n)}</h3><small>${esc(x.t || 'Weapon')}${el ? ` &middot; <span style="color:${el[1]}">${el[0]}</span>` : ''} &middot; ${esc(where)}${x.e ? ' (equipped)' : ''}${x.p ? ' &middot; &#9670; ' + esc(x.p) : ''}</small>
-<div class="gpb">${exo ? '<span class="gpg-pill">Exotic</span>' : `<span class="gpg-pill">${gr === 'S' ? '&#9733; ' : ''}${esc(GNAME[gr] || '')}</span>`}${fr}${tg ? `<span class="gptag">${esc(tg)}</span>` : ''}${x.lk ? '<span class="gptag">Locked</span>' : ''}</div></div>
+<div class="gpb">${exo ? '<span class="gpg-pill">Exotic</span>' : `<span class="gpg-pill">${gr === 'S' ? '&#9733; ' : ''}${esc(GNAME[gr] || '')}</span>${gr === 'S' || gr === 'R' ? modeChip(x) : ''}`}${fr}${tg ? `<span class="gptag">${esc(tg)}</span>` : ''}${x.lk ? '<span class="gptag">Locked</span>' : ''}</div></div>
 <button type="button" class="g gvx" data-gv="x" aria-label="Close" title="Close (Esc)">&#10005;</button></div>
 ${note ? `<p class="gvnote">${esc(note)}</p>` : ''}
 ${body}</div>`;
