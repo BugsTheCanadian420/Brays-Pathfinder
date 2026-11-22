@@ -8,6 +8,10 @@
 /* ---------- installed on the home screen (standalone): keep clear of the notch / Dynamic Island ---------- */
 html.gtweb:root{padding-top:0!important}
 html.gtweb{--gt-sat:env(safe-area-inset-top,0px)}
+/* Opened from the iPhone home screen: iOS 26 lays a frosted strip over the top of the screen that reaches a little past the
+   status bar, which blurred the top bar's buttons and account picture. The status bar is solid now (see build.js), so there is
+   nothing under it; if an older home-screen copy still draws under the status bar, the top bar starts a bit lower, past the frost. */
+@media (display-mode:standalone){html.gtweb{--gt-sat:calc(env(safe-area-inset-top,0px) * 1.35)}}
 /* (the bar's own rule is more specific, so this needs :root and [data-dark] too, or the bar's contents sit under the status bar) */
 :root.gtweb header.gtbar,:root.gtweb[data-dark] header.gtbar,:root.gtweb[data-dark="1"] header.gtbar{padding-top:var(--gt-sat)!important;height:calc(48px + var(--gt-sat))!important;box-sizing:border-box!important;align-items:center!important}
 
