@@ -761,7 +761,7 @@ body.gtann #gtmaint{top:calc(var(--gt-bar-h,56px) + 74px)}
 #godrolls .gpf.on{border-color:var(--gc)!important;background:linear-gradient(180deg,color-mix(in srgb,var(--gc) 18%,transparent),color-mix(in srgb,var(--gc) 4%,transparent)),var(--g-panel,#16181c)!important;color:#fff!important}
 #godrolls .g-S{--gc:#f2b441}#godrolls .g-R{--gc:#c58cff}#godrolls .g-A{--gc:#5fd38a}#godrolls .g-C{--gc:#9aa1ab}#godrolls .g-D{--gc:#ef6461}#godrolls .g-q{--gc:#ffd27a}
 #gvm{position:fixed;inset:0;z-index:70;background:rgba(4,6,10,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:flex;align-items:flex-start;justify-content:center;padding:max(24px,4vh) 16px 24px;overflow:auto}
-#gvm .g-S{--gc:#f2b441}#gvm .g-R{--gc:#c58cff}#gvm .g-A{--gc:#5fd38a}#gvm .g-C{--gc:#9aa1ab}#gvm .g-D{--gc:#ef6461}#gvm .g-q{--gc:#ffd27a}
+#gvm .g-X{--gc:#e8c25a}#gvm .g-S{--gc:#f2b441}#gvm .g-R{--gc:#c58cff}#gvm .g-A{--gc:#5fd38a}#gvm .g-C{--gc:#9aa1ab}#gvm .g-D{--gc:#ef6461}#gvm .g-q{--gc:#ffd27a}
 #gvm .gvp{position:relative;width:min(1080px,100%);border-radius:20px;border:1px solid color-mix(in srgb,var(--gc) 40%,var(--g-line,#2b2e33));background:radial-gradient(70% 60% at 100% 0,color-mix(in srgb,var(--gc) 14%,transparent),transparent 65%),linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,0) 30%),var(--g-panel,#15171b);box-shadow:0 30px 80px rgba(0,0,0,.6);padding:20px 22px 22px;color:#e8ecf2}
 #gvm .gvh{display:flex;gap:16px;align-items:center}#gvm .gvh .vt{--t:72px;flex:none}
 #gvm .gvn{flex:1;min-width:0}#gvm .gvn h3{margin:0;font-size:24px;line-height:1.15;color:#fff;font-weight:800;letter-spacing:.01em;text-transform:none;border:0;padding:0}
@@ -912,7 +912,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
 
   // ---------------- settings, update toast ----------------
   const DEFSET = { theme: 'dim', accent: '#7ab8e8', accentUser: '', bgdim: 45, tile: 44, scale: 100, power: true, emblems: true, postmaster: true, compact: false, sort: 'rarity',
-    ui: 'pf', ornaments: true, locksync: false, clarity: 'both', single: false, charsort: 'recent', charorder: [], vgroup: 'none', armorsep: false, vaultunder: false, vaultsep: false, matchfirst: true, commrate: true, sharerolls: false, invw: 3, hidecollect: false, pmbadge: true, nrmark: true, dropalert: true, dropover: true, anim: 'subtle', cardart: true, glow: 55, starttab: 'vault', farmspaces: 3, sortkeys: null, cst: { 0: [0, 0, 0, 0, 0, 0], 1: [0, 0, 0, 0, 0, 0], 2: [0, 0, 0, 0, 0, 0] } };
+    ui: 'pf', wview: 'classic', ornaments: true, locksync: false, clarity: 'both', single: false, charsort: 'recent', charorder: [], vgroup: 'none', armorsep: false, vaultunder: false, vaultsep: false, matchfirst: true, commrate: true, sharerolls: false, invw: 3, hidecollect: false, pmbadge: true, nrmark: true, dropalert: true, dropover: true, anim: 'subtle', cardart: true, glow: 55, starttab: 'vault', farmspaces: 3, sortkeys: null, cst: { 0: [0, 0, 0, 0, 0, 0], 1: [0, 0, 0, 0, 0, 0], 2: [0, 0, 0, 0, 0, 0] } };
   // Item sort rules, like DIM: a checked list in order. d = 1 normal, -1 flipped.
   const SORTK = [['power', 'Power level'], ['name', 'Name'], ['type', 'Type'], ['rarity', 'Rarity'], ['stack', 'Stack size'], ['class', 'Required class'], ['tag', 'Tag (favorite, keep, junk, infuse, archive)'], ['season', 'Season'], ['dmg', 'Damage type'], ['champ', 'Anti-champion type'], ['mw', 'Masterworked'], ['crafted', 'Crafted'], ['tier', 'Tier']];
   const sortFromOld = (m) => { const on = m === 'power' ? ['power', 'rarity', 'name'] : m === 'name' ? ['name', 'power'] : m === 'tag' ? ['tag', 'power', 'rarity', 'name'] : ['rarity', 'power', 'name']; return [...on.map((k) => ({ k, d: 1, on: true })), ...SORTK.filter((q) => !on.includes(q[0])).map((q) => ({ k: q[0], d: 1, on: false }))]; };
@@ -1846,6 +1846,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
       ${bgGrid()}</div>
       ${sx('Background picture dimming', 'Higher is darker and easier to read.', rng('bgdim', 25, 90, '%'))}
       <div class="thh">Motion and cards</div>
+      ${sx('Weapon pop-up in Inventory', 'Classic is the full pop-up. God roll style opens weapons in the same view as the God rolls tab: every perk column, wish list picks, Apply, tag, move and equip. Its Classic details button still opens the full pop-up.', opt('wview', [['classic', 'Classic'], ['gr', 'God roll style']]))}
       ${sx('Animations', 'Page fades, cards easing in and hover lifts. Off turns every animation off.', opt('anim', [['off', 'Off'], ['subtle', 'Subtle'], ['full', 'Full']]))}
       ${sx('Activity pictures on cards', 'The raid, dungeon and activity art behind cards on Home, Activity and Rotations.', tgl('cardart'))}
       ${sx('Glow strength', 'The soft colored glow around activity cards: purple for raids, bronze for dungeons, and so on.', rng('glow', 0, 100, '%'))}
@@ -2686,16 +2687,16 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
     gvDraw();
     if (!DET[id] || DET[id].err) { delete DET[id]; fetchDet(x).then(() => { if (GV.id === id) gvDraw(); }); }
   }
-  function gvClose() { GV.id = ''; const m = g('gvm'); if (m) m.remove(); document.removeEventListener('keydown', gvKey, true); }
+  function gvClose() { GV.id = ''; GV.from = ''; const m = g('gvm'); if (m) m.remove(); document.removeEventListener('keydown', gvKey, true); }
   function gvKey(e) { if (e.key === 'Escape' && g('gvm')) { e.stopPropagation(); gvClose(); } }
   function gvDraw() {
     const x = byId(GV.id); if (!x) { gvClose(); return; }
     let m = g('gvm'); const fresh = !m;
     if (!m) { m = document.createElement('div'); m.id = 'gvm'; m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); document.body.appendChild(m); m.onclick = gvClick; document.addEventListener('keydown', gvKey, true); }
-    const d = DET[GV.id], gr = grade(x), w = wish(x), wp = w.perks || new Set(), want = (p) => !!p && (wp.has(p.h) || wp.has(p.n));
+    const d = DET[GV.id], exo = x.r === 'Exotic', gr = exo ? 'X' : grade(x), w = exo ? { v: 0, notes: [], tags: [], perks: new Set() } : wish(x), wp = w.perks || new Set(), want = (p) => !!p && (wp.has(p.h) || wp.has(p.n));
     const el = ELEM[x.el], T = TAGS(), tg = T[x.id];
     const where = x.loc === 'vault' ? 'Vault' : (() => { const c = D.chars.find((k) => k.id === x.loc); return c ? CL[c.cls] || 'Guardian' : ''; })();
-    const note = (w.notes && w.notes[0]) || (gr === '?' ? 'No wish list has this weapon yet.' : gr === 'C' ? 'Your lists rate this weapon; this copy is not one of their rolls.' : gr === 'D' ? 'Your wish list marks this roll as trash.' : '');
+    const note = exo ? '' : (w.notes && w.notes[0]) || (gr === '?' ? 'No wish list has this weapon yet.' : gr === 'C' ? 'Your lists rate this weapon; this copy is not one of their rolls.' : gr === 'D' ? 'Your wish list marks this roll as trash.' : '');
     let body;
     if (!d) body = '<div class="gvl">Loading this weapon from Bungie…</div>';
     else if (d.err) body = `<div class="gvmsg bad">Could not load this weapon: ${esc(d.err)} <button class="g" data-gv="retry">Try again</button></div>`;
@@ -2729,13 +2730,13 @@ ${list.length ? `<div class="jks"><label><input type="checkbox" data-jk="all"${n
 <h5>Tag</h5><div class="gvtags">${TG.map(([k, svg, col, lbl]) => `<button type="button" class="g${tg === k ? ' on' : ''}" data-gv="tag" data-v="${k}" style="--tc:${col}" title="${esc(lbl)}">${svg}<span>${esc(lbl)}</span></button>`).join('')}</div>
 <h5>Move to</h5><div class="gvbtns">${sortedChars().map((c) => `<button type="button" class="g" data-gv="mv" data-t="${esc(c.id)}"${x.loc === c.id && !x.e ? ' disabled' : ''}>${esc(CL[c.cls] || 'Guardian')}</button>`).join('')}<button type="button" class="g" data-gv="mv" data-t="vault"${x.loc === 'vault' ? ' disabled' : ''}>Vault</button></div>
 <h5>Equip on</h5><div class="gvbtns">${sortedChars().map((c) => `<button type="button" class="g" data-gv="eq" data-t="${esc(c.id)}"${x.e && x.loc === c.id ? ' disabled' : ''}>${esc(CL[c.cls] || 'Guardian')}</button>`).join('')}</div>
-<div class="gvbtns" style="margin-top:12px"><button type="button" class="g" data-gv="lock">${x.lk ? 'Unlock' : 'Lock'}</button><button type="button" class="g" data-gv="inv">Open in Inventory</button></div>
+<div class="gvbtns" style="margin-top:12px"><button type="button" class="g" data-gv="lock">${x.lk ? 'Unlock' : 'Lock'}</button><button type="button" class="g" data-gv="inv">${GV.from === 'inv' ? 'Classic details' : 'Open in Inventory'}</button></div>
 </div></div>`;
     }
     const fr = d && !d.err && d.frame ? `<span class="gvfr">${esc(d.frame.n)}</span>` : '';
     m.innerHTML = `<div class="gvp g-${gr === '?' ? 'q' : gr}${fresh ? ' enter' : ''}">
 <div class="gvh">${tile(x)}<div class="gvn"><h3>${esc(x.n)}</h3><small>${esc(x.t || 'Weapon')}${el ? ` &middot; <span style="color:${el[1]}">${el[0]}</span>` : ''} &middot; ${esc(where)}${x.e ? ' (equipped)' : ''}${x.p ? ' &middot; &#9670; ' + esc(x.p) : ''}</small>
-<div class="gpb"><span class="gpg-pill">${gr === 'S' ? '&#9733; ' : ''}${esc(GNAME[gr] || '')}</span>${fr}${tg ? `<span class="gptag">${esc(tg)}</span>` : ''}${x.lk ? '<span class="gptag">Locked</span>' : ''}</div></div>
+<div class="gpb">${exo ? '<span class="gpg-pill">Exotic</span>' : `<span class="gpg-pill">${gr === 'S' ? '&#9733; ' : ''}${esc(GNAME[gr] || '')}</span>`}${fr}${tg ? `<span class="gptag">${esc(tg)}</span>` : ''}${x.lk ? '<span class="gptag">Locked</span>' : ''}</div></div>
 <button type="button" class="g gvx" data-gv="x" aria-label="Close" title="Close (Esc)">&#10005;</button></div>
 ${note ? `<p class="gvnote">${esc(note)}</p>` : ''}
 ${body}</div>`;
@@ -2757,7 +2758,7 @@ ${body}</div>`;
     if (a === 'lock') { await toggleLock(x); GV.msg = PMSG || ''; GV.bad = /^Failed/.test(GV.msg) ? 1 : 0; grRefresh(); gvDraw(); return; }
     if (a === 'mv') { doMove(x, b.dataset.t); GV.msg = 'Moving…'; GV.bad = 0; gvDraw(); setTimeout(() => { if (GV.id === x.id) { GV.msg = ''; grRefresh(); gvDraw(); } }, 2500); return; }
     if (a === 'eq') { doEquip(x, b.dataset.t); GV.msg = 'Equipping…'; GV.bad = 0; gvDraw(); setTimeout(() => { if (GV.id === x.id) { GV.msg = ''; grRefresh(); gvDraw(); } }, 2500); return; }
-    if (a === 'inv') { const id = x.id; gvClose(); goItem(id); return; }
+    if (a === 'inv') { const id = x.id, inv = GV.from === 'inv'; gvClose(); if (inv) openPop(id); else goItem(id); return; }
   }
   async function gvApply(x, d) {
     const list = gvChanges(d); if (!list.length || GV.busy) return;
@@ -3250,7 +3251,7 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
     let box = document.getElementById('gtdrops'); if (!box) { box = document.createElement('div'); box.id = 'gtdrops'; document.body.appendChild(box); }
     const t = document.createElement('div'); t.className = 'gtdrop'; t.style.setProperty('--dc', w[1]); t.dataset.id = x.id;
     t.innerHTML = `${tile(x).replace(' draggable="true"', '')}<div class="dt"><small>New drop</small><b>${esc(x.n)}</b><span>${esc(x.r === 'Exotic' ? 'Exotic' : w[0])}${nm ? ' &middot; ' + esc(nm) : ''}</span></div><button class="dx" aria-label="Dismiss">&times;</button>`;
-    t.onclick = (e) => { if (!e.target.closest('.dx')) { show('vault'); setTimeout(() => openPop(x.id), 60); } t.remove(); };
+    t.onclick = (e) => { if (!e.target.closest('.dx')) { show('vault'); setTimeout(() => openItemView(x.id), 60); } t.remove(); };
     box.appendChild(t); while (box.children.length > 4) box.firstElementChild.remove();
     setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 400); }, 15000);
     return { n: x.n, s: (x.r === 'Exotic' ? 'Exotic' : w[0]) + (nm ? ' - ' + nm : ''), c: w[1], i: typeof x.i === 'string' && x.i[0] === '/' ? x.i : '' };
@@ -3900,6 +3901,13 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
   // Postmaster engrams and other things without an instance id: Bungie has no per-item details for them, only the description.
   const noInst = (x) => !!(x && (x.eg || !/^\d+$/.test(String(x.id))));
   let sbWant = 0;
+  // Inventory clicks: weapons open in the God roll style view when that is picked in Settings > Appearance; everything else
+  // (armour, mods, items without their own copy) keeps the classic pop-up.
+  function openItemView(id, el) {
+    const x = byId(id);
+    if (x && SET.wview === 'gr' && WEAPON.has(x.b) && !x.ro && !noInst(x) && !x.pm) { sel = null; renderPop(); GV.from = 'inv'; gvOpen(id); return; }
+    return openPop(id, el);
+  }
   async function openPop(id, el) {
     const x = byId(id); if (!x) return;
     sel = id; psel = {}; plast = null; pex = ''; noteEdit = false; PMSG = ''; ptab = 'ov'; stq = 0; popEl = el || null;
@@ -3945,7 +3953,7 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
     if (window.__gtf && window.__gtf.onClick(e)) return;
     if (e.target.id === 'vsheet') { sel = null; renderPop(); return; }
     const vt = e.target.closest('.vt');
-    if (vt && D) { openPop(vt.dataset.id, vt); return; }
+    if (vt && D) { openItemView(vt.dataset.id, vt); return; }
     const op = e.target.closest('[data-open]');
     if (op && sel) { openPop(op.dataset.open, popEl); return; }
     const ptb = e.target.closest('[data-a="ptab"]');
