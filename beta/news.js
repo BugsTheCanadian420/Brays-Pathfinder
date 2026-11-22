@@ -15,6 +15,13 @@
     { id: 20, draft: true, date: 'Nov 2026', items: [
       'A new look for God rolls: big filter tiles for God rolls, S rated, Keepers, Not keepers and Not rated yet, search and sort, and a card for each weapon with its grade, main perks and which perks your wish list wants.',
       'The Helpful tab is now called Guides.',
+      'Your account in the top right: your profile picture (add one in Settings > Accounts) and display name. Click it for Settings, Help & support, Get the app and Sign out. The gear button is gone, and the Beta switch sits next to your account.',
+      'A lock by the accent colours in Settings > Appearance keeps your look as it is. Bray and Manta unlock their own styles to change anything about them, and locking sends the new look to everyone using that style.',
+      'Hidden login names and passwords always show 12 dots, whatever their length.',
+      'A headphones button next to Notes opens Help from any tab (turn it off in Settings > About & help). Help now comes before Problems there.',
+      'Keyboard shortcuts can be switched off in Settings > Keyboard shortcuts. Quick notes open with Shift+N (Ctrl+Shift+N opens a private window in browsers).',
+      'The Weapon pop-up option "God roll style" is now called Pathfinder Style, and Settings sections are in a new order (Appearance comes second).',
+      'Loadout pictures now import even after Discord or another app re-saves them: copy the picture in Discord and paste it into Import loadout (Ctrl+V or the Paste button). New pictures have a small black-and-white code in the bottom corner for this.',
       'The Hub is now Community sites, with a Join our Discord button. You can also join from Settings, About & help.',
       'About Pathfinder: who makes it and the people who helped, in Settings, About & help and on d2pathfinder.com.',
       'Loadouts: choose mods while you build or edit a loadout. Select mods picks from every mod that fits your armor (the same one more than once if you like) and puts each in a free socket when you apply it, or click one socket to pick exactly what goes there.',
@@ -35,7 +42,7 @@
       'God rolls: clicking a weapon opens its own God roll view (in the same style as the cards) with every perk column, which perks your wish list wants and what is in now. Pick perks or press Pick my wish list perks, then Apply. Tag, move, equip and lock from the same view.',
       'Changing perks now checks with Bungie: Pathfinder only shows the new perk once Bungie confirms it, and tells you if the change did not go through (perk changes only work in orbit, a social space or offline). The God roll card updates straight away too.',
       'Stricter God rolls: a weapon is only a god roll when the perk in every column right now (barrel, magazine, both traits; rail and bolts on combat bows; the origin trait when it matters) is the top pick from a best-perk-per-column list for an S tier weapon (Aegis), or from a roll its curator tags as a god roll. S tier weapons that are not there yet go in the new S rated group (search is:srated), and the God roll view says which columns miss the top perk and whether Apply can fix it.',
-      'New option in Settings > Appearance: Weapon pop-up in Inventory. Pick God roll style and clicking a weapon in your inventory opens the God roll view (every perk column, wish list picks, Apply, tag, move, equip). Its Classic details button still opens the full pop-up, and armour keeps the classic one.',
+      'New option in Settings > Appearance: Weapon pop-up in Inventory. Pick Pathfinder Style and clicking a weapon in your inventory opens the God roll view (every perk column, wish list picks, Apply, tag, move, equip). Its Classic details button still opens the full pop-up, and armour keeps the classic one.',
       'Pathfinder account: a Bungie account you add on the website now also works in the PC app and the other way round (no second sign-in), and your Pathfinder account syncs every time Pathfinder opens or you come back to it, so new accounts show up on your other devices straight away.',
       'New Finder tab (like destiny.report): search any weapon in the game to see every perk it can roll today, column by column (perks that no longer drop are left out), or search a perk to see every weapon that can roll it and in which column. Filter by weapon type, see which ones you own, and jump to your copies or the Wish list maker.',
       'God rolls: every God roll and S rated weapon now says whether it is a PvE or PvP roll, and a new All / PvE / PvP switch at the top shows only the ones you are hunting for (Aegis lists count as PvE; other lists go by their pve/pvp tags).',
@@ -203,8 +210,8 @@ ${list.map((c) => `<div class="gtnv"><small>${esc(c.date)}</small><ul>${c.items.
     ['header.gtbar', 'Tabs', 'Inventory is your vault and characters. Loadouts, Triumphs, Farming and the rest are up here. Reorder or hide tabs in Settings, Appearance.'],
     ['#vq', 'Search', 'Search like DIM: names, perks, or filters such as is:handcannon, is:godroll or tag:junk.'],
     [['#vgrid .eq [data-id]', '#vgrid [data-id]'], 'Items', 'Click an item for its perks, stats and wish list grade. Drag it onto a character or the vault to move it.'],
-    ['#nav button[data-t="settings"]', 'Settings', 'Your accounts, looks, wish lists and shortcuts. Questions or bugs? About & help sends them straight to the Pathfinder team.'],
-    ['#gtnfab', 'Notes', 'A notepad that stays open on any tab (Ctrl+Shift+N).'],
+    ['#gtpfn', 'Settings and your account', 'Click here for Settings (accounts, looks, wish lists, shortcuts), help from the Pathfinder team and signing in or out.'],
+    ['#gtnfab', 'Notes', 'A notepad that stays open on any tab (Shift+N).'],
   ];
   const pick = (q) => [].concat(q).map((x) => document.querySelector(x)).find((el) => seenEl(el)) || null; // the first selector whose thing is on screen
   const seenEl = (el) => { if (!el) return false; const r = el.getBoundingClientRect(); return r.width > 4 && r.height > 4 && getComputedStyle(el).visibility !== 'hidden'; };
@@ -241,8 +248,6 @@ ${list.map((c) => `<div class="gtnv"><small>${esc(c.date)}</small><ul>${c.items.
   // ---- About & help card in Settings ----
   const setEl = document.getElementById('settings');
   function cardHTML() {
-    const L = lsGet(LOGK, []).slice(-6).reverse();
-    const rows = L.length ? `<div class="gtl">${L.map((x) => `<div><small>${esc(new Date(x.t).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }))}${x.n > 1 ? ' &middot; ' + x.n + ' times' : ''}</small>${esc(x.m)}</div>`).join('')}</div>` : '<p class="mute">No problems logged.</p>';
     return `<div class="card sc" id="gtab"><h2>About &amp; help</h2><p class="mute">Pathfinder ${esc(VER || '')} &middot; ${isWeb() ? 'website' : 'PC app'}. Not made by or affiliated with Bungie.</p>
 <h3 class="gth">Updates</h3><p class="mute">${esc(updLine())}</p>${!isWeb() && UPD.canUpdate ? `<p>${UPD.state === 'ready' ? '<button class="b" data-ab="install">Restart to install</button>' : '<button class="g" data-ab="check">Check for updates</button>'}</p>` : ''}
 <h3 class="gth">About Pathfinder</h3>
@@ -251,17 +256,21 @@ ${list.map((c) => `<div class="gtnv"><small>${esc(c.date)}</small><ul>${c.items.
 <p><a class="gtdisc" href="https://discord.gg/rJXsgHdcMY" target="_blank" rel="noopener" data-ab="discord">Join our Discord</a></p>
 <h3 class="gth">Help</h3><p class="mute">Questions, bugs or ideas: <a href="mailto:${HELP}" data-ab="mail">${HELP}</a></p>
 <p><button class="g" data-ab="tour">Take the tour</button> <button class="g" data-ab="news">What's new${(+lsGet('gt_news_seen', 0) || 0) < LATEST ? ' <em class="gtnd">new</em>' : ''}</button> ${window.__gtbetaInfo ? '<button class="g" data-ab="beta" title="Try the next version early. Same sign-in and settings; you can come back any time.">Try the beta</button> ' : window.__GT_BETA__ ? '<button class="g" data-ab="unbeta">Back to the regular site</button> ' : ''}${betaAppBtn()}<button class="g" data-ab="status" title="Is Pathfinder, its sign-in service and Bungie's API working right now?">Status</button> <button class="g" data-ab="privacy">Privacy</button>${isWeb() && window.__GT_DL__ ? ' <button class="g" data-ab="pcapp">Get the PC app</button>' : ''}</p>
-<div class="sx gtna"><div class="sxt"><b>Show What's new after updates</b><small>The list of changes after each update. What's new above always shows it.</small></div><div class="sxc"><label class="tgl"><input type="checkbox" data-ab="auto"${auto() ? ' checked' : ''}><i></i></label></div></div>
-<h3 class="gth">Problems</h3><p class="mute">Errors the app ran into, newest first. If something breaks, copy the report and send it along with what you were doing.</p>${rows}
+<div class="sx gtna"><div class="sxt"><b>Show What's new after updates</b><small>The list of changes after each update. What's new above always shows it.</small></div><div class="sxc"><label class="tgl"><input type="checkbox" data-ab="auto"${auto() ? ' checked' : ''}><i></i></label></div></div></div>`;
+  }
+  // Problems (the error log) is its own card under About & help, after Help, so asking the team comes first.
+  function probHTML() {
+    const L = lsGet(LOGK, []).slice(-6).reverse();
+    const rows = L.length ? `<div class="gtl">${L.map((x) => `<div><small>${esc(new Date(x.t).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }))}${x.n > 1 ? ' &middot; ' + x.n + ' times' : ''}</small>${esc(x.m)}</div>`).join('')}</div>` : '<p class="mute">No problems logged.</p>';
+    return `<div class="card sc" id="gtprob"><h2>Problems</h2><p class="mute">Errors the app ran into, newest first. If something breaks, copy the report and send it along with what you were doing.</p>${rows}
 <p><button class="b" data-ab="copy">Copy problem report</button> <button class="g" data-ab="clear"${L.length ? '' : ' disabled'}>Clear</button> <span class="mute" id="gtabm"></span></p></div>`;
   }
   function drawCard() {
     if (!setEl) return;
-    const old = document.getElementById('gtab'), tmp = document.createElement('div'); tmp.innerHTML = cardHTML();
-    if (old) old.replaceWith(tmp.firstChild); else setEl.appendChild(tmp.firstChild);
+    [['gtab', cardHTML], ['gtprob', probHTML]].forEach(([id, f]) => { const old = document.getElementById(id), tmp = document.createElement('div'); tmp.innerHTML = f(); if (old) old.replaceWith(tmp.firstChild); else setEl.appendChild(tmp.firstChild); });
   }
   if (setEl) {
-    new MutationObserver(() => { if (!document.getElementById('gtab') && setEl.querySelector('.card')) drawCard(); }).observe(setEl, { childList: true });
+    new MutationObserver(() => { if ((!document.getElementById('gtab') || !document.getElementById('gtprob')) && setEl.querySelector('.card')) drawCard(); }).observe(setEl, { childList: true });
     setEl.addEventListener('click', async (e) => {
       const b = e.target.closest('[data-ab]'); if (!b) return;
       const a = b.dataset.ab, msg = (t) => { const s = document.getElementById('gtabm'); if (s) s.textContent = t; };
@@ -289,10 +298,10 @@ ${list.map((c) => `<div class="gtnv"><small>${esc(c.date)}</small><ul>${c.items.
     + '#gtnews .gtnh{display:flex;align-items:center;gap:12px}#gtnews .gtnh b{font-size:17px;color:#fff}#gtnews .gtnh button{margin-left:auto}'
     + '#gtnews .gtnv{margin-top:12px}#gtnews .gtnv small{color:var(--acc,#e8b84a);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase}#gtnews ul{margin:6px 0 0;padding-left:20px}#gtnews li{margin:5px 0;line-height:1.45;color:#d7dae0}'
     + '#gtnews .gtnb{margin:16px 0 0}'
-    + '#gtab a{color:var(--acc,#e8b84a)}#gtab .gth{font-size:13px;margin:14px 0 2px;color:#fff;letter-spacing:.04em}#gtab .gtl{display:flex;flex-direction:column;gap:6px;margin:8px 0;max-height:220px;overflow:auto}'
-    + '#gtab .gtl div{font-size:12.5px;color:#d7dae0;border-left:2px solid #d9534f;padding:2px 8px;word-break:break-word}#gtab .gtl small{display:block;color:#9aa0a8;font-size:11px}'
+    + ':is(#gtab,#gtprob) a{color:var(--acc,#e8b84a)}#gtab .gth{font-size:13px;margin:14px 0 2px;color:#fff;letter-spacing:.04em}#gtprob .gtl{display:flex;flex-direction:column;gap:6px;margin:8px 0;max-height:220px;overflow:auto}'
+    + '#gtprob .gtl div{font-size:12.5px;color:#d7dae0;border-left:2px solid #d9534f;padding:2px 8px;word-break:break-word}#gtprob .gtl small{display:block;color:#9aa0a8;font-size:11px}'
     + '#gtab .gtabout{color:#cfd3da;font-size:13.5px;line-height:1.6;margin:6px 0;max-width:720px}#gtab .gtabout b{color:#fff}#gtab a.gtdisc{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:999px;background:#5865f2;color:#fff;font-weight:700;font-size:13.5px;text-decoration:none}#gtab a.gtdisc:hover{background:#4752c4}'
-    + '#gtab button[disabled]{opacity:.4;pointer-events:none}#gtab .gtnd{font-style:normal;font-size:10.5px;font-weight:700;color:#111;background:var(--g-accent,#e8b84a);border-radius:8px;padding:1px 6px;margin-left:4px}#gtab .sx.gtna{margin:8px 0 2px}'
+    + ':is(#gtab,#gtprob) button[disabled]{opacity:.4;pointer-events:none}#gtab .gtnd{font-style:normal;font-size:10.5px;font-weight:700;color:#111;background:var(--g-accent,#e8b84a);border-radius:8px;padding:1px 6px;margin-left:4px}#gtab .sx.gtna{margin:8px 0 2px}'
     + '#gttour{position:fixed;inset:0;z-index:9650}#gttour .gtth{position:fixed;border-radius:10px;box-shadow:0 0 0 9999px rgba(0,0,0,.6),0 0 0 2px var(--g-accent,#e8b84a);pointer-events:none;transition:all .2s}'
     + '#gttour .gttc{position:fixed;width:min(340px,calc(100vw - 16px));background:var(--g-panel,#1a1c20);border:1px solid var(--g-accent,#e8b84a);border-radius:12px;padding:14px 16px;box-shadow:0 12px 40px rgba(0,0,0,.6)}#gttour .gttc b{color:#fff;font-size:15px}#gttour .gttc p{margin:6px 0 12px;color:#d7dae0;font-size:13.5px;line-height:1.5}#gttour .gttb{display:flex;justify-content:space-between;gap:8px}'
     + '@media (prefers-reduced-motion:reduce){#gttour .gtth{transition:none}}'

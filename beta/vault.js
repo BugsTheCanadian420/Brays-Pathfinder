@@ -301,10 +301,12 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 .lpk .sw{height:30px}
 @media (max-width:900px){.ltab{flex-direction:column}.lsidec{width:100%;flex-direction:row}.lside{flex:1}}
 /* settings page */
+#gtkeys .kyl.off{opacity:.45;pointer-events:none}
+.pfdots{display:inline-flex;align-items:center;gap:4px;vertical-align:middle;height:1em}.pfdots i{width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
 #settings .card{max-width:760px;margin-left:auto;margin-right:auto}#settings .acl{display:flex;flex-direction:column;gap:6px;margin:10px 0}#settings .pfrows{display:flex;flex-direction:column;gap:2px;margin:6px 0 8px;border:1px solid var(--g-line,#2b2e33);border-radius:12px;overflow:hidden}#settings .pfrow{display:flex;align-items:center;gap:10px;padding:9px 12px;background:rgba(255,255,255,.025)}#settings .pfrow+.pfrow{border-top:1px solid var(--g-line,#2b2e33)}#settings .pfk{width:110px;flex:none;color:var(--mut,#9aa3b2);font-size:13px}#settings .pfv{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#settings .pflg{letter-spacing:.08em;font-variant-numeric:tabular-nums}.pfeye{display:inline-flex!important;align-items:center;justify-content:center;width:34px;min-width:34px;padding:0!important}.pfeye[aria-pressed="true"]{color:var(--g-accent,#7ab8e8)!important}.pfmask:not(.show){-webkit-text-security:disc;text-security:disc}
-#gtpfn{order:6;flex:none;display:inline-flex;align-items:center;gap:7px;max-width:220px;height:32px;margin:0 4px 0 8px;padding:0 10px 0 4px!important;border-radius:999px!important;border:1px solid var(--g-line,#33363c)!important;background:rgba(255,255,255,.04)!important;color:#e8ecf2!important;font-size:13px;font-weight:700;letter-spacing:0!important;text-transform:none!important;cursor:pointer}#gtpfn[hidden]{display:none}#gtpfn:hover,#gtpfn[aria-expanded="true"]{border-color:var(--g-accent,#7ab8e8)!important}#gtpfn .gtpfa{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;flex:none;font-size:12px;font-weight:800;color:#0d1015;background:var(--g-accent,#7ab8e8)}#gtpfn svg{width:12px!important;height:12px!important;flex:none;opacity:.7}#gtpfn .gtpft{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#gtpfm{position:fixed;z-index:9700;min-width:220px;padding:6px;border-radius:14px;border:1px solid var(--g-line,#33363c);background:var(--g-solid,#16181d);box-shadow:0 18px 40px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:2px}#gtpfm .gtpfh{padding:8px 10px 8px;border-bottom:1px solid var(--g-line,#2b2e33);margin-bottom:4px}#gtpfm .gtpfh b{display:block;color:#fff;font-size:14px}#gtpfm .gtpfh small{color:var(--mut,#9aa3b2);font-size:12px}#gtpfm button{display:block;width:100%;text-align:left;padding:9px 10px!important;border:0!important;border-radius:9px!important;background:transparent!important;color:#dfe4ea!important;font-size:13.5px;font-weight:600;letter-spacing:0!important;text-transform:none!important;cursor:pointer}#gtpfm button:hover,#gtpfm button:focus-visible{background:rgba(255,255,255,.07)!important;outline:none}
-@media (max-width:560px){#settings .pfrow{flex-wrap:wrap;row-gap:4px}#settings .pfk{width:100%;font-size:12px}}@media (max-width:760px){#gtpfn{max-width:44px;padding:0 4px!important}#gtpfn .gtpft,#gtpfn svg{display:none}}
+#gtpfn{order:8;flex:none;position:relative;display:inline-flex;align-items:center;gap:7px;max-width:220px;height:34px;margin:0 6px 0 auto;padding:0 10px 0 3px!important;border-radius:999px!important;border:1px solid var(--g-line,#33363c)!important;background:rgba(255,255,255,.04)!important;color:#e8ecf2!important;font-size:13px;font-weight:700;letter-spacing:0!important;text-transform:none!important;cursor:pointer}header.gtbar:has(#gtbeta) #gtpfn{margin-left:8px}#gtpfn[hidden]{display:none}#gtpfn:hover,#gtpfn[aria-expanded="true"]{border-color:var(--g-accent,#7ab8e8)!important}#gtpfn.out{padding-right:8px!important}.gtav{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;flex:none;overflow:hidden;font-size:12px;font-weight:800;color:var(--g-on-accent,#0d1015);background:var(--g-accent,#7ab8e8)}.gtav img{width:100%;height:100%;object-fit:cover;display:block}.gtav.out{background:rgba(255,255,255,.08);color:#cfd5de}.gtav svg{width:16px!important;height:16px!important;opacity:1!important}.gtav.big{width:40px;height:40px;font-size:17px}.gtav.big svg{width:22px!important;height:22px!important}.gtav.pfavb{width:44px;height:44px;font-size:18px;margin-right:10px;vertical-align:middle}#gtpfn>svg{width:12px!important;height:12px!important;flex:none;opacity:.7}#gtpfn .gtpft{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#gtpfn.gtdot::after{content:"";position:absolute;top:1px;left:23px;width:9px;height:9px;border-radius:50%;background:var(--g-accent,#7ab8e8);box-shadow:0 0 0 2px var(--g-panel,#1a1c20)}header.gtbar nav button.gtset{display:none!important}header.gtbar #gtbeta{order:7!important;margin-left:auto!important}#gtdl{display:none!important}
+#gtpfm{position:fixed;z-index:9700;min-width:220px;padding:6px;border-radius:14px;border:1px solid var(--g-line,#33363c);background:var(--g-solid,#16181d);box-shadow:0 18px 40px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:2px}#gtpfm .gtpfh{padding:8px 10px 8px;border-bottom:1px solid var(--g-line,#2b2e33);margin-bottom:4px}#gtpfm .gtpfh b{display:block;color:#fff;font-size:14px}#gtpfm .gtpfh small{color:var(--mut,#9aa3b2);font-size:12px}#gtpfm button{display:block;width:100%;text-align:left;padding:9px 10px!important;border:0!important;border-radius:9px!important;background:transparent!important;color:#dfe4ea!important;font-size:13.5px;font-weight:600;letter-spacing:0!important;text-transform:none!important;cursor:pointer}#gtpfm button:hover,#gtpfm button:focus-visible{background:rgba(255,255,255,.07)!important;outline:none}#gtpfm .gtpfh{display:flex;align-items:center;gap:10px}#gtpfm .gtpfh>div{min-width:0}#gtpfm .gtpfh b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#gtpfm{max-width:min(300px,calc(100vw - 16px))}#gtpfm button{display:flex!important;align-items:center;gap:10px}#gtpfm button svg{width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;opacity:.8}#gtpfm button span{flex:1}#gtpfm button[data-pfm=signout]{color:#ffb4ae!important}#gtpfm .gtpfb{font-style:normal;font-size:11px;font-weight:800;color:var(--g-on-accent,#111);background:var(--g-accent,#7ab8e8);border-radius:9px;padding:1px 7px}#gthfab{position:fixed;right:14px;bottom:14px;z-index:44;width:36px;height:34px;display:flex;align-items:center;justify-content:center;background:#1d2026;color:var(--g-accent,#e6e7ea);border:1px solid #4a4d54;border-radius:18px;padding:0!important;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.5)}#gthfab:hover{border-color:var(--g-accent,#8fb3d9);background:#26324a}body.gtfn #gthfab{right:58px}body.gthf #gtnfab{right:58px}body.gtfn.gthf #gtnfab{right:102px}body.ovl #gthfab{display:none}body:has(#vsheet .dp) #gthfab{visibility:hidden}#gthfab.gtdot::after{content:"";position:absolute;top:-2px;right:-2px;width:10px;height:10px;border-radius:50%;background:var(--g-accent,#7ab8e8);box-shadow:0 0 0 2px #1d2026}@media (max-width:760px){html.gtweb #gthfab{bottom:calc(68px + env(safe-area-inset-bottom,0px));right:64px!important;width:44px;height:44px;border-radius:50%}html.gtweb #gthfab svg{width:20px;height:20px}}
+@media (max-width:560px){#settings .pfrow{flex-wrap:wrap;row-gap:4px}#settings .pfk{width:100%;font-size:12px}}@media (max-width:760px){#gtpfn{max-width:44px;padding:0 3px!important}#gtpfn .gtpft,#gtpfn>svg{display:none}}@media (max-width:560px){html[data-gtab="vault"] #gtpfn{margin-left:6px}html[data-gtab="vault"] header.gtbar #gtbeta{margin-left:6px!important}}
 #settings .acfrom{font-size:11.5px;color:var(--mut,#9aa3b2);padding:1px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.12)}#settings .acr{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 10px;border:1px solid var(--g-line,#2b2e33);border-radius:6px;background:rgba(255,255,255,.03)}#settings .acr.on{border-color:var(--g-accent,#7ab8e8)}#settings .acr b{flex:1;min-width:140px;color:#fff}#settings .acr b span{color:#8b8f97;font-weight:400;margin-left:2px}#settings .acr em{font-style:normal;font-size:12px;color:var(--g-accent,#7ab8e8)}#settings .syst{color:#cfd2d8}#settings .acr small{flex-basis:100%;color:#e0b64a;font-size:11.5px}.acswm{position:fixed;inset:0;z-index:100000;background:rgba(8,9,12,.85);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;letter-spacing:1px}#settings .navtg{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}#settings .navtg .chip{opacity:.55}#settings .navtg .chip.on{opacity:1}#settings .navtg .chip:disabled{cursor:default;opacity:.8}
 #settings h2{font-size:15px;letter-spacing:3px;text-transform:uppercase;color:#cfd2d8;margin:0 0 10px}
 .sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
@@ -945,13 +947,14 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   ];
   const keyOf = (a) => { const u = SET.keys && SET.keys[a]; return u !== undefined ? u : (KEYS.find((k) => k[0] === a) || [])[2] || ''; };
   const keyNorm = (e) => (e.key && e.key.length === 1 ? e.key.toLowerCase() : e.key || '');
-  const keyAct = (e) => { const k = keyNorm(e); if (!k) return ''; const hit = KEYS.find((q) => keyOf(q[0]) && keyOf(q[0]) === k); return hit ? hit[0] : ''; };
+  const keyAct = (e) => { if (SET.keyson === false) return ''; const k = keyNorm(e); if (!k) return ''; const hit = KEYS.find((q) => keyOf(q[0]) && keyOf(q[0]) === k); return hit ? hit[0] : ''; };
   const keyLabel = (k) => (!k ? 'None' : k === ' ' ? 'Space' : k.length === 1 ? k.toUpperCase() : k);
   let keyEdit = '';
   const keysCard = () => `<div class="card sc" id="gtkeys"><h2>Keyboard shortcuts</h2>
-      <p class="mute" style="margin:0 0 6px">Click a key to change it, then press the new key. Backspace clears it, Escape cancels. Shortcuts do nothing while you are typing in a box.</p>
-      <div class="kyl">${KEYS.map(([a, lbl]) => `<div class="kyr"><span>${esc(lbl)}</span><button type="button" class="kyb${keyEdit === a ? ' ed' : ''}${keyOf(a) ? '' : ' none'}" data-ky="${a}">${keyEdit === a ? 'Press a key' : esc(keyLabel(keyOf(a)))}</button></div>`).join('')}
-      <div class="kyr fx"><span>Open quick notes</span><kbd>Ctrl + Shift + N</kbd></div><div class="kyr fx"><span>Close a pop-up</span><kbd>Esc</kbd></div></div>
+      <div class="sx"><div class="sxt"><b>Use keyboard shortcuts</b><small>Off: no key does anything on its own (Esc still closes pop-ups).</small></div><div class="sxc"><label class="tgl"><input type="checkbox" data-sk="keyson"${SET.keyson !== false ? ' checked' : ''}><i></i></label></div></div>
+      <p class="mute" style="margin:6px 0 6px">Click a key to change it, then press the new key. Backspace clears it, Escape cancels. Shortcuts do nothing while you are typing in a box.</p>
+      <div class="kyl${SET.keyson === false ? ' off' : ''}">${KEYS.map(([a, lbl]) => `<div class="kyr"><span>${esc(lbl)}</span><button type="button" class="kyb${keyEdit === a ? ' ed' : ''}${keyOf(a) ? '' : ' none'}" data-ky="${a}">${keyEdit === a ? 'Press a key' : esc(keyLabel(keyOf(a)))}</button></div>`).join('')}
+      <div class="kyr fx"><span>Open quick notes</span><kbd>Shift + N</kbd></div><div class="kyr fx"><span>Close a pop-up</span><kbd>Esc</kbd></div></div>
       <p><button class="g" data-sa="keyreset">Reset shortcuts</button></p></div>`;
   // ---- themes ----
   // Each theme is a colour family (hue h, saturation s) that fills the panel, button and line colours. Some also paint a background:
@@ -978,16 +981,38 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   // Pictures that were removed as duplicates: anyone who had one gets the one it duplicated.
   const BGREN = { 'rust-yard': 'cosmodrome-wall' };
   const BGS = [['', 'None'], ['topo', 'Contour lines'], ['blossom-tower', 'Blossom Tower'], ['memorial-garden', 'Memorial Garden'], ['europa-frost', 'Lunar Frost'], ['crimson-spire', 'Crimson Spire'], ['cube-mist', 'Cube Mist'], ['aurora-grove', 'Aurora Grove'], ['vortex', 'Vortex'], ['emerald-lake', 'Emerald Lake'], ['hanging-gardens', 'Hanging Gardens'], ['jupiter-rise', 'Jupiter Rise'], ['cosmodrome-wall', 'Cosmodrome Wall'], ['throne-marsh', 'Nessus'], ['shrouded-statue', 'Shrouded Statue'], ['frozen-array', 'Frozen Array'], ['europa-pyramid', 'Europa Pyramid'], ['tower-sunrise', 'Tower Sunrise'], ['open-valley', 'Open Valley'], ['traveler', 'The Traveler'], ['lantern-gate', 'Lantern Gate']];
-  // Bray and Manta are fixed looks: their colour, accent and picture are set and cannot be changed. Their two pictures are shown last
-  // in the picture list, locked, so the Custom style cannot use them.
+  // Bray and Manta are looks their owners set for everyone. Each owner unlocks their style, changes anything (colour, accent, picture,
+  // dimming, animations, card pictures, glow), and locking it sends the look to every copy of Pathfinder (it comes with the feature
+  // switches). The picture a locked Bray or Manta look uses is that style's own: nobody else can pick it while it is (anyone who
+  // already had it keeps it until they pick another). These are the built-in looks, used until a published one arrives.
   const LOCK = { bray: { theme: 'beta', accent: '#f2b441', bg: 'traveler', n: 'Bray' }, manta: { theme: 'gold', accent: '#35e3cf', bg: 'lantern-gate', n: 'Manta' } };
-  const LOCKBG = { traveler: 'bray', 'lantern-gate': 'manta' };
-  // The look in use: the locked one for Bray and Manta, otherwise your own picks (Pathfinder Classic and Custom each keep their own).
-  // Bray's and Manta's pictures can be changed by them (and only them) for everyone: the choice comes with the feature switches.
-  // (FLG is set up further down; until the switches arrive the built-in picture is used)
+  // (FLG is set up further down; until the switches arrive the built-in look is used)
   const lookBg = (k) => { let v = ''; try { v = FLG.looks[k].bg; } catch (e) { /* not loaded yet */ } return v && BGS.some((b) => b[0] === v) ? v : LOCK[k].bg; };
+  const lockBgOf = (id) => (id ? Object.keys(LOCK).find((k) => lookBg(k) === id) || '' : '');
   const myLook = () => { try { return !!(LOCK[SET.ui] && FLG.mylook === SET.ui); } catch (e) { return false; } };
-  const look = () => (LOCK[SET.ui] ? { ...LOCK[SET.ui], bg: lookBg(SET.ui) } : { theme: SET.theme, accent: SET.accent, bg: SET.bg });
+  // While Bray or Manta has their style unlocked, their changes live in SET.lkd[style] (only on their device) until they lock it.
+  const lkDraft = (k) => (myLook() && SET.lkd && SET.lkd[k] && typeof SET.lkd[k] === 'object' ? SET.lkd[k] : null);
+  const ANIMS = ['off', 'subtle', 'full'];
+  const ownMotion = () => ({ bgdim: +SET.bgdim || 45, anim: ANIMS.includes(SET.anim) ? SET.anim : 'subtle', cardart: SET.cardart !== false, glow: SET.glow === undefined ? 55 : +SET.glow });
+  function pubLook(k) {
+    let p = {}; try { p = (FLG.looks && FLG.looks[k]) || {}; } catch (e) { /* not loaded yet */ }
+    const L = { ...LOCK[k], ...ownMotion(), bg: lookBg(k) };
+    if (p.theme && COLS.some((t) => t.id === p.theme)) L.theme = p.theme;
+    if (/^#[0-9a-f]{6}$/i.test(String(p.accent || ''))) L.accent = p.accent;
+    if (Number.isFinite(p.bgdim)) L.bgdim = p.bgdim; if (Number.isFinite(p.glow)) L.glow = p.glow;
+    if (ANIMS.includes(p.anim)) L.anim = p.anim; if (typeof p.cardart === 'boolean') L.cardart = p.cardart;
+    return L;
+  }
+  // The look in use: Bray's or Manta's published look (or the owner's unlocked changes), otherwise your own picks
+  // (Pathfinder Classic and Custom each keep their own colour, accent and picture).
+  const look = () => { const k = SET.ui; if (LOCK[k]) { const d = lkDraft(k); return d ? { ...pubLook(k), ...d } : pubLook(k); } return { theme: SET.theme, accent: SET.accent, bg: SET.bg, ...ownMotion() }; };
+  // Can the look be changed right now? Your own styles: unless you locked them. Bray's and Manta's: only by their owner, while unlocked.
+  const lookEdit = () => (LOCK[SET.ui] ? !!lkDraft(SET.ui) : !(SET.lk && SET.lk[SET.ui]));
+  function setLook(o) {
+    if (!lookEdit()) return false;
+    if (LOCK[SET.ui]) SET.lkd = { ...(SET.lkd || {}), [SET.ui]: { ...lkDraft(SET.ui), ...o } }; else Object.assign(SET, o);
+    return true;
+  }
   const EDIT = ['pf', 'beta'];
   function switchUi(to) {
     const from = SET.ui;
@@ -1007,7 +1032,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     if (m) { if (Array.isArray(m)) { SET.theme = m[0]; if (!SET.bg) SET.bg = m[1]; } else SET.theme = m; }
     if (!tById(SET.theme)) SET.theme = 'dim';
     if (BGREN[SET.bg]) SET.bg = BGREN[SET.bg];
-    if (SET.bg === undefined || !BGS.some((b) => b[0] === SET.bg) || LOCKBG[SET.bg]) SET.bg = '';
+    if (SET.bg === undefined || !BGS.some((b) => b[0] === SET.bg)) SET.bg = '';
     if (SET.ui === 'd2') SET.ui = 'bray';
     if (SET.ui === 'dim') SET.ui = 'pf'; // the DIM style was removed
   }
@@ -1036,7 +1061,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
 .thh{grid-column:1/-1;margin:10px 0 0;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--mute)}.thh:first-child{margin-top:0}
 .th i.thc{position:relative}.th i.thc b{position:absolute;right:-3px;bottom:-3px;width:11px;height:11px;border-radius:50%;border:2px solid var(--g-solid,#15171b)}
 .acs{display:flex;flex-wrap:wrap;gap:7px;align-items:center}.acs .acw{box-sizing:border-box;width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid transparent;box-shadow:inset 0 0 0 1px rgba(0,0,0,.35);padding:0}.acs .acw.on{border-color:#fff}.acs .acw:focus-visible{outline:2px solid #fff;outline-offset:2px}.acs input[type=color]{width:34px;height:26px;padding:0;border:0;background:none;cursor:pointer}
-.bgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px;margin:6px 0 10px}.bgs .bgo{position:relative;height:64px;border-radius:9px;overflow:hidden;cursor:pointer;border:2px solid transparent;background:#0e1014 center/cover no-repeat;display:flex;align-items:flex-end;padding:6px 8px;font-size:12px;font-weight:600;color:#fff;text-shadow:0 1px 3px #000}.bgs .bgo::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 35%,rgba(0,0,0,.7))}.bgs .bgo span{position:relative}.bgs .bgo.on{border-color:var(--g-accent,#7ab8e8)}.bgs .bgo.lk{cursor:not-allowed}.bgs .bgo.lk::after{content:'';position:absolute;inset:0;background:rgba(0,0,0,.42)}.bgs .bgo.lk.on::after{background:rgba(0,0,0,.12)}.bgs .bgo .lki{position:absolute;top:6px;right:6px;z-index:2;width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;filter:drop-shadow(0 1px 2px #000)}.bgs .bgo span{z-index:2}.bgs .bgo small{display:block;font-size:10.5px;font-weight:600;opacity:.8}.lkw.on .sg,.lkw.on .acs,.lkw.on .bgo{pointer-events:none}.lkw.on.mine .bgo:not(.none){pointer-events:auto;opacity:1!important;cursor:pointer}.lkw.on .th:not(.on),.lkw.on .acw:not(.on),.lkw.on .bgo:not(.on){opacity:.35}.lkn{display:flex;gap:10px;align-items:flex-start;margin:10px 0 4px;padding:10px 12px;border-radius:10px;background:var(--g-accent-soft,rgba(122,184,232,.16));border:1px solid var(--g-line,#2b2e33);font-size:13px;line-height:1.4}.lkn .lki{flex:none;width:18px;height:18px;fill:none;stroke:var(--g-accent,#7ab8e8);stroke-width:2;stroke-linecap:round;margin-top:1px}.bgs .bgo.none{background:repeating-linear-gradient(135deg,#15171b 0 8px,#1b1e23 8px 16px)}`;
+.bgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px;margin:6px 0 10px}.bgs .bgo{position:relative;height:64px;border-radius:9px;overflow:hidden;cursor:pointer;border:2px solid transparent;background:#0e1014 center/cover no-repeat;display:flex;align-items:flex-end;padding:6px 8px;font-size:12px;font-weight:600;color:#fff;text-shadow:0 1px 3px #000}.bgs .bgo::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 35%,rgba(0,0,0,.7))}.bgs .bgo span{position:relative}.bgs .bgo.on{border-color:var(--g-accent,#7ab8e8)}.bgs .bgo.lk{cursor:not-allowed}.bgs .bgo.lk::after{content:'';position:absolute;inset:0;background:rgba(0,0,0,.42)}.bgs .bgo.lk.on::after{background:rgba(0,0,0,.12)}.bgs .bgo .lki{position:absolute;top:6px;right:6px;z-index:2;width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;filter:drop-shadow(0 1px 2px #000)}.bgs .bgo span{z-index:2}.bgs .bgo small{display:block;font-size:10.5px;font-weight:600;opacity:.8}.lkw.on .sg,.lkw.on .acs>:not(.lkb),.lkw.on .bgo{pointer-events:none}.lkw.on .th:not(.on),.lkw.on .acw:not(.on),.lkw.on .bgo:not(.on){opacity:.35}.lkw.on .sx .sxc{opacity:.5}.bgs .bgo.off{opacity:.3;pointer-events:none}.lkb{margin-left:auto;display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 13px 0 10px!important;border-radius:999px!important;border:1px solid var(--g-line,#3a3d43)!important;background:rgba(255,255,255,.04)!important;color:#dfe4ea!important;font-size:12.5px!important;font-weight:700;letter-spacing:.02em!important;text-transform:none!important;cursor:pointer}.lkb .lki{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}.lkb:hover:not([disabled]){border-color:var(--g-accent,#7ab8e8)!important}.lkb:not(.on){border-color:var(--g-accent,#7ab8e8)!important;background:var(--g-accent-soft,rgba(122,184,232,.16))!important;color:#fff!important}.lkb:not(.on) .lki{stroke:var(--g-accent,#7ab8e8)}.lkb[disabled]{opacity:.55;cursor:default}.lkn.open{border-color:var(--g-accent,#7ab8e8)}.lkn .lkm{display:block;font-style:normal;margin-top:4px;color:#fff;font-weight:600}.lkn{display:flex;gap:10px;align-items:flex-start;margin:10px 0 4px;padding:10px 12px;border-radius:10px;background:var(--g-accent-soft,rgba(122,184,232,.16));border:1px solid var(--g-line,#2b2e33);font-size:13px;line-height:1.4}.lkn .lki{flex:none;width:18px;height:18px;fill:none;stroke:var(--g-accent,#7ab8e8);stroke-width:2;stroke-linecap:round;margin-top:1px}.bgs .bgo.none{background:repeating-linear-gradient(135deg,#15171b 0 8px,#1b1e23 8px 16px)}`;
     document.head.appendChild(el);
   })();
   const ACCS = ['#f2b441', '#7ab8e8', '#6fc7ff', '#b38cff', '#ff8a3d', '#ff5a5a', '#f2c14e', '#5fd38a', '#35e3cf', '#ff7ad9', '#d8dde5'];
@@ -1054,12 +1079,12 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     if (L.theme === 'dim') r.removeAttribute('data-gt'); else r.setAttribute('data-gt', L.theme);
     r.setAttribute('data-gx', L.bg ? '1' : '0'); r.setAttribute('data-gan', '0'); r.setAttribute('data-gbg', L.bg || 'none');
     if (L.bg) r.style.setProperty('--g-layers', bgLayers(L)); else r.style.removeProperty('--g-layers');
-    r.style.setProperty('--g-dim', String(Math.max(.25, Math.min(.9, (+SET.bgdim || 45) / 100))));
+    r.style.setProperty('--g-dim', String(Math.max(.25, Math.min(.9, (+L.bgdim || 45) / 100))));
     // Custom, Bray and Manta share the Beta style's rules; data-uin carries which one (Bray has its own lettering).
     const ui = ['pf', 'beta', 'bray', 'manta'].includes(SET.ui) ? SET.ui : 'pf';
     r.setAttribute('data-ui', ui === 'bray' || ui === 'manta' ? 'beta' : ui); r.setAttribute('data-uin', ui);
-    r.setAttribute('data-anim', ['off', 'subtle', 'full'].includes(SET.anim) ? SET.anim : 'subtle'); r.setAttribute('data-cardart', SET.cardart === false ? '0' : '1');
-    r.style.setProperty('--gt-glow', String(Math.max(0, Math.min(100, SET.glow === undefined ? 55 : +SET.glow)) / 100));
+    r.setAttribute('data-anim', ANIMS.includes(L.anim) ? L.anim : 'subtle'); r.setAttribute('data-cardart', L.cardart === false ? '0' : '1');
+    r.style.setProperty('--gt-glow', String(Math.max(0, Math.min(100, +L.glow)) / 100));
     r.setAttribute('data-gcompact', SET.compact ? '1' : '0'); r.setAttribute('data-gpower', SET.power ? '1' : '0');
     r.style.setProperty('--gt-t', SET.tile + 'px'); if (window.__gtfitscale) window.__gtfitscale(); else r.style.setProperty('--gt-z', SET.scale / 100); // polish.js lowers it if this page would not fit the window
     // The accent's dark partner (selected tabs, switches, chips). Mixing a light colour like yellow with black turns it olive,
@@ -1229,9 +1254,26 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     const L = look();
     return COLS.map((t) => `<div class="th${L.theme === t.id ? ' on' : ''}" data-th="${t.id}"><i class="thc" style="background:${t.sw}"><b style="background:${t.a}"></b></i>${esc(t.n)}</div>`).join('');
   }
-  const accGrid = () => { const L = look(); return `<div class="acs">${ACCS.map((c) => `<div role="button" tabindex="0" class="acw${String(L.accent).toLowerCase() === c ? ' on' : ''}" data-acc="${c}" style="background:${c}" title="${c}" aria-label="Accent ${c}"></div>`).join('')}<input type="color" data-sk="accent" value="${esc(L.accent)}" title="Any colour"${LOCK[SET.ui] ? ' disabled' : ''}></div>`; };
-  const bgGrid = () => { const L = look(); return `<div class="bgs">${BGS.map(([id, n]) => { const lk = LOCKBG[id]; return `<div class="bgo${id ? '' : ' none'}${lk ? ' lk' : ''}${(L.bg || '') === id ? ' on' : ''}" data-bg="${id}"${lk ? ` title="Locked: only the ${LOCK[lk].n} style uses this picture"` : ''}${id === 'topo' ? ' style="background-image:url(topo.svg);background-color:#0b0e13;background-size:180%"' : id ? ` style="background-image:url(themes/${id}_t.jpg)"` : ''}>${lk ? LKI : ''}<span>${esc(n)}${lk ? `<small>${LOCK[lk].n} only</small>` : ''}</span></div>`; }).join('')}</div>`; };
-  const lockNote = () => !LOCK[SET.ui] ? '' : myLook() ? `<p class="lkn">${LKI}<span><b>This is your style, ${LOCK[SET.ui].n}.</b> Pick a background picture below: it changes for everyone using the ${LOCK[SET.ui].n} style, on every PC, the website and phones. Its colour and accent stay fixed.</span></p>` : `<p class="lkn">${LKI}<span><b>${LOCK[SET.ui].n} has a fixed look.</b> Its colour, accent and background picture are locked (only ${LOCK[SET.ui].n} can change the picture). Pick Custom to make your own mix.</span></p>`;
+  const LKO = '<svg class="lki" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 017.6-1.8"/></svg>';
+  // The lock at the end of the accent row. Your own styles: locking keeps your look as it is on this device. Bray's and Manta's:
+  // only their owner can unlock, and locking again sends the look to everyone using that style.
+  function lockBtn() {
+    const k = SET.ui, own = LOCK[k], mine = myLook(), on = !lookEdit();
+    if (own && !mine) return `<button type="button" class="lkb on" disabled title="Only ${own.n} can change the ${own.n} style" aria-label="Locked: only ${own.n} can change this style">${LKI}<span>Locked</span></button>`;
+    const tip = on ? (own ? 'Unlock to change your style. Only you see the changes until you lock it again.' : 'Unlock to change your look') : (own ? 'Lock to send this look to everyone using the ' + own.n + ' style' : 'Lock to keep this look as it is');
+    return `<button type="button" class="lkb${on ? ' on' : ''}${LKBUSY ? ' busy' : ''}" data-lk="1" aria-pressed="${on}" title="${tip}"${LKBUSY ? ' disabled' : ''}>${on ? LKI : LKO}<span>${LKBUSY ? 'Sending...' : on ? 'Locked' : 'Unlocked'}</span></button>`;
+  }
+  let LKBUSY = false, LKMSG = '';
+  const accGrid = () => { const L = look(), ed = lookEdit(); return `<div class="acs">${ACCS.map((c) => `<div role="button" tabindex="0" class="acw${String(L.accent).toLowerCase() === c ? ' on' : ''}" data-acc="${c}" style="background:${c}" title="${c}" aria-label="Accent ${c}"${ed ? '' : ' aria-disabled="true"'}></div>`).join('')}<input type="color" data-sk="accent" value="${esc(L.accent)}" title="Any colour"${ed ? '' : ' disabled'}>${lockBtn()}</div>`; };
+  const bgGrid = () => { const L = look(), me = myLook() ? SET.ui : ''; return `<div class="bgs">${BGS.map(([id, n]) => { const lk0 = lockBgOf(id), lk = lk0 && lk0 !== me ? lk0 : ''; return `<div class="bgo${id ? '' : ' none'}${lk ? ' lk' : ''}${(L.bg || '') === id ? ' on' : ''}${!id && LOCK[SET.ui] ? ' off' : ''}" data-bg="${id}"${lk ? ` title="${(L.bg || '') === id ? `You can keep using it, but once you pick another picture it stays ${LOCK[lk].n}'s` : `Locked: only the ${LOCK[lk].n} style uses this picture`}"` : ''}${id === 'topo' ? ' style="background-image:url(topo.svg);background-color:#0b0e13;background-size:180%"' : id ? ` style="background-image:url(themes/${id}_t.jpg)"` : ''}>${lk ? LKI : ''}<span>${esc(n)}${lk ? `<small>${LOCK[lk].n} only</small>` : ''}</span></div>`; }).join('')}</div>`; };
+  function lockNote() {
+    const k = SET.ui, own = LOCK[k], m = LKMSG ? ` <em class="lkm">${esc(LKMSG)}</em>` : '';
+    if (own && myLook()) return lkDraft(k)
+      ? `<p class="lkn open">${LKO}<span><b>Unlocked: only you see these changes, ${own.n}.</b> Change anything below, then lock it to send the look to everyone using the ${own.n} style, on every PC, the website and phones. The picture you lock becomes ${own.n} only.${m}</span></p>`
+      : `<p class="lkn">${LKI}<span><b>This is your style, ${own.n}.</b> Unlock it (the lock by the accent colours) to change anything: colour, accent, picture, dimming, animations, card pictures and glow. Locking it again sends the new look to everyone using the ${own.n} style.${m}</span></p>`;
+    if (own) return `<p class="lkn">${LKI}<span><b>${own.n} has a fixed look.</b> Only ${own.n} can change it, and it updates here when they do. Pick Custom to make your own mix.</span></p>`;
+    return SET.lk && SET.lk[k] ? `<p class="lkn">${LKI}<span><b>Your look is locked.</b> It stays as it is on this device. Unlock it (the lock by the accent colours) to change it.${m}</span></p>` : m ? `<p class="lkn open">${m}</p>` : '';
+  }
   function markLook() {
     const L = look();
     settingsSec.querySelectorAll('[data-th]').forEach((n) => n.classList.toggle('on', n.dataset.th === L.theme));
@@ -1240,23 +1282,38 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     const ac = settingsSec.querySelector('input[data-sk="accent"]'); if (ac) ac.value = L.accent;
   }
   function pickTheme(id) {
-    const t = tById(id), prev = tById(SET.theme);
-    if (!t || LOCK[SET.ui]) return;
+    const L = look(), t = tById(id), prev = tById(L.theme);
+    if (!t || !lookEdit()) return;
     // A colour brings its own accent, unless you picked a different accent yourself: that one stays, so any mix works.
-    if (!prev || String(SET.accent).toLowerCase() === prev.a.toLowerCase() || SET.accent === DEFSET.accent) SET.accent = t.a;
-    SET.theme = id; applySet(); saveSet(); markLook();
+    const o = { theme: id }; if (!prev || String(L.accent).toLowerCase() === prev.a.toLowerCase() || L.accent === DEFSET.accent) o.accent = t.a;
+    setLook(o); applySet(); saveSet(); markLook();
   }
-  async function pickBg(id) {
-    if (myLook()) { // Bray or Manta changing their own style's picture, for everyone
-      if (!id) return;
-      const k = SET.ui, was = lookBg(k);
-      FLG.looks = { ...(FLG.looks || {}), [k]: { bg: id } }; applySet(); markLook();
-      try { const r = await gt.lookSet({ look: k, bg: id }); FLG.looks = r.looks || FLG.looks; } catch (e) { FLG.looks = { ...(FLG.looks || {}), [k]: { bg: was } }; applySet(); markLook(); alert('Could not change the picture: ' + clean(e)); }
-      return;
+  function pickBg(id) {
+    if (!lookEdit()) return;
+    const lk = lockBgOf(id); if (lk && lk !== (myLook() ? SET.ui : '')) return; // Bray's or Manta's picture
+    if (!id && LOCK[SET.ui]) return; // Bray's and Manta's styles always have a picture
+    setLook({ bg: id }); applySet(); saveSet(); markLook();
+  }
+  function pickAcc(c) { if (!setLook({ accent: c })) return; if (!LOCK[SET.ui]) SET.accentUser = ''; applySet(); saveSet(); markLook(); }
+  // The lock button: your own styles lock on this device; Bray and Manta unlock their style, and locking sends it to everyone.
+  async function lockToggle() {
+    const k = SET.ui; LKMSG = '';
+    if (!LOCK[k]) {
+      SET.lk = { ...(SET.lk || {}), [k]: !(SET.lk && SET.lk[k]) };
+      if (SET.lk[k]) { SET.looks = SET.looks && typeof SET.looks === 'object' ? SET.looks : {}; SET.looks[k] = { theme: SET.theme, accent: SET.accent, bg: SET.bg }; LKMSG = 'Locked. Your look is saved on this device only.'; }
+      saveSet(); drawSettings(); return;
     }
-    if (LOCK[SET.ui] || LOCKBG[id]) return; SET.bg = id; applySet(); saveSet(); markLook();
+    if (!myLook() || LKBUSY) return;
+    const d = lkDraft(k);
+    if (!d) { SET.lkd = { ...(SET.lkd || {}), [k]: { ...pubLook(k) } }; delete SET.lkd[k].n; saveSet(); drawSettings(); return; }
+    const L = look(); LKBUSY = true; drawSettings();
+    try {
+      const r = await gt.lookSet({ look: k, theme: L.theme, accent: L.accent, bg: L.bg, bgdim: L.bgdim, anim: L.anim, cardart: L.cardart, glow: L.glow });
+      FLG.looks = r.looks || { ...(FLG.looks || {}), [k]: { ...L } };
+      SET.lkd = { ...(SET.lkd || {}) }; delete SET.lkd[k]; LKMSG = 'Locked and sent: everyone using the ' + LOCK[k].n + ' style gets this look.';
+    } catch (e) { LKMSG = 'Still unlocked: the look could not be sent (' + clean(e) + '). Try locking again.'; }
+    LKBUSY = false; saveSet(); applySet(); drawSettings();
   }
-  function pickAcc(c) { if (LOCK[SET.ui]) return; SET.accent = c; SET.accentUser = ''; applySet(); saveSet(); markLook(); }
   // ---- saved Bungie accounts ----
   let ACL = null, aclBusy = false;
   function aclHTML() {
@@ -1268,6 +1325,19 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   let PFA = null, pfaBusy = false, PFAMSG = '', PFANM = '', PFAED = '', PFAEYE = false, PFAEYE2 = false;
   const EYE = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
   const pdn = () => (PFA && (PFA.dn || PFA.name)) || '';
+  // Your profile picture, or the first letter of your name in a circle (signed out: a person outline).
+  const PERSON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8.5" r="4"/><path d="M4.5 20.5c1.4-3.8 4.2-5.7 7.5-5.7s6.1 1.9 7.5 5.7"/></svg>';
+  const avHTML = (cls) => { const on = !!(PFA && PFA.on), av = on && /^data:image\/(jpeg|png|webp);base64,/.test(PFA.av || '') ? PFA.av : ''; return `<span class="gtav ${cls || ''}${on ? '' : ' out'}" aria-hidden="true">${av ? `<img src="${av}" alt="">` : on ? esc((pdn() || '?').slice(0, 1).toUpperCase()) : PERSON}</span>`; };
+  // A picture you pick becomes a small square (centre cut, 192 px) before it is sent, so it stays tiny on every device.
+  async function picSquare(file) {
+    const bm = await createImageBitmap(file), side = Math.min(bm.width, bm.height); if (!side) throw new Error('That picture is empty.');
+    const cv = document.createElement('canvas'); cv.width = cv.height = 192; const x = cv.getContext('2d'); x.imageSmoothingQuality = 'high';
+    x.drawImage(bm, (bm.width - side) / 2, (bm.height - side) / 2, side, side, 0, 0, 192, 192);
+    for (const [ty, q] of [['image/webp', 0.86], ['image/jpeg', 0.84], ['image/jpeg', 0.6]]) { const d = cv.toDataURL(ty, q); if (d.startsWith('data:' + ty) && d.length < 85000) return d; }
+    throw new Error('That picture is too detailed. Try another one.');
+  }
+  // Hidden login names and passwords: always 12 dots of one size, whatever the real length, so the length gives nothing away.
+  const DOTS = '<span class="pfdots" role="img" aria-label="Hidden">' + '<i></i>'.repeat(12) + '</span>';
   function pfaHTML() {
     if (!window.gt || !gt.pfaStatus) return '';
     if (!PFA) { if (!pfaBusy) { pfaBusy = true; gt.pfaStatus().then((r) => { PFA = r; pfaBusy = false; if (settingsSec.classList.contains('on')) drawSettings(); }).catch(() => { pfaBusy = false; }); } return ''; }
@@ -1280,54 +1350,91 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
       const when = PFA.at ? new Date(PFA.at).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '';
       // Account settings, Steam style: the display name is what everyone sees; the login name only signs in, so it stays hidden
       // (stars) unless the eye is pressed, which keeps it off screen on streams.
-      const lg = esc(PFA.name || ''), stars = '•'.repeat(Math.max(6, Math.min(14, (PFA.name || '').length)));
+      const lg = esc(PFA.name || ''), stars = DOTS;
       const ed = PFAED === 'dn' ? `<div class="pfaf"><input id="pfadn" type="text" maxlength="32" placeholder="Display name" value="${esc(pdn())}" autocomplete="off"><button class="b" data-pfa="dnsave">Save</button><button class="g" data-pfa="edoff">Cancel</button></div><p class="mute">2 to 32 characters. Everyone sees this name (the team in help requests too). You still sign in with your login name.</p>`
         : PFAED === 'login' ? `<div class="pfaf"><input id="pfalg" type="text" class="pfmask${PFAEYE2 ? ' show' : ''}" maxlength="24" placeholder="New login name" autocomplete="off" autocapitalize="off" spellcheck="false"><button class="g pfeye" data-pfa="eye2" title="Show or hide" aria-label="Show or hide the new login name">${EYE}</button><input id="pfacur" type="password" placeholder="Current password" autocomplete="current-password"><button class="b" data-pfa="lgsave">Change login name</button><button class="g" data-pfa="edoff">Cancel</button></div><p class="mute">3 to 24 letters or numbers (. _ and - too). You sign in with it from now on; your other devices are signed out and sign in with the new one.</p>`
         : PFAED === 'pw' ? `<div class="pfaf"><input id="pfacur" type="password" placeholder="Current password" autocomplete="current-password"><input id="pfanpw" type="password" placeholder="New password (8+ characters)" autocomplete="new-password"><input id="pfanpw2" type="password" placeholder="New password again" autocomplete="new-password"><button class="b" data-pfa="pwsave">Change password</button><button class="g" data-pfa="edoff">Cancel</button></div><p class="mute">Your other devices are signed out and sign in with the new password. Your saved Bungie accounts stay.</p>` : '';
       return `<div class="pfa" id="pfacct"><div class="pfah"><b>Pathfinder account</b><span class="pfaon">Signed in</span></div>
 <div class="pfrows">
+<div class="pfrow"><span class="pfk">Profile picture</span><span class="pfv">${avHTML('pfavb')}<small class="mute">Shown in the top bar on every device you sign in on.</small></span>${PFA.av ? '<button class="g" data-pfa="picrm">Remove</button>' : ''}<button class="g" data-pfa="pic">${PFA.av ? 'Change' : 'Add'}</button><input type="file" id="pfapic" accept="image/*" hidden></div>
 <div class="pfrow"><span class="pfk">Display name</span><b class="pfv">${esc(pdn())}</b><button class="g" data-pfa="ed-dn">Edit</button></div>
 <div class="pfrow"><span class="pfk">Login name</span><span class="pfv pflg">${PFAEYE ? lg : stars}</span><button class="g pfeye" data-pfa="eye" title="${PFAEYE ? 'Hide' : 'Show'} your login name" aria-label="${PFAEYE ? 'Hide' : 'Show'} your login name" aria-pressed="${PFAEYE}">${EYE}</button><button class="g" data-pfa="ed-login">Change</button></div>
-<div class="pfrow"><span class="pfk">Password</span><span class="pfv">••••••••</span><button class="g" data-pfa="ed-pw">Change</button></div>
+<div class="pfrow"><span class="pfk">Password</span><span class="pfv">${DOTS}</span><button class="g" data-pfa="ed-pw">Change</button></div>
 </div>${ed}
 <p class="mute">${PFA.n} Bungie account${PFA.n === 1 ? '' : 's'} saved${when ? ' &middot; last synced ' + esc(when) : ''}.${PFA.err ? ' <span class="pfae">Last sync did not work: ' + esc(PFA.err) + '</span>' : ''}</p>${msg}<p><button class="g" data-pfa="sync">Sync now</button> <button class="g" data-pfa="logout">Sign out</button> <button class="g" data-pfa="logoutall">Sign out on all devices</button> <button class="g" data-pfa="del">Delete Pathfinder account</button></p><p class="mute pfan">Every Bungie account you add here is saved to your Pathfinder account, locked with your password before it leaves this device. Removing an account here only removes it from ${GT_HERE}.</p></div>`;
     }
     return `<div class="pfa"><div class="pfah"><b>Pathfinder account</b><span class="mute">Optional</span></div><p class="mute">Sign in once on another PC, the beta, the website or your phone and all your Bungie accounts (alts too) come with you. Everything works without one.</p>${PFA.out ? `<p class="pfae">Your Pathfinder account sign-in ended. Sign in again to keep syncing, or <button class="g pfalink" data-pfa="logout">forget ${esc(pdn())} on ${GT_HERE}</button>.</p>` : ''}<div class="pfaf"><input id="pfanm" type="text" class="pfmask${PFAEYE ? ' show' : ''}" placeholder="Login name" autocomplete="username" autocapitalize="off" spellcheck="false" maxlength="200" value="${esc(PFANM || PFA.name || '')}"><button class="g pfeye" data-pfa="eye" title="Show or hide the login name" aria-label="Show or hide the login name" aria-pressed="${PFAEYE}">${EYE}</button><input id="pfapw" type="password" placeholder="Password (8+ characters)" autocomplete="current-password"><button class="b" data-pfa="login">Sign in</button><button class="g" data-pfa="signup">Create account</button></div><p><button class="g pfalink" data-pfa="forgot">Forgot your password? Reset it at the Help Desk</button></p>${msg}<p class="mute pfan">Your password never leaves this device. Your Bungie sign-ins are locked with it before they are saved, so nobody else can open them, including Pathfinder. If you forget it, the team can reset it for you from a help request.</p></div>`;
   }
-  // ---- your Pathfinder display name in the top bar (Steam style): click it for a small menu with Account settings ----
+  // ---- your account in the top right (Steam style): profile picture (or initial) and display name; click it for the menu with
+  // Settings, Help & support, Get the app and Sign in or out. It is also the way into Settings (there is no gear button any more).
   function pfChip() {
-    const hd = document.querySelector('header.gtbar') || document.querySelector('header'); if (!hd) return;
+    const hd = document.querySelector('header.gtbar') || document.querySelector('header'); if (!hd || !window.gt) return;
     let b = document.getElementById('gtpfn');
-    const on = !!(PFA && PFA.on), dn = pdn();
-    if (!on) { if (b) b.hidden = true; const m0 = document.getElementById('gtpfm'); if (m0) m0.remove(); return; }
+    const on = !!(PFA && PFA.on), dn = on ? pdn() : '';
     if (!b) {
       b = document.createElement('button'); b.id = 'gtpfn'; b.type = 'button'; b.setAttribute('aria-haspopup', 'menu'); b.setAttribute('aria-expanded', 'false');
-      hd.appendChild(b);
+      hd.appendChild(b); window.dispatchEvent(new Event('resize'));
       b.onclick = (e) => { e.stopPropagation(); const m = document.getElementById('gtpfm'); if (m) { m.remove(); b.setAttribute('aria-expanded', 'false'); return; } pfMenu(b); };
-      document.addEventListener('click', (e) => { const m = document.getElementById('gtpfm'); if (m && !m.contains(e.target) && e.target !== b) { m.remove(); b.setAttribute('aria-expanded', 'false'); } });
+      document.addEventListener('click', (e) => { const m = document.getElementById('gtpfm'); if (m && !m.contains(e.target) && !b.contains(e.target)) { m.remove(); b.setAttribute('aria-expanded', 'false'); } });
       document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { const m = document.getElementById('gtpfm'); if (m) { m.remove(); b.setAttribute('aria-expanded', 'false'); b.focus(); } } });
     }
-    b.hidden = false;
-    const html = `<span class="gtpfa" aria-hidden="true">${esc((dn || '?').slice(0, 1).toUpperCase())}</span><span class="gtpft">${esc(dn)}</span><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>`;
-    if (b.dataset.h !== html) { b.innerHTML = html; b.dataset.h = html; b.title = dn + ': your Pathfinder account'; b.setAttribute('aria-label', 'Pathfinder account: ' + dn); }
+    b.hidden = false; b.classList.toggle('out', !on); b.classList.toggle('gtdot', !!((SECN.Help || 0) + (SECN['Help desk'] || 0)));
+    const html = `${avHTML('gtpfa')}${on ? `<span class="gtpft">${esc(dn)}</span>` : ''}<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>`;
+    if (b.dataset.h !== html) { b.innerHTML = html; b.dataset.h = html; const t = on ? dn + ': settings and your Pathfinder account' : 'Settings and sign in'; b.title = t; b.setAttribute('aria-label', t); }
   }
+  // Settings, at the section given (or wherever you were), then an element in it brought into view.
+  function goSettings(sec, focusId) {
+    const sb = document.querySelector('#nav button[data-t="settings"]'); if (sb) sb.click(); else window.show('settings'); // the (hidden) Settings tab button redraws the page
+    setTimeout(() => {
+      const n = sec && settingsSec.querySelector('.sni[data-ssec="' + sec + '"]'); if (n) n.click();
+      if (focusId) setTimeout(() => { const t = document.getElementById(focusId) || settingsSec.querySelector('.son'); if (t) t.scrollIntoView({ block: 'center', behavior: 'smooth' }); }, 80);
+    }, 30);
+  }
+  const MI = {
+    set: '<circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/>',
+    help: '<path d="M4 13a8 8 0 0 1 16 0"/><rect x="3" y="13" width="4" height="6" rx="1.5"/><rect x="17" y="13" width="4" height="6" rx="1.5"/><path d="M20 19c0 1.5-2 2.5-5 2.5"/>',
+    app: '<path d="M12 4v11M7 10.5l5 5 5-5M5 20h14"/>',
+    out: '<path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 16l-4-4 4-4M6 12h10"/>',
+    in: '<path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3"/><path d="M14 16l4-4-4-4M18 12H8"/>',
+  };
+  const mi = (k, label, extra) => `<button type="button" role="menuitem" data-pfm="${k}"><svg viewBox="0 0 24 24" aria-hidden="true">${MI[k === 'signout' ? 'out' : k === 'signin' ? 'in' : k]}</svg><span>${label}</span>${extra || ''}</button>`;
   function pfMenu(b) {
     const m = document.createElement('div'); m.id = 'gtpfm'; m.setAttribute('role', 'menu');
-    const role = { owner: 'Owner', founder: 'Founder', dev: 'Developer', tester: 'Tester' }[FLG && FLG.role] || 'User';
-    m.innerHTML = `<div class="gtpfh"><b>${esc(pdn())}</b><small>${esc(role)} &middot; Pathfinder account</small></div><button type="button" role="menuitem" data-pfm="acct">Account settings</button><button type="button" role="menuitem" data-pfm="help">Help &amp; support</button>`;
+    const on = !!(PFA && PFA.on), role = { owner: 'Owner', founder: 'Founder', dev: 'Developer', tester: 'Tester' }[FLG && FLG.role] || 'User';
+    const ga = window.__gtGetApp && window.__gtGetApp.can() ? window.__gtGetApp.label() : '';
+    const hn = (SECN.Help || 0) + (SECN['Help desk'] || 0);
+    m.innerHTML = `<div class="gtpfh">${avHTML('gtpfa big')}<div><b>${on ? esc(pdn()) : 'Not signed in'}</b><small>${on ? esc(role) + ' &middot; Pathfinder account' : 'Sign in to bring your Bungie accounts to every device'}</small></div></div>`
+      + mi('set', 'Settings') + mi('help', 'Help &amp; support', hn ? `<em class="gtpfb">${hn > 9 ? '9+' : hn}</em>` : '') + (ga ? mi('app', esc(ga)) : '')
+      + (on ? mi('signout', 'Sign out') : PFA && PFA.avail ? mi('signin', 'Sign in or make an account') : '');
     document.body.appendChild(m);
     const r = b.getBoundingClientRect(); m.style.top = Math.round(r.bottom + 6) + 'px'; m.style.right = Math.max(8, Math.round(innerWidth - r.right)) + 'px';
     b.setAttribute('aria-expanded', 'true'); const f = m.querySelector('button'); if (f) f.focus();
     m.onclick = (e) => {
       const it = e.target.closest('[data-pfm]'); if (!it) return; m.remove(); b.setAttribute('aria-expanded', 'false');
-      window.show('settings');
-      setTimeout(() => {
-        const sec = it.dataset.pfm === 'acct' ? 'Accounts' : 'About & help', n = settingsSec.querySelector('.sni[data-ssec="' + sec + '"]'); if (n) n.click();
-        setTimeout(() => { const t = document.getElementById(it.dataset.pfm === 'acct' ? 'pfacct' : 'hmsg') || settingsSec.querySelector('.son'); if (t) t.scrollIntoView({ block: 'center', behavior: 'smooth' }); }, 80);
-      }, 30);
+      const k = it.dataset.pfm;
+      if (k === 'set') goSettings('', '');
+      else if (k === 'help') helpGo();
+      else if (k === 'app') window.__gtGetApp.open(b);
+      else if (k === 'signin') goSettings('Accounts', 'pfanm');
+      else if (k === 'signout') pfaAct('logout').then(pfChip);
     };
   }
-  setInterval(pfChip, 2500); setTimeout(pfChip, 600);
+  // Help: the team (anyone who can see the Help desk) goes to the Help desk; everyone else to Help in About & help.
+  function helpGo() {
+    const desk = settingsSec.querySelector('.sni[data-ssec="Help desk"]') || (FLG && ['dev', 'founder', 'owner'].includes(FLG.role));
+    goSettings(desk ? 'Help desk' : 'About & help', desk ? '' : 'gthelp');
+  }
+  // The headphones button in the bottom-right corner (next to Notes): straight to help. Settings > About & help can hide it.
+  function helpFab() {
+    let f = document.getElementById('gthfab');
+    const want = !!(window.gt && gt.helpNew) && SET.helpfab !== false;
+    document.body.classList.toggle('gthf', want);
+    if (!want) { if (f) f.remove(); return; }
+    if (!f) { f = document.createElement('button'); f.id = 'gthfab'; f.type = 'button'; f.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${MI.help}</svg>`; f.onclick = helpGo; document.body.appendChild(f); }
+    const n = (SECN.Help || 0) + (SECN['Help desk'] || 0), t = n ? 'Help: ' + n + ' new' : 'Help: ask the Pathfinder team, report a bug or suggest an idea';
+    f.classList.toggle('gtdot', !!n); if (f.title !== t) { f.title = t; f.setAttribute('aria-label', t); }
+  }
+  setInterval(() => { pfChip(); helpFab(); }, 2500); setTimeout(() => { pfChip(); helpFab(); }, 600);
   // Signed-in devices: every place this Pathfinder account is signed in, when each was last used, and Sign out for each one.
   const PDEV = { open: false, list: null, busy: false, err: '' };
   function devList() {
@@ -1354,6 +1461,8 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     }
     if (a === 'ed-dn' || a === 'ed-login' || a === 'ed-pw') { PFAED = a.slice(3); PFAMSG = ''; drawSettings(); setTimeout(() => { const i = document.getElementById(PFAED === 'dn' ? 'pfadn' : PFAED === 'login' ? 'pfalg' : 'pfacur'); if (i) { i.focus(); if (i.select) i.select(); } }, 0); return; }
     if (a === 'edoff') { PFAED = ''; PFAMSG = ''; drawSettings(); return; }
+    if (a === 'pic') { const i = document.getElementById('pfapic'); if (i) i.click(); return; }
+    if (a === 'picrm') { if (!confirm('Remove your profile picture?')) return; return run('Removing…', async () => { const r = await gt.pfaAvatar({ img: '' }); setTimeout(() => { PFAMSG = 'Profile picture removed.'; drawSettings(); }, 0); return r; }); }
     if (a === 'dnsave') { const dn = ((document.getElementById('pfadn') || {}).value || '').trim(); return run('Saving…', async () => { const r = await gt.pfaProfile({ dn }); PFAED = ''; setTimeout(() => { PFAMSG = 'Display name saved.'; drawSettings(); }, 0); return r; }); }
     if (a === 'lgsave') {
       const to = ((document.getElementById('pfalg') || {}).value || '').trim(), cur = (document.getElementById('pfacur') || {}).value || '';
@@ -1479,6 +1588,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   function secBadge(n) { const c = (n === 'About & help' ? SECN.Help : SECN[n]) || 0; return c ? `<em class="snb" aria-label="${c} new">${c > 9 ? '9+' : c}</em>` : ''; }
   function badges() {
     const sb = document.querySelector('#nav button[data-t="settings"]'); if (sb) sb.classList.toggle('gtdot', !!((SECN.Help || 0) + (SECN['Help desk'] || 0)));
+    pfChip(); helpFab();
     if (settingsSec.classList.contains('on')) balanceSettings(true);
   }
   // Desktop notifications: the team answered your help request (anyone), a new help request or reply came in (the team).
@@ -1527,9 +1637,10 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
       body = `<p class="fbb"><button class="b" data-h="new" type="button">New request</button><button class="g" data-h="refresh" type="button">${HLP.loading ? 'Checking…' : 'Check for answers'}</button></p>
         <div class="hlist">${L.map((x) => { const st = HST[x.status] || HST.open; return `<div class="hrow${x.unread ? ' new' : ''}" data-hid="${esc(x.id)}" role="button" tabindex="0"><span class="hk">${esc(HKN[x.kind] || 'Other')}</span><span class="hf">${esc(x.first)}</span><span class="hst ${st[1]}">${x.unread ? 'New answer' : st[0]}</span><small>${esc(hWhen(x.upd))}</small></div>`; }).join('') || (HLP.list === null ? '<p class="mute">Loading your requests…</p>' : '<p class="mute">You have not asked anything yet. Questions, bugs and ideas are all welcome.</p>')}</div>
         ${gt.notify ? `<div class="sx hntf"><div class="sxt"><b>Notify me when the team answers</b></div><div class="sxc"><label class="tgl"><input type="checkbox" data-ntf="gt_notify_help"${notifOn('gt_notify_help') ? ' checked' : ''}><i></i></label></div></div>` : ''}
-        ${PFA && PFA.on ? '' : '<p class="mute hsm">Requests are kept on this device. Sign in to a Pathfinder account (Settings &gt; Accounts) to see them on all your devices.</p>'}`;
+        ${PFA && PFA.on ? '' : '<p class="mute hsm">Requests are kept on this device. Sign in to a Pathfinder account (Settings &gt; Accounts) to see them on all your devices.</p>'}
+        <div class="sx"><div class="sxt"><b>Help button in the corner</b><small>The headphones button next to Notes. It opens Help from any tab.</small></div><div class="sxc"><label class="tgl"><input type="checkbox" data-sk="helpfab"${SET.helpfab !== false ? ' checked' : ''}><i></i></label></div></div>`;
     }
-    return `<div class="card sc"><h2>Help</h2><p class="mute">Ask a question, report a bug or suggest an idea. The Pathfinder team answers right here, and you can write back.</p>${note}${body}</div>`;
+    return `<div class="card sc" id="gthelp"><h2>Help</h2><p class="mute">Ask a question, report a bug or suggest an idea. The Pathfinder team answers right here, and you can write back.</p>${note}${body}</div>`;
   }
   async function helpOpen(id) {
     HLP.view = 'ticket'; HLP.reply = ''; HLP.note = ''; HLP.t = (HLP.t && HLP.t.id === id) ? HLP.t : null;
@@ -1778,7 +1889,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     const statsH = `<div class="admstats"><span><b>${ADM.acc.length}</b>accounts</span><span><b>${ADM.acc.filter((a) => a.lastLogin > wk).length}</b>signed in this week</span><span><b>${ADM.acc.filter((a) => a.created > wk).length}</b>new this week</span>${open === null ? '' : `<span><b>${open}</b>help ${open === 1 ? 'request' : 'requests'} waiting</span>`}${cnt.sus ? `<span><b>${cnt.sus}</b>suspended</span>` : ''}</div>`;
     const rfH = `<div class="admseg admrf" role="group" aria-label="Show accounts">${[['all', 'All'], ['', 'Users'], ['tester', 'Testers'], ['dev', 'Developers'], ['founder', 'Founders'], ['locked', 'Locked'], ['sus', 'Suspended']].filter(([v]) => (v !== 'locked' || cnt.locked) && (v !== 'sus' || cnt.sus) && (v !== 'tester' || cnt.tester)).map(([v, l]) => `<button type="button" data-adm="rf" data-rf="${v}" class="${ADM.rf === v ? 'on' : ''}" aria-pressed="${ADM.rf === v}">${l} ${cnt[v]}</button>`).join('')}</div>`;
     const rows = ADM.acc.filter((a) => inRf(a) && (!q || (a.name || '').toLowerCase().includes(q) || (a.display || '').toLowerCase().includes(q))).map((a) => `<div class="admr" data-aid="${esc(a.id)}">
-      <div class="admn"><b>${esc(a.display || a.name || '') || '<span class="mute">(name not saved yet)</span>'}</b><small>${a.name ? `Login: <span class="admlg">${ADM.eye ? esc(a.name) : '••••••'}</span> &middot; ` : ''}Created ${esc(admWhen(a.created))} &middot; last sign-in ${esc(admWhen(a.lastLogin))}${a.locked ? ' &middot; <span class="bad">locked 15 min</span>' : ''}${a.tmp ? ' &middot; password 123456' : ''}${a.suspended ? ' &middot; <span class="bad">suspended</span>' : ''}</small></div>
+      <div class="admn"><b>${esc(a.display || a.name || '') || '<span class="mute">(name not saved yet)</span>'}</b><small>${a.name ? `Login: <span class="admlg">${ADM.eye ? esc(a.name) : DOTS}</span> &middot; ` : ''}Created ${esc(admWhen(a.created))} &middot; last sign-in ${esc(admWhen(a.lastLogin))}${a.locked ? ' &middot; <span class="bad">locked 15 min</span>' : ''}${a.tmp ? ' &middot; password 123456' : ''}${a.suspended ? ' &middot; <span class="bad">suspended</span>' : ''}</small></div>
       <div class="admc">${!may(a.role) ? `<span class="admtag${a.role === 'owner' ? ' own' : ''}">${RL[a.role] || 'User'}</span>` : `<select data-adm="role" aria-label="Role for ${esc(a.name || 'account')}">${roleOpts.map(([v, l]) => `<option value="${v}"${(a.role || '') === v ? ' selected' : ''}>${l}</option>`).join('')}</select>`}
       ${may(a.role) ? '<button class="g" data-adm="quick" title="Set the password to 123456">Reset to 123456</button><button class="g" data-adm="rename" title="Change the display name; their login name and password stay the same">Rename</button><button class="g" data-adm="signout" title="End every saved sign-in; the password stays the same">Sign out everywhere</button>' : ''}${a.locked ? '<button class="g" data-adm="unlockacc">Unlock</button>' : ''}${may(a.role) ? `<button class="g" data-adm="suspend" title="${a.suspended ? 'Let them sign in again' : 'Block sign-in without deleting anything'}">${a.suspended ? 'Unsuspend' : 'Suspend'}</button><button class="g admdel" data-adm="del">Delete</button>` : ''}</div>${ADM.ren === a.id ? `<div class="admc admren"><input type="text" id="admren" maxlength="32" value="${esc(a.display || a.name)}" aria-label="New display name" spellcheck="false"><button class="b" data-adm="rensave">Save name</button><button class="g" data-adm="rencancel">Cancel</button><small class="mute">Changes the display name only. Their login name and password stay the same.</small></div>` : ''}</div>`).join('') || '<p class="mute">No accounts.</p>';
     // Feature switches: every switch the app knows, by name, with three buttons. A click saves it (no typing, no Save button).
@@ -1885,6 +1996,11 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     const tgl = (k) => `<label class="tgl"><input type="checkbox" data-sk="${k}"${SET[k] ? ' checked' : ''}><i></i></label>`;
     const rng = (k, min, max, unit) => `<input type="range" data-sk="${k}" min="${min}" max="${max}" value="${SET[k]}"><output>${SET[k]}${unit}</output>`;
     const opt = (k, list) => `<select data-sk="${k}"${NUMK.has(k) ? ' data-num="1"' : ''}>${list.map((o) => `<option value="${o[0]}"${String(SET[k]) === String(o[0]) ? ' selected' : ''}>${o[1]}</option>`).join('')}</select>`;
+    // Look controls (dimming, animations, card pictures, glow): they show the look in use and follow the appearance lock.
+    const LV = look(), LD = lookEdit() ? '' : ' disabled';
+    const lrng = (k, min, max) => `<input type="range" data-sk="${k}" min="${min}" max="${max}" value="${LV[k]}"${LD}><output>${LV[k]}%</output>`;
+    const ltgl = (k) => `<label class="tgl"><input type="checkbox" data-sk="${k}"${LV[k] ? ' checked' : ''}${LD}><i></i></label>`;
+    const lopt = (k, list) => `<select data-sk="${k}"${LD}>${list.map((o) => `<option value="${o[0]}"${String(LV[k]) === String(o[0]) ? ' selected' : ''}>${o[1]}</option>`).join('')}</select>`;
     const g = window.gt || {};
     let upd = '';
     if (g.updInfo) {
@@ -1943,20 +2059,20 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
       ${sx('Open the app on', 'The tab Pathfinder shows when it starts.', opt('starttab', [['vault', 'Inventory'], ['home', 'Home'], ['loadouts', 'Loadouts'], ['activity', 'Activity'], ['last', 'The last tab I used']]))}
       <div class="thh">Interface style</div>
       <div class="uis">${[['pf', 'Pathfinder Classic', 'The classic Pathfinder look.'], ['beta', 'Custom', 'Your own mix of colour, accent and background picture. Saved for this style.'], ['bray', 'Bray', 'The founder\'s style. Bray created Pathfinder and builds it.'], ['manta', 'Manta', 'The dev and tester\'s style. Manta builds and tests Pathfinder.']].map(([k, n, d]) => `<div class="uic u-${k}${(SET.ui || 'pf') === k ? ' on' : ''}" data-uis="${k}"><i></i><b>${n}</b><small>${d}</small></div>`).join('')}</div>
-      ${lockNote()}<div class="lkw${LOCK[SET.ui] ? ' on' : ''}${myLook() ? ' mine' : ''}">
+      ${lockNote()}<div class="lkw${lookEdit() ? '' : ' on'}${myLook() ? ' mine' : ''}">
       <div class="thh">Colour</div>
       <p class="mute" style="margin:2px 0 6px">The tint of every panel. Mix it with any accent and any background picture.</p>
       <div class="sg">${themeGrid()}</div>
       <div class="thh">Accent colour</div>
       ${accGrid()}
       <div class="thh">Background picture</div>
-      ${bgGrid()}</div>
-      ${sx('Background picture dimming', 'Higher is darker and easier to read.', rng('bgdim', 25, 90, '%'))}
+      ${bgGrid()}
+      ${sx('Background picture dimming', 'Higher is darker and easier to read.', lrng('bgdim', 25, 90))}
       <div class="thh">Motion and cards</div>
-      ${`<div data-fl="opt-wview"${!window.__gtFlag || window.__gtFlag('opt-wview', true) ? '' : ' hidden'}>` + sx('Weapon pop-up in Inventory', 'Classic is the full pop-up. God roll style opens weapons in the same view as the God rolls tab: every perk column, wish list picks, Apply, tag, move and equip. Its Classic details button still opens the full pop-up.', opt('wview', [['classic', 'Classic'], ['gr', 'God roll style']])) + '</div>'}
-      ${sx('Animations', 'Page fades, cards easing in and hover lifts. Off turns every animation off.', opt('anim', [['off', 'Off'], ['subtle', 'Subtle'], ['full', 'Full']]))}
-      ${sx('Activity pictures on cards', 'The raid, dungeon and activity art behind cards on Home, Activity and Rotations.', tgl('cardart'))}
-      ${sx('Glow strength', 'The soft colored glow around activity cards: purple for raids, bronze for dungeons, and so on.', rng('glow', 0, 100, '%'))}
+      ${sx('Animations', 'Page fades, cards easing in and hover lifts. Off turns every animation off.', lopt('anim', [['off', 'Off'], ['subtle', 'Subtle'], ['full', 'Full']]))}
+      ${sx('Activity pictures on cards', 'The raid, dungeon and activity art behind cards on Home, Activity and Rotations.', ltgl('cardart'))}
+      ${sx('Glow strength', 'The soft colored glow around activity cards: purple for raids, bronze for dungeons, and so on.', lrng('glow', 0, 100))}</div>
+      ${`<div data-fl="opt-wview"${!window.__gtFlag || window.__gtFlag('opt-wview', true) ? '' : ' hidden'}><div class="thh">Weapons</div>` + sx('Weapon pop-up in Inventory', 'Classic is the full pop-up. Pathfinder Style opens weapons in the same view as the God rolls tab: every perk column, wish list picks, Apply, tag, move and equip. Its Classic details button still opens the full pop-up.', opt('wview', [['classic', 'Classic'], ['gr', 'Pathfinder Style']])) + '</div>'}
       ${tabsCard}
       <div class="thh">Start over</div>
       <p><button class="g" data-sa="reset">Reset all settings</button> <span class="mute">Puts every setting on this page back to its default. Your accounts, tags, notes, loadouts and wish lists stay.</span></p>
@@ -1965,7 +2081,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   }
   // Settings cards in even columns: each card, in a sensible order, goes into whichever column is shortest, so no side runs
   // far longer than the other. Re-done when cards are added (Farming, Reminders... come from another file) or the window resizes.
-  const SORD = ['Accounts', 'Item display', 'Inventory display', 'Appearance', 'Wish lists', 'Farming', 'Reminders', 'Keyboard shortcuts', 'Backup', 'About & help', 'Help', 'Developer', 'Tester', 'Help desk', 'Founder panel'];
+  const SORD = ['Accounts', 'Appearance', 'Item display', 'Inventory display', 'Wish lists', 'Farming', 'Reminders', 'Keyboard shortcuts', 'Backup', 'About & help', 'Help', 'Problems', 'Help desk', 'Developer', 'Tester', 'Founder panel'];
   // Settings as a menu (like a browser's settings page): the sections are listed on the left and only the one you pick is shown.
   // Cards come from several files (Farming, Reminders, About & help...), so this runs again whenever new cards show up.
   const SICO = {
@@ -1998,8 +2114,8 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     loose.forEach((c) => { if (c.parentElement && (c.parentElement === root || c.parentElement.classList.contains('setgrid') || c.parentElement.classList.contains('scol') || c.parentElement.classList.contains('scols'))) pane.appendChild(c); });
     root.querySelectorAll(':scope > .setgrid, :scope > .scols').forEach((g2) => { if (!g2.querySelector('.card')) g2.remove(); });
     const title = (c) => ((c.querySelector('h2') || {}).textContent || '').trim();
-    // Help (ask the team) shows at the bottom of About & help, not as a section of its own.
-    const sect = (c) => (title(c) === 'Help' ? 'About & help' : title(c));
+    // Help (ask the team) and Problems (the error log) show under About & help, not as sections of their own.
+    const sect = (c) => (title(c) === 'Help' || title(c) === 'Problems' ? 'About & help' : title(c));
     const key = (c) => { const i = SORD.indexOf(title(c)); return i < 0 ? 99 : i; };
     const cards = [...pane.children].filter((c) => c.classList.contains('card')).sort((a, b) => key(a) - key(b));
     cards.forEach((c) => pane.appendChild(c));
@@ -2031,6 +2147,13 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     } catch (er) { WLMSG = wlClean(er); }
     WLV++; drawSettings(); if (window.__gtRender) window.__gtRender();
   }
+  settingsSec.addEventListener('change', async (e) => {
+    if (e.target.id !== 'pfapic' || !e.target.files || !e.target.files[0] || !gt.pfaAvatar) return;
+    const f = e.target.files[0]; e.target.value = '';
+    PFAMSG = 'Saving your picture…'; drawSettings();
+    try { const img = await picSquare(f); PFA = await gt.pfaAvatar({ img }); PFAMSG = 'Profile picture saved.'; } catch (er) { PFAMSG = 'Could not use that picture: ' + clean(er); }
+    drawSettings(); pfChip();
+  });
   settingsSec.addEventListener('change', (e) => {
     if (e.target.id !== 'wlfile' || !e.target.files || !e.target.files[0]) return;
     const f = e.target.files[0];
@@ -2065,6 +2188,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     if (sdb) { const q = SET.sortkeys[+sdb.dataset.sd]; if (q) { q.d = -q.d; saveSet(); drawSettings(); if (window.__gtRender) window.__gtRender(); } return; }
     const cs = e.target.closest('[data-cst]');
     if (cs) { const [c, i] = cs.dataset.cst.split(':').map(Number); SET.cst[c][i] = SET.cst[c][i] ? 0 : 1; saveSet(); drawSettings(); if (window.__gtRender) window.__gtRender(); return; }
+    if (e.target.closest('[data-lk]')) { lockToggle(); return; }
     const bgo = e.target.closest('[data-bg]'); if (bgo) { pickBg(bgo.dataset.bg); return; }
     const acw = e.target.closest('[data-acc]'); if (acw) { pickAcc(acw.dataset.acc); return; }
     const uis = e.target.closest('[data-uis]'); if (uis) { switchUi(uis.dataset.uis); applySet(); saveSet(); drawSettings(); return; }
@@ -2131,11 +2255,18 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     window.__gtnav.move(id, from < to ? L[to + 1] || null : L[to]); drawSettings();
   });
   const CSSONLY = new Set(['accent', 'bgdim', 'tile', 'scale', 'glow']);
+  const LOOKK = new Set(['accent', 'bgdim', 'anim', 'cardart', 'glow']);
   let cssRaf = 0, cssSave = 0;
   settingsSec.addEventListener('input', (e) => {
     if (e.target.id === 'wlurl' || e.target.id === 'wltext') { WLD[e.target.id] = e.target.value; return; }
     const k = e.target.dataset.sk; if (!k) return;
-    if (k === 'accent' && LOCK[SET.ui]) { markLook(); return; } // Bray and Manta keep their accent
+    // The look (accent, dimming, animations, card pictures, glow) follows the appearance lock, and on Bray's or Manta's style an
+    // unlocked owner's changes go to their unsent look rather than their own settings.
+    if (LOOKK.has(k) && (!lookEdit() || LOCK[SET.ui])) {
+      const v = e.target.type === 'checkbox' ? e.target.checked : e.target.type === 'range' ? +e.target.value : e.target.value;
+      if (setLook({ [k]: v })) { const o = e.target.nextElementSibling; if (o && o.tagName === 'OUTPUT') o.textContent = v + '%'; applySet(); clearTimeout(cssSave); cssSave = setTimeout(saveSet, 300); } else drawSettings();
+      return;
+    }
     SET[k] = e.target.type === 'checkbox' ? e.target.checked : e.target.type === 'range' ? +e.target.value : e.target.dataset.num ? +e.target.value : e.target.value;
     const o = e.target.nextElementSibling; if (o && o.tagName === 'OUTPUT') o.textContent = SET[k] + (k === 'tile' ? 'px' : '%');
     if (k === 'accent') SET.accentUser = SET.accent;
@@ -2151,6 +2282,8 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     if (e.target.type !== 'range' && e.target.type !== 'color' && e.target.type !== 'checkbox') drawSettings();
     if (k === 'farmspaces' && window.gt && gt.farmSet) gt.farmSet({ spaces: SET.farmspaces }).catch(() => {});
     if (k === 'clarity') clarLoad();
+    if (k === 'helpfab') helpFab();
+    if (k === 'keyson') drawSettings();
     if (k === 'starttab') { try { localStorage.setItem('gt.home.start', JSON.stringify(SET.starttab === 'home')); } catch (er) { /* storage off */ } }
   });
   settingsSec.addEventListener('change', (e) => {

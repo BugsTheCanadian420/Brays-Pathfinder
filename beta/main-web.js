@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.35-beta.14: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.35-beta.15: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -380,6 +380,8 @@ async function lodefs() {
 
 H('cfg:get', () => { const c = rd(); return { apiKey: !!c.apiKey, clientId: c.clientId || '', redirect: c.redirect || 'https://localhost/redirect', secret: !!c.clientSecret, signedIn: !!c.tok, preset: !!preset, mid: c.tok ? String(c.tok.mid || '') : '', prim: String(c.prim || '') }; });
 H('clip:read', () => clipboard.readText());
+// A picture on the clipboard (Import loadout's Paste button), as PNG base64; '' when there is none or on the website (the page reads it itself).
+H('clip:readimg', () => { try { if (typeof clipboard.readImage !== 'function') return ''; const im = clipboard.readImage(); return im && !im.isEmpty() ? im.toPNG().toString('base64') : ''; } catch (e) { return ''; } });
 H('clip:write', async (e, t) => { await clipboard.writeText(String(t || '')); return true; }); // on the website this can be refused; the page is told
 // Signing out also forgets the Bungie web login, so the next person (or account) gets a fresh sign-in page.
 H('auth:logout', async () => {
@@ -600,7 +602,7 @@ async function pfaSync(boxIn, verIn) {
   let ver = verIn, box = boxIn;
   // Temporary password (123456): nothing is saved into the account until a new password is picked.
   if (c.pfa.tmp && box !== undefined) return { tmp: 1, added: 0 };
-  if (box === undefined) { const g = await pfaReq('GET', '/box', null, c.pfa.sess); ver = g.ver; box = g.box; if (typeof g.role === 'string' && (c.pfa.role || '') !== g.role) { c.pfa.role = g.role; wr(c); } if (typeof g.dn === 'string' && g.dn && c.pfa.dn !== g.dn) { c.pfa.dn = g.dn; wr(c); } if (!!g.tmp !== !!c.pfa.tmp) { if (g.tmp) c.pfa.tmp = 1; else delete c.pfa.tmp; wr(c); } if (g.tmp) return { tmp: 1, added: 0 }; }
+  if (box === undefined) { const g = await pfaReq('GET', '/box', null, c.pfa.sess); ver = g.ver; box = g.box; if (typeof g.role === 'string' && (c.pfa.role || '') !== g.role) { c.pfa.role = g.role; wr(c); } if (typeof g.dn === 'string' && g.dn && c.pfa.dn !== g.dn) { c.pfa.dn = g.dn; wr(c); } if (typeof g.pv === 'number' && g.pv !== (c.pfa.pv || 0)) { await pfaPic(c).catch(() => {}); } if (!!g.tmp !== !!c.pfa.tmp) { if (g.tmp) c.pfa.tmp = 1; else delete c.pfa.tmp; wr(c); } if (g.tmp) return { tmp: 1, added: 0 }; }
   for (let round = 0; round < 3; round++) {
     let data; try { data = await pfaOpen(box, c.pfa.key); } catch (e) { throw new Error('Could not open your saved sign-ins with this password. If you changed it on another device, sign out and in again here.'); }
     const B = (data && data.accts) || {}, cid = String(c.clientId || ''), skip = c.pfa.skip || {}, now = Date.now();
@@ -640,6 +642,18 @@ async function pfaSync(boxIn, verIn) {
   }
   throw new Error('Another device kept saving at the same time. Try "Sync now" again.');
 }
+// Profile picture: fetched again only when the account says it changed (pv), kept with the sign-in so the top bar has it at once.
+async function pfaPic(c) {
+  const r = await pfaReq('GET', '/avatar', null, c.pfa.sess);
+  const c2 = rd(); if (!c2.pfa) return; c2.pfa.pv = r.pv || 0; c2.pfa.av = typeof r.img === 'string' && r.img.length < 90000 ? r.img : ''; wr(c2); c.pfa.pv = c2.pfa.pv; c.pfa.av = c2.pfa.av;
+}
+H('pfa:avatar', async (e, v) => {
+  OBJ(v); const c = rd(); if (!c.pfa || !c.pfa.sess) throw new Error('Sign in to your Pathfinder account first.');
+  const img = typeof v.img === 'string' ? v.img : '';
+  if (img && (img.length > 90000 || !/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(img))) throw new Error('That picture could not be used. Try another one.');
+  const r = await pfaReq('POST', '/avatar', { img }, c.pfa.sess);
+  const c2 = rd(); if (c2.pfa) { c2.pfa.pv = r.pv || 0; c2.pfa.av = img; wr(c2); } return pfaStatus();
+});
 const pfaRun = (boxIn, verIn) => {
   if (PFA_BUSY) return PFA_BUSY;
   PFA_BUSY = pfaSync(boxIn, verIn).catch((e) => { PFA_ERR = e.message; if (e.code === 'signed_out') { const c = rd(); if (c.pfa) { delete c.pfa.sess; wr(c); } } throw e; }).finally(() => { PFA_BUSY = null; });
@@ -648,7 +662,7 @@ const pfaRun = (boxIn, verIn) => {
 // A Pathfinder account is an account name and a password. Accounts made earlier with an email address still sign in with that
 // email typed as the account name (both are matched the same way: trimmed, any capitals ignored).
 const pfaName = (p) => (p && (p.name || p.email)) || '';
-const pfaStatus = () => { const c = rd(), p = c.pfa || {}; return { avail: !!pfaUrl(), on: !!p.sess, tmp: !!(p.sess && p.tmp), name: pfaName(p), dn: p.dn || pfaName(p), at: p.at || 0, n: p.n || 0, err: PFA_ERR, out: !!(pfaName(p) && !p.sess), dev: !!(p.sess && ['dev', 'founder', 'owner'].includes(p.role)), founder: !!(p.sess && ['founder', 'owner'].includes(p.role)), owner: !!(p.sess && p.role === 'owner'), role: p.sess ? p.role || '' : '' }; };
+const pfaStatus = () => { const c = rd(), p = c.pfa || {}; return { avail: !!pfaUrl(), on: !!p.sess, tmp: !!(p.sess && p.tmp), name: pfaName(p), dn: p.dn || pfaName(p), av: p.sess ? p.av || '' : '', at: p.at || 0, n: p.n || 0, err: PFA_ERR, out: !!(pfaName(p) && !p.sess), dev: !!(p.sess && ['dev', 'founder', 'owner'].includes(p.role)), founder: !!(p.sess && ['founder', 'owner'].includes(p.role)), owner: !!(p.sess && p.role === 'owner'), role: p.sess ? p.role || '' : '' }; };
 H('pfa:status', () => pfaStatus());
 const pfaCreds = (v, isNew) => {
   OBJ(v); const name = TXT(v.name, 200).trim(), pw = TXT(v.pw, 200);
@@ -795,9 +809,16 @@ let FLAGS_ANN = null, FLAGS_LOOKS = null, FLAGS_MYLOOK = ''; // the team's annou
 // The Bray and Manta styles' background picture, changed by their owners for everyone (token service /look).
 H('look:set', async (e, v) => {
   OBJ(v); const look = TXT(v.look, 10), bg = TXT(v.bg, 40);
+  // the whole look (Bray or Manta locking their style): colour, accent, picture, dimming, animations, card pictures, glow
+  const full = { look, bg };
+  if (typeof v.theme === 'string') full.theme = TXT(v.theme, 20);
+  if (typeof v.accent === 'string') full.accent = TXT(v.accent, 7);
+  ['bgdim', 'glow'].forEach((k) => { if (Number.isFinite(+v[k])) full[k] = Math.round(+v[k]); });
+  if (['off', 'subtle', 'full'].includes(v.anim)) full.anim = v.anim;
+  if (typeof v.cardart === 'boolean') full.cardart = v.cardart;
   const base = preset && preset.tokenUrl && /^https:\/\//i.test(preset.tokenUrl) ? preset.tokenUrl.replace(/\/+$/, '') : '';
   const c = rd(), sess = c.pfa && c.pfa.sess; if (!base || !sess) throw new Error('Sign in to your Pathfinder account first (Settings > Accounts).');
-  const r = await fetch(base + '/look', { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json', Authorization: 'Bearer ' + sess }, body: JSON.stringify({ look, bg }) });
+  const r = await fetch(base + '/look', { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json', Authorization: 'Bearer ' + sess }, body: JSON.stringify(full) });
   const j = await readJson(r).catch(() => ({}));
   if (!r.ok) throw new Error((j && j.message) || 'The token service said no (' + r.status + ').');
   FLAGS_LOOKS = j.looks || FLAGS_LOOKS; return { looks: FLAGS_LOOKS || {} };

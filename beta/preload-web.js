@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.35-beta.14: preload.js for the browser */
+/* Pathfinder 0.3.35-beta.15: preload.js for the browser */
 (function (require) {
 const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('gt', {
@@ -58,6 +58,7 @@ contextBridge.exposeInMainWorld('gt', {
   pfaSync: () => ipcRenderer.invoke('pfa:sync'),
   pfaLogout: () => ipcRenderer.invoke('pfa:logout'),
   pfaDelete: () => ipcRenderer.invoke('pfa:delete'),
+  pfaAvatar: (v) => ipcRenderer.invoke('pfa:avatar', v),
   pfaProfile: (v) => ipcRenderer.invoke('pfa:profile', v), pfaChangePw: (v) => ipcRenderer.invoke('pfa:changepw', v), pfaLoginName: (v) => ipcRenderer.invoke('pfa:loginname', v),
   flagsGet: (v) => ipcRenderer.invoke('flags:get', v),
   bungieStatus: () => ipcRenderer.invoke('bungie:status'),
@@ -68,6 +69,7 @@ contextBridge.exposeInMainWorld('gt', {
   itemSlots: (v) => ipcRenderer.invoke('item:slots', v),
   subOpts: (v) => ipcRenderer.invoke('sub:opts', v),
   readClipboard: () => ipcRenderer.invoke('clip:read'),
+  readClipboardImage: () => ipcRenderer.invoke('clip:readimg'),
   loadVault: () => ipcRenderer.invoke('vault:load'),
   wlGet: () => ipcRenderer.invoke('wl:get'),
   wlSet: (v) => ipcRenderer.invoke('wl:set', v),
