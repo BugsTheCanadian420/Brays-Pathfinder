@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.36: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.37: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -3416,6 +3416,7 @@ const fdCols = (df, h) => {
 const fdIsWeapon = (d) => d && d.pp && TF_WB0.has(d.b) && /legendary|exotic/i.test(d.r || '') && d.n;
 const fdWi = (d) => (d.wl ? d.wl[d.wl.length - 1] : d.w !== undefined ? d.w : -1);
 // one row per weapon name (the game keeps reissues and old copies under the same name); the newest version is shown
+const FD_GONE = /no longer (?:available|obtainable|drops|be obtained)|not currently (?:available|obtainable)|cannot be (?:earned|obtained)\b|retired|sunset/i;
 function fdGroups(df, test) {
   const by = {};
   for (const k in df.d) {
@@ -3427,7 +3428,9 @@ function fdGroups(df, test) {
   }
   return Object.values(by).map((g) => {
     const d = df.d[g.h] || {}, fr = d.fi && df.p[d.fi] ? df.p[d.fi].n : '';
-    return { h: g.h, hs: g.hs.slice(0, 12), n: g.n, i: g.i, t: g.t, r: g.r, e: g.e, am: g.am, fr, wm: g.wi >= 0 ? df.W[g.wi] || '' : '' };
+    // gone: Bungie's source line for the newest version says it no longer drops (the Finder tags the card)
+    const src = d.so !== undefined && df.srcs ? df.srcs[d.so] || '' : '', gone = FD_GONE.test(src) ? 1 : 0;
+    return { h: g.h, hs: g.hs.slice(0, 12), n: g.n, i: g.i, t: g.t, r: g.r, e: g.e, am: g.am, fr, wm: g.wi >= 0 ? df.W[g.wi] || '' : '', gone };
   });
 }
 function fdIndex(df) {

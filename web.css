@@ -14,15 +14,19 @@ html.gtweb{--gt-sat:env(safe-area-inset-top,0px)}
 /* ---------- bottom tab bar and More sheet (phones only) ---------- */
 #gtw-tabs,#gtw-more{display:none}
 @media (max-width:760px){
-  html.gtweb body{padding-bottom:calc(62px + env(safe-area-inset-bottom,0px))!important}
+  html.gtweb body{padding-bottom:calc(56px + env(safe-area-inset-bottom,0px))!important}
+  /* the top bar: no see-through blur on phones. iPhones drew everything inside a blurred bar soft (the account picture, the
+     Beta switch, the buttons); a nearly solid bar keeps them sharp */
+  /* (:not(#gtx) lifts it over every interface style's own top-bar rules, which are just as !important) */
+  :root.gtweb:not(#gtx) header.gtbar,:root.gtweb:not(#gtx) header{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;filter:none!important;background:rgba(9,11,16,.96)!important}
   html.gtweb header.gtbar nav{display:none!important}
-  html.gtweb #gtw-tabs{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:9000;height:calc(56px + env(safe-area-inset-bottom,0px));padding:0 6px env(safe-area-inset-bottom,0px);background:rgba(14,16,22,.92);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);border-top:1px solid rgba(255,255,255,.08)}
+  html.gtweb #gtw-tabs{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:9000;height:calc(50px + env(safe-area-inset-bottom,0px));padding:0 6px env(safe-area-inset-bottom,0px);background:rgba(14,16,22,.92);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);border-top:1px solid rgba(255,255,255,.08)}
   #gtw-tabs button{flex:1;display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none!important;border:0!important;box-shadow:none!important;color:#8d929b!important;font:600 10.5px/1 'Open Sans','Segoe UI',system-ui,sans-serif!important;letter-spacing:.02em!important;text-transform:none!important;padding:6px 0 4px!important;margin:0!important;min-width:0;height:auto!important;border-radius:0!important;-webkit-tap-highlight-color:transparent}
   #gtw-tabs button svg{width:24px;height:24px}
   #gtw-tabs button.on{color:var(--g-accent,#7ab8e8)!important}
   html.gtweb #gtw-more{display:block;position:fixed;inset:0;z-index:9500;pointer-events:none}
   #gtw-more .bk{position:absolute;inset:0;background:rgba(0,0,0,.5);opacity:0;transition:opacity .2s}
-  #gtw-more .sh{position:absolute;left:0;right:0;bottom:0;max-height:78vh;overflow:auto;background:var(--g-solid,#171a24);border-radius:16px 16px 0 0;border-top:1px solid rgba(255,255,255,.1);padding:8px 12px calc(68px + env(safe-area-inset-bottom,0px));transform:translateY(105%);transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+  #gtw-more .sh{position:absolute;left:0;right:0;bottom:0;max-height:78vh;overflow:auto;background:var(--g-solid,#171a24);border-radius:16px 16px 0 0;border-top:1px solid rgba(255,255,255,.1);padding:8px 12px calc(62px + env(safe-area-inset-bottom,0px));transform:translateY(105%);transition:transform .25s cubic-bezier(.2,.8,.2,1)}
   html.gtweb #gtw-more.open{pointer-events:auto}#gtw-more.open .bk,#gtw-more.open .sh{pointer-events:auto}#gtw-more.open .bk{opacity:1}#gtw-more.open .sh{transform:none}
   #gtw-more .grab{display:block;width:40px;height:5px;border-radius:3px;background:rgba(255,255,255,.25);margin:2px auto 10px}
   #gtw-more .ls{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -37,16 +41,16 @@ html.gtweb{--gt-sat:env(safe-area-inset-top,0px)}
   html.gtweb #dled{top:calc(var(--gt-sat) + 6px)!important;height:auto!important;z-index:9100!important;border-radius:14px 14px 0 0}
   html.gtweb #dled .dl-ef{padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}
   html.gtweb #dled .dl-ef button{flex:1 1 auto}
-  html.gtweb #dlmod{z-index:9200!important;padding:calc(var(--gt-sat) + 8px) 8px calc(66px + env(safe-area-inset-bottom,0px));box-sizing:border-box}
+  html.gtweb #dlmod{z-index:9200!important;padding:calc(var(--gt-sat) + 8px) 8px calc(60px + env(safe-area-inset-bottom,0px));box-sizing:border-box}
   html.gtweb #dlmod .dl-mc{max-height:100%;min-width:0;width:100%}
   html.gtweb #loimg{z-index:9200!important;padding:calc(var(--gt-sat) + 12px) 10px calc(12px + env(safe-area-inset-bottom,0px))}
   html.gtweb #loimg .li{max-height:100%;overflow:auto;padding:10px}
-  html.gtweb #dlt{z-index:9300!important;left:12px!important;right:12px;max-width:none!important;bottom:calc(68px + env(safe-area-inset-bottom,0px))!important}
+  html.gtweb #dlt{z-index:9300!important;left:12px!important;right:12px;max-width:none!important;bottom:calc(62px + env(safe-area-inset-bottom,0px))!important}
 
   /* the Inventory's status line ("Working...", "Failed: ...", "Done, except ...") sat under the tab bar, so phones never saw it */
-  html.gtweb #vnote{left:12px!important;right:12px!important;max-width:none!important;bottom:calc(66px + env(safe-area-inset-bottom,0px))!important;z-index:9050!important;border-radius:10px!important;padding:8px 12px!important}
+  html.gtweb #vnote{left:12px!important;right:12px!important;max-width:none!important;bottom:calc(60px + env(safe-area-inset-bottom,0px))!important;z-index:9050!important;border-radius:10px!important;padding:8px 12px!important}
   /* floating Notes button and toasts sit above the tab bar */
-  html.gtweb #gtnfab{bottom:calc(68px + env(safe-area-inset-bottom,0px))!important}
+  html.gtweb #gtnfab{bottom:calc(62px + env(safe-area-inset-bottom,0px))!important}
 
   /* item popup becomes a bottom sheet, over the top bar and character headers */
   html.gtweb #vsheet{z-index:8500!important}

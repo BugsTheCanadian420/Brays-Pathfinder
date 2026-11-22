@@ -12,30 +12,72 @@
   const ELEM = { 1: ['Kinetic', '#d8dde4'], 2: ['Arc', '#7bd0ff'], 3: ['Solar', '#ff9a3c'], 4: ['Void', '#b98cff'], 6: ['Stasis', '#6fa8ff'], 7: ['Strand', '#4ee08c'] };
   const AMMO = { 1: 'Primary', 2: 'Special', 3: 'Heavy' };
   const RCOL = (r) => (/exotic/i.test(r) ? '#e8c25a' : '#b07cff');
-  // "How to get": Bungie's Collections source line, plus a short pointer to where that is in the game
-  const HOWTO = [
-    [/no longer|not currently|cannot be (?:earned|obtained)|retired|sunset/i, 'This version does not drop any more. Look at the newest version if there is one.'],
-    [/trials/i, 'Play Trials of Osiris while it is live (weekends).'],
-    [/iron banner/i, 'Play Iron Banner while it is live.'],
-    [/solo ops/i, 'Queue Solo Ops in the Portal.'],
-    [/fireteam ops/i, 'Queue Fireteam Ops in the Portal.'],
-    [/pinnacle ops/i, 'Queue Pinnacle Ops in the Portal.'],
-    [/nightfall|grandmaster/i, 'Play Nightfall strikes.'],
-    [/vanguard|strike/i, 'Play Vanguard strikes and playlists.'],
-    [/crucible|competitive|shaxx/i, 'Play Crucible matches.'],
-    [/gambit|drifter/i, 'Play Gambit matches.'],
-    [/\braid\b/i, 'It drops in that raid: finish its encounters (the weekly featured raid can drop it more often).'],
-    [/dungeon/i, 'It drops in that dungeon: finish its encounters.'],
-    [/x[uû]r/i, 'Sold by Xûr when he visits (weekends).'],
-    [/banshee|gunsmith/i, 'From Banshee-44, the Gunsmith, in the Tower.'],
-    [/exotic (?:quest|mission)|quest|mission/i, 'Comes from a quest or mission: check your Quests.'],
-    [/season pass|rewards pass/i, 'From the season\'s rewards pass.'],
-    [/eververse|bright engram/i, 'From Eververse or Bright Engrams.'],
-    [/festival|dawning|solstice|guardian games|event/i, 'From a seasonal event, while it is running.'],
-    [/exotic engram/i, 'Drops from Exotic Engrams.'],
-    [/engram|world|loot pool/i, 'World loot: drops from engrams and activities all over the game.'],
-  ];
-  const howTo = (src) => { const t = String(src || '').replace(/^source:\s*/i, '').trim(); if (!t) return null; const hit = HOWTO.find(([re]) => re.test(t)); return { t, tip: hit ? hit[1] : '' }; };
+  // "How to get": one or two short lines, no filler. Bungie's Collections line (cleaned up), the harder version an Adept
+  // (Timelost, Harrowed) copy needs, and for exotic quests the quest's name plus what has to be done before it opens.
+  // EXQ: exotic quest/mission weapons -> [quest or mission, what is needed first]. Bungie's own line for these only says
+  // "An Exotic quest or challenge", so it is replaced. Campaign requirements are listed only where known for sure.
+  const EXQ = {
+    'xenophage': ['Exotic quest "The Journey"', 'Finish the Shadowkeep campaign first.'],
+    'the lament': ['Exotic quest "Lost Lament" from Banshee-44 in the Tower', 'Finish the Beyond Light campaign first.'],
+    'deathbringer': ['Exotic quest "Symphony of Death"', 'Needs Shadowkeep.'],
+    'divinity': ['Exotic quest "Divine Fragmentation" (Garden of Salvation raid)', 'Needs Shadowkeep.'],
+    'salvation\'s grip': ['Exotic quest "The Stasis Prototype"', 'Needs Beyond Light.'],
+    'the chaperone': ['Exotic quest "Tex Mechanica Tournament"', 'Needs Beyond Light.'],
+    'dead man\'s tale': ['Exotic mission "Presage"', 'Needs Beyond Light.'],
+    'parasite': ['Exotic quest "Of Queens and Worms"', 'Needs The Witch Queen.'],
+    'dead messenger': ['Exotic mission "Vox Obscura"', 'Needs The Witch Queen.'],
+    'revision zero': ['Exotic mission "Operation: Seraph\'s Shield"', 'Needs The Witch Queen.'],
+    'deterministic chaos': ['Exotic quest "Unfinished Business"', 'Needs Lightfall.'],
+    'winterbite': ['Exotic quest "Strider"', 'Needs Lightfall.'],
+    'final warning': ['Exotic quest "The Final Strand"', 'Needs Lightfall.'],
+    'wish-keeper': ['Exotic mission "Starcrossed"', 'Needs Lightfall.'],
+    'arbalest': ['Exotic quest "Another Last City"', 'Needs Lightfall.'],
+    'ergo sum': ['Exotic quest "Hope"', 'Needs The Final Shape.'],
+    'still hunt': ['Exotic quest "Wild Card"', 'Needs The Final Shape.'],
+    'choir of one': ['Exotic mission "Encore"', ''],
+    'slayer\'s fang': ['Exotic mission "Kell\'s Fall"', ''],
+    'barrow-dyad': ['Exotic quest "Derealize"', ''],
+    'wolfsbane': ['Exotic quest "Heliostat"', 'Needs The Edge of Fate.'],
+    'praxic blade': ['Exotic quest "Fire and Ice"', 'Needs Renegades.'],
+    'wish-ender': ['Exotic quest "Hunter\'s Remembrance"', 'Needs Forsaken.'],
+    'gjallarhorn': ['Exotic mission "And Out Fly the Wolves"', 'Needs the 30th Anniversary Pack.'],
+    'cull\'s shadow': ['Exotic quest "Oblation: Bloodline"', ''],
+    'necrochasm': ['Exotic quest "Bottomless Pit"', ''],
+    'wicked implement': ['Exotic quest "Whetstone"', ''],
+    'heir apparent': ['Exotic quest "Top of Class"', ''],
+    'riskrunner': ['Exotic quest "A Spark of Hope"', ''],
+    'malfeasance': ['Exotic quest "Darkness in the Light"', ''],
+    'sweet business': ['Exotic quest "The Queen Beckons"', ''],
+    'forerunner': ['Exotic quest "Magnum Opus"', ''],
+    'outbreak perfected': ['Exotic mission "Zero Hour"', ''],
+    'whisper of the worm': ['Exotic mission "The Whisper"', ''],
+  };
+  const tidySrc = (t) => t.replace(/\s+/g, ' ').replace(/"([^"]+)"\s+Raid\b/g, '"$1" raid').replace(/"([^"]+)"\s+Dungeon\b/g, '"$1" dungeon').replace(/^(Complete|Completing) /i, '').replace(/[.\s]+$/, '');
+  // When Bungie gives no source, the origin trait often tells where a weapon drops (these are the ones known for sure).
+  const ORIGIN = [[/vanguard/i, 'Vanguard Ops (strikes)'], [/^skulking wolf$/i, 'Iron Banner'], [/^alacrity$/i, 'Trials of Osiris'], [/^nadir focus$/i, 'Gambit'], [/crucible/i, 'Crucible']];
+  const GONE = /no longer (?:available|obtainable|drops|be obtained)|not currently (?:available|obtainable)|cannot be (?:earned|obtained)\b|retired|sunset/i;
+  const isOld = (d) => !!(d.versions && d.versions.length > 1 && d.versions[0].h !== d.h);
+  function howTo(d) {
+    // "Random Perks: This item cannot be reacquired from Collections." says nothing about where it drops, so it is dropped
+    const raw = String(d.src || '').replace(/^source:\s*/i, '').replace(/^random perks:\s*/i, '').replace(/this item cannot be reacquired from (?:the )?collections\.?/i, '').trim(), name = String(d.n || '').trim();
+    const base = name.replace(/\s*\((adept|timelost|harrowed)\)\s*$/i, '').toLowerCase();
+    const q = EXQ[base];
+    if (q && !isOld(d)) return { t: q[0] + '.', pre: q[1] };
+    if (GONE.test(raw) || isOld(d)) return { t: 'No longer drops.', pre: isOld(d) ? 'The newest version does: pick Newest above.' : '', gone: 1 };
+    if (!raw) {
+      const oc = (d.cols || []).find((c) => /origin/i.test(c.label || '')), on = oc && oc.opts && oc.opts[0] ? oc.opts[0].n : '', hit = on && ORIGIN.find(([re]) => re.test(on));
+      return hit ? { t: hit[1] + '.', pre: `Going by its ${on} origin trait.` } : null;
+    }
+    let t = tidySrc(raw);
+    // Adept (and the older Timelost / Harrowed) copies come from the hardest version of the activity
+    if (/\((adept|timelost|harrowed)\)\s*$/i.test(name)) {
+      if (/trials/i.test(t)) t = 'Trials of Osiris: go Flawless (the Lighthouse)';
+      else if (/nightfall|grandmaster/i.test(t)) t = 'Grandmaster Nightfalls';
+      else if (/raid|dungeon/i.test(t)) t += ', on Master difficulty';
+      else t += ' (the hardest version, like Master)';
+    }
+    return { t: t + '.', pre: '' };
+  }
   const SUGGEST = ['Rampage', 'Kill Clip', 'Incandescent', 'Repulsor Brace', 'Chill Clip', 'Bait and Switch', 'Destabilizing Rounds', 'Hand Cannon'];
 
   const s = document.createElement('section'); s.id = 'finder'; s.className = 'gdark'; vsec.parentNode.appendChild(s);
@@ -75,6 +117,7 @@
 #finder .fdtag{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;color:#cfd3da;padding:2px 9px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08)}
 #finder .fdtag.col{color:#35e3cf;border-color:color-mix(in srgb,#35e3cf 40%,transparent);background:color-mix(in srgb,#35e3cf 10%,transparent)}
 #finder .fdtag.old{color:#ffd27a;border-color:color-mix(in srgb,#ffd27a 40%,transparent);background:color-mix(in srgb,#ffd27a 9%,transparent)}
+#finder .fdtag.gone,#fdm .tag.gone{color:#ff9b93;border-color:color-mix(in srgb,#ff6b5e 45%,transparent);background:color-mix(in srgb,#ff6b5e 11%,transparent)}
 #finder .fdtag.own{color:#9fe0a8;border-color:color-mix(in srgb,#5fd38a 40%,transparent);background:color-mix(in srgb,#5fd38a 9%,transparent)}
 #finder .fdp{--gc:#5ec8e5}
 #finder .fdp .fdic{border-radius:50%;border-width:1px;border-color:rgba(255,255,255,.18)}
@@ -123,10 +166,10 @@
 #fdm .fvo{display:flex;align-items:center;gap:9px;width:100%;min-height:40px;padding:5px 8px!important;border-radius:10px!important;border:1px solid transparent!important;background:rgba(255,255,255,.03)!important;color:#dfe4ea!important;text-align:left;font-size:13.5px;font-weight:600;cursor:pointer}
 #fdm .fvo:hover{background:rgba(255,255,255,.07)!important}
 #fdm .fvo img{width:30px;height:30px;border-radius:50%;flex:none;background:#0d0f13;border:1px solid rgba(255,255,255,.14)}
-#fdm .fvo span{flex:1;min-width:0;line-height:1.2;overflow-wrap:anywhere}
+#fdm .fvo span{flex:1;min-width:0;line-height:1.2;overflow-wrap:break-word;word-break:normal;hyphens:auto}
 #fdm .fvo.on{border-color:color-mix(in srgb,var(--gc) 55%,transparent)!important;background:color-mix(in srgb,var(--gc) 10%,transparent)!important;color:#fff!important}
 #fdm .fvo.hl{border-color:#35e3cf!important;background:color-mix(in srgb,#35e3cf 9%,transparent)!important}
-#fdm .fvd{overflow-wrap:anywhere;margin:4px 2px 0;font-size:12.5px;line-height:1.45;color:#a3aab4}
+#fdm .fvget .fvpre{color:#cfd5de;font-weight:600}#fdm .fvd{overflow-wrap:anywhere;margin:4px 2px 0;font-size:12.5px;line-height:1.45;color:#a3aab4}
 #fdm .fvd a{display:inline-block;margin-top:6px;color:#8fd9ea;font-weight:600;cursor:pointer;text-decoration:none}
 #fdm .fvd a:hover{text-decoration:underline}
 #fdm .fva{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:16px 0 0}
@@ -151,7 +194,7 @@
     const n = owned(w.hs);
     return `<button type="button" class="fdc" style="--gc:${RCOL(w.r)}" data-fw="${w.h}" data-hs="${esc((w.hs || []).join(','))}">
 <div class="fdct">${icon(w)}<div class="fdn"><b>${esc(w.n)}</b><small>${sub(w)}</small></div></div>
-<div class="fdtags">${w.fr ? `<span class="fdtag">${esc(w.fr)}</span>` : ''}${extra || ''}${n ? `<span class="fdtag own">You have ${n}</span>` : ''}</div></button>`;
+<div class="fdtags">${w.fr ? `<span class="fdtag">${esc(w.fr)}</span>` : ''}${w.gone ? '<span class="fdtag gone">No longer drops</span>' : ''}${extra || ''}${n ? `<span class="fdtag own">You have ${n}</span>` : ''}</div></button>`;
   };
   const pCard = (p) => `<button type="button" class="fdc fdp" data-fp="${esc(p.n)}">
 <div class="fdct"><span class="fdic">${img(p.i) ? `<img src="${esc(img(p.i))}" alt="" loading="lazy">` : ''}</span><div class="fdn"><b>${esc(p.n)}</b><small>${esc(p.kind)}<i>·</i>on ${p.cnt} weapon${p.cnt === 1 ? '' : 's'}</small></div></div>
@@ -183,7 +226,7 @@ ${!st.q && !st.perk ? `<div class="fdsug">Try: ${SUGGEST.map((t) => `<button typ
 <div class="fdfl"><select id="fdpt" aria-label="Weapon type"><option value="">Every weapon type</option>${types.map((t) => `<option ${t === st.ptype ? 'selected' : ''}>${esc(t)}</option>`).join('')}</select>
 <label><input type="checkbox" id="fdpn" ${st.pnew ? 'checked' : ''}> Only the newest version of each weapon</label></div>
 <h3 class="fdt">Weapons that can roll ${esc(p.n)}<small>${list.length}</small></h3>
-${list.length ? `<div class="fdgrid">${list.map((w) => wCard(w, `${w.col ? `<span class="fdtag col">${esc(w.col)}</span>` : ''}${w.newest ? '' : '<span class="fdtag old" title="Only an older version of this weapon rolls it">Older version</span>'}`)).join('')}</div>` : '<div class="fdempty">No weapons of that type.</div>'}`;
+${list.length ? `<div class="fdgrid">${list.map((w) => wCard(w, `${w.col ? `<span class="fdtag col">${esc(w.col)}</span>` : ''}${w.newest ? '' : '<span class="fdtag old" title="Only an older version of this weapon rolls it, and older versions no longer drop">Older version, no longer drops</span>'}`)).join('')}</div>` : '<div class="fdempty">No weapons of that type.</div>'}`;
   }
   function draw() {
     const foc = document.activeElement && document.activeElement.id === 'fdq', sel = foc ? [document.activeElement.selectionStart, document.activeElement.selectionEnd] : null;
@@ -232,12 +275,12 @@ ${list.length ? `<div class="fdgrid">${list.map((w) => wCard(w, `${w.col ? `<spa
     const am = AMMO[d.am] ? esc(AMMO[d.am]) + ' ammo' : '';
     m.innerHTML = `<div class="fvp" style="--gc:${RCOL(d.r)}">
 <div class="fvh">${icon({ i: d.i, wm: d.wm })}<div class="fvn"><h3>${esc(d.n)}</h3><small>${[esc(d.t), elem(d.e), am].filter(Boolean).join('<i>·</i>')}</small>
-<div class="fvb"><span class="pill">${esc(d.r || 'Weapon')}</span>${d.fr ? `<span class="tag">${img(d.fr.i) ? `<img src="${esc(img(d.fr.i))}" alt="">` : ''}${esc(d.fr.n)}</span>` : ''}${img(d.bi) ? `<span class="tag"><img src="${esc(img(d.bi))}" alt="">Champion</span>` : ''}${n ? `<span class="tag">You have ${n}</span>` : ''}</div></div>
+<div class="fvb"><span class="pill">${esc(d.r || 'Weapon')}</span>${(howTo(d) || {}).gone ? '<span class="tag gone">No longer drops</span>' : ''}${d.fr ? `<span class="tag">${img(d.fr.i) ? `<img src="${esc(img(d.fr.i))}" alt="">` : ''}${esc(d.fr.n)}</span>` : ''}${img(d.bi) ? `<span class="tag"><img src="${esc(img(d.bi))}" alt="">Champion</span>` : ''}${n ? `<span class="tag">You have ${n}</span>` : ''}</div></div>
 <button type="button" class="fvx" data-fx aria-label="Close">&#10005;</button></div>
 ${vers}
 ${d.fr && d.fr.d ? `<div class="fvfr"><b>${esc(d.fr.n)}:</b> ${esc(d.fr.d)}</div>` : ''}
 ${d.cols.length ? `<div class="fvcols">${cols}</div>` : '<div class="fdl">This weapon has no random perks.</div>'}
-${(() => { const g = howTo(d.src); return `<div class="fvfr fvget"><b>How to get:</b> ${g ? `${esc(g.t)}${/[.!?]$/.test(g.t) ? '' : '.'}${g.tip ? ' ' + esc(g.tip) : ''}` : 'Bungie does not say where this drops. It may come from an event, a past season or a reissue' + (d.versions.length > 1 ? ': look at the other versions above.' : '.')}</div>`; })()}
+${(() => { const g = howTo(d); return `<div class="fvfr fvget"><b>How to get:</b> ${g ? `${esc(g.t)}${g.pre ? ` <span class="fvpre">${esc(g.pre)}</span>` : ''}` : 'Bungie does not say where this drops. It may be from an event, a past season or a reissue.'}</div>`; })()}
 <p class="fvhint">Every perk this version can drop with today. Click a perk for what it does.</p>
 <div class="fva">${n ? `<button type="button" data-finv>Show my copies in Inventory</button>` : ''}${window.__gtTabLocked && !window.__gtTabLocked('wishmaker') ? '<button type="button" data-fwm>Make a wish list roll</button>' : ''}</div></div>`;
   }
