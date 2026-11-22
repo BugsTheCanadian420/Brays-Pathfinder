@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.35-beta.10: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.35-beta.11: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -59,8 +59,9 @@ function rd0() {
     // The Bungie app comes only from app-config.json. Anything saved by older versions is ignored.
     delete o.own;
     o = { ...o, apiKey: preset.apiKey, clientId: preset.clientId, redirect: preset.redirect || 'https://localhost/redirect', clientSecret: '' };
-    // A login made with some other Bungie app does not work with the shared one: ask for a fresh sign-in.
-    if (o.tok && o.tok.cid !== preset.clientId) delete o.tok;
+    // A login made with some other Bungie app does not work with the shared one: ask for a fresh sign-in. A sign-in made by
+    // Pathfinder's other app (website / PC app) carries that app's key and is used with it, so it stays.
+    if (o.tok && o.tok.cid !== preset.clientId && !(o.tok.key && (o.tok.app === 'web' || o.tok.app === 'pc'))) delete o.tok;
   }
   return o;
 }
@@ -140,15 +141,29 @@ async function readJson(r) {
   }
 }
 
+// Pathfinder is two Bungie apps: the PC app and the website (different client IDs and keys). A Pathfinder account carries
+// sign-ins made by either, so a Bungie account added on the website also works in the PC app and the other way round. A sign-in
+// made by the other app ("foreign") is always used with that app's key (and, from the PC, the website's address as Origin), and
+// refreshed through the token service as that app (X-PF-App).
+const APPN = WEB ? 'web' : 'pc';
+let PFA_SOON = 0;
+const isForeign = (t, c) => !!(t && t.cid && t.key && String(t.cid) !== String((c || rd()).clientId || ''));
+function bHead(c, t) {
+  const f = isForeign(t, c), h = { 'X-API-Key': f ? t.key : c.apiKey, 'User-Agent': UA };
+  if (f && t.ori && !WEB) h.Origin = t.ori;
+  return h;
+}
+const pfApp = () => { const c = rd(); return isForeign(c.tok, c) ? { 'X-PF-App': c.tok.app === 'web' ? 'web' : 'pc' } : {}; };
+const myOri = () => { try { return WEB && globalThis.location ? globalThis.location.origin : ''; } catch (e) { return ''; } };
 async function tokenReq(params) {
   const c = rd();
   let j, status;
   if (preset && preset.tokenUrl && /^https:\/\//i.test(preset.tokenUrl)) {
     // The Bungie app is a confidential one: its secret lives only on the token service, never in this app. The service swaps a sign-in
     // code (or a refresh token) for tokens and hands them back, which is what lets a sign-in last 90 days instead of an hour.
-    const isRef = params.grant_type === 'refresh_token';
+    const isRef = params.grant_type === 'refresh_token', ft = isRef && params.ftok;
     const r = await fetch(preset.tokenUrl.replace(/\/+$/, '') + (isRef ? '/refresh' : '/token'), {
-      method: 'POST', headers: { 'Content-Type': 'application/json', 'User-Agent': UA, Accept: 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'User-Agent': UA, Accept: 'application/json', ...(ft ? { 'X-PF-App': ft.app === 'web' ? 'web' : 'pc' } : {}) },
       body: JSON.stringify(isRef ? { refresh_token: params.refresh_token } : { code: params.code }),
     });
     j = await readJson(r); status = r.status;
@@ -175,6 +190,9 @@ async function tokenReq(params) {
     mid: j.membership_id, cid: c.clientId,
     part: PEND_PART || (same ? prev.part : '') || '', m: same ? prev.m : undefined, n: same ? prev.n : '',
   };
+  if (params.grant_type === 'refresh_token' && c.pfa && c.pfa.sess) { clearTimeout(PFA_SOON); PFA_SOON = setTimeout(() => pfaRun().catch(() => {}), 5000); }
+  // a refreshed foreign sign-in stays foreign (same app, key and origin)
+  if (params.ftok && same) Object.assign(c.tok, { cid: params.ftok.cid, app: params.ftok.app, key: params.ftok.key, ...(params.ftok.ori ? { ori: params.ftok.ori } : {}) });
   PEND_PART = '';
   wr(c);
 }
@@ -183,8 +201,10 @@ async function fresh() {
   if (!c.tok) throw new Error('Not signed in');
   if (Date.now() < c.tok.exp - 60000) return;
   if (c.tok.refresh && Date.now() < c.tok.rexp) {
-    try { await tokenReq({ grant_type: 'refresh_token', refresh_token: c.tok.refresh }); return; } catch (e) { /* fall back to a silent sign-in */ }
+    try { await tokenReq({ grant_type: 'refresh_token', refresh_token: c.tok.refresh, ...(isForeign(c.tok, c) ? { ftok: c.tok } : {}) }); return; } catch (e) { /* fall back to a silent sign-in */ }
   }
+  // A sign-in from the other app cannot be renewed with this app's quiet sign-in (it would sign in whoever Bungie remembers here).
+  if (isForeign(c.tok, c)) throw new Error('This Bungie account was added on the ' + (c.tok.app === 'web' ? 'website' : 'PC app') + ' and its sign-in has run out. Sign in to it here once (Settings > Accounts > Add a Bungie account).');
   // Bungie gives public apps no refresh token, so the sign-in lasts an hour. The Bungie web login is remembered,
   // so sign in again quietly in a hidden window; only ask the person if Bungie wants them to log in.
   if (!(await silentAuth())) throw new Error('Session expired. Sign in again.');
@@ -237,7 +257,7 @@ function silentAuth() {
 async function api(p, auth = true) {
   if (auth) await fresh();
   const c = rd();
-  const h = { 'X-API-Key': c.apiKey, 'User-Agent': UA };
+  const h = auth ? bHead(c, c.tok) : { 'X-API-Key': c.apiKey, 'User-Agent': UA };
   if (auth) h.Authorization = 'Bearer ' + c.tok.access;
   // A request Bungie never answers would leave a pop-up loading forever; give up after 20 seconds instead.
   const sig = typeof AbortSignal !== 'undefined' && AbortSignal.timeout ? AbortSignal.timeout(20000) : undefined;
@@ -247,6 +267,7 @@ async function api(p, auth = true) {
   return j.Response;
 }
 let DEFS = null;
+const PSNEED = new Set(); // perk pools Finder needs, filled while the item table is read
 // Speed: the manifest index (which game version is live) is asked for once every 10 minutes, not before every lookup.
 let MFQ = null;
 function manifest() {
@@ -256,9 +277,9 @@ function manifest() {
   return p;
 }
 async function defs() {
-  const f = path.join(app.getPath('userData'), 'defs7.json');
+  const f = path.join(app.getPath('userData'), 'defs8.json');
   const m = await manifest();
-  const v = m.version + '.13';
+  const v = m.version + '.14';
   if (DEFS && DEFS.v === v) return DEFS;
   try { const o = JSON.parse(fs.readFileSync(f, 'utf8')); if (o.v === v) return (DEFS = o); } catch (e) { /* download below */ }
   send('Downloading item data. This only happens on the first run and after game updates.');
@@ -289,16 +310,37 @@ async function defs() {
       const ifc = x.quality && x.quality.infusionCategoryHashes; if (ifc && ifc.length) d[k].f = ifc[0];
       // Weapons: which sockets are perk columns (Bungie's "weapon perks" socket category), for the God roll check.
       if (x.itemType === 3 && x.sockets && Array.isArray(x.sockets.socketCategories)) { const c = x.sockets.socketCategories.find((q) => q.socketCategoryHash === 4241085061); if (c && c.socketIndexes && c.socketIndexes.length) d[k].ps = c.socketIndexes; }
+      // Finder: each perk socket's perk pool (the plug set the game rolls from, or the one fixed perk), the built-in frame and the element.
+      if (x.itemType === 3 && x.sockets && Array.isArray(x.sockets.socketEntries)) {
+        const ents = x.sockets.socketEntries, cats = x.sockets.socketCategories || [];
+        const pi = ((cats.find((q) => q.socketCategoryHash === 4241085061) || {}).socketIndexes) || [], ii = ((cats.find((q) => q.socketCategoryHash === 3956125808) || {}).socketIndexes) || [];
+        const pp = pi.map((si) => { const en = ents[si] || {}, ps = en.randomizedPlugSetHash || en.reusablePlugSetHash || 0; if (ps) PSNEED.add(ps); return [ps, en.singleInitialItemHash || 0]; }).filter((q) => q[0] || q[1]);
+        if (pp.length) d[k].pp = pp;
+        const fi = ii.map((si) => (ents[si] || {}).singleInitialItemHash).find(Boolean); if (fi) d[k].fi = fi;
+        if (x.defaultDamageType) d[k].e = x.defaultDamageType;
+      }
       const amt = x.equippingBlock && x.equippingBlock.ammoType; if (amt) d[k].am = amt; // 1 primary, 2 special, 3 heavy (is:primary and so on in search)
     }
     else if (x.plug) p[k] = { n: dp.name, i: dp.icon, d: dp.description, c: x.plug.plugCategoryIdentifier, s: (x.investmentStats || []).filter((q) => q.value && !q.isConditionallyActive).map((q) => [q.statTypeHash, q.value]) };
   });
   needBrk.forEach(([k, hs]) => { for (const h of hs) if (plugBrk[h]) { d[k].bt = plugBrk[h]; break; } });
+  // Finder: the perks each weapon perk pool can roll TODAY (Bungie marks perks that no longer drop with currentlyCanRoll false).
+  const psd = {};
+  if (P.DestinyPlugSetDefinition) {
+    try {
+      await table(P.DestinyPlugSetDefinition, (k, x) => {
+        if (!PSNEED.has(+k)) return;
+        const hs = []; for (const q of x.reusablePlugItems || []) if (q.currentlyCanRoll !== false && q.plugItemHash && !hs.includes(q.plugItemHash)) hs.push(q.plugItemHash);
+        psd[k] = hs;
+      });
+    } catch (e) { /* Finder falls back to the fixed perks */ }
+  }
+  PSNEED.clear();
   for (const k in dtRaw) { const q = dtRaw[k]; if (q.enumValue !== undefined && q.displayProperties && q.displayProperties.icon) dm[q.enumValue] = q.displayProperties.icon; }
   for (const k in btRaw) { const q = btRaw[k]; if (q.enumValue && q.displayProperties && q.displayProperties.icon) bk[q.enumValue] = q.displayProperties.icon; }
   for (const k in stRaw) { const x = stRaw[k]; if (x.displayProperties && x.displayProperties.name) st[k] = { n: x.displayProperties.name, o: x.index }; }
   for (const k in sgRaw) sg[k] = (sgRaw[k].scaledStats || []).map((q) => ({ h: q.statHash, max: q.maximumValue || 100, num: !!q.displayAsNumeric }));
-  const o = { v, d, p, st, sg, a: ar, g: gx, W, dm, bk };
+  const o = { v, d, p, st, sg, a: ar, g: gx, W, dm, bk, psd };
   fs.writeFileSync(f, JSON.stringify(o));
   return (DEFS = o);
 }
@@ -369,7 +411,7 @@ const syncUrl = () => (preset && preset.tokenUrl && /^https:\/\//i.test(preset.t
 async function syncReq(method, body) {
   const u = syncUrl(); if (!u) throw new Error('sync_unavailable');
   await fresh();
-  const r = await fetch(u, { method, headers: { Authorization: 'Bearer ' + rd().tok.access, Accept: 'application/json', ...(body ? { 'Content-Type': 'application/json' } : {}) }, ...(body ? { body } : {}) });
+  const r = await fetch(u, { method, headers: { Authorization: 'Bearer ' + rd().tok.access, ...pfApp(), Accept: 'application/json', ...(body ? { 'Content-Type': 'application/json' } : {}) }, ...(body ? { body } : {}) });
   const j = await readJson(r).catch(() => ({}));
   if (!r.ok) throw new Error((j && j.error) || 'HTTP ' + r.status);
   return j;
@@ -389,7 +431,7 @@ H('lo:share', async (e, v) => {
   if (!/^GTL1:[A-Za-z0-9+/=]+$/.test(c)) throw bad();
   const u = shareUrl(); if (!u) throw new Error(SHERR.share_unavailable);
   await fresh();
-  const r = await fetch(u, { method: 'POST', headers: { Authorization: 'Bearer ' + rd().tok.access, 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ c, n, t, d }) });
+  const r = await fetch(u, { method: 'POST', headers: { Authorization: 'Bearer ' + rd().tok.access, ...pfApp(), 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ c, n, t, d }) });
   const j = await readJson(r).catch(() => ({}));
   if (!r.ok || !j || !/^[A-Za-z0-9]{5,12}$/.test(String(j.code || ''))) throw new Error(SHERR[j && j.error] || (j && j.error) || 'HTTP ' + r.status);
   return { url: siteBase() + '/' + j.code + '/' + encodeURIComponent(slugOf(n)), code: j.code };
@@ -401,7 +443,7 @@ H('lo:shareimg', async (e, v) => {
   const buf = Buffer.from(m[1], 'base64'); if (!buf.length || buf.length > 1500000) throw bad();
   const u = shareUrl(); if (!u) throw new Error(SHERR.share_unavailable);
   await fresh();
-  const r = await fetch(u + '/' + code + '/img', { method: 'POST', headers: { Authorization: 'Bearer ' + rd().tok.access, 'Content-Type': 'image/jpeg', Accept: 'application/json' }, body: new Uint8Array(buf) });
+  const r = await fetch(u + '/' + code + '/img', { method: 'POST', headers: { Authorization: 'Bearer ' + rd().tok.access, ...pfApp(), 'Content-Type': 'image/jpeg', Accept: 'application/json' }, body: new Uint8Array(buf) });
   const j = await readJson(r).catch(() => ({}));
   if (!r.ok) throw new Error(SHERR[j && j.error] || (j && j.error) || 'HTTP ' + r.status);
   return { ok: true, same: !!j.same };
@@ -422,7 +464,7 @@ function restartApp() {
   setTimeout(() => { try { app.relaunch(); } catch (e) { /* manual start */ } app.exit(0); }, 200);
   return { restart: 1 };
 }
-const acctRow = (t, on) => ({ mid: String(t.mid || ''), n: t.n || (t.m && (t.m.bungieGlobalDisplayName || t.m.displayName)) || 'Bungie account', code: t.m && t.m.bungieGlobalDisplayNameCode ? String(t.m.bungieGlobalDisplayNameCode).padStart(4, '0') : '', on: on ? 1 : 0, ok: t.refresh && Date.now() < (t.rexp || 0) ? 1 : 0 });
+const acctRow = (t, on) => ({ from: isForeign(t) ? (t.app === 'web' ? 'web' : 'pc') : '', mid: String(t.mid || ''), n: t.n || (t.m && (t.m.bungieGlobalDisplayName || t.m.displayName)) || 'Bungie account', code: t.m && t.m.bungieGlobalDisplayNameCode ? String(t.m.bungieGlobalDisplayNameCode).padStart(4, '0') : '', on: on ? 1 : 0, ok: t.refresh && Date.now() < (t.rexp || 0) ? 1 : 0 });
 H('acct:list', () => {
   const c = rd(), out = [];
   if (c.tok) out.push(acctRow(c.tok, true));
@@ -523,8 +565,19 @@ async function pfaReq(method, p, body, sess, extra) {
   if (!r.ok && !(r.status === 409 && j.error === 'changed')) { const er = new Error(j.message || (r.status === 404 || r.status === 501 ? 'Pathfinder accounts are not switched on in the token service yet (see ACCOUNTS-SETUP.txt).' : 'Pathfinder account error (HTTP ' + r.status + ')')); er.code = j.error || r.status; throw er; }
   return { ...j, status: r.status };
 }
-const PFA_FRESH = 3 * 864e5; // a newer Bungie sign-in is sent up when it is at least this much newer than the saved one
 let PFA_ERR = '', PFA_BUSY = null;
+// Before a sign-in made by the other app is added here, check Bungie takes it from this app (its key, and the website's address).
+async function foreignWorks(c, t) {
+  try {
+    if (Date.now() > (t.exp || 0) - 60000) { // its hour is up: renew it as its own app first (the box then gets the new one)
+      const r0 = await fetch(preset.tokenUrl.replace(/\/+$/, '') + '/refresh', { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-PF-App': t.app === 'web' ? 'web' : 'pc' }, body: JSON.stringify({ refresh_token: t.refresh }) });
+      const j0 = await readJson(r0); if (!j0.access_token) return false;
+      Object.assign(t, { access: j0.access_token, refresh: j0.refresh_token || t.refresh, exp: Date.now() + j0.expires_in * 1000, rexp: Date.now() + (j0.refresh_expires_in || 7776000) * 1000 }); t.renewed = 1;
+    }
+    const r = await fetch(BASE + '/Platform/User/GetMembershipsForCurrentUser/', { headers: { ...bHead(c, t), Authorization: 'Bearer ' + t.access } });
+    const j = await readJson(r); return j && j.ErrorCode === 1;
+  } catch (e) { return false; }
+}
 // Bring the box and this device together: Bungie accounts you do not have here are added, newer sign-ins replace older ones,
 // and anything newer here is sent back up.
 async function pfaSync(boxIn, verIn) {
@@ -538,17 +591,30 @@ async function pfaSync(boxIn, verIn) {
     const B = (data && data.accts) || {}, cid = String(c.clientId || ''), skip = c.pfa.skip || {}, now = Date.now();
     const local = [c.tok, ...Object.values(c.accts || {})].filter((t) => t && t.mid);
     let added = 0, changed = false, push = false;
+    const ok = (e) => e && e.refresh && (e.rexp || 0) > now;
     for (const mid of Object.keys(B)) {
-      const e = B[mid] && B[mid][cid]; if (!e || !e.refresh || (e.rexp || 0) < now || skip[mid]) continue;
+      if (skip[mid]) continue;
+      // this app's own sign-in for the account if there is one, otherwise one made by the other app (website / PC app)
+      const own = ok(B[mid][cid]) ? B[mid][cid] : null;
+      const other = own ? null : Object.values(B[mid] || {}).filter((x) => ok(x) && x.key && String(x.cid) !== cid).sort((a, z) => (z.rexp || 0) - (a.rexp || 0))[0];
+      const e = own || other; if (!e) continue;
       const L = local.find((t) => String(t.mid) === String(mid));
-      if (!L) { const t = { ...e, part: '' }; if (!c.tok) c.tok = t; else { c.accts = c.accts || {}; c.accts[mid] = t; } local.push(t); added++; changed = true; }
-      else if ((e.rexp || 0) > (L.rexp || 0) + 60000) { Object.assign(L, { access: e.access, refresh: e.refresh, exp: e.exp, rexp: e.rexp }); changed = true; }
+      if (!L) {
+        if (other && !(await foreignWorks(c, e))) continue; // Bungie would not take it here: it stays a "sign in here once" account
+        if (e.renewed) { delete e.renewed; push = true; }
+        const t = { ...e, part: '' }; if (!c.tok) c.tok = t; else { c.accts = c.accts || {}; c.accts[mid] = t; } local.push(t); added++; changed = true;
+      } else if (own && isForeign(L, c)) {
+        // signed in on this app somewhere: use that instead of the other app's sign-in
+        ['cid', 'app', 'key', 'ori'].forEach((k) => delete L[k]); Object.assign(L, { access: e.access, refresh: e.refresh, exp: e.exp, rexp: e.rexp, cid }); changed = true;
+      } else if (String(L.cid || cid) === String(e.cid || cid) && (e.rexp || 0) > (L.rexp || 0) + 60000) { Object.assign(L, { access: e.access, refresh: e.refresh, exp: e.exp, rexp: e.rexp }); changed = true; }
     }
     for (const L of local) {
-      if (String(L.cid || cid) !== cid) continue;
-      const mid = String(L.mid), e = B[mid] && B[mid][cid];
-      if (!e || (L.rexp || 0) > (e.rexp || 0) + PFA_FRESH || (!e.n && L.n)) {
-        const { part, ...t } = L; void part; B[mid] = B[mid] || {}; B[mid][cid] = { ...t, cid }; push = true;
+      const lc = String(L.cid || cid), mid = String(L.mid), e = B[mid] && B[mid][lc], mine = lc === cid;
+      if (!e || ((L.rexp || 0) > (e.rexp || 0) + 60000 && L.refresh !== e.refresh) || (!e.n && L.n) || (mine && !e.key)) {
+        const { part, ...t } = L; void part; B[mid] = B[mid] || {};
+        // each sign-in carries its app's key (and the website's address) so the other app can use it
+        B[mid][lc] = mine ? { ...t, cid, app: APPN, key: c.apiKey, ...(myOri() ? { ori: myOri() } : {}) } : { ...t, cid: lc };
+        push = true;
       }
     }
     if (changed) wr(c);
@@ -744,7 +810,7 @@ H('pfa:sessions', async () => { const c = rd(); if (!c.pfa || !c.pfa.sess) throw
 H('pfa:sessEnd', async (e, v) => { OBJ(v); const c = rd(); if (!c.pfa || !c.pfa.sess) throw new Error('Sign in to your Pathfinder account first.'); const r = await pfaReq('POST', '/sessions/end', { id: TXT(v.id, 20) }, c.pfa.sess); if (r.me) { delete c.pfa; wr(c); } return { me: !!r.me }; });
 H('pfa:delete', async () => { const c = rd(); if (!c.pfa || !c.pfa.sess) throw new Error('Sign in to your Pathfinder account first.'); await pfaReq('DELETE', '', null, c.pfa.sess); delete c.pfa; wr(c); return pfaStatus(); });
 // Keep the box up to date: shortly after start, then every six hours.
-setTimeout(() => { if (rd().pfa) pfaRun().catch(() => {}); setInterval(() => { if (rd().pfa) pfaRun().catch(() => {}); }, 6 * 3600e3); }, 8000);
+setInterval(() => { if (rd().pfa) pfaRun().catch(() => {}); }, 6 * 3600e3); // the app also syncs on open and on coming back (vault.js resumeCheck)
 // Website only: the sign-in code Bungie sent back to the site (its state was already checked by the page).
 if (WEB) H('auth:webcode', async (e, v) => { OBJ(v); await tokenReq({ grant_type: 'authorization_code', code: TXT(v.code, 4000) }); const c = rd(); if (c.tok && c.accts && c.accts[c.tok.mid]) { delete c.accts[c.tok.mid]; wr(c); } return true; });
 const PMDEF = {}, TITLES = {}, ENTC = {}, OVR = {};
@@ -1205,7 +1271,7 @@ async function post(p, body) {
     const c = rd();
     const r = await fetch(BASE + '/Platform' + p, {
       method: 'POST',
-      headers: { 'X-API-Key': c.apiKey, 'User-Agent': UA, Authorization: 'Bearer ' + c.tok.access, 'Content-Type': 'application/json' },
+      headers: { ...bHead(c, c.tok), Authorization: 'Bearer ' + c.tok.access, 'Content-Type': 'application/json' },
       body: JSON.stringify({ ...body, membershipType: M.membershipType }),
     });
     const j = await readJson(r);
@@ -1979,8 +2045,8 @@ const clanErr = (msg) => new Error(/scope/i.test(String(msg || '')) ? 'SCOPE' : 
 let CLANRE = 0;
 async function clanReauth() {
   const c = rd(); if (!c.tok) return false;
-  if (CLANRE === 0) { CLANRE = 1; if (c.tok.refresh && Date.now() < c.tok.rexp) { try { await tokenReq({ grant_type: 'refresh_token', refresh_token: c.tok.refresh }); return true; } catch (e) { /* next step */ } } }
-  if (CLANRE === 1) { CLANRE = 2; if (!WEB) { try { return !!(await silentAuth()); } catch (e) { return false; } } }
+  if (CLANRE === 0) { CLANRE = 1; if (c.tok.refresh && Date.now() < c.tok.rexp) { try { await tokenReq({ grant_type: 'refresh_token', refresh_token: c.tok.refresh, ...(isForeign(c.tok, c) ? { ftok: c.tok } : {}) }); return true; } catch (e) { /* next step */ } } }
+  if (CLANRE === 1) { CLANRE = 2; if (!WEB && !isForeign(c.tok, c)) { try { return !!(await silentAuth()); } catch (e) { return false; } } }
   return false;
 }
 async function gget(p) {
@@ -1995,7 +2061,7 @@ async function gget(p) {
 async function gpost(p, body) {
   for (let t = 0; ; t++) {
     await fresh(); const c = rd();
-    const r = await fetch(BASE + '/Platform' + p, { method: 'POST', headers: { 'X-API-Key': c.apiKey, 'User-Agent': UA, Authorization: 'Bearer ' + c.tok.access, 'Content-Type': 'application/json' }, body: JSON.stringify(body || {}) });
+    const r = await fetch(BASE + '/Platform' + p, { method: 'POST', headers: { ...bHead(c, c.tok), Authorization: 'Bearer ' + c.tok.access, 'Content-Type': 'application/json' }, body: JSON.stringify(body || {}) });
     const j = await readJson(r);
     if (j.ErrorCode === 1) return j.Response;
     const thr = (j.ThrottleSeconds || 0) > 0 || /throttl/i.test(String(j.ErrorStatus || ''));
@@ -3252,6 +3318,97 @@ H('wm:pool', async (e, v) => {
   const d = df.d[h] || {};
   return { h, hs: pools.filter((p) => p.cols.length).map((p) => p.h), n: d.n || base.n, i: d.i || '', t: d.t || '', cols: cols.filter((c) => c.opts.length) };
 });
+// ---------- Finder (like destiny.report) ----------
+// Look up any weapon to see every perk it can ACTUALLY roll today, or any perk to see every weapon that can roll it. Everything
+// comes from the item data (defs): each weapon's perk pools (pp) and the pools' perks that can still drop (psd).
+const FD_SKIP = /intrinsic|tracker|shader|ornament|memento|masterwork|v400\.weapon\.mod|mods?$|catalyst|crafting|empty|default|enhancements/i;
+let FDX = null; // perk name -> { n, i, d, c, w: Set of weapon hashes }
+const fdCols = (df, h) => {
+  const d = df.d[h] || {}, out = [], cnt = {};
+  for (const [ps, init] of d.pp || []) {
+    const hs = ps && df.psd && df.psd[ps] ? df.psd[ps] : init ? [init] : [];
+    const seen = new Set(), opts = [];
+    for (const x of hs) {
+      const p = df.p[x]; if (!p || !p.n || FD_SKIP.test(p.c || '') || /^(empty|default)\b/i.test(p.n)) continue;
+      const k = p.n.toLowerCase(); if (seen.has(k)) continue; seen.add(k);
+      opts.push({ h: x, n: p.n, i: p.i || '', d: String(p.d || '').replace(/\[###[^\]]*\]/g, (m) => (/interact/i.test(m) ? 'Interact' : '')).replace(/(Interact\s*){2,}/g, 'Interact ').replace(/\s{2,}/g, ' ').trim().slice(0, 400), c: p.c || '' });
+    }
+    if (opts.length) out.push({ c: opts[0].c, fixed: !(ps && df.psd && df.psd[ps] && df.psd[ps].length > 1) && opts.length === 1, opts: opts.slice(0, 60) });
+  }
+  const tot = {}; out.forEach((c) => { tot[c.c] = (tot[c.c] || 0) + 1; });
+  out.forEach((c) => { cnt[c.c] = (cnt[c.c] || 0) + 1; const l = WMLBL[c.c] || (c.c ? c.c.replace(/[_-]+/g, ' ').replace(/^./, (m) => m.toUpperCase()).replace(/s$/, '') : 'Perk'); c.label = tot[c.c] > 1 ? l + ' ' + cnt[c.c] : l; });
+  return out;
+};
+const fdIsWeapon = (d) => d && d.pp && TF_WB0.has(d.b) && /legendary|exotic/i.test(d.r || '') && d.n;
+const fdWi = (d) => (d.wl ? d.wl[d.wl.length - 1] : d.w !== undefined ? d.w : -1);
+// one row per weapon name (the game keeps reissues and old copies under the same name); the newest version is shown
+function fdGroups(df, test) {
+  const by = {};
+  for (const k in df.d) {
+    const d = df.d[k]; if (!fdIsWeapon(d) || (test && !test(d, +k))) continue;
+    const key = d.n + '|' + (d.t || '') + '|' + (d.r || ''), wi = fdWi(d);
+    const g = by[key] || (by[key] = { h: +k, n: d.n, i: d.i || '', t: d.t || '', r: d.r || '', e: d.e || 0, am: d.am || 0, wi: -2, hs: [] });
+    g.hs.push(+k);
+    if (wi > g.wi || (wi === g.wi && (d.pp || []).length > ((df.d[g.h] || {}).pp || []).length)) { g.wi = wi; g.h = +k; g.i = d.i || g.i; g.e = d.e || g.e; }
+  }
+  return Object.values(by).map((g) => {
+    const d = df.d[g.h] || {}, fr = d.fi && df.p[d.fi] ? df.p[d.fi].n : '';
+    return { h: g.h, hs: g.hs.slice(0, 12), n: g.n, i: g.i, t: g.t, r: g.r, e: g.e, am: g.am, fr, wm: g.wi >= 0 ? df.W[g.wi] || '' : '' };
+  });
+}
+function fdIndex(df) {
+  if (FDX && FDX.v === df.v) return FDX;
+  const m = new Map();
+  for (const k in df.d) {
+    const d = df.d[k]; if (!fdIsWeapon(d)) continue;
+    for (const [ps, init] of d.pp) {
+      const hs = ps && df.psd && df.psd[ps] ? df.psd[ps] : init ? [init] : [];
+      for (const x of hs) {
+        const p = df.p[x]; if (!p || !p.n || FD_SKIP.test(p.c || '') || /^(empty|default)\b/i.test(p.n)) continue;
+        const key = p.n.toLowerCase(); let e = m.get(key);
+        if (!e) { e = { n: p.n, i: p.i || '', d: String(p.d || '').replace(/\[###[^\]]*\]/g, (q) => (/interact/i.test(q) ? 'Interact' : '')).replace(/(Interact\s*){2,}/g, 'Interact ').replace(/\s{2,}/g, ' ').trim().slice(0, 400), c: p.c || '', w: new Set() }; m.set(key, e); }
+        e.w.add(+k);
+      }
+    }
+  }
+  return (FDX = { v: df.v, m });
+}
+const fdKind = (c) => { const l = WMLBL[c] || ''; return l === 'Trait' ? 'Trait' : l || (c ? c.replace(/[_-]+/g, ' ').replace(/^./, (q) => q.toUpperCase()).replace(/s$/, '') : 'Perk'); };
+H('fd:find', async (e, v) => {
+  OBJ(v); const q = TXT(v.q, 60).trim().toLowerCase(); if (q.length < 2) return { weapons: [], perks: [] };
+  const df = await defs(), words = q.split(/\s+/).filter(Boolean), X = fdIndex(df);
+  const weapons = fdGroups(df, (d) => { const hay = (d.n + ' ' + (d.t || '')).toLowerCase(); return words.every((w) => hay.includes(w)); })
+    .map((g) => ({ ...g, st: g.n.toLowerCase().startsWith(q) ? 0 : 1 })).sort((a, b) => a.st - b.st || a.n.localeCompare(b.n)).slice(0, 80);
+  const perks = [];
+  for (const [k, p] of X.m) {
+    if (!words.every((w) => k.includes(w))) continue;
+    const names = new Set(); p.w.forEach((h) => { const d = df.d[h]; if (d) names.add(d.n + '|' + d.t); });
+    perks.push({ n: p.n, i: p.i, d: p.d, kind: fdKind(p.c), cnt: names.size, st: k.startsWith(q) ? 0 : 1 });
+  }
+  perks.sort((a, b) => a.st - b.st || b.cnt - a.cnt || a.n.localeCompare(b.n));
+  return { weapons, perks: perks.slice(0, 40) };
+});
+H('fd:weapon', async (e, v) => {
+  OBJ(v); const h = HASH(v.h), df = await defs(), d = df.d[h];
+  if (!d) throw new Error('That weapon is not in the item data.');
+  const hs = v.hs === undefined ? [h] : [h].concat(ARR(v.hs, 12).map(HASH)).filter((x, i, a) => x > 0 && a.indexOf(x) === i && df.d[x]);
+  const versions = hs.map((x) => { const q = df.d[x], wi = fdWi(q); return { h: x, wm: wi >= 0 ? df.W[wi] || '' : '', wi, i: q.i || '', cols: (q.pp || []).length }; }).sort((a, b) => b.wi - a.wi || b.cols - a.cols);
+  const fr = d.fi && df.p[d.fi] ? { n: df.p[d.fi].n, i: df.p[d.fi].i || '', d: String(df.p[d.fi].d || '').slice(0, 300) } : null;
+  return { h, n: d.n, i: d.i || '', t: d.t || '', r: d.r || '', e: d.e || 0, ei: (df.dm && df.dm[d.e]) || '', am: d.am || 0, bt: d.bt || 0, bi: (df.bk && df.bk[d.bt]) || '', wm: fdWi(d) >= 0 ? df.W[fdWi(d)] || '' : '', fr, versions, cols: fdCols(df, h) };
+});
+H('fd:perk', async (e, v) => {
+  OBJ(v); const n = TXT(v.n, 80).trim().toLowerCase(), df = await defs(), X = fdIndex(df), p = X.m.get(n);
+  if (!p) throw new Error('No weapon can roll that perk right now.');
+  // where on each weapon it sits (its column), and whether the newest version of the weapon rolls it
+  const where = (h) => { for (const c of fdCols(df, h)) if (c.opts.some((o) => o.n.toLowerCase() === n)) return c.label; return ''; };
+  const allG = {}; fdGroups(df).forEach((g) => { allG[g.n + '|' + g.t + '|' + g.r] = g; });
+  const weapons = fdGroups(df, (d, h) => p.w.has(h)).map((g) => {
+    const all = allG[g.n + '|' + g.t + '|' + g.r] || g;
+    return { ...g, col: where(g.h), newest: all.h === g.h ? 1 : 0 };
+  }).sort((a, b) => a.t.localeCompare(b.t) || a.n.localeCompare(b.n));
+  return { n: p.n, i: p.i, d: p.d, kind: fdKind(p.c), weapons };
+});
+
 // Every option the game offers for each subclass socket (super, abilities, aspects, fragments), taken from the item data.
 const SUBO = {};
 H('sub:opts', async (e, v) => {

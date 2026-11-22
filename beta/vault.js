@@ -301,7 +301,7 @@ body.vdragging,body.vdragging *{cursor:grabbing!important;user-select:none!impor
 .lpk .sw{height:30px}
 @media (max-width:900px){.ltab{flex-direction:column}.lsidec{width:100%;flex-direction:row}.lside{flex:1}}
 /* settings page */
-#settings .card{max-width:760px;margin-left:auto;margin-right:auto}#settings .acl{display:flex;flex-direction:column;gap:6px;margin:10px 0}#settings .acr{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 10px;border:1px solid var(--g-line,#2b2e33);border-radius:6px;background:rgba(255,255,255,.03)}#settings .acr.on{border-color:var(--g-accent,#7ab8e8)}#settings .acr b{flex:1;min-width:140px;color:#fff}#settings .acr b span{color:#8b8f97;font-weight:400;margin-left:2px}#settings .acr em{font-style:normal;font-size:12px;color:var(--g-accent,#7ab8e8)}#settings .syst{color:#cfd2d8}#settings .acr small{flex-basis:100%;color:#e0b64a;font-size:11.5px}.acswm{position:fixed;inset:0;z-index:100000;background:rgba(8,9,12,.85);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;letter-spacing:1px}#settings .navtg{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}#settings .navtg .chip{opacity:.55}#settings .navtg .chip.on{opacity:1}#settings .navtg .chip:disabled{cursor:default;opacity:.8}
+#settings .card{max-width:760px;margin-left:auto;margin-right:auto}#settings .acl{display:flex;flex-direction:column;gap:6px;margin:10px 0}#settings .acfrom{font-size:11.5px;color:var(--mut,#9aa3b2);padding:1px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.12)}#settings .acr{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 10px;border:1px solid var(--g-line,#2b2e33);border-radius:6px;background:rgba(255,255,255,.03)}#settings .acr.on{border-color:var(--g-accent,#7ab8e8)}#settings .acr b{flex:1;min-width:140px;color:#fff}#settings .acr b span{color:#8b8f97;font-weight:400;margin-left:2px}#settings .acr em{font-style:normal;font-size:12px;color:var(--g-accent,#7ab8e8)}#settings .syst{color:#cfd2d8}#settings .acr small{flex-basis:100%;color:#e0b64a;font-size:11.5px}.acswm{position:fixed;inset:0;z-index:100000;background:rgba(8,9,12,.85);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;letter-spacing:1px}#settings .navtg{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}#settings .navtg .chip{opacity:.55}#settings .navtg .chip.on{opacity:1}#settings .navtg .chip:disabled{cursor:default;opacity:.8}
 #settings h2{font-size:15px;letter-spacing:3px;text-transform:uppercase;color:#cfd2d8;margin:0 0 10px}
 .sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
 .th{border:2px solid var(--g-line);padding:8px;cursor:pointer;background:var(--g-btn);text-align:center;font-size:14px}
@@ -1223,7 +1223,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   function aclHTML() {
     if (!window.gt || !gt.acctList) return '';
     if (!ACL) { if (!aclBusy) { aclBusy = true; gt.acctList().then((r) => { ACL = r; aclBusy = false; if (settingsSec.classList.contains('on')) drawSettings(); }).catch(() => { aclBusy = false; }); } return '<p class="mute">Loading accounts...</p>'; }
-    return ACL.list.map((a) => `<div class="acr${a.on ? ' on' : ''}"><b>${esc(a.n)}${a.code ? `<span>#${esc(a.code)}</span>` : ''}</b>${a.on ? '<em>Active</em>' : `<button class="g" data-acsw="${esc(a.mid)}">Switch</button>`}<button class="g" data-acrm="${esc(a.mid)}" title="Remove this account from ${GT_HERE}">Remove</button>${a.ok ? '' : '<small>Sign-in expired: switching asks you to sign in again</small>'}</div>`).join('');
+    return ACL.list.map((a) => `<div class="acr${a.on ? ' on' : ''}"><b>${esc(a.n)}${a.code ? `<span>#${esc(a.code)}</span>` : ''}</b>${a.from ? `<small class="acfrom" title="This Bungie account came from your Pathfinder account. It was signed in on the ${a.from === 'web' ? 'website' : 'PC app'} and works here too.">from the ${a.from === 'web' ? 'website' : 'PC app'}</small>` : ''}${a.on ? '<em>Active</em>' : `<button class="g" data-acsw="${esc(a.mid)}">Switch</button>`}<button class="g" data-acrm="${esc(a.mid)}" title="Remove this account from ${GT_HERE}">Remove</button>${a.ok ? '' : '<small>Sign-in expired: switching asks you to sign in again</small>'}</div>`).join('');
   }
   // ---- Pathfinder account (optional): one login that brings all your Bungie accounts to every device and build ----
   let PFA = null, pfaBusy = false, PFAMSG = '', PFANM = '', PFARS = false;
@@ -1545,12 +1545,15 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   // date, because a phone can keep the page asleep for hours. The Pathfinder account (your Bungie accounts) syncs if it has not
   // for 5 minutes, help answers and switches are checked, and the website reloads itself if a newer version came out.
   let awayAt = 0, verAt = 0;
-  async function resumeCheck(away) {
+  async function resumeCheck(away, force) {
     try {
-      if (PFA && PFA.on && window.gt && gt.pfaSync && Date.now() - (PFA.at || 0) > 3e5) {
+      if (!PFA && window.gt && gt.pfaStatus) PFA = await gt.pfaStatus().catch(() => null);
+      // Your Pathfinder account syncs every time Pathfinder opens and whenever you come back to it after a minute away, so a
+      // Bungie account added on another device (website, phone, PC) shows up here without pressing Sync.
+      if (PFA && PFA.on && window.gt && gt.pfaSync && (force || away >= 6e4 || Date.now() - (PFA.at || 0) > 3e5)) {
         const r = await gt.pfaSync().catch(() => null);
         if (r && (r.reload || r.restart)) { afterAcct(r); return; }
-        if (r && r.avail !== undefined) { PFA = r; ACL = null; if (r.added) PFAMSG = `Added ${r.added} Bungie account${r.added === 1 ? '' : 's'} from your Pathfinder account. Switch to ${r.added === 1 ? 'it' : 'them'} above.`; if (settingsSec.classList.contains('on')) dDraw(); }
+        if (r && r.avail !== undefined) { PFA = r; ACL = null; if (r.added && window.gt && gt.acctList) gt.acctList().then((l) => { ACL = l; window.dispatchEvent(new Event('gtaccts')); }).catch(() => {}); if (r.added) PFAMSG = `Added ${r.added} Bungie account${r.added === 1 ? '' : 's'} from your Pathfinder account. Switch to ${r.added === 1 ? 'it' : 'them'} above.`; if (settingsSec.classList.contains('on')) dDraw(); }
       }
       helpLoad(true); deskLoad(true); flagsLoad(true);
       if (window.__GT_WEB__ && Date.now() - verAt > 6e4) {
@@ -1567,6 +1570,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   document.addEventListener('visibilitychange', () => { if (document.hidden) { awayAt = Date.now(); return; } const away = awayAt ? Date.now() - awayAt : 0; awayAt = 0; if (away > 6e4) resumeCheck(away); });
   window.addEventListener('pageshow', (e) => { if (e.persisted) resumeCheck(6e5); });
   setInterval(() => { if (!document.hidden) resumeCheck(0); }, 18e5);
+  setTimeout(() => resumeCheck(0, true), 2500); // on open
   // While Admin is open, check every 30 seconds that the access key and the role still hold: a key taken back by the owner, or a
   // founder role removed, locks Admin on this screen right away instead of at the next click.
   setInterval(() => {

@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.35-beta.10: preload.js for the browser */
+/* Pathfinder 0.3.35-beta.11: preload.js for the browser */
 (function (require) {
 const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('gt', {
@@ -94,6 +94,7 @@ contextBridge.exposeInMainWorld('gt', {
   onFarm: (cb) => ipcRenderer.on('farm', (e, m) => cb(m)),
   actRot: (v) => ipcRenderer.invoke('act:rot', v),
   chkAuto: () => ipcRenderer.invoke('chk:auto'),
+  fdFind: (v) => ipcRenderer.invoke('fd:find', v), fdWeapon: (v) => ipcRenderer.invoke('fd:weapon', v), fdPerk: (v) => ipcRenderer.invoke('fd:perk', v),
   clanGet: (v) => ipcRenderer.invoke('clan:get', v),
   clanProf: (v) => ipcRenderer.invoke('clan:prof', v),
   clanXp: (v) => ipcRenderer.invoke('clan:xp', v),
