@@ -17,6 +17,8 @@ async function latest() {
   return REL;
 }
 const json = (o, st) => new Response(JSON.stringify(o), { status: st || 200, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=300' } });
+// a share link: /abc1234, /abc1234/Name, or the same under /beta/ (made on the beta)
+const SHARE = /^\/(?:beta\/)?([A-Za-z0-9]{5,12})(?:\/([^/]{1,160}))?\/?$/i;
 export default {
   async fetch(request, env) {
     const u0 = new URL(request.url), p0 = u0.pathname.replace(/\/+$/, '').toLowerCase();
@@ -26,10 +28,12 @@ export default {
     if (DOMAIN && u0.hostname.toLowerCase() === 'www.' + DOMAIN) return Response.redirect('https://' + DOMAIN + u0.pathname + u0.search, 301);
     if (DOMAIN && u0.hostname.toLowerCase() === 'beta.' + DOMAIN) return Response.redirect('https://' + DOMAIN + '/beta/', 302);
     if (p0 === '/beta' && !u0.pathname.endsWith('/')) return Response.redirect(u0.origin + '/beta/', 302);
-    if (p0 === '/beta' || p0.startsWith('/beta/')) { // no beta published right now: the regular site
+    let res;
+    if (p0 === '/beta' || p0.startsWith('/beta/')) { // no beta published right now: the regular site (a share code comes along)
       const rb = await env.ASSETS.fetch(request);
-      if (rb.status === 404 && (p0 === '/beta' || p0 === '/beta/index.html')) return Response.redirect(u0.origin + '/', 302);
-      return rb;
+      if (rb.status === 404 && (p0 === '/beta' || p0 === '/beta/index.html')) return Response.redirect(u0.origin + '/' + u0.search, 302);
+      if (rb.status !== 404 || !SHARE.test(u0.pathname)) return rb;
+      res = rb; // a share link made on the beta (/beta/abc1234): the not-found page opens it, with a link preview like the others
     }
     if (REPO && (request.method === 'GET' || request.method === 'HEAD') && (p0 === '/download' || p0 === '/download/windows' || p0 === '/download/info')) {
       try {
@@ -41,10 +45,10 @@ export default {
         return Response.redirect('https://github.com/' + REPO + '/releases/latest', 302);
       }
     }
-    const res = await env.ASSETS.fetch(request);
+    if (!res) res = await env.ASSETS.fetch(request);
     if (!API) return res;
     try {
-      const u = u0, m = /^\/([A-Za-z0-9]{5,12})\/([^/]{1,160})\/?$/.exec(u.pathname);
+      const u = u0, m = SHARE.exec(u.pathname);
       if ((request.method !== 'GET' && request.method !== 'HEAD') || !m || res.status !== 404) return res;
       const r = await api(env, '/share/' + m[1]);
       if (!r.ok) return res;

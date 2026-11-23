@@ -76,7 +76,21 @@
       else if (/raid|dungeon/i.test(t)) t += ', on Master difficulty';
       else t += ' (the hardest version, like Master)';
     }
-    return { t: t + '.', pre: '' };
+    return { t: t + '.', pre: '', how: howDo(t, /\((adept|timelost|harrowed)\)\s*$/i.test(name)) };
+  }
+  // What to actually do there, one short sentence (only for activity types where it is the same for every weapon)
+  function howDo(t, adept) {
+    if (/\braid\b/i.test(t)) return adept ? 'Adept copies only drop there: finish its encounters on Master (the weekly featured raid can drop it more often).' : 'It drops in that raid: finish its encounters (the weekly featured raid can drop it more often).';
+    if (/\bdungeon\b/i.test(t)) return adept ? 'Adept copies only drop there: finish its encounters on Master (the weekly featured dungeon can drop it more often).' : 'It drops in that dungeon: finish its encounters (the weekly featured dungeon can drop it more often).';
+    if (/trials/i.test(t)) return adept ? 'Win seven matches on one card without a loss, then open the chest at the Lighthouse.' : 'Win Trials matches and rank up with Saint-14 in the Tower.';
+    if (/grandmaster/i.test(t)) return 'Finish Grandmaster Nightfalls while this is the weekly Nightfall weapon.';
+    if (/nightfall/i.test(t)) return 'Finish Nightfall strikes while this is the weekly Nightfall weapon.';
+    if (/iron banner/i.test(t)) return 'Play Iron Banner matches while it is on and rank up with Saladin.';
+    if (/gambit/i.test(t)) return 'Play Gambit matches and rank up with the Drifter.';
+    if (/crucible/i.test(t)) return 'Play Crucible matches and rank up with Lord Shaxx.';
+    if (/vanguard|strike/i.test(t)) return 'Play Vanguard Ops and rank up with Zavala.';
+    if (/exotic engram|xûr|xur/i.test(t)) return 'Open Exotic engrams, or check what Xûr is selling this weekend.';
+    return '';
   }
   const SUGGEST = ['Rampage', 'Kill Clip', 'Incandescent', 'Repulsor Brace', 'Chill Clip', 'Bait and Switch', 'Destabilizing Rounds', 'Hand Cannon'];
 
@@ -169,7 +183,7 @@
 #fdm .fvo span{flex:1;min-width:0;line-height:1.2;overflow-wrap:break-word;word-break:normal;hyphens:auto}
 #fdm .fvo.on{border-color:color-mix(in srgb,var(--gc) 55%,transparent)!important;background:color-mix(in srgb,var(--gc) 10%,transparent)!important;color:#fff!important}
 #fdm .fvo.hl{border-color:#35e3cf!important;background:color-mix(in srgb,#35e3cf 9%,transparent)!important}
-#fdm .fvget .fvpre{color:#cfd5de;font-weight:600}#fdm .fvd{overflow-wrap:anywhere;margin:4px 2px 0;font-size:12.5px;line-height:1.45;color:#a3aab4}
+#fdm .fvget .fvpre{color:#cfd5de;font-weight:600}#fdm .fvget .fvhow{color:#b9c0ca}#fdm .fvd{overflow-wrap:anywhere;margin:4px 2px 0;font-size:12.5px;line-height:1.45;color:#a3aab4}
 #fdm .fvd a{display:inline-block;margin-top:6px;color:#8fd9ea;font-weight:600;cursor:pointer;text-decoration:none}
 #fdm .fvd a:hover{text-decoration:underline}
 #fdm .fva{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:16px 0 0}
@@ -280,7 +294,7 @@ ${list.length ? `<div class="fdgrid">${list.map((w) => wCard(w, `${w.col ? `<spa
 ${vers}
 ${d.fr && d.fr.d ? `<div class="fvfr"><b>${esc(d.fr.n)}:</b> ${esc(d.fr.d)}</div>` : ''}
 ${d.cols.length ? `<div class="fvcols">${cols}</div>` : '<div class="fdl">This weapon has no random perks.</div>'}
-${(() => { const g = howTo(d); return `<div class="fvfr fvget"><b>How to get:</b> ${g ? `${esc(g.t)}${g.pre ? ` <span class="fvpre">${esc(g.pre)}</span>` : ''}` : 'Bungie does not say where this drops. It may be from an event, a past season or a reissue.'}</div>`; })()}
+${(() => { const g = howTo(d); return `<div class="fvfr fvget"><b>How to get:</b> ${g ? `${esc(g.t)}${g.pre ? ` <span class="fvpre">${esc(g.pre)}</span>` : ''}${g.how ? ` <span class="fvhow">${esc(g.how)}</span>` : ''}` : 'Bungie does not say where this drops. It may be from an event, a past season or a reissue.'}</div>`; })()}
 <p class="fvhint">Every perk this version can drop with today. Click a perk for what it does.</p>
 <div class="fva">${n ? `<button type="button" data-finv>Show my copies in Inventory</button>` : ''}${window.__gtTabLocked && !window.__gtTabLocked('wishmaker') ? '<button type="button" data-fwm>Make a wish list roll</button>' : ''}</div></div>`;
   }
