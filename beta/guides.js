@@ -69,6 +69,10 @@
   // ---------- Community maps from app/g, placed with the encounter they belong to ----------
   // Each image's place was decided by looking at it (research/mapplace.py -> g.pl). Older or unlisted images fall back to
   // their section: overview pictures go with the loot, chest pictures with the chests, the rest at the end.
+  // Last Wish's Wall of Wishes (by /u/Tiredness) was one tall picture that was hard to read, so it is cut into one picture per
+  // wish (g/wish-01.webp ... wish-15.webp), each with its plates, where the plate is and what it does.
+  const WISHES = ['Ethereal key for the treasure room', 'Chest between the 3rd and 4th encounters', '"Numbers of Power" emblem', 'Warp to Shuro Chi', 'Warp to Morgeth', 'Warp to the Vault', 'Warp to Riven', 'Plays "Hope for the Future"', 'Failsafe voice lines', 'Drifter voice lines', 'Grunt birthday party', 'Effects on fireteam heads', '"Petra\'s Run" (flawless mode)', 'Ahamkara eggs', '"This one you shall cherish."'];
+  const wishHTML = (all) => `<div class="gx-sec gx-wishsec"><h3>The Wall of Wishes</h3><p class="gx-sub">Each wish shows the plate pattern to enter on the wall, where its plate is and what it does. Tap one to enlarge it. Made by /u/Tiredness.</p><div class="gx-wishes">${WISHES.map((t, i) => { const n = i + 1, cap = 'Wish ' + n + ': ' + t, u = 'g/wish-' + String(n).padStart(2, '0') + '.webp'; return `<div class="gx-shot gx-wish" role="button" tabindex="0" data-full="${E(u)}" data-cap="${E(cap)}"><img src="${E(u)}" alt="${E(cap)}" loading="lazy"><span><b>Wish ${n}</b> ${E(t)}</span></div>`; }).join('')}${all ? `<div class="gx-shot gx-wish all" role="button" tabindex="0" data-full="${E(all)}" data-cap="The whole Wall of Wishes"><img src="${E(all)}" alt="The whole Wall of Wishes" loading="lazy"><span><b>The whole wall</b> All 15 in one picture</span></div>` : ''}</div></div>`;
   function shots(g) {
     const F = g.b && full(g.b); const out = { by: {}, top: [], loot: [], chest: [], rest: [] }, seen = new Set(), pl = g.pl || {};
     if (!F || !F.sections) return out;
@@ -78,6 +82,7 @@
         const key = i + '_' + j, u = built(g.b + '|' + key); if (!u || seen.has(u)) return;
         let to = pl[key];
         if (to === 'skip') return;
+        if (g.b === 'Last Wish' && /wishing wall/i.test(cap)) { seen.add(u); out.wish = u; return; } // shown as one picture per wish
         if (to === undefined) to = /overview|loot/i.test(s.t) ? 'loot' : /chest/i.test(s.t) ? 'chest' : 'rest';
         seen.add(u);
         const x = { u, cap };
@@ -188,6 +193,7 @@
     if (g.chests && g.chests.length) h += `<div class="gx-sec" id="gx-chests" style="--cat:${catVar(g.type)}"><h3>Hidden chests</h3><ul class="gx-list">${g.chests.map((c) => `<li>${E(c)}</li>`).join('')}</ul>${shotHTML(S.chest)}</div>`;
     if (g.extra) h += `<div class="gx-sec" style="--cat:${catVar(g.type)}"><h3>${E(g.extra.t)}</h3><ul class="gx-list">${g.extra.b.map((c) => `<li>${E(c)}</li>`).join('')}</ul></div>`;
     h += `<div class="gx-sec" id="gx-loot" style="--cat:${catVar(g.type)}"><h3>Loot</h3><div id="gx-lootbox">${lootHTML(g)}</div>${shotHTML(S.loot)}</div>`;
+    if (S.wish) h += wishHTML(S.wish).replace('<div class="gx-sec gx-wishsec">', `<div class="gx-sec gx-wishsec" style="--cat:${catVar(g.type)}">`);
     if (S.rest.length) h += `<div class="gx-sec" style="--cat:${catVar(g.type)}"><h3>More maps and cheat sheets</h3>${shotHTML(S.rest)}</div>`;
     if (S.loot.length || S.rest.length || Object.keys(S.by).length) h += '<p class="gx-note">Maps and cheat sheets are community-made; the creator credit is on each image. Tap one to enlarge it.</p>';
     h += `<div class="gx-sec" style="--cat:${catVar(g.type)}"><h3>Sources</h3><ol class="gx-src">${g.src.map((s) => `<li><a href="${E(s[1])}" target="_blank" rel="noopener">${E(s[0])}</a></li>`).join('')}</ol><p class="gx-note">Every step above was checked against these sources. Where they disagreed, the guide only says what they agree on.</p></div>`;

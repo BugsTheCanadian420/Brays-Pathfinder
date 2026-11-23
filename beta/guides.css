@@ -173,3 +173,12 @@
 #guides .gx-armor img{cursor:pointer}
 #guides .gx-armor img.miss{filter:grayscale(.85);opacity:.55}
 #guides .gx-armor img.inv{box-shadow:0 0 0 2px var(--arc)}
+
+/* The Wall of Wishes: one picture per wish, shown whole so it reads without enlarging */
+.gx-wishes{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;margin:12px 0 0}
+.gx-wish{width:auto}
+.gx-wishes .gx-wish img{height:auto!important;max-height:none!important;object-fit:contain!important;background:#444874}
+.gx-wishes .gx-wish.all img{height:300px!important;object-fit:cover!important;object-position:top}
+.gx-wish span b{color:var(--text,#e8ecf2);margin-right:4px}
+.gx-sub{color:var(--mute);font-size:13px;margin:4px 0 0}
+@media (max-width:560px){.gx-wishes{grid-template-columns:1fr 1fr;gap:8px}}
