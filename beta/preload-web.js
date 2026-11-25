@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.46-beta.2: preload.js for the browser */
+/* Pathfinder 0.3.46-beta.3: preload.js for the browser */
 (function (require) {
 const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('gt', {
@@ -30,6 +30,7 @@ contextBridge.exposeInMainWorld('gt', {
   bdVote: (v) => ipcRenderer.invoke('bd:vote', v),
   bdUse: (v) => ipcRenderer.invoke('bd:use', v),
   bdDel: (v) => ipcRenderer.invoke('bd:del', v),
+  bdPic: (v) => ipcRenderer.invoke('bd:pic', v),
   helpMine: () => ipcRenderer.invoke('help:mine'),
   helpGet: (v) => ipcRenderer.invoke('help:get', v),
   helpReply: (v) => ipcRenderer.invoke('help:reply', v),

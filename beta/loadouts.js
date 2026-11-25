@@ -99,6 +99,8 @@
   const homeTip = () => { try { return !!(mod && mod.code) && document.documentElement.classList.contains('gtweb') && matchMedia('(pointer:coarse)').matches && !matchMedia('(display-mode: standalone)').matches && !navigator.standalone; } catch (e) { return false; } };
   // The Builds tab opens a build here: the same pop-up as a share link, with "Add to my loadouts".
   window.__gtlo = Object.assign(window.__gtlo || {}, {
+    // the Builds tab asks for a picture of a build its owner shared before builds had pictures
+    async buildPic(code, title) { const l = decode(code); if (title) l.n = String(title).slice(0, 80); return buildPic(l); },
     openBuild(code, meta) { const l = decode(code); if (meta && meta.title) l.n = String(meta.title).slice(0, 80); mod = { t: 'shin', l, bid: meta && meta.id, by: meta && meta.by }; drawMod(); },
   });
   function shinHTML() {
@@ -671,7 +673,10 @@
     const cv = await drawPic(l, link);
     showPic(l, cv, codeOf(l));
   }
-  async function drawPic(l, link) {
+  // opt.build: the Builds tab version, more compact: no header (the Builds tab shows the name, class and subclass) and no
+  // per-piece stat rows (the totals stay).
+  async function drawPic(l, link, opt) {
+    const cp = !!(opt && opt.build);
     const res = resolve(l), by = (b) => res.find((r) => r.en.b === b) || null, c = l.c < 3 ? CL[l.c] : 'Any class';
     const sub = by(SUB), weps = WB.map(by), arms = AB.map(by);
     // Mods by where they go: each armor piece's own mods, plus loadout mods that name a piece; the rest go in "Any piece".
@@ -717,10 +722,10 @@
     const SUBSZ = Math.max(44, Math.min(88, Math.floor((IW - 32 - (subPer - 1) * SUBGAP) / subPer))), SUBSTEP = SUBSZ + SUBGAP;
     // armor cards: five across, each with its archetype, tier, set, its own stats and its mods
     const CG = 12, CW = Math.floor((IW - 32 - 4 * CG) / 5), MSZ = 44, MSTEP = 50, mPer = Math.max(1, Math.floor((CW - 20 + (MSTEP - MSZ)) / MSTEP));
-    const stRows = Math.max(0, ...pst.map((q) => q.length)), mRows = Math.max(0, ...modsBy.map((m) => Math.ceil(m.length / mPer)));
+    const stRows = cp ? 0 : Math.max(0, ...pst.map((q) => q.length)), mRows = Math.max(0, ...modsBy.map((m) => Math.ceil(m.length / mPer)));
     const CH2 = 12 + 88 + 30 + stRows * 22 + (stRows ? 8 : 0) + (mRows ? 8 + mRows * MSTEP : 0) + 8;
     const anyRows = anyMods.length ? Math.ceil(anyMods.length / Math.floor((IW - 32) / MSTEP)) : 0;
-    let y = 196;
+    let y = cp ? 26 : 196;
     const L = { top: y };
     const TOPH = 414; y += TOPH + GAP;
     if (arms.some(Boolean)) { L.arm = y; y += 44 + CH2 + 14 + GAP; }
@@ -765,10 +770,12 @@
       rr(x + .5, y1 + .5, sz - 1, sz - 1, rad); g2.strokeStyle = 'rgba(255,255,255,.22)'; g2.lineWidth = 1.5; g2.stroke();
     };
     // header
-    txt(l.n || 'Loadout', 48, 78, 46, '#ffffff', 700, 900);
-    txt(c.toUpperCase() + (sub && (sub.x || sub.en).n ? '  ·  ' + (sub.x || sub.en).n : ''), 50, 112, 18, '#9aa0a8', 600, 900);
-    if (sub && imgs[ic(sub)]) g2.drawImage(imgs[ic(sub)], W - 150, 30, 110, 110);
-    g2.fillStyle = '#2b2e33'; g2.fillRect(48, 172, W - 96, 1);
+    if (!cp) {
+      txt(l.n || 'Loadout', 48, 78, 46, '#ffffff', 700, 900);
+      txt(c.toUpperCase() + (sub && (sub.x || sub.en).n ? '  ·  ' + (sub.x || sub.en).n : ''), 50, 112, 18, '#9aa0a8', 600, 900);
+      if (sub && imgs[ic(sub)]) g2.drawImage(imgs[ic(sub)], W - 150, 30, 110, 110);
+      g2.fillStyle = '#2b2e33'; g2.fillRect(48, 172, W - 96, 1);
+    }
     // weapons, with the perks in them right now (their frame first)
     const WPW = 640; panel(M, L.top, WPW - M, TOPH); panel(WPW + GAP, L.top, W - M - WPW - GAP, TOPH);
     label('WEAPONS', 48, L.top + 26);
@@ -813,7 +820,7 @@
         txt(ex ? (r.x.n || (r.en && r.en.n) || '') : (AD[i].s || (r.x || r.en).n || ''), ix, iy + 88 + 20, 14, ex ? '#ceae33' : '#e6e7ea', 600, CW - 20);
         // this piece's stats, biggest first
         let yy = iy + 88 + 30;
-        pst[i].forEach(([v, k, tn]) => {
+        if (!cp) pst[i].forEach(([v, k, tn]) => {
           const zero = !v;
           txt(IMSTL[k], ix, yy + 13, 13, tn < 0 ? '#e88a7e' : zero ? '#7c818a' : '#cfd2d8', 600, 64);
           // tuning: which stat got +5 and which gave 5 away
@@ -883,6 +890,22 @@
       if (link) txt('Import this loadout in Pathfinder: ' + link, M + 16, H - 10, 14, '#8b8f97', 600, mx - 24 - (M + 16));
     }
     return cv;
+  }
+  // The Builds picture: the compact loadout picture (with the QR code of a share link when one can be made), as a WebP small
+  // enough to keep with the build. Empty when it cannot be made; the build is still shared.
+  async function buildPic(l) {
+    try {
+      let link = '';
+      try {
+        if (gt.loShare && l.it && l.it.length) { const meta = shareMeta(l); const r = await Promise.race([gt.loShare({ c: codeOf(l), n: l.n || 'Loadout', t: meta.t, d: meta.d }), new Promise((ok) => setTimeout(() => ok(null), 6000))]); if (r && r.url) link = String(r.url).replace(/^https?:\/\//, '').replace(/\/[^/]*$/, ''); }
+      } catch (e) { /* no link: no QR code */ }
+      let cv = await drawPic(l, link, { build: true });
+      for (let k = 0; k < 4; k++) {
+        for (const [ty, q] of [['image/webp', .84], ['image/webp', .7], ['image/jpeg', .72]]) { const d = cv.toDataURL(ty, q); if (d.startsWith('data:' + ty) && d.length <= 690000) return d; }
+        const c2 = document.createElement('canvas'); c2.width = Math.round(cv.width * .8); c2.height = Math.round(cv.height * .8); c2.getContext('2d').drawImage(cv, 0, 0, c2.width, c2.height); cv = c2;
+      }
+    } catch (e) { /* shared without a picture */ }
+    return '';
   }
   function showPic(l, cv, code) {
     let data = cv.toDataURL('image/png');
@@ -1475,7 +1498,8 @@ ${mod.l.c < 3 ? '' : `<label class="dl-bdl">Class<select id="bdcls"><option valu
       m0.busy = true; m0.msg = ''; drawMod();
       try {
         const lc = l.c < 3 ? l : { ...l, c: m0.cls };
-        await gt.bdPub({ title: m0.title.trim(), notes: m0.notes.trim(), tags: m0.tags, code: codeOf(lc), ex, cls: m0.cls });
+        const img = await buildPic({ ...lc, n: m0.title.trim() });
+        await gt.bdPub({ title: m0.title.trim(), notes: m0.notes.trim(), tags: m0.tags, code: codeOf(lc), ex, cls: m0.cls, img });
         if (mod === m0) { mod = { t: 'bddone', title: m0.title.trim() }; drawMod(); }
         if (window.__gtBuilds) window.__gtBuilds.refresh();
       } catch (er) { if (mod === m0) { m0.busy = false; m0.msg = V.clean(er); drawMod(); } }

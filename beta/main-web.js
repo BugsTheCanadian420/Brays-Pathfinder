@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.46-beta.2: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.46-beta.3: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -767,6 +767,8 @@ async function helpReq(p, body, staff) {
 }
 // ---- Builds tab: the community build gallery (token service /builds/*). Looking and importing need no account; sharing,
 // voting and deleting send the Pathfinder account sign-in (helpReq adds it when there is one).
+// A build's picture: the loadout picture as a WebP or JPEG data link, at most about 520 KB.
+const BIMG = (v) => { if (v == null || v === '') return undefined; const s = String(v); if (s.length > 700000 || !/^data:image\/(webp|jpeg|png);base64,[A-Za-z0-9+/=]+$/.test(s)) throw bad(); return s; };
 const BID = (v) => { const id = TXT(v, 12); if (!/^[A-Za-z0-9]{8,12}$/.test(id)) throw bad(); return id; };
 async function bdReq(p, body) {
   try { return await helpReq(p, body); }
@@ -787,8 +789,9 @@ H('bd:get', async (e, v) => { OBJ(v); return (await bdReq('/builds/get?id=' + BI
 H('bd:pub', async (e, v) => {
   OBJ(v); const code = TXT(v.code, 40000); if (!/^GTL1:[A-Za-z0-9+/=]+$/.test(code)) throw bad();
   const tags = ARR(v.tags || [], 8).map((t) => TXT(t, 12)), ex = ARR(v.ex || [], 20).map((h) => INT(+h, 1, 4294967295));
-  return bdReq('/builds/publish', { title: TXT(v.title, 80), notes: TXT(v.notes || '', 1500), tags, code, ex, cls: v.cls === undefined ? undefined : INT(+v.cls, 0, 3) });
+  return bdReq('/builds/publish', { title: TXT(v.title, 80), notes: TXT(v.notes || '', 1500), tags, code, ex, cls: v.cls === undefined ? undefined : INT(+v.cls, 0, 3), img: BIMG(v.img) });
 });
+H('bd:pic', async (e, v) => { OBJ(v); const img = BIMG(v.img); if (!img) throw bad(); return bdReq('/builds/pic', { id: BID(v.id), img }); });
 H('bd:vote', async (e, v) => { OBJ(v); return bdReq('/builds/vote', { id: BID(v.id), v: INT(+v.v, -1, 1) }); });
 H('bd:use', async (e, v) => { OBJ(v); return bdReq('/builds/use', { id: BID(v.id) }); });
 H('bd:del', async (e, v) => { OBJ(v); return bdReq('/builds/delete', { id: BID(v.id) }); });

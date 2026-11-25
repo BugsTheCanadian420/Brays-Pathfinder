@@ -77,13 +77,19 @@
 #builds .bdempty{padding:34px 20px;text-align:center;border:1px dashed var(--g-line,#2b2e33);border-radius:14px;color:#aeb4bd}
 #builds .bdempty b{display:block;color:#fff;font-size:16px;margin-bottom:6px}
 #bdm{position:fixed;inset:0;z-index:9100;background:rgba(4,6,10,.72);display:flex;align-items:flex-start;justify-content:center;padding:max(5vh,env(safe-area-inset-top)) 12px 24px;overflow:auto}
-#bdm .bdmc{width:min(680px,100%);border:1px solid var(--g-line,#2b2e33);border-radius:16px;background:var(--g-panel,#16181d);box-shadow:0 30px 80px rgba(0,0,0,.6);overflow:hidden;color:#e6e7ea}
+#bdm .bdmc{width:min(var(--bdw,680px),100%);border:1px solid var(--g-line,#2b2e33);border-radius:16px;background:var(--g-panel,#16181d);box-shadow:0 30px 80px rgba(0,0,0,.6);overflow:hidden;color:#e6e7ea}
 #bdm .bdtop{display:flex;align-items:center;gap:14px;padding:18px 18px 14px;background:linear-gradient(100deg,color-mix(in srgb,var(--el) 28%,transparent),transparent 75%)}
 #bdm .bdsi{width:56px;height:56px;flex:none;border-radius:12px;background:color-mix(in srgb,var(--el) 18%,#0d0f13);display:grid;place-items:center;overflow:hidden}#bdm .bdsi img{width:52px;height:52px}
 #bdm h3{margin:0;font-size:22px;color:#fff;overflow-wrap:anywhere}
 #bdm .bdsub{font-size:13px;color:color-mix(in srgb,var(--el) 70%,#fff);margin-top:3px}
 #bdm .bdx{margin-left:auto;align-self:flex-start;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:18px;line-height:28px;padding:0}
 #bdm .bdin{padding:4px 18px 16px;display:flex;flex-direction:column;gap:12px}
+#bdm .bdpic{display:block;width:100%;padding:0!important;margin:0;border:1px solid var(--g-line,#2b2e33)!important;border-radius:12px!important;overflow:hidden;background:#0c0d11;cursor:zoom-in;line-height:0}
+#bdm .bdmc.big .bdpic{cursor:zoom-out}
+#bdm .bdpic img{display:block;width:100%;height:auto}
+#bdm .bdpic:focus-visible{outline:2px solid var(--el);outline-offset:2px}
+#bdm .bdaddpic{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 12px;border:1px dashed var(--g-line,#2b2e33);border-radius:10px;font-size:13px;color:#cfd2d8}
+#bdm .bdaddpic span{flex:1 1 220px}
 #bdm h4{margin:6px 0 0;font-size:11px;letter-spacing:.08em;color:#8e939b;font-weight:600}
 #bdm .bdlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px}
 #bdm .bdit{display:flex;align-items:center;gap:9px;font-size:13px;color:#dfe2e6;min-width:0}
@@ -160,9 +166,9 @@ ${st.more ? `<button type="button" class="bdmore" data-more="1"${st.busy ? ' dis
     if (!OPEN) return; let m = document.getElementById('bdm');
     if (!m) { m = document.createElement('div'); m.id = 'bdm'; m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); document.body.appendChild(m); m.onclick = openClick; }
     const x = OPEN, e = elOf(x.el), si = img(x.sum && x.sum.si), it = (q) => `<div class="bdit"><span class="${q.x ? 'x' : ''}">${img(q.i) ? `<img src="${esc(img(q.i))}" alt="">` : ''}</span><b title="${esc(q.n)}">${esc(q.n)}</b></div>`;
-    m.innerHTML = `<div class="bdmc" style="--el:${e[2]}"><div class="bdtop"><div class="bdsi">${si ? `<img src="${esc(si)}" alt="">` : ''}</div><div><h3>${esc(x.title)}</h3><div class="bdsub">${esc([CL[x.cls], subName(x)].filter(Boolean).join(' · '))} · by ${esc(x.by)} · ${esc(ago(x.at))}</div></div><button type="button" class="bdx g" data-bx="1" aria-label="Close">&times;</button></div>
+    m.innerHTML = `<div class="bdmc${x.big ? ' big' : ''}" style="--el:${e[2]};--bdw:${x.img ? (x.big ? '1240px' : '860px') : '680px'}"><div class="bdtop"><div class="bdsi">${si ? `<img src="${esc(si)}" alt="">` : ''}</div><div><h3>${esc(x.title)}</h3><div class="bdsub">${esc([CL[x.cls], subName(x)].filter(Boolean).join(' · '))} · by ${esc(x.by)} · ${esc(ago(x.at))}</div></div><button type="button" class="bdx g" data-bx="1" aria-label="Close">&times;</button></div>
 <div class="bdin">${x.tags.length ? `<div class="bdtags" style="display:flex;gap:5px;flex-wrap:wrap">${x.tags.map((t) => `<em style="font-style:normal;font-size:12px;padding:2px 9px;border-radius:999px;border:1px solid var(--g-line,#2b2e33)">${esc(TAGN[t] || t)}</em>`).join('')}</div>` : ''}
-${x.sum && x.sum.w && x.sum.w.length ? `<h4>WEAPONS</h4><div class="bdlist">${x.sum.w.map(it).join('')}</div>` : ''}${x.sum && x.sum.a && x.sum.a.length ? `<h4>ARMOR</h4><div class="bdlist">${x.sum.a.map(it).join('')}</div>` : ''}
+${x.img ? `<button type="button" class="bdpic" data-bzoom="1" title="${x.big ? 'Make smaller' : 'Show bigger'}" aria-label="Loadout picture, ${x.big ? 'make smaller' : 'show bigger'}"><img src="${esc(x.img)}" alt="The loadout: weapons, stats, armor, subclass and artifact"></button>` : !x.full ? '' : `${x.mine && window.__gtlo && window.__gtlo.buildPic ? `<div class="bdaddpic"><span>Builds now show the full loadout picture. Add one to this build.</span><button type="button" class="b" data-bpic="1"${x.picBusy ? ' disabled' : ''}>${x.picBusy ? 'Making the picture...' : 'Add picture'}</button></div>` : ''}${x.sum && x.sum.w && x.sum.w.length ? `<h4>WEAPONS</h4><div class="bdlist">${x.sum.w.map(it).join('')}</div>` : ''}${x.sum && x.sum.a && x.sum.a.length ? `<h4>ARMOR</h4><div class="bdlist">${x.sum.a.map(it).join('')}</div>` : ''}`}
 ${x.notes ? `<h4>HOW TO PLAY IT</h4><div class="bdnotes">${esc(x.notes)}</div>` : x.full ? '' : '<p class="mute">Loading...</p>'}</div>
 <div class="bdft">${votes(x, true)}<span class="bdu" style="font-size:12.5px;color:#8e939b">${x.uses} import${x.uses === 1 ? '' : 's'}</span>${x.mine || x.staff ? `<button type="button" class="g" data-bdel="${esc(x.id)}">${x.mine ? 'Delete my build' : 'Take down'}</button>` : ''}<button type="button" class="b bdimp" data-imp="${esc(x.id)}">Import to my loadouts</button>${x.msg ? `<div class="bdmsg">${esc(x.msg)}</div>` : ''}</div></div>`;
   }
@@ -175,6 +181,16 @@ ${x.notes ? `<h4>HOW TO PLAY IT</h4><div class="bdnotes">${esc(x.notes)}</div>` 
     if (e.target.id === 'bdm' || e.target.closest('[data-bx]')) { closeOpen(); return; }
     const v = e.target.closest('[data-bv]'); if (v) { vote(v.dataset.id, +v.dataset.bv, v); return; }
     const i = e.target.closest('[data-imp]'); if (i) { imp(i.dataset.imp); return; }
+    if (e.target.closest('[data-bzoom]') && OPEN) { OPEN.big = !OPEN.big; drawOpen(); return; }
+    if (e.target.closest('[data-bpic]') && OPEN && !OPEN.picBusy) {
+      const o = OPEN; o.picBusy = true; o.msg = ''; drawOpen();
+      try {
+        const img = await window.__gtlo.buildPic(o.code, o.title);
+        if (!img) throw new Error('The picture could not be made. Open the Loadouts tab once so your gear is loaded, then try again.');
+        await gt.bdPic({ id: o.id, img }); o.img = img;
+      } catch (er) { o.msg = clean(er); }
+      o.picBusy = false; if (OPEN === o) drawOpen(); return;
+    }
     const d = e.target.closest('[data-bdel]');
     if (d && OPEN) {
       if (!OPEN.sure) { OPEN.sure = true; OPEN.msg = 'Click again to ' + (OPEN.mine ? 'delete it for good.' : 'take it down.'); drawOpen(); return; }
