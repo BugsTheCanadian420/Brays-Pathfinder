@@ -97,12 +97,16 @@
   // Someone opened a share link on the website: show the loadout (no sign-in needed to look), with a button to add it.
   // A phone's browser (a scanned QR code opens there) rather than the home-screen app, which keeps its own loadouts on iPhones.
   const homeTip = () => { try { return !!(mod && mod.code) && document.documentElement.classList.contains('gtweb') && matchMedia('(pointer:coarse)').matches && !matchMedia('(display-mode: standalone)').matches && !navigator.standalone; } catch (e) { return false; } };
+  // The Builds tab opens a build here: the same pop-up as a share link, with "Add to my loadouts".
+  window.__gtlo = Object.assign(window.__gtlo || {}, {
+    openBuild(code, meta) { const l = decode(code); if (meta && meta.title) l.n = String(meta.title).slice(0, 80); mod = { t: 'shin', l, bid: meta && meta.id, by: meta && meta.by }; drawMod(); },
+  });
   function shinHTML() {
     const l = mod.l, signed = !!D0(), cls = l.c < 3 ? CL[l.c] : 'Any class';
     const grp = (bs) => l.it.filter((q) => bs.includes(q.b)).sort((a, b) => bs.indexOf(a.b) - bs.indexOf(b.b));
     const row = (q) => `<div class="dl-shi${q.e === 0 ? ' fade' : ''}"><span>${q.i ? `<img src="${esc(V.icon(q.i))}" alt="">` : ''}</span><b>${esc(q.n || 'Item')}</b></div>`;
     const sec2 = (t, bs) => { const l2 = grp(bs); return l2.length ? `<h4>${t}</h4><div class="dl-shg">${l2.map(row).join('')}</div>` : ''; };
-    return `<div class="dl-mc dl-shin"><h3>${esc(l.n || 'Shared loadout')}</h3><p class="mute">${esc(cls)} &middot; shared with Pathfinder${l.o ? ' &middot; ' + esc(String(l.o).slice(0, 140)) : ''}</p>${sec2('Subclass', [SUB])}${sec2('Weapons', WB)}${sec2('Armor', AB)}${sec2('General', GB)}${l.a && l.a.length ? `<p class="mute">Includes ${l.a.length} artifact perks${l.fm && l.fm.length ? ' and ' + l.fm.length + ' mods' : ''}.</p>` : ''}${signed ? '' : '<div class="dl-wr">Sign in (Inventory tab) to add it to your loadouts. Items are matched to the ones you own.</div>'}${homeTip() ? '<p class="mute dl-hst">Using Pathfinder from your home screen? Copy the link, then open Pathfinder there and paste it into Loadouts &gt; Import loadout. <button class="g" data-md="shcopy">Copy link</button></p>' : ''}<div class="dl-bt"><button class="b" data-md="shadd"${signed ? '' : ' disabled'}>Add to my loadouts</button><span class="dl-sp"></span><button class="g" data-md="x">Close</button></div></div>`;
+    return `<div class="dl-mc dl-shin"><h3>${esc(l.n || 'Shared loadout')}</h3><p class="mute">${esc(cls)} &middot; ${mod.bid ? 'a build by ' + esc(mod.by || 'a Guardian') + ' from the Builds tab' : 'shared with Pathfinder'}${l.o ? ' &middot; ' + esc(String(l.o).slice(0, 140)) : ''}</p>${sec2('Subclass', [SUB])}${sec2('Weapons', WB)}${sec2('Armor', AB)}${sec2('General', GB)}${l.a && l.a.length ? `<p class="mute">Includes ${l.a.length} artifact perks${l.fm && l.fm.length ? ' and ' + l.fm.length + ' mods' : ''}.</p>` : ''}${signed ? '' : '<div class="dl-wr">Sign in (Inventory tab) to add it to your loadouts. Items are matched to the ones you own.</div>'}${homeTip() ? '<p class="mute dl-hst">Using Pathfinder from your home screen? Copy the link, then open Pathfinder there and paste it into Loadouts &gt; Import loadout. <button class="g" data-md="shcopy">Copy link</button></p>' : ''}<div class="dl-bt"><button class="b" data-md="shadd"${signed ? '' : ' disabled'}>Add to my loadouts</button><span class="dl-sp"></span><button class="g" data-md="x">Close</button></div></div>`;
   }
   (async () => {
     let sp; try { sp = new URLSearchParams(location.search); } catch (e) { return; }
@@ -1326,9 +1330,19 @@ ${mod.msg && mod.cats ? `<p class="dl-msm">${esc(mod.msg)}</p>` : ''}
     else if (mod.t === 'imp') {
       h = `<div class="dl-mc"><h3>Import loadout</h3><p class="mute">Paste a Pathfinder share link (d2pathfinder.com/...), a DIM loadout link (dim.gg/...) or a loadout code (GTL1:...), or choose or drop a picture made with Pathfinder. Items are matched to the closest ones you own.</p><textarea id="dlimp" placeholder="https://d2pathfinder.com/..." spellcheck="false">${esc(mod.text || '')}</textarea>${mod.msg ? `<div class="dl-wr">${esc(mod.msg)}</div>` : ''}<div class="dl-bt"><button class="g" data-md="paste">Paste from clipboard</button><button class="g" data-md="pickpic">Choose a picture</button><input type="file" id="dlimpf" accept="image/*" hidden><span class="dl-sp"></span><button class="b" data-md="doimp">Import</button><button class="g" data-md="x">Cancel</button></div></div>`;
     } else if (mod.t === 'shmenu') {
-      h = `<div class="dl-mc dl-ig-pop"><h3>Share loadout</h3><p class="mute">A link opens the loadout for anyone, in Pathfinder or in a browser, like a dim.gg link. A picture is easy to post anywhere.</p>${mod.msg ? `<div class="dl-wr">${esc(mod.msg)}</div>` : ''}<div class="dl-bt dl-col"><button class="b" data-md="shlink">Copy share link</button><button class="g" data-md="shpic">Share as a picture</button><button class="g" data-md="shcode">Copy loadout code</button>${navigator.share ? '<button class="g" data-md="shsend">Send the code...</button>' : ''}<button class="g" data-md="x">Close</button></div></div>`;
+      h = `<div class="dl-mc dl-ig-pop"><h3>Share loadout</h3><p class="mute">A link opens the loadout for anyone, in Pathfinder or in a browser, like a dim.gg link. A picture is easy to post anywhere.</p>${mod.msg ? `<div class="dl-wr">${esc(mod.msg)}</div>` : ''}<div class="dl-bt dl-col"><button class="b" data-md="shlink">Copy share link</button><button class="g" data-md="shpic">Share as a picture</button>${gt.bdPub && window.__gtFlag && window.__gtFlag('tab-builds', true) === false ? '' : gt.bdPub ? '<button class="g" data-md="shbuild">Share to Builds (the community gallery)</button>' : ''}<button class="g" data-md="shcode">Copy loadout code</button>${navigator.share ? '<button class="g" data-md="shsend">Send the code...</button>' : ''}<button class="g" data-md="x">Close</button></div></div>`;
     } else if (mod.t === 'shlink') {
       h = `<div class="dl-mc dl-ig-pop"><h3>Share link</h3><p class="mute">${esc(mod.copied ? 'Copied. Paste it anywhere: Discord, a message, a forum post. It shows a preview card with the loadout picture.' : mod.copyFail ? 'Your browser blocked copying. The link below is selected: copy it with Ctrl+C, or press and hold it on a phone.' : 'Copy it and paste it anywhere: Discord, a message, a forum post. It shows a preview card with the loadout picture.')}</p><input id="dlurl" class="dl-url" readonly value="${esc(mod.url)}"><div class="dl-bt"><button class="b" data-md="lcopy">Copy link</button>${navigator.share ? '<button class="g" data-md="lsend">Share...</button>' : ''}<span class="dl-sp"></span><button class="g" data-md="x">Close</button></div></div>`;
+    } else if (mod.t === 'bdpub') {
+      const tg = (k, label) => `<label class="dl-bdt${mod.tags.includes(k) ? ' on' : ''}"><input type="checkbox" data-bdtag="${k}"${mod.tags.includes(k) ? ' checked' : ''}>${label}</label>`;
+      h = `<div class="dl-mc dl-bdp"><h3>Share to Builds</h3><p class="mute">Your build goes in the Builds tab for everyone to see, vote on and import. People get the same subclass, weapons, armor, mods and artifact perks, matched to the gear they own.</p>${mod.signed === false ? '<div class="dl-wr">Sharing builds needs a Pathfinder account. Sign in at Settings &gt; Accounts first.</div>' : ''}${mod.msg ? `<div class="dl-wr">${esc(mod.msg)}</div>` : ''}
+<label class="dl-bdl">Name<input id="bdtitle" maxlength="60" value="${esc(mod.title)}" placeholder="For example: Golden Gun GM build"></label>
+${mod.l.c < 3 ? '' : `<label class="dl-bdl">Class<select id="bdcls"><option value="">Pick the class</option>${[0, 1, 2].map((c) => `<option value="${c}"${mod.cls === c ? ' selected' : ''}>${CL[c]}</option>`).join('')}</select></label>`}
+<div class="dl-bdl">Good for (up to 4)<div class="dl-bdts">${tg('pve', 'PvE')}${tg('pvp', 'PvP')}${tg('raid', 'Raids')}${tg('dungeon', 'Dungeons')}${tg('gm', 'Grandmasters')}${tg('solo', 'Solo')}${tg('trials', 'Trials')}${tg('beginner', 'Beginners')}</div></div>
+<label class="dl-bdl">How to play it (optional)<textarea id="bdnotes" maxlength="1200" rows="5" placeholder="What the build does, how to play it, what to swap.">${esc(mod.notes)}</textarea></label>
+<div class="dl-bt"><button class="b" data-md="bdgo"${mod.busy ? ' disabled' : ''}>${mod.busy ? 'Sharing...' : 'Share to Builds'}</button><span class="dl-sp"></span><button class="g" data-md="x">Cancel</button></div></div>`;
+    } else if (mod.t === 'bddone') {
+      h = `<div class="dl-mc dl-ig-pop"><h3>Shared to Builds</h3><p class="mute">"${esc(mod.title)}" is in the Builds tab now. Every like and every import moves it up the popular list.</p><div class="dl-bt"><button class="b" data-md="bdopen">Open Builds</button><span class="dl-sp"></span><button class="g" data-md="x">Close</button></div></div>`;
     } else if (mod.t === 'shin') {
       h = shinHTML();
     } else if (mod.t === 'share') {
@@ -1365,6 +1379,11 @@ ${mod.msg && mod.cats ? `<p class="dl-msm">${esc(mod.msg)}</p>` : ''}
     if (!mod) return;
     if (e.target.id === 'dlimpf') { const f = e.target.files && e.target.files[0]; e.target.value = ''; if (f) impPic(f); return; }
     if (e.target.id === 'dlnm') mod.nh = +e.target.value;
+    if (e.target.dataset && e.target.dataset.bdtag && mod.t === 'bdpub') {
+      const k = e.target.dataset.bdtag, ti = g('bdtitle'), no = g('bdnotes'); if (ti) mod.title = ti.value; if (no) mod.notes = no.value;
+      if (e.target.checked) { if (mod.tags.length >= 4) { e.target.checked = false; mod.msg = 'Pick up to 4.'; drawMod(); return; } mod.tags.push(k); } else mod.tags = mod.tags.filter((t) => t !== k);
+      mod.msg = ''; drawMod(); return;
+    }
     else if (e.target.id === 'dlslot') { mod.i = +e.target.value; }
     else if (e.target.id === 'dlimp') mod.text = e.target.value;
   }
@@ -1403,7 +1422,7 @@ ${mod.msg && mod.cats ? `<p class="dl-msm">${esc(mod.msg)}</p>` : ''}
       mod = null; drawMod(); return;
     }
     // Sharing Equipped: wait until its mods, subclass and artifact have been read.
-    if (mod && mod.t === 'shmenu' && mod.wait && ['shlink', 'shpic', 'shcode', 'shsend'].includes(a)) {
+    if (mod && mod.t === 'shmenu' && mod.wait && ['shlink', 'shpic', 'shcode', 'shsend', 'shbuild'].includes(a)) {
       const w = mod.wait, m0 = mod; m0.msg = 'Reading your mods, subclass and artifact...'; drawMod(); await w;
       if (mod !== m0) return; m0.msg = '';
     }
@@ -1439,7 +1458,30 @@ ${mod.msg && mod.cats ? `<p class="dl-msm">${esc(mod.msg)}</p>` : ''}
       catch (er) { prompt('Copy this link:', url); }
       return;
     }
+    if (mod.t === 'shin' && a === 'shadd' && mod.bid && gt.bdUse) gt.bdUse({ id: mod.bid }).catch(() => {}); // a Builds import counts towards its popularity
     if (mod.t === 'shin' && a === 'shadd') { const l = mod.l; if (!D0()) return; try { sessionStorage.removeItem('gt.share'); } catch (er) { /* storage off */ } mod = null; drawMod(); importLo(l); window.show && window.show('loadouts'); return; }
+    if (mod.t === 'shmenu' && a === 'shbuild') {
+      const l = mod.l; mod = { t: 'bdpub', l, title: /^equipped$/i.test(String(l.n || '').trim()) ? '' : String(l.n || '').slice(0, 60), notes: String(l.o || '').slice(0, 1200), tags: [], cls: l.c < 3 ? l.c : '', msg: '' }; drawMod();
+      if (gt.pfaStatus) gt.pfaStatus().then((st) => { if (mod && mod.t === 'bdpub') { mod.signed = !!(st && st.on); if (!mod.signed) drawMod(); } }, () => {});
+      setTimeout(() => { const i = g('bdtitle'); if (i) i.focus(); }, 30);
+      return;
+    }
+    if (mod.t === 'bdpub' && a === 'bdgo') {
+      const ti = g('bdtitle'), no = g('bdnotes'), cs = g('bdcls'); mod.title = ti ? ti.value : mod.title; mod.notes = no ? no.value : mod.notes; if (cs) mod.cls = cs.value === '' ? '' : +cs.value;
+      if (mod.title.replace(/[^\p{L}\p{N}]/gu, '').length < 3) { mod.msg = 'Give the build a name of at least 3 letters.'; drawMod(); return; }
+      if (mod.cls === '') { mod.msg = 'Pick the class this build is for.'; drawMod(); return; }
+      const l = mod.l, m0 = mod; let ex = [];
+      try { ex = resolve(l).filter((r) => r && r.x && r.x.r === 'Exotic').map((r) => r.en.h); } catch (er) { ex = []; }
+      m0.busy = true; m0.msg = ''; drawMod();
+      try {
+        const lc = l.c < 3 ? l : { ...l, c: m0.cls };
+        await gt.bdPub({ title: m0.title.trim(), notes: m0.notes.trim(), tags: m0.tags, code: codeOf(lc), ex, cls: m0.cls });
+        if (mod === m0) { mod = { t: 'bddone', title: m0.title.trim() }; drawMod(); }
+        if (window.__gtBuilds) window.__gtBuilds.refresh();
+      } catch (er) { if (mod === m0) { m0.busy = false; m0.msg = V.clean(er); drawMod(); } }
+      return;
+    }
+    if (mod.t === 'bddone' && a === 'bdopen') { mod = null; drawMod(); if (window.show) window.show('builds'); return; }
     if (mod.t === 'shmenu') {
       const l = mod.l;
       if (a === 'shpic') { mod = null; drawMod(); toast('Drawing the picture...'); try { await loImage(l); } catch (er) { toast('Could not draw the picture: ' + V.clean(er), { bad: 1 }); } return; }
@@ -1747,7 +1789,7 @@ ${art ? `<div class="dl-mrow"><span class="dl-gl">Artifact &middot; ${esc(AR.ite
 .dl-wr{color:#ffb74d;font-size:13px}
 .dl-ef{display:flex;gap:8px;padding:10px 14px;border-top:1px solid #2b2d31;background:#0e1013;flex-wrap:wrap}
 #dlmod .dl-url{width:100%;box-sizing:border-box;font:13px ui-monospace,Consolas,monospace;padding:9px 10px;background:#0e1013;border:1px solid #3a3d43;border-radius:3px;color:#fff}
-.dl-shin{max-width:min(620px,94vw)}.dl-hst{margin:10px 0 0;font-size:12.5px;line-height:1.5}.dl-hst .g{margin-left:6px;padding:3px 10px;font-size:12px}.dl-shin h4{margin:6px 0 2px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#8b8f97}
+.dl-shin{max-width:min(620px,94vw)}.dl-bdp{max-width:min(560px,94vw)}.dl-bdl{display:flex;flex-direction:column;gap:5px;margin:10px 0 0;font-size:12.5px;color:#cfd2d8}.dl-bdl input,.dl-bdl select,.dl-bdl textarea{width:100%;box-sizing:border-box;font:inherit;font-size:14px}.dl-bdl textarea{resize:vertical;min-height:84px}.dl-bdts{display:flex;flex-wrap:wrap;gap:6px}.dl-bdt{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border:1px solid var(--g-line,#2b2e33);border-radius:999px;cursor:pointer;font-size:12.5px;color:#cfd2d8;user-select:none}.dl-bdt input{position:absolute;opacity:0;pointer-events:none}.dl-bdt.on{border-color:var(--g-accent,#e8b84a);color:#fff;background:color-mix(in srgb,var(--g-accent,#e8b84a) 18%,transparent)}.dl-bdt:focus-within{outline:2px solid var(--g-accent,#e8b84a);outline-offset:2px}.dl-hst{margin:10px 0 0;font-size:12.5px;line-height:1.5}.dl-hst .g{margin-left:6px;padding:3px 10px;font-size:12px}.dl-shin h4{margin:6px 0 2px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#8b8f97}
 .dl-shg{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}.dl-shin .dl-bt{position:sticky;bottom:-16px;background:#1a1c20;padding:10px 0 4px;margin-bottom:-4px}.dl-shin .dl-wr{margin-top:4px}.dl-shi{display:flex;align-items:center;gap:8px;font-size:13px}.dl-shi{min-width:0}.dl-shi b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}.dl-shi span{width:40px;height:40px;flex:none;background:#14161b;border:1px solid #3a3d43}.dl-shi img{width:100%;height:100%;display:block}.dl-shi.fade{opacity:.55}
 #dlmod{position:fixed;inset:0;z-index:95;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;--t:var(--gt-t,44px)}
 .dl-mc{background:#1a1c20;border:1px solid #4a4d54;border-radius:4px;padding:16px;min-width:300px;max-width:min(560px,92vw);max-height:86vh;overflow:auto;color:#e6e7ea;display:flex;flex-direction:column;gap:10px}

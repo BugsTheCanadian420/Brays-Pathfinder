@@ -667,7 +667,6 @@ ${quick.length ? `<div class="tcol" style="margin-top:14px">Quick wins: almost d
     { id: 'dr', g: 'look', c: '#6aa6e0', name: 'Destiny Report', url: 'https://destiny.report/', desc: 'Weapon database: search every weapon by perk, frame, element and where it drops, and find god rolls.' },
     { id: 'ls', g: 'look', c: 'var(--ak-lost)', name: 'Lost Sector Report', url: 'https://d2lostsector.report/', desc: 'Today\'s legend and master lost sectors, rewards, modifiers and the rotation ahead.' },
     { id: 'cal', g: 'look', c: '#d36b8f', name: 'Caldera Report', url: 'https://caldera.report/', desc: 'Caldera clears and stats for any guardian.' },
-    { id: 'mob', g: 'build', c: '#e0a35a', name: 'Mobalytics', url: 'https://mobalytics.gg/destiny-2/builds', desc: 'Meta builds for every class and subclass, with the exotics, aspects, fragments and mods to run.' },
     { id: 'blue', g: 'build', c: '#7d8cf0', name: 'Blueberries', url: 'https://www.blueberries.gg/', desc: 'Destiny 2 guides, best builds for the current meta, and weapon and armor breakdowns.' },
     { id: 'bldr', g: 'build', c: '#e2675c', name: 'Builders', url: 'https://builders.gg/destiny/builds', desc: 'Browse and filter Destiny 2 builds by class, subclass, season, exotics, aspects and fragments.' },
   ];
