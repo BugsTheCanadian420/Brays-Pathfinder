@@ -19,7 +19,7 @@ async function latest() {
 const json = (o, st) => new Response(JSON.stringify(o), { status: st || 200, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=300' } });
 // a share link: /abc1234, /abc1234/Name, or the same under /beta/ (made on the beta)
 const SHARE = /^\/(?:beta\/)?([A-Za-z0-9]{5,12})(?:\/([^/]{1,160}))?\/?$/i;
-export default {
+const SITE = {
   async fetch(request, env) {
     const u0 = new URL(request.url), p0 = u0.pathname.replace(/\/+$/, '').toLowerCase();
     // status.<your domain> is a short way to the status page (it lives on the main address, where Bungie allows the checks)
@@ -67,5 +67,15 @@ export default {
     } catch (e) {
       return res;
     }
+  },
+};
+// Every answer from the site gets a few protective headers: no other site may show it inside a frame (so nobody can lay
+// their page over it and trick a click on a hidden button), files are only read as the type they say they are, links to other
+// sites do not carry the page's address, and browsers always use https.
+const SECH = { 'X-Frame-Options': 'DENY', 'Content-Security-Policy': "frame-ancestors 'none'", 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'strict-origin-when-cross-origin', 'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=()', 'Strict-Transport-Security': 'max-age=31536000' };
+export default {
+  async fetch(request, env, ctx) {
+    const r = await SITE.fetch(request, env, ctx);
+    try { const out = new Response(r.body, r); for (const [k, v] of Object.entries(SECH)) if (!out.headers.has(k)) out.headers.set(k, v); return out; } catch (e) { return r; }
   },
 };
