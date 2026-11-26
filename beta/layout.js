@@ -37,7 +37,37 @@
       }
     }, true);
     document.addEventListener('keydown', (e) => { if (html.classList.contains('gtsq-open') && (e.key === 'Escape' || (e.key === 'Enter' && e.target && e.target.id === 'vq'))) { open(false); if (e.target && e.target.blur) e.target.blur(); } }, true);
-    window.addEventListener('resize', () => { if (html.classList.contains('gtsq-open') && innerWidth > 560) open(false); }); }
+    window.addEventListener('resize', () => { if (html.classList.contains('gtsq-open') && innerWidth > 560) open(false); });
+    // Phones: the bar's other buttons (saved searches, farming, loadouts, reload...) go in a ⋮ menu beside the search button, each
+    // with its icon and its name. The menu clicks the real button, so everything works as before.
+    const vm = document.createElement('button'); vm.id = 'gtvm'; vm.type = 'button'; vm.title = 'More'; vm.setAttribute('aria-label', 'More actions'); vm.setAttribute('aria-haspopup', 'menu'); vm.setAttribute('aria-expanded', 'false');
+    vm.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="12" cy="18.5" r="1.9"/></svg><i aria-hidden="true"></i>';
+    sq.after(vm);
+    const VMN = { savq: 'Saved searches', farm: 'Farming mode', junk: 'Vault cleanup', bulk: 'Select several items', sets: 'Loadouts', refresh: 'Reload from Bungie', qrefresh: 'Reload from Bungie' };
+    const vmBtns = () => [...document.querySelectorAll('#gtsrch .vbar .vtg button')].filter((b) => getComputedStyle(b).display !== 'none');
+    const vmName = (b) => VMN[b.dataset.act] || VMN[b.dataset.f] || String(b.title || b.getAttribute('aria-label') || '').split(/[:(]/)[0].trim() || 'Action';
+    const vmClose = () => { const m = document.getElementById('gtvmm'); if (m) m.remove(); vm.setAttribute('aria-expanded', 'false'); };
+    const vmMark = () => { vm.classList.toggle('on', vmBtns().some((b) => b.classList.contains('on'))); };
+    vm.onclick = (e) => {
+      e.stopPropagation(); if (document.getElementById('gtvmm')) { vmClose(); return; }
+      const list = vmBtns(); if (!list.length) return;
+      const m = document.createElement('div'); m.id = 'gtvmm'; m.setAttribute('role', 'menu');
+      list.forEach((b, i) => {
+        const it = document.createElement('button'); it.type = 'button'; it.setAttribute('role', 'menuitem');
+        const sv = b.querySelector('svg'); if (sv) { const c = sv.cloneNode(true); c.setAttribute('width', '18'); c.setAttribute('height', '18'); it.appendChild(c); }
+        const t = document.createElement('span'); t.textContent = vmName(b); it.appendChild(t);
+        if (b.classList.contains('on')) { const o = document.createElement('em'); o.textContent = 'On'; it.appendChild(o); }
+        it.onclick = (ev) => { ev.stopPropagation(); vmClose(); b.click(); setTimeout(vmMark, 300); };
+        m.appendChild(it);
+      });
+      document.body.appendChild(m);
+      const r = vm.getBoundingClientRect(); m.style.top = Math.round(r.bottom + 6) + 'px'; m.style.right = Math.max(8, Math.round(innerWidth - r.right)) + 'px';
+      vm.setAttribute('aria-expanded', 'true'); const f = m.querySelector('button'); if (f) f.focus({ preventScroll: true });
+    };
+    document.addEventListener('click', (e) => { const m = document.getElementById('gtvmm'); if (m && !m.contains(e.target) && e.target !== vm) vmClose(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && document.getElementById('gtvmm')) { vmClose(); vm.focus(); } });
+    window.addEventListener('resize', () => { if (innerWidth > 560) vmClose(); });
+    new MutationObserver(vmMark).observe(slot, { subtree: true, attributes: true, attributeFilter: ['class'], childList: true }); }
   // If the vault finished drawing before this file ran, its search bar is still in the page: move it up.
   { const ex = document.querySelector('#vault .vcard .vbar'), v = document.getElementById('vault');
     if (ex && v) { slot.appendChild(ex); ex.onclick = (e) => v.onclick(e); const c = v.querySelector('.vcard'); if (c) c.remove(); } }
@@ -245,13 +275,22 @@ html:not([data-gtab="vault"]) #gtsrch .vbar .vtg{display:none!important}
 #gtsrch .vbar button.g svg{display:block;pointer-events:none;width:16px!important;height:16px!important;filter:none!important}
 #gtsrch .vbar button.g:hover{background:rgba(255,255,255,.09)!important;color:#fff!important}
 #gtsrch .vbar button.g.on{background:var(--g-accent2,#2b4a6b)!important;color:var(--g-on-accent,#fff)!important}
-#gtsq,#gtsqx{display:none}
+#gtsq,#gtsqx,#gtvm{display:none}
+#gtvmm{position:fixed;z-index:9650;min-width:220px;max-width:calc(100vw - 16px);background:var(--g-panel,#1a1c20);border:1px solid #3d4047;border-radius:12px;box-shadow:0 14px 36px rgba(0,0,0,.6);padding:6px}
+#gtvmm button{display:flex!important;align-items:center;gap:12px;width:100%;min-height:46px;padding:0 12px!important;margin:0!important;background:transparent!important;border:0!important;border-radius:8px!important;color:#e6e7ea!important;font-size:15px!important;letter-spacing:normal!important;text-transform:none!important;text-align:left;cursor:pointer;box-shadow:none!important}
+#gtvmm button:hover,#gtvmm button:focus-visible{background:rgba(255,255,255,.08)!important;outline:0}
+#gtvmm svg{flex:none;width:18px!important;height:18px!important;color:#b4b8bf}
+#gtvmm span{flex:1}
+#gtvmm em{font-style:normal;font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--g-accent2,#2b4a6b);color:var(--g-on-accent,#fff)}
 header.gtbar nav button.gtdrag{z-index:6;cursor:grabbing!important;opacity:.9;background:rgba(255,255,255,.08)!important;border-radius:6px;transition:none!important}
 html.gtnavdrag,html.gtnavdrag *{cursor:grabbing!important;user-select:none!important}
 #gtnavmark{position:fixed;width:3px;border-radius:2px;background:var(--g-accent,#7ab8e8);box-shadow:0 0 8px var(--g-accent,#7ab8e8);z-index:9700;pointer-events:none;display:none}#gtnavmark.on{display:block}
 header.gtbar nav #gtmore.gtdropto{outline:2px dashed var(--g-accent,#7ab8e8);outline-offset:-4px;border-radius:6px}
 @media (max-width:560px){
 html[data-gtab="vault"] #gtsq{display:inline-flex;position:relative;flex:none;order:5;margin-left:auto;width:44px;height:40px;align-items:center;justify-content:center;padding:0!important;margin-right:0;background:var(--g-btn,#1b1d21)!important;border:1px solid #33363c!important;border-radius:8px!important;color:#cfd2d8!important;cursor:pointer}
+html[data-gtab="vault"] #gtvm{display:inline-flex;position:relative;flex:none;order:5;width:44px;height:40px;align-items:center;justify-content:center;padding:0!important;margin:0 0 0 6px;background:var(--g-btn,#1b1d21)!important;border:1px solid #33363c!important;border-radius:8px!important;color:#cfd2d8!important;cursor:pointer}
+#gtvm svg{width:20px!important;height:20px!important;flex:none;display:block;margin:0!important}#gtvm i{display:none;position:absolute;top:6px;right:7px;width:7px;height:7px;border-radius:50%;background:var(--g-accent,#7ab8e8)}#gtvm.on i{display:block}#gtvm[aria-expanded="true"]{border-color:var(--g-accent,#7ab8e8)!important;color:#fff!important}
+html[data-gtab="vault"] #gtsrch .vbar .vtg{display:none!important}
 #gtsq svg{width:21px!important;height:21px!important;flex:none;display:block;margin:0!important}html[data-gtab="vault"] #gtsrch{flex:0 0 auto;margin-left:0}
 #gtsq i{display:none;position:absolute;top:6px;right:7px;width:7px;height:7px;border-radius:50%;background:var(--g-accent,#7ab8e8)}#gtsq.on{color:var(--g-accent,#7ab8e8)!important;border-color:var(--g-accent,#7ab8e8)!important}#gtsq.on i{display:block}
 html:not(.gtsq-open) #gtsrch .vbar input{display:none!important}
