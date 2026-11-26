@@ -152,6 +152,7 @@
 #builds .bdsb p{margin:3px 0 0;font-size:13px;line-height:1.45;color:#b9bec6}#builds .bdsb{align-items:flex-start}
 #builds .bdartn{font-size:15px;color:#fff;margin-left:6px}
 @media (max-width:640px){#builds .bdex,#builds .bdnames{margin-left:0}#builds .bdcap{width:64px}}
+#builds .bdcols.solo{grid-template-columns:1fr}#builds .bdpicbig{cursor:zoom-in}#builds .bdsw.one{grid-template-columns:1fr}
 #builds .bdbtns{display:flex;gap:8px}#builds .bdbtns button{height:38px;padding:0 16px;border-radius:10px;cursor:pointer}
 #bdlb{position:fixed;inset:0;z-index:9200;background:rgba(4,6,10,.88);display:flex;align-items:center;justify-content:center;padding:16px;cursor:zoom-out}#bdlb img{max-width:100%;max-height:100%;border-radius:10px;box-shadow:0 30px 80px rgba(0,0,0,.6)}#bdlb button{position:absolute;top:14px;right:14px;width:40px;height:40px;border-radius:50%;font-size:22px;padding:0;cursor:pointer}
 @media (max-width:900px){#builds .bdcols{grid-template-columns:1fr}}
@@ -231,52 +232,32 @@ ${st.more ? `<button type="button" class="bdmore" data-more="1"${st.busy ? ' dis
   const drawOpen = () => draw();
   const tile = (q, sz, round) => { const u = img(q && q.i); return `<span class="bdti${round ? ' rd' : ''}" style="width:${sz}px;height:${sz}px${q && q.r && RC[q.r] ? ';border-color:' + RC[q.r] : ''}" title="${esc((q && q.n) || '')}${q && q.d ? '\n\n' + esc(q.d) : ''}">${u ? `<img src="${esc(u)}" alt="${esc((q && q.n) || '')}" loading="lazy">` : ''}</span>`; };
   function pageHTML(x) {
-    const e = elOf(x.el), si = img(x.sum && x.sum.si), inf = x.info || null, sw = x.sw || { s: [], w: [], p: [] };
+    // A build's page: the loadout picture, how to play it (when written), strengths and weaknesses (when picked) and more builds
+    // like it. Builds shared before pictures existed show their gear until the owner adds one.
+    const e = elOf(x.el), si = img(x.sum && x.sum.si), sw = x.sw || { s: [], w: [] };
     const box = (title, body, cls) => `<div class="bdbox${cls ? ' ' + cls : ''}"><h3>${title}</h3><div class="bdbb">${body}</div></div>`;
-    let sub = '', gear = '', stats = '', sets = '', art = '';
-    if (inf) {
-      const sp = inf.sp || [], k = (q, i) => (q.k !== undefined ? q.k : i === 0 ? 0 : i <= 4 ? 1 : i <= 6 ? 5 : 6);
-      const grp = [['Super', sp.filter((q, i) => k(q, i) === 0)], ['Abilities', sp.filter((q, i) => { const n = k(q, i); return n >= 1 && n <= 4; })], ['Aspects', sp.filter((q, i) => k(q, i) === 5)], ['Fragments', sp.filter((q, i) => k(q, i) >= 6)]].filter((g) => g[1].length);
-      // Super and abilities as icons with their names; aspects and fragments as a list with what each one does.
-      const cap = (q, sz) => `<div class="bdcap">${tile(q, sz)}<span>${esc(q.n || '')}</span></div>`;
-      const lst = (l, sz) => `<div class="bdlst">${l.map((q) => `<div class="bdli">${tile(q, sz)}<div><b>${esc(q.n || '')}</b>${q.d ? `<p>${esc(q.d)}</p>` : ''}</div></div>`).join('')}</div>`;
-      const top = grp.filter(([t]) => t === 'Super' || t === 'Abilities'), low = grp.filter(([t]) => t === 'Aspects' || t === 'Fragments');
-      if (grp.length) sub = box('Subclass' + (inf.sub && inf.sub.n ? ' · ' + esc(inf.sub.n) : ''), `${top.length ? `<div class="bdsubg">${top.map(([t, l]) => `<div class="bdsgi"><small>${t}</small><div class="bdrowi">${l.map((q) => cap(q, t === 'Super' ? 56 : 50)).join('')}</div></div>`).join('')}</div>` : ''}${low.map(([t, l]) => `<h4>${t}</h4>${lst(l, t === 'Aspects' ? 46 : 40)}`).join('')}`);
-      // Every weapon: type, its frame (or exotic perk, with what it does), and its perks by name; every armor piece: archetype,
-      // set, its exotic perk, and its mods by name.
-      const ex = (q) => q.intr && q.intr.n ? (q.r === 'Exotic' || q.intr.d) && q.r === 'Exotic' ? `<p class="bdex"><b>${esc(q.intr.n)}</b>${q.intr.d ? ' · ' + esc(q.intr.d) : ''}</p>` : '' : '';
-      const names = (l, lbl) => (l || []).length ? `<p class="bdnames"><span>${lbl}</span> ${l.map((p) => `<i title="${esc(p.d || '')}">${esc(p.n || '')}</i>`).join('')}</p>` : '';
-      const wl = (inf.w || []).map((q) => `<div class="bdgr"><div class="bdgi">${tile(q, 52)}<div class="bdgt"><b>${esc(q.n)}</b><small>${esc([[q.r === 'Exotic' ? 'Exotic' : '', q.t].filter(Boolean).join(' '), q.r !== 'Exotic' && q.intr ? q.intr.n : ''].filter(Boolean).join(' · '))}</small></div><div class="bdgm">${(q.p || []).map((p) => tile(p, 34, true)).join('')}</div></div>${ex(q)}${names(q.p, 'Perks')}</div>`).join('');
-      const al = (inf.a || []).map((q) => `<div class="bdgr"><div class="bdgi">${tile(q, 52)}<div class="bdgt"><small>${esc(q.s || '')}</small><b>${esc(q.n)}</b><small>${esc([q.r === 'Exotic' ? 'Exotic' : '', q.ar, q.r === 'Exotic' ? '' : q.set].filter(Boolean).join(' · '))}</small></div><div class="bdgm">${(q.m || []).map((p) => tile(p, 34)).join('')}</div></div>${ex(q)}${names(q.m, 'Mods')}</div>`).join('');
-      const any = (inf.any || []).length ? `<h4>Other mods</h4><div class="bdrowi">${inf.any.map((p) => tile(p, 34)).join('')}</div>${names(inf.any, 'Mods')}` : '';
-      if (wl || al) gear = box('Gear and mods', `${wl ? `<h4>Weapons</h4>${wl}` : ''}${al ? `<h4>Armor</h4>${al}` : ''}${any}`);
-      if (inf.sb && inf.sb.length) sets = box('Armor set bonuses', inf.sb.map((q) => `<div class="bdsb">${tile(q, 40, true)}<div><b>${esc(q.n)}</b><small>${esc(q.rc + '-piece · ' + q.s)}</small>${q.d ? `<p>${esc(q.d)}</p>` : ''}</div></div>`).join(''));
-      if (inf.art && ((inf.art.p || []).length || inf.art.i)) art = box('Artifact and perks', `<div class="bdrowi">${inf.art.i ? tile({ i: inf.art.i, n: inf.art.n }, 52) + `<b class="bdartn">${esc(inf.art.n || '')}</b>` : ''}</div>${(inf.art.p || []).length ? `<div class="bdlst two">${inf.art.p.map((p) => `<div class="bdli">${tile(p, 38, true)}<div><b>${esc(p.n || '')}</b>${p.d ? `<p>${esc(p.d)}</p>` : ''}</div></div>`).join('')}</div>` : ''}`);
-    } else if (x.sum) {
-      const it = (q) => `<div class="bdgi">${tile({ ...q, r: q.x ? 'Exotic' : '' }, 48)}<div class="bdgt"><b>${esc(q.n)}</b></div></div>`;
-      if ((x.sum.w || []).length || (x.sum.a || []).length) gear = box('Gear', `${(x.sum.w || []).length ? `<h4>Weapons</h4>${x.sum.w.map(it).join('')}` : ''}${(x.sum.a || []).length ? `<h4>Armor</h4>${x.sum.a.map(it).join('')}` : ''}`);
-    }
-    const tot = inf && inf.st ? inf.st : null, hasP = !!(sw.p && sw.p.length);
-    if (hasP || tot) stats = box('Stats', `${hasP ? `<h4>Priority</h4><div class="bdprio">${sw.p.map((i, n) => `${n ? '<i aria-hidden="true">›</i>' : ''}<span style="--c:${BDS.STC[i]}"><b>${n + 1}</b>${esc(BDS.STATS[i])}</span>`).join('')}</div>` : ''}${tot ? `<h4>Totals on the armor</h4>${tot.map((v, i) => `<div class="bdst1"><span>${esc(BDS.STATS[i])}</span><i><u style="width:${Math.max(0, Math.min(100, v / 2))}%;background:${BDS.STC[i]}"></u></i><b>${v}</b></div>`).join('')}` : ''}`);
-    const swb = (sw.s.length || sw.w.length) ? box('Strengths and weaknesses', `<div class="bdsw"><div class="good"><h4>Strengths</h4>${sw.s.length ? sw.s.map((k2) => `<p>✓ ${esc(BDS.STR[k2] || k2)}</p>`).join('') : '<p class="mute">None picked.</p>'}</div><div class="bad"><h4>Weaknesses</h4>${sw.w.length ? sw.w.map((k2) => `<p>✕ ${esc(BDS.WEAK[k2] || k2)}</p>`).join('') : '<p class="mute">None picked.</p>'}</div></div>`, 'bdswb') : '';
-    const canAdd = x.mine && window.__gtlo && window.__gtlo.buildPic && x.full && (!x.img || !inf || (inf.v || 1) < 2); // older builds: the owner can fill in everything the page now shows
-    const more = x.moreList && x.moreList.length ? box(`More ${esc([subName(x), CL[x.cls]].filter(Boolean).join(' '))} builds`, x.moreList.map((m) => `<button type="button" class="bdmi" data-open="${esc(m.id)}"><span><b>${esc(m.title)}</b><small>${m.likes - m.dislikes} likes · ${m.uses} imports</small></span><span class="bdmg">${gearIcons(m, 3)}</span></button>`).join('')) : '';
+    const ss2 = (sw.s || []).filter((k2) => BDS.STR[k2]), ww2 = (sw.w || []).filter((k2) => BDS.WEAK[k2]);
+    const swb = ss2.length || ww2.length ? box(ss2.length && ww2.length ? 'Strengths and weaknesses' : ss2.length ? 'Strengths' : 'Weaknesses', `<div class="bdsw${ss2.length && ww2.length ? '' : ' one'}">${ss2.length ? `<div class="good">${ss2.length && ww2.length ? '<h4>Strengths</h4>' : ''}${ss2.map((k2) => `<p>✓ ${esc(BDS.STR[k2])}</p>`).join('')}</div>` : ''}${ww2.length ? `<div class="bad">${ss2.length && ww2.length ? '<h4>Weaknesses</h4>' : ''}${ww2.map((k2) => `<p>✕ ${esc(BDS.WEAK[k2])}</p>`).join('')}</div>` : ''}</div>`, 'bdswb') : '';
+    const it = (q) => `<div class="bdgi">${tile({ ...q, r: q.x ? 'Exotic' : '' }, 48)}<div class="bdgt"><b>${esc(q.n)}</b></div></div>`;
+    const gear = x.sum && ((x.sum.w || []).length || (x.sum.a || []).length) ? box('Gear', `${(x.sum.w || []).length ? `<h4>Weapons</h4>${x.sum.w.map(it).join('')}` : ''}${(x.sum.a || []).length ? `<h4>Armor</h4>${x.sum.a.map(it).join('')}` : ''}`) : '';
+    const canAdd = x.mine && window.__gtlo && window.__gtlo.buildPic && x.full && !x.img;
+    const more = x.moreList && x.moreList.length ? box(`More ${esc((() => { const sn = subName(x), c = CL[x.cls] || ''; return sn && c && sn.includes(c) ? sn : [sn, c].filter(Boolean).join(' '); })())} builds`, x.moreList.map((m) => `<button type="button" class="bdmi" data-open="${esc(m.id)}"><span><b>${esc(m.title)}</b><small>${m.likes - m.dislikes} likes · ${m.uses} imports</small></span><span class="bdmg">${gearIcons(m, 3)}</span></button>`).join('')) : '';
     const chip = (cls, on, attr, k2, label) => `<label class="bdchip${cls}${on ? ' on' : ''}"><input type="checkbox" ${attr}="${k2}"${on ? ' checked' : ''}>${label}</label>`;
     const edit = x.editing ? `<div class="bdbox bdedit"><h3>Edit build</h3><div class="bdbb">
 <label class="bdl">Name<input id="bdetitle" maxlength="60" value="${esc(x.ed.title)}"></label>
 <div class="bdl">Good for (up to 4)<div class="bdchips">${TAGS.map(([k2, l2]) => chip('', x.ed.tags.includes(k2), 'data-etag', k2, esc(l2))).join('')}</div></div>
-<div class="bdl">Strengths (up to 8)<div class="bdchips">${Object.entries(BDS.STR).map(([k2, l2]) => chip(' gd', x.ed.s.includes(k2), 'data-estr', k2, esc(l2))).join('')}</div></div>
-<div class="bdl">Weaknesses (up to 6)<div class="bdchips">${Object.entries(BDS.WEAK).map(([k2, l2]) => chip(' bd', x.ed.w.includes(k2), 'data-eweak', k2, esc(l2))).join('')}</div></div>
-<div class="bdl">Stat priority (pick them in order)<div class="bdchips">${BDS.STATS.map((l2, i) => { const at = x.ed.p.indexOf(i); return chip(' pr', at >= 0, 'data-eprio', i, (at >= 0 ? `<em>${at + 1}</em>` : '') + esc(l2)); }).join('')}</div></div>
-<label class="bdl">How to play it<textarea id="bdenotes" maxlength="1200" rows="6">${esc(x.ed.notes)}</textarea></label>
+<div class="bdl">Strengths (optional, up to 8)<div class="bdchips">${Object.entries(BDS.STR).map(([k2, l2]) => chip(' gd', x.ed.s.includes(k2), 'data-estr', k2, esc(l2))).join('')}</div></div>
+<div class="bdl">Weaknesses (optional, up to 6)<div class="bdchips">${Object.entries(BDS.WEAK).map(([k2, l2]) => chip(' bd', x.ed.w.includes(k2), 'data-eweak', k2, esc(l2))).join('')}</div></div>
+<label class="bdl">How to play it (optional)<textarea id="bdenotes" maxlength="1200" rows="6">${esc(x.ed.notes)}</textarea></label>
 <div class="bdbtns"><button type="button" class="b" data-esave="1"${x.saving ? ' disabled' : ''}>${x.saving ? 'Saving...' : 'Save changes'}</button><button type="button" class="g" data-ecancel="1">Cancel</button></div></div></div>` : '';
+    const main = !x.full ? '<p class="mute">Loading the build...</p>' : x.img ? `<button type="button" class="bdpic bdpicbig" data-bzoom="1" aria-label="Show the loadout picture full size"><img src="${esc(x.img)}" alt="The loadout: weapons, stats, armor, subclass and artifact"></button>` : gear || '<p class="mute">This build has no picture yet.</p>';
+    const side = (x.notes ? box('How to play it', `<div class="bdnotes">${esc(x.notes)}</div>`) : '') + swb + more;
     return `<div class="bdw bdpage" style="--el:${e[2]}"><button type="button" class="g bdback" data-bback="1">‹ All builds</button>
 <div class="bdhero"><div class="bdsi big">${si ? `<img src="${esc(si)}" alt="">` : ''}</div><div class="bdht"><small>${esc([CL[x.cls], subName(x)].filter(Boolean).join(' · '))} build</small><h2>${esc(x.title)}</h2>${x.tags.length ? `<div class="bdtags">${x.tags.map((t) => `<em>${esc(TAGN[t] || t)}</em>`).join('')}</div>` : ''}<div class="bdby">by ${esc(x.by)} · shared ${esc(new Date(x.at).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' }))} (${esc(ago(x.at))})</div></div>
 <div class="bdha">${votes(x, true)}<span class="bdu">${x.uses} import${x.uses === 1 ? '' : 's'}</span><button type="button" class="b bdimp" data-imp="${esc(x.id)}">Import to my loadouts</button>${x.mine ? '<button type="button" class="g" data-bedit="1">Edit</button>' : ''}${x.mine || x.staff ? `<button type="button" class="g" data-bdel="${esc(x.id)}">${x.mine ? 'Delete' : 'Take down'}</button>` : ''}${x.msg ? `<div class="bdmsg">${esc(x.msg)}</div>` : ''}</div></div>
-${canAdd ? `<div class="bdaddpic"><span>${x.img ? 'Fill in everything the page can show now: perk, mod and ability names and what they do, exotic perks and set bonuses.' : 'Add the full page to this build: the picture, subclass, perks, mods and stats, made from your gear.'}</span><button type="button" class="b" data-bpic="1"${x.picBusy ? ' disabled' : ''}>${x.picBusy ? 'Making it...' : x.img ? 'Update picture and details' : 'Add picture and details'}</button></div>` : ''}
+${canAdd ? `<div class="bdaddpic"><span>This build has no picture yet. Make one from your gear.</span><button type="button" class="b" data-bpic="1"${x.picBusy ? ' disabled' : ''}>${x.picBusy ? 'Making it...' : 'Add picture'}</button></div>` : ''}
 ${edit}
-<div class="bdcols"><div class="bdmain">${x.full ? (sub + gear + stats + sets + art + swb) || '<p class="mute">This build has no details yet.</p>' : '<p class="mute">Loading the build...</p>'}</div>
-<div class="bdside">${x.notes ? box('How to play it', `<div class="bdnotes">${esc(x.notes)}</div>`) : ''}${x.img ? box('Loadout picture', `<button type="button" class="bdpic" data-bzoom="1" aria-label="Show the loadout picture full size"><img src="${esc(x.img)}" alt="The loadout: weapons, stats, armor, subclass and artifact"></button>`) : ''}${more}</div></div></div>`;
+<div class="bdcols${side ? '' : ' solo'}"><div class="bdmain">${main}</div>${side ? `<div class="bdside">${side}</div>` : ''}</div></div>`;
   }
   async function open(id, keepY) {
     if (!OPEN && !keepY) listY = window.scrollY;
@@ -300,7 +281,7 @@ ${edit}
     const t = e.target;
     if (t.closest('[data-bback]')) { closeOpen(); return; }
     if (t.closest('[data-bzoom]') && OPEN.img) { lightbox(OPEN.img); return; }
-    if (t.closest('[data-bedit]')) { const sw = OPEN.sw || { s: [], w: [], p: [] }; OPEN.editing = true; OPEN.ed = { title: OPEN.title, notes: OPEN.notes || '', tags: OPEN.tags.slice(), s: sw.s.slice(), w: sw.w.slice(), p: sw.p.slice() }; draw(); return; }
+    if (t.closest('[data-bedit]')) { const sw = OPEN.sw || { s: [], w: [], p: [] }; OPEN.editing = true; OPEN.ed = { title: OPEN.title, notes: OPEN.notes || '', tags: OPEN.tags.slice(), s: (sw.s || []).slice(), w: (sw.w || []).slice(), p: (sw.p || []).slice() }; draw(); return; }
     if (t.closest('[data-ecancel]')) { OPEN.editing = false; draw(); return; }
     if (t.closest('[data-esave]') && OPEN.ed) {
       const o = OPEN, ti = document.getElementById('bdetitle'), no = document.getElementById('bdenotes'); o.ed.title = ti ? ti.value : o.ed.title; o.ed.notes = no ? no.value : o.ed.notes;
