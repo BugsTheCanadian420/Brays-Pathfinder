@@ -1461,7 +1461,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     out: '<path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 16l-4-4 4-4M6 12h10"/>',
     in: '<path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3"/><path d="M14 16l4-4-4-4M18 12H8"/>',
   };
-  const mi = (k, label, extra) => `<button type="button" role="menuitem" data-pfm="${k}"><svg viewBox="0 0 24 24" aria-hidden="true">${MI[k === 'signout' ? 'out' : k === 'signin' ? 'in' : k]}</svg><span>${label}</span>${extra || ''}</button>`;
+  const mi = (k, label, extra) => `<button type="button" role="menuitem" data-pfm="${k}"><svg viewBox="0 0 24 24" aria-hidden="true">${MI[k === 'signout' ? 'out' : k === 'signin' || k === 'bungie' ? 'in' : k]}</svg><span>${label}</span>${extra || ''}</button>`;
   function pfMenu(b) {
     const m = document.createElement('div'); m.id = 'gtpfm'; m.setAttribute('role', 'menu');
     const on = !!(PFA && PFA.on), role = { owner: 'Owner', founder: 'Founder', dev: 'Developer', tester: 'Tester' }[FLG && FLG.role] || 'User';
@@ -1469,7 +1469,8 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     const hn = (SECN.Help || 0) + (SECN['Help desk'] || 0);
     m.innerHTML = `<div class="gtpfh">${avHTML('gtpfa big')}<div><b>${on ? esc(pdn()) : 'Not signed in'}</b><small>${on ? esc(role) + ' &middot; Pathfinder account' : 'Sign in to bring your Bungie accounts to every device'}</small></div></div>`
       + mi('set', 'Settings') + mi('help', 'Help &amp; support', hn ? `<em class="gtpfb">${hn > 9 ? '9+' : hn}</em>` : '') + (ga ? mi('app', esc(ga)) : '')
-      + (on ? mi('signout', 'Sign out') : PFA && PFA.avail ? mi('signin', 'Sign in or make an account') : '');
+      + (!D && window.gt && gt.login ? mi('bungie', 'Sign in with Bungie') : '')
+      + (on ? mi('signout', 'Sign out') : !PFA || PFA.avail ? mi('signin', 'Sign in to Pathfinder account') : '');
     document.body.appendChild(m);
     const r = b.getBoundingClientRect(); m.style.top = Math.round(r.bottom + 6) + 'px'; m.style.right = Math.max(8, Math.round(innerWidth - r.right)) + 'px';
     b.setAttribute('aria-expanded', 'true'); const f = m.querySelector('button'); if (f) f.focus();
@@ -1480,6 +1481,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
       else if (k === 'help') helpGo();
       else if (k === 'app') window.__gtGetApp.open(b);
       else if (k === 'signin') goSettings('Accounts', 'pfanm');
+      else if (k === 'bungie') bLogin();
       else if (k === 'signout') pfaAct('logout').then(pfChip);
     };
   }
@@ -1864,7 +1866,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
         verAt = Date.now();
         const v = await fetch('version.json', { cache: 'no-store' }).then((x) => (x.ok ? x.json() : null)).catch(() => null);
         if (v && v.v && window.__GT_VER__ && v.v !== window.__GT_VER__) {
-          const typing = document.activeElement && /^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName) && document.activeElement.value;
+          const typing = (document.activeElement && /^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName) && document.activeElement.value) || [...document.querySelectorAll('#settings input[id^="pfa"]')].some((i) => i.value);
           if (away >= 6e5 && !typing) { location.reload(); return; }
           if (!document.getElementById('gtnewver')) { const d = document.createElement('div'); d.id = 'gtnewver'; d.setAttribute('role', 'status'); d.innerHTML = '<span>Pathfinder was updated.</span><button type="button">Reload</button>'; d.querySelector('button').onclick = () => location.reload(); document.body.appendChild(d); }
         }
@@ -2080,7 +2082,17 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     return sx('Sync across devices', 'Keeps loadouts, tags, notes, settings, tracked triumphs, Home pins and wish lists (including My wish list) the same on every device where you turn this on, for this Bungie account. Stored in your own token service. <br><span class="syst">' + line + '</span>' + (onv ? ' <button class="g" data-sa="syncnow" style="margin-left:6px">Sync now</button>' : ''), `<label class="tgl"><input type="checkbox" data-syncon${onv ? ' checked' : ''}><i></i></label>`);
   }
   window.addEventListener('gtsync', () => { if (settingsSec.classList.contains('on')) drawSettings(); });
+  // Settings redraws whenever something changes in the background (a sync, the feature switches, help answers, coming back to the
+  // app). What you were typing in the account boxes (sign in, passwords, names) and where your cursor was stay put through it.
   function drawSettings() {
+    const keep = {}; settingsSec.querySelectorAll('input[id^="pfa"]:not([type=file]):not([type=checkbox])').forEach((i) => { keep[i.id] = i.value; });
+    const ae = document.activeElement, fid = ae && ae.id && settingsSec.contains(ae) && /^(INPUT|TEXTAREA)$/.test(ae.tagName) ? ae.id : '';
+    let ss = null, se = null; try { if (fid) { ss = ae.selectionStart; se = ae.selectionEnd; } } catch (e) { /* no selection on this kind of box */ }
+    drawSettings0();
+    Object.keys(keep).forEach((id) => { const i = document.getElementById(id); if (i && keep[id] && i.value !== keep[id] && !i.dataset.fresh) i.value = keep[id]; });
+    if (fid) { const back = () => { const i = document.getElementById(fid); if (i && document.activeElement !== i && (!document.activeElement || document.activeElement === document.body || !settingsSec.contains(document.activeElement) || document.activeElement.id === fid)) { try { i.focus({ preventScroll: true }); if (ss != null) i.setSelectionRange(ss, se); } catch (e) { /* not focusable now */ } } }; back(); setTimeout(back, 0); }
+  }
+  function drawSettings0() {
     const sx = (title, desc, ctl, wide) => `<div class="sx${wide ? ' wide' : ''}"><div class="sxt"><b>${title}</b>${desc ? `<small>${desc}</small>` : ''}</div><div class="sxc">${ctl}</div></div>`;
     const tgl = (k) => `<label class="tgl"><input type="checkbox" data-sk="${k}"${SET[k] ? ' checked' : ''}><i></i></label>`;
     const rng = (k, min, max, unit) => `<input type="range" data-sk="${k}" min="${min}" max="${max}" value="${SET[k]}"><output>${SET[k]}${unit}</output>`;
@@ -2206,8 +2218,14 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     // Help (ask the team) and Problems (the error log) show under About & help, not as sections of their own.
     const sect = (c) => (title(c) === 'Help' || title(c) === 'Problems' ? 'About & help' : title(c));
     const key = (c) => { const i = SORD.indexOf(title(c)); return i < 0 ? 99 : i; };
-    const cards = [...pane.children].filter((c) => c.classList.contains('card')).sort((a, b) => key(a) - key(b));
-    cards.forEach((c) => pane.appendChild(c));
+    const now = [...pane.children].filter((c) => c.classList.contains('card')), cards = now.slice().sort((a, b) => key(a) - key(b));
+    // Moving a card takes the cursor out of any box in it (on a phone that also closes the keyboard, which resizes the page and
+    // lays it out again), so cards only move when they are out of order, and the box you were typing in gets the cursor back.
+    if (cards.some((c, i) => c !== now[i])) {
+      const ae = document.activeElement, has = ae && ae !== document.body && root.contains(ae); let ss = null, se = null; try { if (has) { ss = ae.selectionStart; se = ae.selectionEnd; } } catch (e) { /* no selection here */ }
+      cards.forEach((c) => pane.appendChild(c));
+      if (has && document.activeElement !== ae && ae.isConnected) { try { ae.focus({ preventScroll: true }); if (ss != null) ae.setSelectionRange(ss, se); } catch (e) { /* not focusable now */ } }
+    }
     const names = [...new Set(cards.map(sect).filter(Boolean))];
     if (SSEC === 'Help') SSEC = 'About & help';
     if (SSEC === 'Founder panel') SSEC = 'Founder'; if (SSEC === 'Keyboard shortcuts') SSEC = 'Shortcuts'; // renamed sections
@@ -2471,7 +2489,11 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   const STN = ['weapons', 'health', 'class', 'grenade', 'super', 'melee'];
   const clean = (e) => String(e.message || e).replace(/^Error invoking remote method '[^']+': (Error: )?/, '');
   const noBar = () => { const sl = document.getElementById('gtsrch'); if (sl) sl.replaceChildren(); };
-  const msg = (t, err) => { if (t && err && MAINT_RE.test(t)) maintShow(); noBar(); sec.innerHTML = `<div class="card"><h2>Vault</h2><p class="${err ? '' : 'mute'}">${esc(t)}</p>${err ? (/sign-?in|session expired|not signed|authoriz|token/i.test(t) ? '<button class="b" data-act="out">Sign in again</button> ' : '') + '<button class="g" data-act="retry">Try again</button>' : ''}</div>`; };
+  // While the vault loads for a long time (the first load downloads Bungie's item list, slow on a phone), ways out show under the
+  // message after 15 seconds: sign in to Bungie again, bring the accounts in from the Pathfinder account, or start over.
+  let LOADT = 0, MSGT = '', slowT = 0;
+  const slowHTML = () => (LOADT && Date.now() - LOADT > 15000 ? `<div class="gtslow" style="margin-top:14px"><p class="mute" style="font-size:13px">Taking a while? The first load downloads Bungie's item list, which can take a minute or two on a phone. You can keep waiting, or:</p><p><button class="b" data-act="presetlogin">Sign in with Bungie</button> ${PFA && PFA.on ? '<button class="g" data-act="pfapull" title="Bring in the Bungie accounts saved in your Pathfinder account">Get my accounts</button> ' : ''}<button class="g" data-act="retry">Start over</button></p></div>` : '');
+  const msg = (t, err) => { if (t && err && MAINT_RE.test(t)) maintShow(); noBar(); MSGT = t; if (err) LOADT = 0; sec.innerHTML = `<div class="card"><h2>Vault</h2><p class="${err ? '' : 'mute'}">${esc(t)}</p>${err ? (/sign-?in|session expired|not signed|authoriz|token/i.test(t) ? '<button class="b" data-act="out">Sign in again</button> ' : '') + '<button class="g" data-act="retry">Try again</button>' : slowHTML()}</div>`; };
   let noteT = 0;
   // ---- Bungie maintenance banner ----
   // When Bungie says it is down for maintenance, a bar under the tabs shows where its timeline is (what is happening now and
@@ -2539,6 +2561,12 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
   // Accounts arriving from the Pathfinder account (the sync when Pathfinder opens or comes back) while the vault is not showing
   // anything yet: load it straight away instead of leaving the sign-in screen up.
   window.addEventListener('gtaccts', () => { if (!D && !sec.querySelector('.vt')) gt.cfgGet().then((c) => { if (c.signedIn) { delete sec.dataset.busy; load(); } }).catch(() => {}); });
+  // Sign in with Bungie: from the vault's own button, the waiting and slow-loading screens, and the account menu at the top.
+  async function bLogin() {
+    if (!sec.classList.contains('on') && window.show) window.show('vault');
+    LOADT = 0; clearTimeout(slowT);
+    try { sec.dataset.busy = 1; waitSignIn(); await gt.login(); load(); } catch (er) { delete sec.dataset.busy; let c = { preset: true }; try { c = await gt.cfgGet(); } catch (e2) { /* welcome anyway */ } setup(c, clean(er)); }
+  }
   async function init() { const c = await gt.cfgGet(); try { localStorage.setItem('gt_acct_ns', acctNs(c.mid, c.prim)); } catch (e) { /* storage off */ } ACL = null; c.signedIn ? load() : setup(c); }
   function setup(c, err) {
     noBar();
@@ -2617,9 +2645,10 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
         return;
       }
     }
-    sec.dataset.busy = 1; msg('Loading your vault...');
-    try { D = reconcile(await gt.loadVault()); sel = null; Object.keys(DET).forEach((k) => delete DET[k]); delete sec.dataset.busy; shell(); if (window.__gtl) window.__gtl.reset(); }
-    catch (e) { delete sec.dataset.busy; msg(clean(e), true); }
+    sec.dataset.busy = 1; LOADT = Date.now(); msg('Loading your vault...');
+    clearTimeout(slowT); slowT = setTimeout(() => { if (sec.dataset.busy && LOADT && !sec.querySelector('.vt') && !sec.querySelector('.gtwait')) msg(MSGT || 'Loading your vault...'); }, 15500);
+    try { D = reconcile(await gt.loadVault()); sel = null; Object.keys(DET).forEach((k) => delete DET[k]); delete sec.dataset.busy; LOADT = 0; shell(); if (window.__gtl) window.__gtl.reset(); }
+    catch (e) { delete sec.dataset.busy; LOADT = 0; msg(clean(e), true); }
   }
 
   // ---------------- search, like DIM ----------------
@@ -3245,7 +3274,8 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
     if (!w.length) return '';
     const t = [0, 0, 0, 0, 0, 0]; w.forEach((x) => x.st.forEach((v, i) => { t[i] += v; }));
     const ic = D.sti || [];
-    return `<div class="cst" title="Armor stats: ${STL.map((q, i) => q[1] + ' ' + t[i]).join(', ')}">${t.map((v, i) => `<span title="${STL[i][1]}">${ic[i] ? `<img src="${esc(icon(ic[i]))}" alt="">` : `<em>${STL[i][0]}</em>`}${v}</span>`).join('')}</div>`;
+    const GO = [1, 5, 3, 4, 2, 0]; // the game's order: Health, Melee, Grenade, Super, Class, Weapons
+    return `<div class="cst" title="Armor stats: ${GO.map((i) => STL[i][1] + ' ' + t[i]).join(', ')}">${GO.map((i) => `<span title="${STL[i][1]}">${ic[i] ? `<img src="${esc(icon(ic[i]))}" alt="">` : `<em>${STL[i][0]}</em>`}${t[i]}</span>`).join('')}</div>`;
   }
   // Characters in the order chosen in Settings. Single-character view keeps only the first one.
   const idCmp = (a, b) => { try { const x = BigInt(a.id), y = BigInt(b.id); return x < y ? -1 : x > y ? 1 : 0; } catch (e) { return 0; } };
@@ -4458,9 +4488,7 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
       mkRoom(t.dataset.c);
     } else if (a === 'collect') {
       collectPm(t.dataset.c);
-    } else if (a === 'presetlogin') {
-      try { sec.dataset.busy = 1; waitSignIn(); await gt.login(); load(); } catch (er) { delete sec.dataset.busy; let c = { preset: true }; try { c = await gt.cfgGet(); } catch (e2) { /* welcome anyway */ } setup(c, clean(er)); }
-    }
+    } else if (a === 'presetlogin') bLogin();
     else if (a === 'pfapull') pfaPull(t);
     else if (a === 'waitx') { delete sec.dataset.busy; init(); }
     else if (a === 'refresh' || a === 'qrefresh') quickLoad();
@@ -4559,5 +4587,5 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
   init();
   // Straight to the page chosen in Settings > Display > Open the app on (polish.js finishes opening it), so the Inventory
   // does not flash first.
-  { const st0 = SET.starttab === 'last' ? window.__gtLastTab : SET.starttab; show(st0 && /^[a-z]{2,20}$/.test(st0) ? st0 : 'vault'); }
+  { const st0 = SET.starttab === 'last' || (window.__gtReload && window.__gtLastTab) ? window.__gtLastTab : SET.starttab; show(st0 && /^[a-z]{2,20}$/.test(st0) ? st0 : 'vault'); }
 })();

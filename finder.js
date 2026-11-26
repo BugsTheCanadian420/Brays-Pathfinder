@@ -216,7 +216,7 @@ ${p.d ? `<p>${esc(p.d)}</p>` : ''}</button>`;
 
   function head() {
     return `<div class="fdh"><div><h2>Finder</h2><p>Look up any weapon to see every perk it can roll today, column by column. Or look up a perk to see every weapon that can roll it. Perks that no longer drop are left out.</p></div>
-<div class="fdq"><input id="fdq" type="search" placeholder="Search a weapon or a perk (for example Rampage, Fatebringer, hand cannon)" value="${esc(st.q)}" autocomplete="off" spellcheck="false" aria-label="Search weapons and perks">
+<div class="fdq"><input id="fdq" type="search" placeholder="Search a weapon, perk or frame (for example Rampage, Fatebringer, lightweight hand cannon)" value="${esc(st.q)}" autocomplete="off" spellcheck="false" aria-label="Search weapons, perks and frames">
 <div class="fdm" role="tablist">${[['all', 'All'], ['weapons', 'Weapons'], ['perks', 'Perks']].map(([k, l]) => `<button type="button" data-fm="${k}" class="${st.mode === k ? 'on' : ''}" role="tab" aria-selected="${st.mode === k}">${l}</button>`).join('')}</div></div>
 ${!st.q && !st.perk ? `<div class="fdsug">Try: ${SUGGEST.map((t) => `<button type="button" data-fs="${esc(t)}">${esc(t)}</button>`).join('')}</div>` : ''}</div>`;
   }

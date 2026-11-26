@@ -13,6 +13,13 @@
   // entry for every small change.
   const ALL = [
     { id: 20, draft: true, date: 'Nov 2026', items: [
+      'Create build: make a build in the Builds tab with any weapon or armor in the game, even gear you do not own yet, then share it.',
+      'Every build has its own page with the loadout picture, plus how to play it and its strengths and weaknesses when the person who shared it adds them. Owners can edit the name, tags, notes, strengths and weaknesses.',
+      'Refreshing keeps you on the page you were on, including an open build.',
+      'Builds: a new tab of builds shared by the community. Filter by class, subclass and what a build is good for (raids, Grandmasters, PvP and more), sort by popular, newest, most liked or most imported, and import one straight into your loadouts. Like or dislike builds with a Pathfinder account; builds people like and import rise to the top.',
+      'Share to Builds: in Loadouts, a loadout\'s Share menu can now post it to the Builds tab with a name, tags and notes on how to play it (needs a Pathfinder account). Delete your own builds from the Builds tab at any time.',
+      'Finder searches weapon frames: type a frame (for example Lightweight, Aggressive or Rapid-Fire) to see every weapon with it, or add a weapon type to narrow it down (lightweight hand cannon).',
+      'Community sites no longer lists Mobalytics.',
       'A new look for God rolls: big filter tiles for God rolls, S rated, Keepers, Not keepers and Not rated yet, search and sort, and a card for each weapon with its grade, main perks and which perks your wish list wants.',
       'The Helpful tab is now called Guides.',
       'Your account in the top right: your profile picture (add one in Settings > Accounts, then drag, zoom and turn it to fit the circle) and display name. Click it for Settings, Help & support, Get the app and Sign out. The gear button is gone, and the Beta switch sits next to your account.',

@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.45: preload.js for the browser */
+/* Pathfinder 0.3.46: preload.js for the browser */
 (function (require) {
 const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('gt', {
@@ -24,6 +24,14 @@ contextBridge.exposeInMainWorld('gt', {
   pfaSessions: () => ipcRenderer.invoke('pfa:sessions'),
   pfaSessEnd: (v) => ipcRenderer.invoke('pfa:sessEnd', v),
   helpNew: (v) => ipcRenderer.invoke('help:new', v),
+  bdList: (v) => ipcRenderer.invoke('bd:list', v),
+  bdGet: (v) => ipcRenderer.invoke('bd:get', v),
+  bdPub: (v) => ipcRenderer.invoke('bd:pub', v),
+  bdVote: (v) => ipcRenderer.invoke('bd:vote', v),
+  bdUse: (v) => ipcRenderer.invoke('bd:use', v),
+  bdDel: (v) => ipcRenderer.invoke('bd:del', v),
+  bdPic: (v) => ipcRenderer.invoke('bd:pic', v),
+  bdEdit: (v) => ipcRenderer.invoke('bd:edit', v), bdItems: (v) => ipcRenderer.invoke('bd:items', v), bdDefs: (v) => ipcRenderer.invoke('bd:defs', v),
   helpMine: () => ipcRenderer.invoke('help:mine'),
   helpGet: (v) => ipcRenderer.invoke('help:get', v),
   helpReply: (v) => ipcRenderer.invoke('help:reply', v),

@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.45: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.46: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -9,7 +9,7 @@ const BUCKETS = new Set([1498876634, 2465295065, 953998645, 3448274439, 35519185
 // Other buckets shown read-only in the Vault tab: subclass, ships, emblems, finishers, emotes, clan banners, engrams, consumables, mods, shaders, materials.
 const XB = new Set([1506418338, 3284755031, 284967655, 4274335291, 3683254069, 3054419239, 4292445962, 375726501, 1469714392, 3313201758, 2973005342, 3865314626]);
 // Websites the Hub tab may show (everything else opens in your normal browser).
-const HUBRE = /^https:\/\/([a-z0-9-]+\.)?(d2checkpoint\.com|raid\.report|dungeon\.report|destiny\.report|d2lostsector\.report|lostsector\.report|caldera\.report|mobalytics\.gg|blueberries\.gg|paracausality\.com|builders\.gg)(\/|$)/i;
+const HUBRE = /^https:\/\/([a-z0-9-]+\.)?(d2checkpoint\.com|raid\.report|dungeon\.report|destiny\.report|d2lostsector\.report|lostsector\.report|caldera\.report|blueberries\.gg|paracausality\.com|builders\.gg)(\/|$)/i;
 let win, M = null;
 // The same file also runs inside the web version (web/ folder): there the browser stand-ins set __GT_WEB__ and provide the window.
 const WEB = !!globalThis.__GT_WEB__;
@@ -765,6 +765,77 @@ async function helpReq(p, body, staff) {
   if (!r.ok) { const er = new Error(j.message || (r.status === 404 || r.status === 501 ? 'Help is not switched on in the token service yet. Email help@d2pathfinder.com instead.' : 'Could not reach Pathfinder (HTTP ' + r.status + '). Try again in a moment.')); er.code = j.error || r.status; er.data = j; throw er; }
   return j;
 }
+// ---- Builds tab: the community build gallery (token service /builds/*). Looking and importing need no account; sharing,
+// voting and deleting send the Pathfinder account sign-in (helpReq adds it when there is one).
+// A build's picture: the loadout picture as a WebP or JPEG data link, at most about 520 KB.
+const BIMG = (v) => { if (v == null || v === '') return undefined; const s = String(v); if (s.length > 700000 || !/^data:image\/(webp|jpeg|png);base64,[A-Za-z0-9+/=]+$/.test(s)) throw bad(); return s; };
+// A build's page details (worked out on this device) and its strengths, weaknesses and stat priority (keys from fixed lists).
+const BINFO = (v) => { if (v == null) return undefined; OBJ(v); if (JSON.stringify(v).length > 60000) throw bad(); return v; };
+const BSW = (v) => ({ str: ARR(v.str || [], 16).map((k) => TXT(k, 10)), weak: ARR(v.weak || [], 16).map((k) => TXT(k, 10)), prio: ARR(v.prio || [], 6).map((k) => INT(+k, 0, 5)) });
+const BID = (v) => { const id = TXT(v, 12); if (!/^[A-Za-z0-9]{8,12}$/.test(id)) throw bad(); return id; };
+async function bdReq(p, body) {
+  try { return await helpReq(p, body); }
+  catch (er) { if (er.code === 404 || er.code === 'not_found') throw new Error('Builds are not switched on in the token service yet.'); throw er; }
+}
+H('bd:list', async (e, v) => {
+  OBJ(v); const qs = new URLSearchParams();
+  const sort = TXT(v.sort || 'popular', 10); if (/^(popular|new|liked|used)$/.test(sort)) qs.set('sort', sort);
+  if (v.cls !== undefined && v.cls !== '') qs.set('cls', String(INT(+v.cls, 0, 2)));
+  const el = TXT(v.el || '', 10); if (/^[a-z]{0,10}$/.test(el) && el) qs.set('el', el);
+  const tag = TXT(v.tag || '', 10); if (/^[a-z]{0,10}$/.test(tag) && tag) qs.set('tag', tag);
+  const q = TXT(v.q || '', 40).trim(); if (q) qs.set('q', q);
+  if (v.mine) qs.set('mine', '1');
+  qs.set('p', String(INT(+v.p || 0, 0, 50)));
+  return bdReq('/builds/list?' + qs.toString());
+});
+H('bd:get', async (e, v) => { OBJ(v); return (await bdReq('/builds/get?id=' + BID(v.id))).build; });
+H('bd:pub', async (e, v) => {
+  OBJ(v); const code = TXT(v.code, 40000); if (!/^GTL1:[A-Za-z0-9+/=]+$/.test(code)) throw bad();
+  const tags = ARR(v.tags || [], 8).map((t) => TXT(t, 12)), ex = ARR(v.ex || [], 20).map((h) => INT(+h, 1, 4294967295));
+  return bdReq('/builds/publish', { title: TXT(v.title, 80), notes: TXT(v.notes || '', 1500), tags, code, ex, cls: v.cls === undefined ? undefined : INT(+v.cls, 0, 3), img: BIMG(v.img), info: BINFO(v.info), ...BSW(v) });
+});
+H('bd:edit', async (e, v) => { OBJ(v); const tags = ARR(v.tags || [], 8).map((t) => TXT(t, 12)); return bdReq('/builds/edit', { id: BID(v.id), title: TXT(v.title, 80), notes: TXT(v.notes || '', 1500), tags, ...BSW(v) }); });
+// Builds you make without owning the gear: any Legendary or Exotic for a slot (armor for the class), by name or type.
+H('bd:items', async (e, v) => {
+  OBJ(v); const b = INT(+v.b, 1, 4294967295), c = v.c === undefined ? 3 : INT(+v.c, 0, 3), q = TXT(v.q || '', 60).trim().toLowerCase(), words = q.split(/\s+/).filter(Boolean);
+  const df = await defs(), seen = new Map();
+  for (const k in df.d) {
+    const d = df.d[k]; if (d.b !== b || !d.n || !/^(Legendary|Exotic)$/.test(d.r || '')) continue;
+    if (c < 3 && d.c !== undefined && d.c !== 3 && d.c !== c) continue;
+    const hay = (d.n + ' ' + (d.t || '')).toLowerCase(); if (!words.every((w) => hay.includes(w))) continue;
+    const key = d.n + '|' + d.r, prev = seen.get(key); if (!prev || +k > prev.h) seen.set(key, { h: +k, n: d.n, i: d.i, t: d.t || '', r: d.r });
+  }
+  return [...seen.values()].sort((a, z) => (q ? (z.n.toLowerCase().startsWith(q) ? 1 : 0) - (a.n.toLowerCase().startsWith(q) ? 1 : 0) : 0) || (a.r === 'Exotic' ? 0 : 1) - (z.r === 'Exotic' ? 0 : 1) || a.n.localeCompare(z.n)).slice(0, 90);
+});
+// Names, types and kinds for a build's page: items (weapon type, rarity) and plugs (a subclass choice's kind: super, aspect ...).
+H('bd:defs', async (e, v) => {
+  OBJ(v); const df = await defs(), items = {}, plugs = {};
+  ARR(v.items || [], 60).forEach((h) => { h = INT(+h, 1, 4294967295); const d = df.d[h]; if (d) items[h] = { n: d.n, i: d.i, t: d.t || '', r: d.r || '', b: d.b, c: d.c }; });
+  // Gear you may not own: its intrinsic (a weapon's frame, an exotic's perk) and its armor set with the 2- and 4-piece bonuses.
+  await Promise.all(Object.keys(items).map(async (h) => {
+    const it = items[h], d = df.d[h];
+    try {
+      if (d && d.fi && df.p[d.fi]) it.intr = { h: d.fi, n: df.p[d.fi].n, i: df.p[d.fi].i || '', d: String(df.p[d.fi].d || '').slice(0, 500) };
+      const idf = await Promise.race([entDef('DestinyInventoryItemDefinition', +h), new Promise((ok) => setTimeout(() => ok(null), 4000))]); if (!idf) return;
+      if (!it.intr && idf.sockets) {
+        const cat = (idf.sockets.socketCategories || []).find((c) => c.socketCategoryHash === 3956125808), si = cat && (cat.socketIndexes || [])[0], ph = si !== undefined && idf.sockets.socketEntries && idf.sockets.socketEntries[si] && idf.sockets.socketEntries[si].singleInitialItemHash;
+        const pl = ph && (df.p[ph] || await entDef('DestinyInventoryItemDefinition', ph)), dp = pl && (pl.displayProperties || pl);
+        if (dp && (dp.n || dp.name)) it.intr = { h: ph, n: dp.n || dp.name, i: dp.i || dp.icon || '', d: String(dp.d || dp.description || '').slice(0, 500) };
+      }
+      const sh = idf.equippingBlock && idf.equippingBlock.equipableItemSetHash, sd = sh && await entDef('DestinyEquipableItemSetDefinition', sh);
+      if (sd) {
+        const pds = await Promise.all((sd.setPerks || []).map((q) => entDef('DestinySandboxPerkDefinition', q.sandboxPerkHash)));
+        it.set = { n: (sd.displayProperties && sd.displayProperties.name) || '', perks: (sd.setPerks || []).map((q, qi) => { const dp = pds[qi] && pds[qi].displayProperties; return dp ? { n: dp.name || '', d: String(dp.description || '').slice(0, 400), i: dp.icon || '', rc: q.requiredSetCount || 0 } : null; }).filter(Boolean).sort((a, b) => a.rc - b.rc) };
+      }
+    } catch (er) { /* shown without it */ }
+  }));
+  ARR(v.plugs || [], 200).forEach((h) => { h = INT(+h, 1, 4294967295); const p = df.p[h]; if (p) plugs[h] = { n: p.n, i: p.i, c: p.c || '', d: String(p.d || '').replace(/\[###[^\]]*\]/g, '').replace(/\s{2,}/g, ' ').trim().slice(0, 500) }; });
+  return { items, plugs };
+});
+H('bd:pic', async (e, v) => { OBJ(v); const img = BIMG(v.img); if (!img) throw bad(); return bdReq('/builds/pic', { id: BID(v.id), img, info: BINFO(v.info) }); });
+H('bd:vote', async (e, v) => { OBJ(v); return bdReq('/builds/vote', { id: BID(v.id), v: INT(+v.v, -1, 1) }); });
+H('bd:use', async (e, v) => { OBJ(v); return bdReq('/builds/use', { id: BID(v.id) }); });
+H('bd:del', async (e, v) => { OBJ(v); return bdReq('/builds/delete', { id: BID(v.id) }); });
 const myTickets = () => { const t = rd().tickets; return Array.isArray(t) ? t.filter((x) => x && typeof x.id === 'string' && typeof x.key === 'string').slice(0, 60) : []; };
 const tKey = (id) => { const t = myTickets().find((x) => x.id === id); return t ? t.key : undefined; };
 const HID = (v) => { const id = TXT(v, 40); if (!/^[0-9]{13}-[A-Za-z0-9_-]{6}$/.test(id)) throw bad(); return id; };
@@ -1183,6 +1254,7 @@ const entDef = async (tbl, h) => {
   return ENTP[k];
 };
 const ARSH = [2996146975, 392767087, 1943323491, 1735777505, 144602215, 4244567218]; // weapons, health, class, grenade, super, melee
+const ARGO = [392767087, 4244567218, 1735777505, 144602215, 1943323491, 2996146975]; // the order the game shows armor stats: health, melee, grenade, super, class, weapons
 const ARCHN = new Set(['paragon', 'brawler', 'gunner', 'specialist', 'grenadier', 'bulwark']); // Armor 3.0 archetypes
 H('item:detail', async (e, v) => { await ensureM();
   OBJ(v); const id = ID(v.id), h = v.h !== undefined ? HASH(v.h) : 0;
@@ -1224,7 +1296,7 @@ H('item:detail', async (e, v) => { await ensureM();
     const tn = tun[q.h] || 0, v = tn < 0 && cur.value === 0 ? tn : cur.value;
     out.stats.push({ h: q.h, n: def.n, v, max: q.max, num: q.num, o: def.o, mb: Math.max(0, Math.min(v, mbn[q.h] || 0)), mw: Math.max(0, Math.min(v, mwn[q.h] || 0)), tn: tn || undefined });
   }
-  out.stats.sort((a, b) => (isArmor ? ARSH.indexOf(a.h) - ARSH.indexOf(b.h) : a.o - b.o));
+  out.stats.sort((a, b) => (isArmor ? ARGO.indexOf(a.h) - ARGO.indexOf(b.h) : a.o - b.o));
   if (isArmor) out.tot = out.stats.reduce((t, q) => t + q.v, 0);
   if (inst.energy && inst.energy.energyCapacity) out.energy = { cap: inst.energy.energyCapacity, used: inst.energy.energyUsed || 0 };
   if (inst.primaryStat) out.pw = inst.primaryStat.value;
@@ -3448,19 +3520,34 @@ function fdIndex(df) {
       }
     }
   }
-  return (FDX = { v: df.v, m });
+  // Frames (and exotic intrinsics) sit in their own field on each weapon, not in a perk column, so they get their own list:
+  // the Finder finds "Lightweight Frame" like a perk and lists every weapon built on it.
+  const f = new Map();
+  for (const k in df.d) {
+    const d = df.d[k]; if (!fdIsWeapon(d) || !d.fi) continue;
+    const p = df.p[d.fi]; if (!p || !p.n || /^(empty|default)\b/i.test(p.n)) continue;
+    const key = p.n.toLowerCase(); let e = f.get(key);
+    if (!e) { e = { n: p.n, i: p.i || '', d: String(p.d || '').replace(/\s{2,}/g, ' ').trim().slice(0, 400), w: new Set(), frame: /frame$/i.test(p.n) }; f.set(key, e); }
+    e.w.add(+k);
+  }
+  return (FDX = { v: df.v, m, f });
 }
 const fdKind = (c) => { const l = WMLBL[c] || ''; return l === 'Trait' ? 'Trait' : l || (c ? c.replace(/[_-]+/g, ' ').replace(/^./, (q) => q.toUpperCase()).replace(/s$/, '') : 'Perk'); };
 H('fd:find', async (e, v) => {
   OBJ(v); const q = TXT(v.q, 60).trim().toLowerCase(); if (q.length < 2) return { weapons: [], perks: [] };
   const df = await defs(), words = q.split(/\s+/).filter(Boolean), X = fdIndex(df);
-  const weapons = fdGroups(df, (d) => { const hay = (d.n + ' ' + (d.t || '')).toLowerCase(); return words.every((w) => hay.includes(w)); })
+  const weapons = fdGroups(df, (d) => { const fr = d.fi && df.p[d.fi] ? df.p[d.fi].n || '' : ''; const hay = (d.n + ' ' + (d.t || '') + ' ' + fr).toLowerCase(); return words.every((w) => hay.includes(w)); })
     .map((g) => ({ ...g, st: g.n.toLowerCase().startsWith(q) ? 0 : 1 })).sort((a, b) => a.st - b.st || a.n.localeCompare(b.n)).slice(0, 80);
   const perks = [];
   for (const [k, p] of X.m) {
     if (!words.every((w) => k.includes(w))) continue;
     const names = new Set(); p.w.forEach((h) => { const d = df.d[h]; if (d) names.add(d.n + '|' + d.t); });
     perks.push({ n: p.n, i: p.i, d: p.d, kind: fdKind(p.c), cnt: names.size, st: k.startsWith(q) ? 0 : 1 });
+  }
+  for (const [k, p] of X.f) { // frames: listed first when they match, they are what people usually mean by "lightweight"
+    if (X.m.has(k) || !words.every((w) => k.includes(w))) continue;
+    const names = new Set(); p.w.forEach((h) => { const d = df.d[h]; if (d) names.add(d.n + '|' + d.t); });
+    perks.push({ n: p.n, i: p.i, d: p.d, kind: p.frame ? 'Frame' : 'Intrinsic', cnt: names.size, st: k.startsWith(q) ? -1 : 1 });
   }
   perks.sort((a, b) => a.st - b.st || b.cnt - a.cnt || a.n.localeCompare(b.n));
   return { weapons, perks: perks.slice(0, 40) };
@@ -3474,7 +3561,14 @@ H('fd:weapon', async (e, v) => {
   return { h, src: d.so !== undefined && df.srcs ? df.srcs[d.so] || '' : '', n: d.n, i: d.i || '', t: d.t || '', r: d.r || '', e: d.e || 0, ei: (df.dm && df.dm[d.e]) || '', am: d.am || 0, bt: d.bt || 0, bi: (df.bk && df.bk[d.bt]) || '', wm: fdWi(d) >= 0 ? df.W[fdWi(d)] || '' : '', fr, versions, cols: fdCols(df, h) };
 });
 H('fd:perk', async (e, v) => {
-  OBJ(v); const n = TXT(v.n, 80).trim().toLowerCase(), df = await defs(), X = fdIndex(df), p = X.m.get(n);
+  OBJ(v); const n = TXT(v.n, 80).trim().toLowerCase(), df = await defs(), X = fdIndex(df);
+  if (!X.m.has(n) && X.f.has(n)) { // a frame: every weapon built on it
+    const fp = X.f.get(n), allF = {}; fdGroups(df).forEach((g) => { allF[g.n + '|' + g.t + '|' + g.r] = g; });
+    const weapons = fdGroups(df, (d, h) => fp.w.has(h)).map((g) => { const all = allF[g.n + '|' + g.t + '|' + g.r] || g; return { ...g, col: 'Frame', newest: all.h === g.h ? 1 : 0 }; })
+      .sort((a, b) => a.t.localeCompare(b.t) || a.n.localeCompare(b.n));
+    return { n: fp.n, i: fp.i, d: fp.d, kind: fp.frame ? 'Frame' : 'Intrinsic', weapons };
+  }
+  const p = X.m.get(n);
   if (!p) throw new Error('No weapon can roll that perk right now.');
   // where on each weapon it sits (its column), and whether the newest version of the weapon rolls it
   const where = (h) => { for (const c of fdCols(df, h)) if (c.opts.some((o) => o.n.toLowerCase() === n)) return c.label; return ''; };

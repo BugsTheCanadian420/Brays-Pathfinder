@@ -34,6 +34,8 @@
         id: sid(q.id), h: int(q.h), b: int(q.b), n: String(q.n || '').slice(0, 80), i: rawIcon(q.i), e: q.e === 0 ? 0 : 1,
         m: (Array.isArray(q.m) ? q.m : []).slice(0, 40).map((p) => (Array.isArray(p) && int(p[1]) > 0 ? [int(p[0]), int(p[1]), rawIcon(p[2]), String(p[3] || '').slice(0, 60)] : null)).filter(Boolean),
         cs: (Array.isArray(q.cs) ? q.cs : []).slice(0, 6).map((p) => (Array.isArray(p) && int(p[1]) > 0 ? [int(p[0]), int(p[1]), rawIcon(p[2]), String(p[3] || '').slice(0, 60)] : null)).filter(Boolean),
+        // weapon perks picked for a build ([hash, name, icon]): shown on the build's page and picture, never put on your weapon
+        wp: (Array.isArray(q.wp) ? q.wp : []).slice(0, 8).map((p) => (Array.isArray(p) && int(p[0]) > 0 ? [int(p[0]), String(p[1] || '').slice(0, 60), rawIcon(p[2])] : null)).filter(Boolean),
       };
     }).filter(Boolean);
     const seen = new Set(), items = it.filter((q) => { if (seen.has(q.b) && q.b) return false; seen.add(q.b); return true; });
@@ -51,7 +53,7 @@
   const save = () => { try { localStorage.setItem(KEY(), JSON.stringify(all())); } catch (e) { /* storage unavailable */ } };
   const b64e = (s) => { const u = new TextEncoder().encode(s); let o = ''; for (let i = 0; i < u.length; i++) o += String.fromCharCode(u[i]); return btoa(o); };
   const b64d = (b) => { const s = atob(b), u = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return new TextDecoder().decode(u); };
-  const codeOf = (l) => 'GTL1:' + b64e(JSON.stringify({ v: 1, n: l.n, c: l.c, o: l.o, a: l.a, ai: l.ai, fm: l.fm, mv: l.mv, it: l.it.map((q) => ({ h: q.h, b: q.b, n: q.n, i: q.i, e: q.e, m: q.m })) }));
+  const codeOf = (l) => 'GTL1:' + b64e(JSON.stringify({ v: 1, n: l.n, c: l.c, o: l.o, a: l.a, ai: l.ai, fm: l.fm, mv: l.mv, it: l.it.map((q) => ({ h: q.h, b: q.b, n: q.n, i: q.i, e: q.e, m: q.m, ...(q.wp && q.wp.length ? { wp: q.wp } : {}) })) }));
   function decode(s) {
     const m = /GTL1:([A-Za-z0-9+/=]+)/.exec(String(s || '')); if (!m) throw new Error('That is not a loadout code. It should start with GTL1:');
     let o; try { o = JSON.parse(b64d(m[1])); } catch (e) { throw new Error('That loadout code is damaged. Ask for it again.'); }
@@ -97,12 +99,20 @@
   // Someone opened a share link on the website: show the loadout (no sign-in needed to look), with a button to add it.
   // A phone's browser (a scanned QR code opens there) rather than the home-screen app, which keeps its own loadouts on iPhones.
   const homeTip = () => { try { return !!(mod && mod.code) && document.documentElement.classList.contains('gtweb') && matchMedia('(pointer:coarse)').matches && !matchMedia('(display-mode: standalone)').matches && !navigator.standalone; } catch (e) { return false; } };
+  // The Builds tab opens a build here: the same pop-up as a share link, with "Add to my loadouts".
+  window.__gtlo = Object.assign(window.__gtlo || {}, {
+    // the Builds tab asks for a picture of a build its owner shared before builds had pictures
+    async buildPic(code, title) { const l = decode(code); if (title) l.n = String(title).slice(0, 80); return buildPic(l); },
+    // Builds tab > Create build: the loadout editor in build mode (any item, Share to Builds at the bottom).
+    createBuild() { let c = 3; try { const e0 = CH && V.ent(CH); if (e0 && e0.cls !== undefined) c = e0.cls; } catch (e) { /* any class */ } openEd(norm({ id: newId(), n: '', c, o: '', it: [], a: [], mv: 0 }), true, { build: true }); },
+    openBuild(code, meta) { const l = decode(code); if (meta && meta.title) l.n = String(meta.title).slice(0, 80); mod = { t: 'shin', l, bid: meta && meta.id, by: meta && meta.by }; drawMod(); },
+  });
   function shinHTML() {
     const l = mod.l, signed = !!D0(), cls = l.c < 3 ? CL[l.c] : 'Any class';
     const grp = (bs) => l.it.filter((q) => bs.includes(q.b)).sort((a, b) => bs.indexOf(a.b) - bs.indexOf(b.b));
     const row = (q) => `<div class="dl-shi${q.e === 0 ? ' fade' : ''}"><span>${q.i ? `<img src="${esc(V.icon(q.i))}" alt="">` : ''}</span><b>${esc(q.n || 'Item')}</b></div>`;
     const sec2 = (t, bs) => { const l2 = grp(bs); return l2.length ? `<h4>${t}</h4><div class="dl-shg">${l2.map(row).join('')}</div>` : ''; };
-    return `<div class="dl-mc dl-shin"><h3>${esc(l.n || 'Shared loadout')}</h3><p class="mute">${esc(cls)} &middot; shared with Pathfinder${l.o ? ' &middot; ' + esc(String(l.o).slice(0, 140)) : ''}</p>${sec2('Subclass', [SUB])}${sec2('Weapons', WB)}${sec2('Armor', AB)}${sec2('General', GB)}${l.a && l.a.length ? `<p class="mute">Includes ${l.a.length} artifact perks${l.fm && l.fm.length ? ' and ' + l.fm.length + ' mods' : ''}.</p>` : ''}${signed ? '' : '<div class="dl-wr">Sign in (Inventory tab) to add it to your loadouts. Items are matched to the ones you own.</div>'}${homeTip() ? '<p class="mute dl-hst">Using Pathfinder from your home screen? Copy the link, then open Pathfinder there and paste it into Loadouts &gt; Import loadout. <button class="g" data-md="shcopy">Copy link</button></p>' : ''}<div class="dl-bt"><button class="b" data-md="shadd"${signed ? '' : ' disabled'}>Add to my loadouts</button><span class="dl-sp"></span><button class="g" data-md="x">Close</button></div></div>`;
+    return `<div class="dl-mc dl-shin"><h3>${esc(l.n || 'Shared loadout')}</h3><p class="mute">${esc(cls)} &middot; ${mod.bid ? 'a build by ' + esc(mod.by || 'a Guardian') + ' from the Builds tab' : 'shared with Pathfinder'}${l.o ? ' &middot; ' + esc(String(l.o).slice(0, 140)) : ''}</p>${sec2('Subclass', [SUB])}${sec2('Weapons', WB)}${sec2('Armor', AB)}${sec2('General', GB)}${l.a && l.a.length ? `<p class="mute">Includes ${l.a.length} artifact perks${l.fm && l.fm.length ? ' and ' + l.fm.length + ' mods' : ''}.</p>` : ''}${signed ? '' : '<div class="dl-wr">Sign in (Inventory tab) to add it to your loadouts. Items are matched to the ones you own.</div>'}${homeTip() ? '<p class="mute dl-hst">Using Pathfinder from your home screen? Copy the link, then open Pathfinder there and paste it into Loadouts &gt; Import loadout. <button class="g" data-md="shcopy">Copy link</button></p>' : ''}<div class="dl-bt"><button class="b" data-md="shadd"${signed ? '' : ' disabled'}>Add to my loadouts</button><span class="dl-sp"></span><button class="g" data-md="x">Close</button></div></div>`;
   }
   (async () => {
     let sp; try { sp = new URLSearchParams(location.search); } catch (e) { return; }
@@ -667,7 +677,10 @@
     const cv = await drawPic(l, link);
     showPic(l, cv, codeOf(l));
   }
-  async function drawPic(l, link) {
+  // opt.build: the Builds tab version, more compact: no header (the Builds tab shows the name, class and subclass) and no
+  // per-piece stat rows (the totals stay).
+  async function drawPic(l, link, opt) {
+    const cp = !!(opt && opt.build);
     const res = resolve(l), by = (b) => res.find((r) => r.en.b === b) || null, c = l.c < 3 ? CL[l.c] : 'Any class';
     const sub = by(SUB), weps = WB.map(by), arms = AB.map(by);
     // Mods by where they go: each armor piece's own mods, plus loadout mods that name a piece; the rest go in "Any piece".
@@ -686,7 +699,16 @@
     const ARCH = [['Gunner', 0, 3], ['Bulwark', 1, 2], ['Specialist', 2, 0], ['Grenadier', 3, 4], ['Paragon', 4, 5], ['Brawler', 5, 1]];
     const archOf = (x) => { if (!x || !x.st || x.r === 'Exotic') return ''; const o = x.st.map((v, i) => [v || 0, i]).sort((p, q) => q[0] - p[0]); if (!o[1] || !o[1][0]) return ''; const f = ARCH.find((a) => a[1] === o[0][1] && a[2] === o[1][1]); return f ? f[0] : ''; };
     const AD = ADd.map((d, i) => ({ a: (d && d.arche && d.arche.n) || archOf(arms[i] && arms[i].x), s: (d && d.set && d.set.n) || '', set: (d && d.set) || null, f: (d && d.frame && d.frame.n) || '' }));
-    const WP = WD.map((d) => {
+    const WP = WD.map((d, wi) => {
+      const en = weps[wi] && weps[wi].en, pk = en && en.wp && en.wp.length ? en.wp.map((p) => ({ h: p[0], i: p[2], n: p[1] })) : null;
+      if (!d) return pk ? pk.slice(0, 7) : [];
+      const out = []; if (d.frame && d.frame.i) out.push({ i: d.frame.i, n: d.frame.n, d: d.frame.d || '', fr: 1 });
+      if (pk) return out.concat(pk).slice(0, 7); // the build's page: perks picked for a build win over the ones on your own copy
+      (d.groups || []).filter((gr) => gr.label === 'Perks').forEach((gr) => gr.cols.forEach((col) => { const on = col.find((p) => p.on); if (on && on.i && !/tracker|memento|shader/i.test(on.c || '')) out.push({ h: on.h, i: on.i, n: on.n, d: on.d || '' }); }));
+      return out.slice(0, 7);
+    });
+    // The picture draws each weapon's own perks, as it always has; perks picked for a build only go on the build's page.
+    const WPD = WD.map((d) => {
       if (!d) return [];
       const out = []; if (d.frame && d.frame.i) out.push({ i: d.frame.i, n: d.frame.n });
       (d.groups || []).filter((gr) => gr.label === 'Perks').forEach((gr) => gr.cols.forEach((col) => { const on = col.find((p) => p.on); if (on && on.i && !/tracker|memento|shader/i.test(on.c || '')) out.push({ i: on.i, n: on.n }); }));
@@ -694,8 +716,8 @@
     });
     // Set bonuses that are on: a set's 2- and 4-piece perks, once you wear that many pieces of it.
     const sets = {}; AD.forEach((a) => { if (a.set && a.set.n) { const k = a.set.n; (sets[k] = sets[k] || { set: a.set, n: 0 }).n++; } });
-    const SB = []; Object.values(sets).forEach((o) => (o.set.perks || []).forEach((p) => { if (o.n >= (p.rc || 99)) SB.push({ n: p.n, i: p.i, rc: p.rc, s: o.set.n }); }));
-    const paths = [ic(sub), ...weps.map(ic), ...arms.map(ic), ...modsBy.flat().map((m) => m.i), ...anyMods.map((m) => m.i), ...subPl.map((m) => m.i), artIc, ...artPk, ...WP.flat().map((p) => p.i), ...SB.map((p) => p.i)].filter(Boolean);
+    const SB = []; Object.values(sets).forEach((o) => (o.set.perks || []).forEach((p) => { if (o.n >= (p.rc || 99)) SB.push({ n: p.n, i: p.i, rc: p.rc, s: o.set.n, d: p.d || '' }); }));
+    const paths = [ic(sub), ...weps.map(ic), ...arms.map(ic), ...modsBy.flat().map((m) => m.i), ...anyMods.map((m) => m.i), ...subPl.map((m) => m.i), artIc, ...artPk, ...WP.flat().map((p) => p.i), ...WPD.flat().map((p) => p.i), ...SB.map((p) => p.i)].filter(Boolean);
     let D = {}; try { D = await gt.imgFetch({ p: [...new Set(paths)] }); } catch (e) { /* drawn without icons */ }
     const imgs = {}; await Promise.all(Object.entries(D).map(([k, v]) => new Promise((ok) => { const im = new Image(); im.onload = () => { imgs[k] = im; ok(); }; im.onerror = ok; im.src = v; })));
     // Each piece's six stats, in the game's order (Health, Melee, Grenade, Super, Class, Weapons), with the tuning (+5 / -5) if it has one.
@@ -713,10 +735,10 @@
     const SUBSZ = Math.max(44, Math.min(88, Math.floor((IW - 32 - (subPer - 1) * SUBGAP) / subPer))), SUBSTEP = SUBSZ + SUBGAP;
     // armor cards: five across, each with its archetype, tier, set, its own stats and its mods
     const CG = 12, CW = Math.floor((IW - 32 - 4 * CG) / 5), MSZ = 44, MSTEP = 50, mPer = Math.max(1, Math.floor((CW - 20 + (MSTEP - MSZ)) / MSTEP));
-    const stRows = Math.max(0, ...pst.map((q) => q.length)), mRows = Math.max(0, ...modsBy.map((m) => Math.ceil(m.length / mPer)));
+    const stRows = cp ? 0 : Math.max(0, ...pst.map((q) => q.length)), mRows = Math.max(0, ...modsBy.map((m) => Math.ceil(m.length / mPer)));
     const CH2 = 12 + 88 + 30 + stRows * 22 + (stRows ? 8 : 0) + (mRows ? 8 + mRows * MSTEP : 0) + 8;
     const anyRows = anyMods.length ? Math.ceil(anyMods.length / Math.floor((IW - 32) / MSTEP)) : 0;
-    let y = 196;
+    let y = cp ? 26 : 196;
     const L = { top: y };
     const TOPH = 414; y += TOPH + GAP;
     if (arms.some(Boolean)) { L.arm = y; y += 44 + CH2 + 14 + GAP; }
@@ -761,10 +783,12 @@
       rr(x + .5, y1 + .5, sz - 1, sz - 1, rad); g2.strokeStyle = 'rgba(255,255,255,.22)'; g2.lineWidth = 1.5; g2.stroke();
     };
     // header
-    txt(l.n || 'Loadout', 48, 78, 46, '#ffffff', 700, 900);
-    txt(c.toUpperCase() + (sub && (sub.x || sub.en).n ? '  ·  ' + (sub.x || sub.en).n : ''), 50, 112, 18, '#9aa0a8', 600, 900);
-    if (sub && imgs[ic(sub)]) g2.drawImage(imgs[ic(sub)], W - 150, 30, 110, 110);
-    g2.fillStyle = '#2b2e33'; g2.fillRect(48, 172, W - 96, 1);
+    if (!cp) {
+      txt(l.n || 'Loadout', 48, 78, 46, '#ffffff', 700, 900);
+      txt(c.toUpperCase() + (sub && (sub.x || sub.en).n ? '  ·  ' + (sub.x || sub.en).n : ''), 50, 112, 18, '#9aa0a8', 600, 900);
+      if (sub && imgs[ic(sub)]) g2.drawImage(imgs[ic(sub)], W - 150, 30, 110, 110);
+      g2.fillStyle = '#2b2e33'; g2.fillRect(48, 172, W - 96, 1);
+    }
     // weapons, with the perks in them right now (their frame first)
     const WPW = 640; panel(M, L.top, WPW - M, TOPH); panel(WPW + GAP, L.top, W - M - WPW - GAP, TOPH);
     label('WEAPONS', 48, L.top + 26);
@@ -772,19 +796,20 @@
       const y1 = L.top + 42 + i * 122; box(r, 48, y1, 100);
       txt(r ? (r.x || r.en).n : 'Empty', 166, y1 + 26, 23, r ? '#fff' : '#555', 700, WPW - 200);
       txt(r && r.x ? (r.x.t || '') + (r.x.p ? '  ·  ' + r.x.p : '') : '', 166, y1 + 48, 14, '#9aa0a8', 400, WPW - 200);
-      (WP[i] || []).forEach((p, k) => tileIc(p.i, 166 + k * 54, y1 + 56, 46, true));
+      (WPD[i] || []).forEach((p, k) => tileIc(p.i, 166 + k * 54, y1 + 56, 46, true));
     });
     // total stats, with every piece's share
     const sx = WPW + GAP + 16, sw = W - M - 16 - sx;
     label('STATS', sx, L.top + 26);
     if (hasSt) {
       const tot = st.reduce((a, b) => a + b, 0), bx = sx + 108, bw = sw - 108 - 56;
-      st.forEach((v, i) => {
-        const y1 = L.top + 48 + i * 50; txt(IMSTL[i], sx, y1 + 18, 17, '#e6e7ea', 600);
+      // in the game's order (Health, Melee, Grenade, Super, Class, Weapons); a stat below 0 (tuning took 5 from it) shows in red, like the game
+      GORD.forEach((i, row) => {
+        const v = st[i], y1 = L.top + 48 + row * 50; txt(IMSTL[i], sx, y1 + 18, 17, '#e6e7ea', 600);
         rr(bx, y1 + 3, bw, 18, 4); g2.fillStyle = '#23262b'; g2.fill();
-        const fw = Math.max(0, Math.min(bw, v / 200 * bw)); if (fw > 0) { rr(bx, y1 + 3, fw, 18, 4); g2.fillStyle = IMSTC[i]; g2.fill(); }
+        const fw = Math.max(0, Math.min(bw, Math.abs(v) / 200 * bw)); if (fw > 0) { rr(bx, y1 + 3, fw, 18, 4); g2.fillStyle = v < 0 ? '#c0392b' : IMSTC[i]; g2.fill(); }
         for (let t = 1; t < 10; t++) { g2.fillStyle = 'rgba(0,0,0,.35)'; g2.fillRect(bx + bw * t / 10, y1 + 3, 1, 18); } // tens, like the game
-        txt(String(v), bx + bw + 12, y1 + 19, 19, '#fff', 700);
+        txt(String(v), bx + bw + 12, y1 + 19, 19, v < 0 ? '#ff8a7a' : '#fff', 700);
       });
       txt('Total ' + tot, sx, L.top + 384, 18, '#e0b64a', 700);
     } else txt('Stats show for your own armor.', sx, L.top + 70, 15, '#8b8f97', 400);
@@ -809,7 +834,7 @@
         txt(ex ? (r.x.n || (r.en && r.en.n) || '') : (AD[i].s || (r.x || r.en).n || ''), ix, iy + 88 + 20, 14, ex ? '#ceae33' : '#e6e7ea', 600, CW - 20);
         // this piece's stats, biggest first
         let yy = iy + 88 + 30;
-        pst[i].forEach(([v, k, tn]) => {
+        if (!cp) pst[i].forEach(([v, k, tn]) => {
           const zero = !v;
           txt(IMSTL[k], ix, yy + 13, 13, tn < 0 ? '#e88a7e' : zero ? '#7c818a' : '#cfd2d8', 600, 64);
           // tuning: which stat got +5 and which gave 5 away
@@ -878,7 +903,58 @@
       txt('Made with Pathfinder', mx, H - 10, 14, '#6a6f77', 600);
       if (link) txt('Import this loadout in Pathfinder: ' + link, M + 16, H - 10, 14, '#8b8f97', 600, mx - 24 - (M + 16));
     }
+    // What the Builds page shows, worked out here once: the same things the picture draws, with names.
+    const nmM = (p) => (p && p[2] ? { h: +p[1] || 0, i: p[2], n: String(p[3] || '') } : null); // armor and subclass plugs: [socket, hash, icon, name]
+    const nmF = (p) => (p && p[2] ? { h: +p[0] || 0, i: p[2], n: String(p[1] || '') } : null); // loadout mods: [hash, name, icon, ..., bucket]
+    const SLN = ['Helmet', 'Arms', 'Chest', 'Legs', 'Class item'];
+    cv.info = {
+      v: 2,
+      sub: sub ? { h: sub.en.h, n: (sub.x || sub.en).n || '', i: ic(sub), el: elk } : null,
+      sp: subOrd(subM).map(nmM).filter(Boolean).slice(0, 16),
+      w: weps.map((r, i) => { if (!r) return null; const fr = (WP[i] || []).find((q) => q.fr); return { h: r.en.h, n: (r.x || r.en).n || '', i: ic(r), t: (r.x && r.x.t) || '', r: (r.x && r.x.r) || '', intr: fr ? { n: fr.n || '', i: fr.i, d: fr.d || '' } : null, p: (WP[i] || []).filter((q) => !q.fr).map((q) => ({ h: q.h || 0, i: q.i, n: q.n || '', d: q.d || '' })) }; }).filter(Boolean),
+      a: arms.map((r, i) => (r ? { h: r.en.h, n: (r.x || r.en).n || '', i: ic(r), s: SLN[i], r: (r.x && r.x.r) || '', ar: AD[i].a || '', set: AD[i].s || '', intr: ADd[i] && ADd[i].frame && r.x && r.x.r === 'Exotic' ? { n: ADd[i].frame.n || '', i: ADd[i].frame.i || '', d: ADd[i].frame.d || '' } : null, m: [...l.it.filter((q) => q.b === AB[i]).flatMap((q) => (q.m || []).map(nmM)), ...(l.fm || []).filter((q) => +q[4] === AB[i]).map(nmF)].filter(Boolean).slice(0, 12) } : null)).filter(Boolean),
+      any: (l.fm || []).filter((q) => !q[4] || !AB.includes(+q[4])).map(nmF).filter(Boolean).slice(0, 12),
+      st: hasSt ? st.slice() : null,
+      sb: SB.slice(0, 6).map((q) => ({ n: q.n || '', i: q.i || '', rc: q.rc || 0, s: q.s || '', d: q.d || '' })),
+      art: hasArt ? { n: (l.ai && l.ai.n) || 'Artifact', i: artIc, p: (l.a || []).slice(0, 14).map((q) => ({ h: +q[0] || 0, i: q[2] || '', n: String(q[1] || '') })).filter((q) => q.i) } : null,
+    };
     return cv;
+  }
+  // The Builds picture: the compact loadout picture (with the QR code of a share link when one can be made), as a WebP small
+  // enough to keep with the build. Empty when it cannot be made; the build is still shared.
+  async function buildPic(l) {
+    try {
+      let link = '';
+      try {
+        if (gt.loShare && l.it && l.it.length) { const meta = shareMeta(l); const r = await Promise.race([gt.loShare({ c: codeOf(l), n: l.n || 'Loadout', t: meta.t, d: meta.d }), new Promise((ok) => setTimeout(() => ok(null), 6000))]); if (r && r.url) link = String(r.url).replace(/^https?:\/\//, '').replace(/\/[^/]*$/, ''); }
+      } catch (e) { /* no link: no QR code */ }
+      let cv = await drawPic(l, link, { build: true });
+      const info = cv.info || null;
+      if (info && gt.bdDefs) {
+        try {
+          const plugsOf = [...info.sp, ...info.w.flatMap((q) => q.p), ...info.a.flatMap((q) => q.m), ...info.any, ...((info.art && info.art.p) || [])];
+          const D2 = await gt.bdDefs({ items: [...new Set([...info.w, ...info.a].map((q) => q.h).filter(Boolean))].slice(0, 60), plugs: [...new Set(plugsOf.map((q) => q.h).filter(Boolean))].slice(0, 200) });
+          [...info.w, ...info.a].forEach((q) => {
+            const x = D2.items[q.h]; if (!x) return;
+            if (!q.t) q.t = x.t; if (!q.r) q.r = x.r;
+            if (!q.intr && x.intr && (q.r === 'Exotic' || info.w.includes(q))) q.intr = x.intr;
+            if (!q.set && x.set && x.set.n) { q.set = x.set.n; q.setp = x.set.perks; }
+          });
+          info.sp.forEach((q) => { const x = D2.plugs[q.h]; if (x) { q.k = subRank(x.c); if (!q.n) q.n = x.n; if (x.d) q.d = x.d; } });
+          plugsOf.forEach((q) => { const x = D2.plugs[q.h]; if (x) { if (!q.n) q.n = x.n; if (!q.d && x.d) q.d = x.d; } });
+          // set bonuses for armor you do not own (worked out from the sets of the pieces in the build)
+          const cnt = {}; info.a.forEach((q) => { if (q.set) cnt[q.set] = (cnt[q.set] || 0) + 1; });
+          info.a.forEach((q) => { (q.setp || []).forEach((p) => { if (cnt[q.set] >= (p.rc || 99) && !info.sb.some((b) => b.n === p.n)) info.sb.push({ n: p.n, i: p.i, rc: p.rc, s: q.set, d: p.d || '' }); }); delete q.setp; });
+        } catch (e) { /* the page shows what it has */ }
+      }
+      let img = '';
+      for (let k = 0; k < 4 && !img; k++) {
+        for (const [ty, q] of [['image/webp', .84], ['image/webp', .7], ['image/jpeg', .72]]) { const d = cv.toDataURL(ty, q); if (d.startsWith('data:' + ty) && d.length <= 690000) { img = d; break; } }
+        if (!img) { const c2 = document.createElement('canvas'); c2.width = Math.round(cv.width * .8); c2.height = Math.round(cv.height * .8); c2.getContext('2d').drawImage(cv, 0, 0, c2.width, c2.height); cv = c2; }
+      }
+      return { img, info };
+    } catch (e) { /* shared without a picture */ }
+    return { img: '', info: null };
   }
   function showPic(l, cv, code) {
     let data = cv.toDataURL('image/png');
@@ -961,8 +1037,9 @@
   const usedExotics = (d) => { const res = resolve(d); return [res.filter((q) => q.x && WB.includes(q.x.b) && isEx(q.x)).length, res.filter((q) => q.x && AB.includes(q.x.b) && isEx(q.x)).length]; };
 
   // ---------------- editor (bottom sheet) ----------------
-  function openEd(l, isNew) {
-    ed = { id: isNew ? null : l.id, d: clone(l), hist: [], fut: [], pick: null, pq: '', msg: '' };
+  function openEd(l, isNew, opt) {
+    const bld = !!(opt && opt.build);
+    ed = { id: isNew ? null : l.id, d: clone(l), hist: [], fut: [], pick: null, pq: '', msg: '', build: bld, src: bld ? 'any' : 'mine', anyRes: null, anyKey: '', anySeq: 0 };
     drawEd(); artLoad();
   }
   function mut(fn) { if (!ed) return; ed.hist.push(JSON.stringify(ed.d)); if (ed.hist.length > 60) ed.hist.shift(); ed.fut = []; fn(ed.d); drawEd(); }
@@ -976,8 +1053,22 @@
     const mi = en && AB.includes(b) && en.m.length ? `<div class="dl-pm">${plugIcons(en.m)}</div>` : '';
     return `<div class="dl-slot">${b === SUB ? '' : `<div class="dl-sn">${esc(BN[b])}</div>`}${body}${mi}${en ? `<div class="dl-sf"><button class="g${en.e === 0 ? '' : ' on'}" data-ed="eqt" data-b="${b}" title="${en.e === 0 ? 'Only moved to the character, not equipped' : 'Equipped when applied'}">${en.e === 0 ? 'Carry' : 'Equip'}</button><button class="g" data-ed="rm" data-b="${b}" title="Remove from loadout">&#10005;</button></div>` : ''}</div>`;
   };
+  // Any item: every Legendary and Exotic in the game for the slot (armor for the loadout's class), for builds you do not own yet.
+  const anyOK = (b) => WB.includes(b) || AB.includes(b);
+  let anyT = 0;
+  function anyLoad() {
+    if (!ed || !gt.bdItems) return; const key = ed.pick + '|' + ed.d.c + '|' + ed.pq.trim(); if (ed.anyKey === key) return;
+    ed.anyKey = key; ed.anyRes = null; const my = ++ed.anySeq, e0 = ed; clearTimeout(anyT);
+    anyT = setTimeout(() => gt.bdItems({ b: e0.pick, c: e0.d.c, q: e0.pq.trim() }).then((r) => { if (ed === e0 && my === e0.anySeq) { e0.anyRes = r || []; const el = g('dlpl'); if (el) el.innerHTML = pickList(); } }, () => { if (ed === e0 && my === e0.anySeq) { e0.anyRes = []; const el = g('dlpl'); if (el) el.innerHTML = pickList(); } }), 180);
+  }
   function pickList() {
     const d = ed.d, b = ed.pick, qq = ed.pq.trim();
+    if (ed.src === 'any' && anyOK(b)) {
+      if (AB.includes(b) && d.c === 3) return '<p class="mute">Pick a class at the top first. Armor is made for one class.</p>';
+      anyLoad(); const cur = d.it.find((q) => q.b === b);
+      if (ed.anyRes === null) return '<p class="mute">Loading every item for this slot...</p>';
+      return ed.anyRes.map((x) => `<div class="dl-pa${cur && cur.h === x.h ? ' on' : ''}" data-ed="chooseany" data-h="${x.h}" role="button" tabindex="0" title="${esc(x.n)}"><span style="border-color:${IMRC[x.r] === '#522f65' ? '#8a5fb0' : IMRC[x.r] || '#3a3d43'}"><img src="${esc(V.icon(x.i))}" alt="" loading="lazy"></span><b>${esc(x.n)}</b><small>${esc(x.t)}${x.r === 'Exotic' ? ' · Exotic' : ''}</small></div>`).join('') || '<p class="mute">Nothing matches. Try another name or type.</p>';
+    }
     let list = cand(b, d);
     if (qq && window.__gtx) list = list.filter((x) => window.__gtx.match(x, qq.toLowerCase()));
     else if (qq) list = list.filter((x) => (x.n + ' ' + x.t).toLowerCase().includes(qq.toLowerCase()));
@@ -1004,10 +1095,10 @@
     const warn = (xw > 1 ? '<div class="dl-wr">Only one exotic weapon can be equipped at a time.</div>' : '') + (xa > 1 ? '<div class="dl-wr">Only one exotic armor piece can be equipped at a time.</div>' : '');
     const pn = (cls, title, body, foot, dis) => `<div class="dl-pn ${cls}${dis ? ' dis' : ''}"><div class="dl-ph"><span>${title}</span></div><div class="dl-pb">${body}</div>${foot ? `<div class="dl-pf">${foot}</div>` : ''}</div>`;
     box.innerHTML = `<div class="dl-eb">
-<div class="dl-ehd"><input id="dlen" class="dl-name" placeholder="Loadout name" maxlength="80" value="${esc(d.n)}"><select id="dlcls" title="Which class this loadout is for"><option value="3"${anyc ? ' selected' : ''}>Any class</option>${[0, 1, 2].map((c) => `<option value="${c}"${d.c === c ? ' selected' : ''}>${esc(CL[c])}</option>`).join('')}</select><span class="dl-sp"></span><button class="g" data-ed="undo"${ed.hist.length ? '' : ' disabled'} title="Undo">&#8630; Undo</button><button class="g" data-ed="redo"${ed.fut.length ? '' : ' disabled'} title="Redo">Redo &#8631;</button><button class="g" data-ed="x" title="Close without saving">&#10005;</button></div>
-<div class="dl-ebody"><textarea id="dleo" class="dl-notes" placeholder="Notes (add #hashtags like #pvp or #raid to find this loadout fast)">${esc(d.o)}</textarea>
+<div class="dl-ehd"><input id="dlen" class="dl-name" placeholder="${ed.build ? 'Build name' : 'Loadout name'}" maxlength="80" value="${esc(d.n)}"><select id="dlcls" title="Which class this loadout is for"><option value="3"${anyc ? ' selected' : ''}>Any class</option>${[0, 1, 2].map((c) => `<option value="${c}"${d.c === c ? ' selected' : ''}>${esc(CL[c])}</option>`).join('')}</select><span class="dl-sp"></span><button class="g" data-ed="undo"${ed.hist.length ? '' : ' disabled'} title="Undo">&#8630; Undo</button><button class="g" data-ed="redo"${ed.fut.length ? '' : ' disabled'} title="Redo">Redo &#8631;</button><button class="g" data-ed="x" title="Close without saving">&#10005;</button></div>
+<div class="dl-ebody">${ed.build ? '<div class="dl-bhint">Making a build for the Builds tab. Pick any weapon or armor with <b>Any item</b>, even ones you do not own yet. Customize the subclass, mods and artifact, then press <b>Share to Builds</b>. The Builds page shows its picture, plus how to play it and strengths and weaknesses if you add them.</div>' : ''}<textarea id="dleo" class="dl-notes" placeholder="Notes (add #hashtags like #pvp or #raid to find this loadout fast)">${esc(d.o)}</textarea>
 ${warn}${ed.msg ? `<div class="dl-wr">${esc(ed.msg)}</div>` : ''}
-${ed.pick ? `<div class="dl-es dl-pk"><div class="dl-eh">Choose ${esc(BN[ed.pick])} <button class="g" data-ed="pickx">Close</button></div><input id="dlpq" placeholder="Search (is:exotic, perk:..., or a name)" value="${esc(ed.pq)}" autocomplete="off"><div id="dlpl" class="dl-pl">${pickList()}</div></div>` : ''}
+${ed.wpk ? wperkHTML() : ''}${ed.pick ? `<div class="dl-es dl-pk"><div class="dl-eh">Choose ${esc(BN[ed.pick])} ${anyOK(ed.pick) && gt.bdItems ? `<span class="dl-src"><button class="g${ed.src === 'mine' ? ' on' : ''}" data-ed="src" data-v="mine">Your items</button><button class="g${ed.src === 'any' ? ' on' : ''}" data-ed="src" data-v="any" title="Every Legendary and Exotic in the game, for builds you do not own yet">Any item</button></span>` : ''}<button class="g" data-ed="pickx">Close</button></div><input id="dlpq" placeholder="${ed.src === 'any' && anyOK(ed.pick) ? 'Search by name or type (for example: hand cannon)' : 'Search (is:exotic, perk:..., or a name)'}" value="${esc(ed.pq)}" autocomplete="off"><div id="dlpl" class="dl-pl">${pickList()}</div></div>` : ''}
 <div class="dl-panels">
 ${pn('dl-p-sub', 'Subclass', anyc ? '<span class="mute">Pick a class to add a subclass.</span>' : `<div class="dl-subrow">${row([SUB])}<div class="dl-subpl">${subPl.length ? plugIcons(subPl, 'big') : (subEn ? '<span class="mute">No abilities saved. Use Customize.</span>' : '')}</div></div>`, `<button class="g" data-ed="subcust"${subEn ? '' : ' disabled'}>Customize subclass</button>`, anyc)}
 ${pn('dl-p-wep', 'Weapons', `<div class="dl-er">${row(WB)}</div>`, `<label class="dl-ac"><input type="checkbox" id="dlmv"${d.mv ? ' checked' : ''}> Move other items away</label>`)}
@@ -1019,7 +1110,7 @@ ${pn('dl-p-art', 'Artifact', `<div class="dl-artrow">${d.ai && d.ai.i ? `<span c
 </div>
 <div class="dl-tools"><button class="g" data-ed="fill" data-m="eq">Fill in using equipped</button><button class="g" data-ed="fill" data-m="neq">Fill in using non-equipped</button><button class="g" data-ed="rand">Randomize</button>${AR === null ? `<span class="mute">Artifact unavailable${ARERR ? ': ' + esc(ARERR) : ''}</span>` : ''}</div>
 </div>
-<div class="dl-ef"><button class="b" data-ed="save">Save Changes</button><button class="g" data-ed="savenew">Save as New</button><button class="g" data-ed="share">Share</button>${ed.id ? '<button class="g dl-del" data-ed="del">Delete</button>' : ''}<span class="dl-sp"></span><button class="g" data-ed="x">Cancel</button></div></div>`;
+<div class="dl-ef">${ed.build ? '<button class="b" data-ed="tobuild">Share to Builds</button><button class="g" data-ed="savenew">Save as a loadout</button>' : `<button class="b" data-ed="save">Save Changes</button><button class="g" data-ed="savenew">Save as New</button><button class="g" data-ed="share">Share</button>${ed.id ? '<button class="g dl-del" data-ed="del">Delete</button>' : ''}`}<span class="dl-sp"></span><button class="g" data-ed="x">Cancel</button></div></div>`;
     { const bd = box.querySelector('.dl-ebody'); if (bd) bd.scrollTop = ed.top ? 0 : sc0; ed.top = false; }
     if (keepQ) { const i = box.querySelector('#dlpq'); if (i) { i.focus(); i.setSelectionRange(i.value.length, i.value.length); } } else if (keepN === 'dlen' || keepN === 'dleo') { const i = g(keepN); if (i) { i.focus(); i.setSelectionRange(i.value.length, i.value.length); } }
   }
@@ -1079,6 +1170,20 @@ ${pn('dl-p-art', 'Artifact', `<div class="dl-artrow">${d.ai && d.ai.i ? `<span c
     ed.pick = null; drawEd();
   }
   function closeEd() { ed = null; AP = null; drawEd(); renderAP(); }
+  // Perks for a weapon in a build: every column the weapon can roll (from the item data), one pick per column.
+  function wperkHTML() {
+    const w = ed.wpk, en = ed.d.it.find((q) => q.b === w.b); if (!en) return '';
+    const on = new Set((en.wp || []).map((p) => p[0]));
+    const body = w.err ? `<p class="dl-wr">${esc(w.err)}</p>` : !w.cols ? '<p class="mute">Loading the perks...</p>' : w.cols.length ? w.cols.map((c, ci) => `<div class="dl-wpc"><small>${esc(c.label)}</small><div>${c.opts.map((o) => `<button class="dl-wpo${on.has(o.h) ? ' on' : ''}" data-ed="wpo" data-ci="${ci}" data-h="${o.h}" title="${esc(o.n + (o.d ? '\n\n' + o.d : ''))}"><img src="${esc(V.icon(o.i))}" alt=""><span>${esc(o.n)}</span></button>`).join('')}</div></div>`).join('') : '<p class="mute">This weapon has no perks to pick.</p>';
+    return `<div class="dl-es dl-pk"><div class="dl-eh">Perks for ${esc(en.n)} <span class="mute" style="font-size:12px;letter-spacing:0;text-transform:none">One per column. Shown on the build; your own copy is not changed.</span> <button class="g" data-ed="wpkx">Done</button></div>${body}</div>`;
+  }
+  async function wperkOpen(b) {
+    const en = ed.d.it.find((q) => q.b === b); if (!en) return;
+    ed.pick = null; ed.wpk = { b, h: en.h, cols: null, err: '' }; ed.top = true; drawEd();
+    try { const r = await gt.fdWeapon({ h: en.h }); if (ed && ed.wpk && ed.wpk.b === b) { ed.wpk.cols = (r.cols || []).filter((c) => !c.fixed || c.opts.length); drawEd(); } }
+    catch (e) { if (ed && ed.wpk && ed.wpk.b === b) { ed.wpk.err = V.clean(e); drawEd(); } }
+  }
+  function edClickBuild(l) { mod = { t: 'bdpub', l, title: String(l.n || '').slice(0, 60), notes: String(l.o || '').slice(0, 1200), tags: [], str: [], weak: [], prio: [], cls: l.c < 3 ? l.c : '', msg: '' }; drawMod(); if (gt.pfaStatus) gt.pfaStatus().then((st) => { if (mod && mod.t === 'bdpub') { mod.signed = !!(st && st.on); if (!mod.signed) drawMod(); } }, () => {}); setTimeout(() => { const i = g('bdtitle'); if (i) i.focus(); }, 30); }
   function commit(asNew) {
     const d = clone(ed.d); d.n = d.n.trim();
     if (!d.n) { ed.msg = 'Give the loadout a name first.'; ed.top = true; drawEd(); const i = g('dlen'); if (i) i.focus(); return; }
@@ -1103,9 +1208,26 @@ ${pn('dl-p-art', 'Artifact', `<div class="dl-artrow">${d.ai && d.ai.i ? `<span c
     if (a === 'x') closeEd();
     else if (a === 'undo') { if (ed.hist.length) { ed.fut.push(JSON.stringify(ed.d)); ed.d = JSON.parse(ed.hist.pop()); drawEd(); } }
     else if (a === 'redo') { if (ed.fut.length) { ed.hist.push(JSON.stringify(ed.d)); ed.d = JSON.parse(ed.fut.pop()); drawEd(); } }
-    else if (a === 'pick') { ed.pick = b; ed.pq = ''; ed.top = true; drawEd(); const i = g('dlpq'); if (i) i.focus(); }
+    else if (a === 'pick') { ed.wpk = null; ed.pick = b; ed.pq = ''; ed.top = true; drawEd(); const i = g('dlpq'); if (i) i.focus(); }
     else if (a === 'pickx') { ed.pick = null; drawEd(); }
     else if (a === 'choose') choose(t.dataset.id);
+    else if (a === 'wperks') wperkOpen(b);
+    else if (a === 'wpkx') { ed.wpk = null; drawEd(); }
+    else if (a === 'wpo' && ed.wpk && ed.wpk.cols) {
+      const col = ed.wpk.cols[+t.dataset.ci], o = col && col.opts.find((q) => String(q.h) === t.dataset.h), bk = ed.wpk.b; if (!o) return;
+      mut((d) => { const en = d.it.find((q) => q.b === bk); if (!en) return; const inCol = new Set(col.opts.map((q) => q.h)), had = (en.wp || []).some((p) => p[0] === o.h); en.wp = (en.wp || []).filter((p) => !inCol.has(p[0])); if (!had) en.wp.push([o.h, o.n, rawIcon(o.i)]); const order = ed.wpk.cols.map((c) => new Set(c.opts.map((q) => q.h))); en.wp.sort((p, q) => order.findIndex((s2) => s2.has(p[0])) - order.findIndex((s2) => s2.has(q[0]))); });
+    }
+    else if (a === 'src') { ed.src = t.dataset.v === 'any' ? 'any' : 'mine'; ed.anyKey = ''; drawEd(); const i = g('dlpq'); if (i) i.focus(); }
+    else if (a === 'chooseany') {
+      const x = (ed.anyRes || []).find((q) => String(q.h) === t.dataset.h), bk = ed.pick; if (!x || !bk) return;
+      mut((d) => { d.it = d.it.filter((q) => q.b !== bk); d.it.push({ id: '', h: x.h, b: bk, n: String(x.n).slice(0, 80), i: rawIcon(x.i), e: 1, m: [], cs: [] }); });
+      ed.pick = null; drawEd();
+    }
+    else if (a === 'tobuild') {
+      const d = clone(ed.d); d.n = String(d.n || '').trim();
+      if (!d.it.length) { ed.msg = 'Add at least one item first.'; ed.top = true; drawEd(); return; }
+      mod = { t: 'shmenu', l: d }; edClickBuild(d);
+    }
     else if (a === 'rm') mut((d) => { d.it = d.it.filter((q) => q.b !== b); });
     else if (a === 'eqt') mut((d) => { const q = d.it.find((o) => o.b === b); if (q) q.e = q.e === 0 ? 1 : 0; });
     else if (a === 'fill') doFill(t.dataset.m);
@@ -1326,9 +1448,23 @@ ${mod.msg && mod.cats ? `<p class="dl-msm">${esc(mod.msg)}</p>` : ''}
     else if (mod.t === 'imp') {
       h = `<div class="dl-mc"><h3>Import loadout</h3><p class="mute">Paste a Pathfinder share link (d2pathfinder.com/...), a DIM loadout link (dim.gg/...) or a loadout code (GTL1:...), or choose or drop a picture made with Pathfinder. Items are matched to the closest ones you own.</p><textarea id="dlimp" placeholder="https://d2pathfinder.com/..." spellcheck="false">${esc(mod.text || '')}</textarea>${mod.msg ? `<div class="dl-wr">${esc(mod.msg)}</div>` : ''}<div class="dl-bt"><button class="g" data-md="paste">Paste from clipboard</button><button class="g" data-md="pickpic">Choose a picture</button><input type="file" id="dlimpf" accept="image/*" hidden><span class="dl-sp"></span><button class="b" data-md="doimp">Import</button><button class="g" data-md="x">Cancel</button></div></div>`;
     } else if (mod.t === 'shmenu') {
-      h = `<div class="dl-mc dl-ig-pop"><h3>Share loadout</h3><p class="mute">A link opens the loadout for anyone, in Pathfinder or in a browser, like a dim.gg link. A picture is easy to post anywhere.</p>${mod.msg ? `<div class="dl-wr">${esc(mod.msg)}</div>` : ''}<div class="dl-bt dl-col"><button class="b" data-md="shlink">Copy share link</button><button class="g" data-md="shpic">Share as a picture</button><button class="g" data-md="shcode">Copy loadout code</button>${navigator.share ? '<button class="g" data-md="shsend">Send the code...</button>' : ''}<button class="g" data-md="x">Close</button></div></div>`;
+      h = `<div class="dl-mc dl-ig-pop"><h3>Share loadout</h3><p class="mute">A link opens the loadout for anyone, in Pathfinder or in a browser, like a dim.gg link. A picture is easy to post anywhere.</p>${mod.msg ? `<div class="dl-wr">${esc(mod.msg)}</div>` : ''}<div class="dl-bt dl-col"><button class="b" data-md="shlink">Copy share link</button><button class="g" data-md="shpic">Share as a picture</button>${gt.bdPub && window.__gtFlag && window.__gtFlag('tab-builds', true) === false ? '' : gt.bdPub ? '<button class="g" data-md="shbuild">Share to Builds (the community gallery)</button>' : ''}<button class="g" data-md="shcode">Copy loadout code</button>${navigator.share ? '<button class="g" data-md="shsend">Send the code...</button>' : ''}<button class="g" data-md="x">Close</button></div></div>`;
     } else if (mod.t === 'shlink') {
       h = `<div class="dl-mc dl-ig-pop"><h3>Share link</h3><p class="mute">${esc(mod.copied ? 'Copied. Paste it anywhere: Discord, a message, a forum post. It shows a preview card with the loadout picture.' : mod.copyFail ? 'Your browser blocked copying. The link below is selected: copy it with Ctrl+C, or press and hold it on a phone.' : 'Copy it and paste it anywhere: Discord, a message, a forum post. It shows a preview card with the loadout picture.')}</p><input id="dlurl" class="dl-url" readonly value="${esc(mod.url)}"><div class="dl-bt"><button class="b" data-md="lcopy">Copy link</button>${navigator.share ? '<button class="g" data-md="lsend">Share...</button>' : ''}<span class="dl-sp"></span><button class="g" data-md="x">Close</button></div></div>`;
+    } else if (mod.t === 'bdpub') {
+      const tg = (k, label) => `<label class="dl-bdt${mod.tags.includes(k) ? ' on' : ''}"><input type="checkbox" data-bdtag="${k}"${mod.tags.includes(k) ? ' checked' : ''}>${label}</label>`;
+      h = `<div class="dl-mc dl-bdp"><h3>Share to Builds</h3><p class="mute">Your build goes in the Builds tab for everyone to see, vote on and import. People get the same subclass, weapons, armor, mods and artifact perks, matched to the gear they own.</p>${mod.signed === false ? '<div class="dl-wr">Sharing builds needs a Pathfinder account. Sign in at Settings &gt; Accounts first.</div>' : ''}${mod.msg ? `<div class="dl-wr">${esc(mod.msg)}</div>` : ''}
+<label class="dl-bdl">Name<input id="bdtitle" maxlength="60" value="${esc(mod.title)}" placeholder="For example: Golden Gun GM build"></label>
+${mod.l.c < 3 ? '' : `<label class="dl-bdl">Class<select id="bdcls"><option value="">Pick the class</option>${[0, 1, 2].map((c) => `<option value="${c}"${mod.cls === c ? ' selected' : ''}>${CL[c]}</option>`).join('')}</select></label>`}
+<div class="dl-bdl">Good for (up to 4)<div class="dl-bdts">${tg('pve', 'PvE')}${tg('pvp', 'PvP')}${tg('raid', 'Raids')}${tg('dungeon', 'Dungeons')}${tg('gm', 'Grandmasters')}${tg('solo', 'Solo')}${tg('trials', 'Trials')}${tg('beginner', 'Beginners')}</div></div>
+${(() => { const BD = window.__gtBD; if (!BD) return ''; const ch = (k, label, cls, on, data) => `<label class="dl-bdt ${cls}${on ? ' on' : ''}"><input type="checkbox" ${data}="${k}"${on ? ' checked' : ''}>${label}</label>`;
+  return `<div class="dl-bdl">Strengths (optional, up to 8)<div class="dl-bdts">${Object.entries(BD.STR).map(([k, v]) => ch(k, esc(v), 'gd', mod.str.includes(k), 'data-bdstr')).join('')}</div></div>
+<div class="dl-bdl">Weaknesses (optional, up to 6)<div class="dl-bdts">${Object.entries(BD.WEAK).map(([k, v]) => ch(k, esc(v), 'bd', mod.weak.includes(k), 'data-bdweak')).join('')}</div></div>
+`; })()}
+<label class="dl-bdl">How to play it (optional)<textarea id="bdnotes" maxlength="1200" rows="5" placeholder="What the build does, how to play it, what to swap.">${esc(mod.notes)}</textarea></label>
+<div class="dl-bt"><button class="b" data-md="bdgo"${mod.busy ? ' disabled' : ''}>${mod.busy ? 'Sharing...' : 'Share to Builds'}</button><span class="dl-sp"></span><button class="g" data-md="x">Cancel</button></div></div>`;
+    } else if (mod.t === 'bddone') {
+      h = `<div class="dl-mc dl-ig-pop"><h3>Shared to Builds</h3><p class="mute">"${esc(mod.title)}" is in the Builds tab now. Every like and every import moves it up the popular list.</p><div class="dl-bt"><button class="b" data-md="bdopen">Open Builds</button><span class="dl-sp"></span><button class="g" data-md="x">Close</button></div></div>`;
     } else if (mod.t === 'shin') {
       h = shinHTML();
     } else if (mod.t === 'share') {
@@ -1365,6 +1501,17 @@ ${mod.msg && mod.cats ? `<p class="dl-msm">${esc(mod.msg)}</p>` : ''}
     if (!mod) return;
     if (e.target.id === 'dlimpf') { const f = e.target.files && e.target.files[0]; e.target.value = ''; if (f) impPic(f); return; }
     if (e.target.id === 'dlnm') mod.nh = +e.target.value;
+    if (e.target.dataset && (e.target.dataset.bdstr || e.target.dataset.bdweak || e.target.dataset.bdprio !== undefined) && mod.t === 'bdpub') {
+      const ti = g('bdtitle'), no = g('bdnotes'); if (ti) mod.title = ti.value; if (no) mod.notes = no.value;
+      const ds = e.target.dataset, [key, val, max] = ds.bdstr ? ['str', ds.bdstr, 8] : ds.bdweak ? ['weak', ds.bdweak, 6] : ['prio', +ds.bdprio, 6];
+      if (e.target.checked) { if (mod[key].length >= max) { e.target.checked = false; mod.msg = 'Pick up to ' + max + '.'; drawMod(); return; } mod[key].push(val); } else mod[key] = mod[key].filter((t) => t !== val);
+      mod.msg = ''; drawMod(); return;
+    }
+    if (e.target.dataset && e.target.dataset.bdtag && mod.t === 'bdpub') {
+      const k = e.target.dataset.bdtag, ti = g('bdtitle'), no = g('bdnotes'); if (ti) mod.title = ti.value; if (no) mod.notes = no.value;
+      if (e.target.checked) { if (mod.tags.length >= 4) { e.target.checked = false; mod.msg = 'Pick up to 4.'; drawMod(); return; } mod.tags.push(k); } else mod.tags = mod.tags.filter((t) => t !== k);
+      mod.msg = ''; drawMod(); return;
+    }
     else if (e.target.id === 'dlslot') { mod.i = +e.target.value; }
     else if (e.target.id === 'dlimp') mod.text = e.target.value;
   }
@@ -1403,7 +1550,7 @@ ${mod.msg && mod.cats ? `<p class="dl-msm">${esc(mod.msg)}</p>` : ''}
       mod = null; drawMod(); return;
     }
     // Sharing Equipped: wait until its mods, subclass and artifact have been read.
-    if (mod && mod.t === 'shmenu' && mod.wait && ['shlink', 'shpic', 'shcode', 'shsend'].includes(a)) {
+    if (mod && mod.t === 'shmenu' && mod.wait && ['shlink', 'shpic', 'shcode', 'shsend', 'shbuild'].includes(a)) {
       const w = mod.wait, m0 = mod; m0.msg = 'Reading your mods, subclass and artifact...'; drawMod(); await w;
       if (mod !== m0) return; m0.msg = '';
     }
@@ -1439,7 +1586,32 @@ ${mod.msg && mod.cats ? `<p class="dl-msm">${esc(mod.msg)}</p>` : ''}
       catch (er) { prompt('Copy this link:', url); }
       return;
     }
+    if (mod.t === 'shin' && a === 'shadd' && mod.bid && gt.bdUse) gt.bdUse({ id: mod.bid }).catch(() => {}); // a Builds import counts towards its popularity
     if (mod.t === 'shin' && a === 'shadd') { const l = mod.l; if (!D0()) return; try { sessionStorage.removeItem('gt.share'); } catch (er) { /* storage off */ } mod = null; drawMod(); importLo(l); window.show && window.show('loadouts'); return; }
+    if (mod.t === 'shmenu' && a === 'shbuild') {
+      const l = mod.l; mod = { t: 'bdpub', l, title: /^equipped$/i.test(String(l.n || '').trim()) ? '' : String(l.n || '').slice(0, 60), notes: String(l.o || '').slice(0, 1200), tags: [], str: [], weak: [], prio: [], cls: l.c < 3 ? l.c : '', msg: '' }; drawMod();
+      if (gt.pfaStatus) gt.pfaStatus().then((st) => { if (mod && mod.t === 'bdpub') { mod.signed = !!(st && st.on); if (!mod.signed) drawMod(); } }, () => {});
+      setTimeout(() => { const i = g('bdtitle'); if (i) i.focus(); }, 30);
+      return;
+    }
+    if (mod.t === 'bdpub' && a === 'bdgo') {
+      const ti = g('bdtitle'), no = g('bdnotes'), cs = g('bdcls'); mod.title = ti ? ti.value : mod.title; mod.notes = no ? no.value : mod.notes; if (cs) mod.cls = cs.value === '' ? '' : +cs.value;
+      if (mod.title.replace(/[^\p{L}\p{N}]/gu, '').length < 3) { mod.msg = 'Give the build a name of at least 3 letters.'; drawMod(); return; }
+      if (mod.cls === '') { mod.msg = 'Pick the class this build is for.'; drawMod(); return; }
+      const l = mod.l, m0 = mod; let ex = [];
+      try { ex = resolve(l).filter((r) => r && r.x && r.x.r === 'Exotic').map((r) => r.en.h); } catch (er) { ex = []; }
+      m0.busy = true; m0.msg = ''; drawMod();
+      try {
+        const lc = l.c < 3 ? l : { ...l, c: m0.cls };
+        const bp = await buildPic({ ...lc, n: m0.title.trim() });
+        await gt.bdPub({ title: m0.title.trim(), notes: m0.notes.trim(), tags: m0.tags, code: codeOf(lc), ex, cls: m0.cls, img: bp.img, info: bp.info || undefined, str: m0.str || [], weak: m0.weak || [], prio: m0.prio || [] });
+        if (ed && ed.build) closeEd();
+        if (mod === m0) { mod = { t: 'bddone', title: m0.title.trim() }; drawMod(); }
+        if (window.__gtBuilds) window.__gtBuilds.refresh();
+      } catch (er) { if (mod === m0) { m0.busy = false; m0.msg = V.clean(er); drawMod(); } }
+      return;
+    }
+    if (mod.t === 'bddone' && a === 'bdopen') { mod = null; drawMod(); if (window.show) window.show('builds'); return; }
     if (mod.t === 'shmenu') {
       const l = mod.l;
       if (a === 'shpic') { mod = null; drawMod(); toast('Drawing the picture...'); try { await loImage(l); } catch (er) { toast('Could not draw the picture: ' + V.clean(er), { bad: 1 }); } return; }
@@ -1542,7 +1714,7 @@ ${mod.msg && mod.cats ? `<p class="dl-msm">${esc(mod.msg)}</p>` : ''}
   const statsOf = (xs) => {
     const w = xs.filter((x) => x.st); if (!w.length) return '';
     const t = [0, 0, 0, 0, 0, 0]; w.forEach((x) => x.st.forEach((v, i) => { t[i] += v; }));
-    return `<div class="dl-stats" title="Armor stats of these pieces">${t.map((v, i) => `<span title="${STL[i][1]}">${STL[i][0]}<b>${v}</b></span>`).join('')}<span class="dl-tot">Total <b>${t.reduce((s, v) => s + v, 0)}</b></span></div>`;
+    return `<div class="dl-stats" title="Armor stats of these pieces">${[1, 5, 3, 4, 2, 0].map((i) => `<span title="${STL[i][1]}">${STL[i][0]}<b>${t[i]}</b></span>`).join('')}<span class="dl-tot">Total <b>${t.reduce((s, v) => s + v, 0)}</b></span></div>`;
   };
   const tileOf = (r) => (r.x ? V.tile(r.x).replace(/ fade(?=[" ])/, '') : `<div class="vt dl-miss" title="Missing: ${esc(r.en.n || 'item')}">${r.en.i ? `<img src="${esc(V.icon(r.en.i))}" alt="">` : '?'}</div>`);
   const plugIcons = (m, big) => m.map((p) => `<span class="ap ${big ? 'md' : 'sm'}" data-ph="${int(p[1])}" title="${esc(p[3])}">${p[2] ? `<img src="${esc(V.icon(p[2]))}" alt="">` : ''}</span>`).join('');
@@ -1747,7 +1919,12 @@ ${art ? `<div class="dl-mrow"><span class="dl-gl">Artifact &middot; ${esc(AR.ite
 .dl-wr{color:#ffb74d;font-size:13px}
 .dl-ef{display:flex;gap:8px;padding:10px 14px;border-top:1px solid #2b2d31;background:#0e1013;flex-wrap:wrap}
 #dlmod .dl-url{width:100%;box-sizing:border-box;font:13px ui-monospace,Consolas,monospace;padding:9px 10px;background:#0e1013;border:1px solid #3a3d43;border-radius:3px;color:#fff}
-.dl-shin{max-width:min(620px,94vw)}.dl-hst{margin:10px 0 0;font-size:12.5px;line-height:1.5}.dl-hst .g{margin-left:6px;padding:3px 10px;font-size:12px}.dl-shin h4{margin:6px 0 2px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#8b8f97}
+.dl-wpk{display:flex;flex-wrap:wrap;align-items:center;gap:3px;margin-top:4px}.dl-wpk img{width:22px;height:22px;border-radius:50%;border:1px solid #3a3d43}.dl-wpk button{padding:2px 8px!important;font-size:11.5px!important}
+.dl-wpc{margin:0 0 10px}.dl-wpc small{display:block;font-size:11.5px;color:#9aa0a8;margin:0 0 5px;letter-spacing:.04em}.dl-wpc>div{display:flex;flex-wrap:wrap;gap:5px}.dl-wpo{display:inline-flex!important;align-items:center;gap:6px;padding:4px 10px 4px 4px!important;border-radius:999px!important;font-size:12.5px!important}.dl-wpo img{width:26px;height:26px;border-radius:50%;display:block}.dl-wpo.on{border-color:var(--g-accent,#e8b84a)!important;background:color-mix(in srgb,var(--g-accent,#e8b84a) 20%,transparent)!important;color:#fff!important}
+.dl-src{display:inline-flex;margin-left:10px;gap:0}.dl-src button{border-radius:0!important;padding:4px 10px!important}.dl-src button:first-child{border-radius:6px 0 0 6px!important}.dl-src button:last-child{border-radius:0 6px 6px 0!important}.dl-src button.on{background:var(--g-accent2,#3a6ea5)!important;color:#fff!important;border-color:transparent!important}
+.dl-pa{display:grid;grid-template-columns:44px 1fr;grid-template-rows:auto auto;column-gap:10px;align-items:center;padding:6px;border:1px solid transparent;border-radius:8px;cursor:pointer;min-width:0}.dl-pa:hover,.dl-pa:focus-visible,.dl-pa.on{border-color:var(--g-accent,#e8b84a);background:rgba(255,255,255,.04);outline:0}.dl-pa span{grid-row:1/3;width:44px;height:44px;border:2px solid #3a3d43;border-radius:4px;overflow:hidden;background:#0d0f13}.dl-pa img{width:100%;height:100%;display:block}.dl-pa b{font-size:13px;font-weight:600;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dl-pa small{font-size:11.5px;color:#9aa0a8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#dlpl:has(.dl-pa){display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:4px}.dl-bhint{margin:0 0 10px;padding:9px 12px;border:1px solid color-mix(in srgb,var(--g-accent,#e8b84a) 45%,transparent);border-radius:8px;background:color-mix(in srgb,var(--g-accent,#e8b84a) 10%,transparent);font-size:13px;color:#e6e7ea}
+.dl-shin{max-width:min(620px,94vw)}.dl-bdp{max-width:min(560px,94vw)}.dl-bdl{display:flex;flex-direction:column;gap:5px;margin:10px 0 0;font-size:12.5px;color:#cfd2d8}.dl-bdl input,.dl-bdl select,.dl-bdl textarea{width:100%;box-sizing:border-box;font:inherit;font-size:14px}.dl-bdl textarea{resize:vertical;min-height:84px}.dl-bdts{display:flex;flex-wrap:wrap;gap:6px}.dl-bdt{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border:1px solid var(--g-line,#2b2e33);border-radius:999px;cursor:pointer;font-size:12.5px;color:#cfd2d8;user-select:none}.dl-bdt input{position:absolute;opacity:0;pointer-events:none}.dl-bdt.on{border-color:var(--g-accent,#e8b84a);color:#fff;background:color-mix(in srgb,var(--g-accent,#e8b84a) 18%,transparent)}.dl-bdt.gd.on{border-color:#3f9a64;background:rgba(63,154,100,.2)}.dl-bdt.bd.on{border-color:#a64b4b;background:rgba(166,75,75,.22)}.dl-bdt em{font-style:normal;font-weight:700;font-size:11px;min-width:16px;height:16px;border-radius:50%;display:inline-grid;place-items:center;background:var(--g-accent,#e8b84a);color:#111}.dl-bdp{max-height:88vh;overflow:auto}.dl-bdt:focus-within{outline:2px solid var(--g-accent,#e8b84a);outline-offset:2px}.dl-hst{margin:10px 0 0;font-size:12.5px;line-height:1.5}.dl-hst .g{margin-left:6px;padding:3px 10px;font-size:12px}.dl-shin h4{margin:6px 0 2px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#8b8f97}
 .dl-shg{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}.dl-shin .dl-bt{position:sticky;bottom:-16px;background:#1a1c20;padding:10px 0 4px;margin-bottom:-4px}.dl-shin .dl-wr{margin-top:4px}.dl-shi{display:flex;align-items:center;gap:8px;font-size:13px}.dl-shi{min-width:0}.dl-shi b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}.dl-shi span{width:40px;height:40px;flex:none;background:#14161b;border:1px solid #3a3d43}.dl-shi img{width:100%;height:100%;display:block}.dl-shi.fade{opacity:.55}
 #dlmod{position:fixed;inset:0;z-index:95;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;--t:var(--gt-t,44px)}
 .dl-mc{background:#1a1c20;border:1px solid #4a4d54;border-radius:4px;padding:16px;min-width:300px;max-width:min(560px,92vw);max-height:86vh;overflow:auto;color:#e6e7ea;display:flex;flex-direction:column;gap:10px}
