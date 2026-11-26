@@ -60,8 +60,10 @@
 #builds .bdtt small{display:block;margin-top:2px;font-size:12px;color:color-mix(in srgb,var(--el) 70%,#fff)}
 #builds .bdbody{display:flex;flex-direction:column;gap:10px;padding:12px 14px 12px;flex:1}
 #builds .bdgear{display:flex;flex-wrap:wrap;gap:6px}
-#builds .bdgear span{width:44px;height:44px;border-radius:6px;overflow:hidden;border:1px solid #3a3f48;background:#0d0f13}
-#builds .bdgear span.x{border-color:#e8c25a;box-shadow:0 0 0 1px rgba(232,194,90,.35)}
+/* the rarity colour sits behind each icon (like the loadout picture), so icons with a see-through or black background (ornaments)
+   still look like the item: purple for legendary, gold for exotic */
+#builds .bdgear span{width:44px;height:44px;border-radius:6px;overflow:hidden;border:1px solid #8a5fb0;background:linear-gradient(180deg,rgba(82,47,101,.9),#14161b)}
+#builds .bdgear span.x{border-color:#e8c25a;box-shadow:0 0 0 1px rgba(232,194,90,.35);background:linear-gradient(180deg,rgba(206,174,51,.9),#14161b)}
 #builds .bdgear img{width:100%;height:100%;display:block}
 #builds .bdtags{display:flex;flex-wrap:wrap;gap:5px}
 #builds .bdtags em{font-style:normal;font-size:11.5px;padding:2px 8px;border-radius:999px;border:1px solid var(--g-line,#2b2e33);color:#cfd2d8}
@@ -179,7 +181,7 @@ html.bdv-open{overflow:hidden}
 #bdv .bdbb{padding:14px 16px 16px}#bdv .bdbb h4{margin:4px 0 8px;font-size:13px;color:#9aa0a8;font-weight:600}
 #bdv .bdnotes{white-space:pre-wrap;overflow-wrap:anywhere;font-size:14.5px;line-height:1.6;color:#d6d9de}
 #bdv .bdsw{display:grid;grid-template-columns:1fr 1fr}#bdv .bdsw.one{grid-template-columns:1fr}#bdv .bdsw>div{padding:14px 16px}#bdv .bdsw .good{background:rgba(63,154,100,.1)}#bdv .bdsw .bad{background:rgba(166,75,75,.1)}#bdv .bdsw h4{margin:0 0 8px;font-size:15px}#bdv .bdsw .good h4{color:#5fd08a}#bdv .bdsw .bad h4{color:#ff7d8f}#bdv .bdsw p{margin:5px 0;font-size:14px;color:#dfe2e6}
-#bdv .bdgi{display:flex;align-items:center;gap:12px;padding:6px 0}#bdv .bdti{display:inline-block;flex:none;border:2px solid #3a3f48;border-radius:6px;overflow:hidden;background:#0d0f13}#bdv .bdti img{width:100%;height:100%;display:block}#bdv .bdgt b{font-size:14px;color:#fff}
+#bdv .bdgi{display:flex;align-items:center;gap:12px;padding:6px 0}#bdv .bdti{display:inline-block;flex:none;border:2px solid #8a5fb0;border-radius:6px;overflow:hidden;background:linear-gradient(180deg,rgba(82,47,101,.9),#14161b)}#bdv .bdti img{width:100%;height:100%;display:block}#bdv .bdgt b{font-size:14px;color:#fff}
 #bdv .bdaddpic{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 14px;border:1px dashed var(--g-line,#2b2e33);border-radius:12px;background:var(--g-panel,#16181d);font-size:13.5px;color:#cfd2d8}#bdv .bdaddpic span{flex:1 1 240px}
 #bdv .bdedit .bdl{display:flex;flex-direction:column;gap:6px;margin:0 0 12px;font-size:13px;color:#cfd2d8}#bdv .bdedit input,#bdv .bdedit textarea{width:100%;box-sizing:border-box;font:inherit;font-size:14px;margin:0!important}
 #bdv .bdchips{display:flex;flex-wrap:wrap;gap:6px}#bdv .bdchip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border:1px solid var(--g-line,#2b2e33);border-radius:999px;cursor:pointer;font-size:12.5px;user-select:none}#bdv .bdchip input{position:absolute;opacity:0;pointer-events:none}#bdv .bdchip.on{border-color:var(--g-accent,#e8b84a);color:#fff;background:color-mix(in srgb,var(--g-accent,#e8b84a) 18%,transparent)}#bdv .bdchip.gd.on{border-color:#3f9a64;background:rgba(63,154,100,.2)}#bdv .bdchip.bd.on{border-color:#a64b4b;background:rgba(166,75,75,.22)}#bdv .bdchip:focus-within{outline:2px solid var(--g-accent,#e8b84a);outline-offset:2px}
@@ -266,7 +268,7 @@ ${st.more ? `<button type="button" class="bdmore" data-more="1"${st.busy ? ' dis
     pushed = false;
   }
   window.addEventListener('popstate', () => { if (OPEN) closeOpen(true); });
-  const tile = (q, sz) => { const u = img(q && q.i); return `<span class="bdti" style="width:${sz}px;height:${sz}px${q && q.x ? ';border-color:#ceae33' : ''}" title="${esc((q && q.n) || '')}">${u ? `<img src="${esc(u)}" alt="${esc((q && q.n) || '')}" loading="lazy">` : ''}</span>`; };
+  const tile = (q, sz) => { const u = img(q && q.i); return `<span class="bdti" style="width:${sz}px;height:${sz}px${q && q.x ? ';border-color:#ceae33;background:linear-gradient(180deg,rgba(206,174,51,.9),#14161b)' : ''}" title="${esc((q && q.n) || '')}">${u ? `<img src="${esc(u)}" alt="${esc((q && q.n) || '')}" loading="lazy">` : ''}</span>`; };
   function viewHTML(x) {
     const e = elOf(x.el), si = img(x.sum && x.sum.si), sw = x.sw || { s: [], w: [] };
     const ss2 = (sw.s || []).filter((k2) => BDS.STR[k2]), ww2 = (sw.w || []).filter((k2) => BDS.WEAK[k2]);
