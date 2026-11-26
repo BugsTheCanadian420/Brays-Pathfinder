@@ -2,6 +2,18 @@
 // Tabs are renamed and grouped so the bar stays short: the everyday ones stay on the bar,
 // the rest live under "More". On a narrow window everything moves into one menu.
 (() => {
+  // Pop-ups close when you click the dark area around them. Selecting text in a pop-up and letting go outside it also counts as a
+  // click on that dark area (the browser sends the click to the element both ends share), which closed the pop-up and lost what
+  // was typed. Here a click only reaches a full-screen backdrop when the press started on the backdrop too.
+  { let downOn = null;
+    window.addEventListener('pointerdown', (e) => { downOn = e.target; }, true);
+    window.addEventListener('click', (e) => {
+      const t = e.target, d = downOn; downOn = null;
+      if (!d || d === t || !(t instanceof Element) || !t.contains(d)) return;
+      const cs = getComputedStyle(t); if (cs.position !== 'fixed') return;
+      const r = t.getBoundingClientRect(); if (r.width < innerWidth * 0.9 || r.height < innerHeight * 0.9) return;
+      e.stopImmediatePropagation(); e.preventDefault();
+    }, true); }
   const nav = document.getElementById('nav'), hd = document.querySelector('header');
   if (!nav || !hd) return;
   const html = document.documentElement;
