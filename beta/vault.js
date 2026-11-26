@@ -1866,7 +1866,7 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
         verAt = Date.now();
         const v = await fetch('version.json', { cache: 'no-store' }).then((x) => (x.ok ? x.json() : null)).catch(() => null);
         if (v && v.v && window.__GT_VER__ && v.v !== window.__GT_VER__) {
-          const typing = document.activeElement && /^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName) && document.activeElement.value;
+          const typing = (document.activeElement && /^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName) && document.activeElement.value) || [...document.querySelectorAll('#settings input[id^="pfa"]')].some((i) => i.value);
           if (away >= 6e5 && !typing) { location.reload(); return; }
           if (!document.getElementById('gtnewver')) { const d = document.createElement('div'); d.id = 'gtnewver'; d.setAttribute('role', 'status'); d.innerHTML = '<span>Pathfinder was updated.</span><button type="button">Reload</button>'; d.querySelector('button').onclick = () => location.reload(); document.body.appendChild(d); }
         }
@@ -2082,7 +2082,17 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     return sx('Sync across devices', 'Keeps loadouts, tags, notes, settings, tracked triumphs, Home pins and wish lists (including My wish list) the same on every device where you turn this on, for this Bungie account. Stored in your own token service. <br><span class="syst">' + line + '</span>' + (onv ? ' <button class="g" data-sa="syncnow" style="margin-left:6px">Sync now</button>' : ''), `<label class="tgl"><input type="checkbox" data-syncon${onv ? ' checked' : ''}><i></i></label>`);
   }
   window.addEventListener('gtsync', () => { if (settingsSec.classList.contains('on')) drawSettings(); });
+  // Settings redraws whenever something changes in the background (a sync, the feature switches, help answers, coming back to the
+  // app). What you were typing in the account boxes (sign in, passwords, names) and where your cursor was stay put through it.
   function drawSettings() {
+    const keep = {}; settingsSec.querySelectorAll('input[id^="pfa"]:not([type=file]):not([type=checkbox])').forEach((i) => { keep[i.id] = i.value; });
+    const ae = document.activeElement, fid = ae && ae.id && settingsSec.contains(ae) && /^(INPUT|TEXTAREA)$/.test(ae.tagName) ? ae.id : '';
+    let ss = null, se = null; try { if (fid) { ss = ae.selectionStart; se = ae.selectionEnd; } } catch (e) { /* no selection on this kind of box */ }
+    drawSettings0();
+    Object.keys(keep).forEach((id) => { const i = document.getElementById(id); if (i && keep[id] && i.value !== keep[id] && !i.dataset.fresh) i.value = keep[id]; });
+    if (fid) { const back = () => { const i = document.getElementById(fid); if (i && document.activeElement !== i && (!document.activeElement || document.activeElement === document.body || !settingsSec.contains(document.activeElement) || document.activeElement.id === fid)) { try { i.focus({ preventScroll: true }); if (ss != null) i.setSelectionRange(ss, se); } catch (e) { /* not focusable now */ } } }; back(); setTimeout(back, 0); }
+  }
+  function drawSettings0() {
     const sx = (title, desc, ctl, wide) => `<div class="sx${wide ? ' wide' : ''}"><div class="sxt"><b>${title}</b>${desc ? `<small>${desc}</small>` : ''}</div><div class="sxc">${ctl}</div></div>`;
     const tgl = (k) => `<label class="tgl"><input type="checkbox" data-sk="${k}"${SET[k] ? ' checked' : ''}><i></i></label>`;
     const rng = (k, min, max, unit) => `<input type="range" data-sk="${k}" min="${min}" max="${max}" value="${SET[k]}"><output>${SET[k]}${unit}</output>`;
@@ -2208,8 +2218,14 @@ html:has(#junkm),html:has(#junkm) body{overflow:hidden!important}#junkm{overscro
     // Help (ask the team) and Problems (the error log) show under About & help, not as sections of their own.
     const sect = (c) => (title(c) === 'Help' || title(c) === 'Problems' ? 'About & help' : title(c));
     const key = (c) => { const i = SORD.indexOf(title(c)); return i < 0 ? 99 : i; };
-    const cards = [...pane.children].filter((c) => c.classList.contains('card')).sort((a, b) => key(a) - key(b));
-    cards.forEach((c) => pane.appendChild(c));
+    const now = [...pane.children].filter((c) => c.classList.contains('card')), cards = now.slice().sort((a, b) => key(a) - key(b));
+    // Moving a card takes the cursor out of any box in it (on a phone that also closes the keyboard, which resizes the page and
+    // lays it out again), so cards only move when they are out of order, and the box you were typing in gets the cursor back.
+    if (cards.some((c, i) => c !== now[i])) {
+      const ae = document.activeElement, has = ae && ae !== document.body && root.contains(ae); let ss = null, se = null; try { if (has) { ss = ae.selectionStart; se = ae.selectionEnd; } } catch (e) { /* no selection here */ }
+      cards.forEach((c) => pane.appendChild(c));
+      if (has && document.activeElement !== ae && ae.isConnected) { try { ae.focus({ preventScroll: true }); if (ss != null) ae.setSelectionRange(ss, se); } catch (e) { /* not focusable now */ } }
+    }
     const names = [...new Set(cards.map(sect).filter(Boolean))];
     if (SSEC === 'Help') SSEC = 'About & help';
     if (SSEC === 'Founder panel') SSEC = 'Founder'; if (SSEC === 'Keyboard shortcuts') SSEC = 'Shortcuts'; // renamed sections
