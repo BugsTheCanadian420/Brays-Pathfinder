@@ -900,7 +900,7 @@
     const nmF = (p) => (p && p[2] ? { h: +p[0] || 0, i: p[2], n: String(p[1] || '') } : null); // loadout mods: [hash, name, icon, ..., bucket]
     const SLN = ['Helmet', 'Arms', 'Chest', 'Legs', 'Class item'];
     cv.info = {
-      v: 1,
+      v: 2,
       sub: sub ? { h: sub.en.h, n: (sub.x || sub.en).n || '', i: ic(sub), el: elk } : null,
       sp: subOrd(subM).map(nmM).filter(Boolean).slice(0, 16),
       w: weps.map((r, i) => { if (!r) return null; const fr = (WP[i] || []).find((q) => q.fr); return { h: r.en.h, n: (r.x || r.en).n || '', i: ic(r), t: (r.x && r.x.t) || '', r: (r.x && r.x.r) || '', intr: fr ? { n: fr.n || '', i: fr.i, d: fr.d || '' } : null, p: (WP[i] || []).filter((q) => !q.fr).map((q) => ({ h: q.h || 0, i: q.i, n: q.n || '', d: q.d || '' })) }; }).filter(Boolean),
