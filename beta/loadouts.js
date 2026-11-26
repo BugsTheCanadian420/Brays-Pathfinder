@@ -703,14 +703,21 @@
       const en = weps[wi] && weps[wi].en, pk = en && en.wp && en.wp.length ? en.wp.map((p) => ({ h: p[0], i: p[2], n: p[1] })) : null;
       if (!d) return pk ? pk.slice(0, 7) : [];
       const out = []; if (d.frame && d.frame.i) out.push({ i: d.frame.i, n: d.frame.n, d: d.frame.d || '', fr: 1 });
-      if (pk) return out.concat(pk).slice(0, 7); // perks picked for a build win over the ones on your own copy
+      if (pk) return out.concat(pk).slice(0, 7); // the build's page: perks picked for a build win over the ones on your own copy
       (d.groups || []).filter((gr) => gr.label === 'Perks').forEach((gr) => gr.cols.forEach((col) => { const on = col.find((p) => p.on); if (on && on.i && !/tracker|memento|shader/i.test(on.c || '')) out.push({ h: on.h, i: on.i, n: on.n, d: on.d || '' }); }));
+      return out.slice(0, 7);
+    });
+    // The picture draws each weapon's own perks, as it always has; perks picked for a build only go on the build's page.
+    const WPD = WD.map((d) => {
+      if (!d) return [];
+      const out = []; if (d.frame && d.frame.i) out.push({ i: d.frame.i, n: d.frame.n });
+      (d.groups || []).filter((gr) => gr.label === 'Perks').forEach((gr) => gr.cols.forEach((col) => { const on = col.find((p) => p.on); if (on && on.i && !/tracker|memento|shader/i.test(on.c || '')) out.push({ i: on.i, n: on.n }); }));
       return out.slice(0, 7);
     });
     // Set bonuses that are on: a set's 2- and 4-piece perks, once you wear that many pieces of it.
     const sets = {}; AD.forEach((a) => { if (a.set && a.set.n) { const k = a.set.n; (sets[k] = sets[k] || { set: a.set, n: 0 }).n++; } });
     const SB = []; Object.values(sets).forEach((o) => (o.set.perks || []).forEach((p) => { if (o.n >= (p.rc || 99)) SB.push({ n: p.n, i: p.i, rc: p.rc, s: o.set.n, d: p.d || '' }); }));
-    const paths = [ic(sub), ...weps.map(ic), ...arms.map(ic), ...modsBy.flat().map((m) => m.i), ...anyMods.map((m) => m.i), ...subPl.map((m) => m.i), artIc, ...artPk, ...WP.flat().map((p) => p.i), ...SB.map((p) => p.i)].filter(Boolean);
+    const paths = [ic(sub), ...weps.map(ic), ...arms.map(ic), ...modsBy.flat().map((m) => m.i), ...anyMods.map((m) => m.i), ...subPl.map((m) => m.i), artIc, ...artPk, ...WP.flat().map((p) => p.i), ...WPD.flat().map((p) => p.i), ...SB.map((p) => p.i)].filter(Boolean);
     let D = {}; try { D = await gt.imgFetch({ p: [...new Set(paths)] }); } catch (e) { /* drawn without icons */ }
     const imgs = {}; await Promise.all(Object.entries(D).map(([k, v]) => new Promise((ok) => { const im = new Image(); im.onload = () => { imgs[k] = im; ok(); }; im.onerror = ok; im.src = v; })));
     // Each piece's six stats, in the game's order (Health, Melee, Grenade, Super, Class, Weapons), with the tuning (+5 / -5) if it has one.
@@ -789,7 +796,7 @@
       const y1 = L.top + 42 + i * 122; box(r, 48, y1, 100);
       txt(r ? (r.x || r.en).n : 'Empty', 166, y1 + 26, 23, r ? '#fff' : '#555', 700, WPW - 200);
       txt(r && r.x ? (r.x.t || '') + (r.x.p ? '  ·  ' + r.x.p : '') : '', 166, y1 + 48, 14, '#9aa0a8', 400, WPW - 200);
-      (WP[i] || []).forEach((p, k) => tileIc(p.i, 166 + k * 54, y1 + 56, 46, true));
+      (WPD[i] || []).forEach((p, k) => tileIc(p.i, 166 + k * 54, y1 + 56, 46, true));
     });
     // total stats, with every piece's share
     const sx = WPW + GAP + 16, sw = W - M - 16 - sx;
