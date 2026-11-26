@@ -269,6 +269,50 @@ ${st.more ? `<button type="button" class="bdmore" data-more="1"${st.busy ? ' dis
   }
   window.addEventListener('popstate', () => { if (OPEN) closeOpen(true); });
   const tile = (q, sz) => { const u = img(q && q.i); return `<span class="bdti" style="width:${sz}px;height:${sz}px${q && q.x ? ';border-color:#ceae33;background:linear-gradient(180deg,rgba(206,174,51,.9),#14161b)' : ''}" title="${esc((q && q.n) || '')}">${u ? `<img src="${esc(u)}" alt="${esc((q && q.n) || '')}" loading="lazy">` : ''}</span>`; };
+  // Build pictures made before the stats went into the game's order (Weapons, Health, Class, Grenade, Super, Melee):
+  // read each row back off the picture and draw the panel again as Health, Melee, Grenade, Super, Class, Weapons.
+  // Returns a new picture, or '' when the picture is already in the game's order or cannot be read with confidence.
+  async function restatPic(src) {
+    const im = new Image(); im.src = src; await im.decode();
+    if (im.width !== 1200) return '';
+    const cv = document.createElement('canvas'); cv.width = im.width; cv.height = im.height; const g = cv.getContext('2d'); g.drawImage(im, 0, 0);
+    const SX = 672, BX = 780, BW = 316, VX = 1108, Y0 = 74, STACK = '"Open Sans","Segoe UI",Arial', FAM = [STACK, '"Segoe UI"', 'Arial', 'Tahoma'];
+    const NAMES = ['Weapons', 'Health', 'Class', 'Grenade', 'Super', 'Melee'], COLS = ['#9aa0a8', '#6fbf73', '#e0b64a', '#e8a53a', '#c77dff', '#5d9ce0'], GO = [1, 5, 3, 4, 2, 0];
+    const RW = 100, RH = 26, tc = document.createElement('canvas'); tc.width = RW; tc.height = RH; const t2 = tc.getContext('2d', { willReadFrequently: true });
+    // the text on the picture as 0..1 ink, against the panel behind it
+    const ink = (x, y, top) => { const d = g.getImageData(x, y, RW, RH).data, n = RW * RH, L = new Float32Array(n);
+      for (let i = 0; i < n; i++) L[i] = d[i * 4] * 0.3 + d[i * 4 + 1] * 0.59 + d[i * 4 + 2] * 0.11;
+      const s = [...L].sort((a, b) => a - b)[Math.floor(n * 0.5)]; for (let i = 0; i < n; i++) L[i] = Math.max(0, Math.min(1, (L[i] - s) / (top - s))); return L; };
+    const rend = (t, fam, sz, w, base) => { t2.clearRect(0, 0, RW, RH); t2.font = `${w} ${sz}px ${fam},sans-serif`; t2.fillStyle = '#fff'; t2.fillText(t, 0, base); const d = t2.getImageData(0, 0, RW, RH).data, o = new Float32Array(RW * RH); for (let i = 0; i < o.length; i++) o[i] = d[i * 4 + 3] / 255; return o; };
+    const err = (a, b) => { let e = 0, s = 0; for (let i = 0; i < a.length; i++) { e += (a[i] - b[i]) ** 2; s += a[i] + b[i]; } return s ? e / s : 1; };
+    const fit = (L, t, sz, w, base) => Math.min(...FAM.map((f) => err(L, rend(t, f, sz, w, base))));
+    // which order is the picture in? its first row says Weapons (the old order) or Health (the game's)
+    const lab0 = ink(SX, Y0, 231); if (!(fit(lab0, 'Weapons', 17, 600, 18) < Math.min(0.3, fit(lab0, 'Health', 17, 600, 18) * 0.8))) return '';
+    const vals = [];
+    for (let r = 0; r < 6; r++) {
+      const y1 = Y0 + r * 50; if (fit(ink(SX, y1, 231), NAMES[r], 17, 600, 18) > 0.3) return '';
+      // the bar's length gives the stat to within a point or two (an empty bar: 0 or below); the number next to it settles it
+      const bar = g.getImageData(BX, y1 + 12, BW, 1).data; let end = 0;
+      for (let x = 0; x < BW; x++) { const R = bar[x * 4], G = bar[x * 4 + 1], B = bar[x * 4 + 2]; if (Math.max(R, G, B) > 75) end = x + 1; }
+      const vb = end * 200 / BW, vi = ink(VX, y1 + 1, 255), sc = [];
+      for (let v = -60; v <= 260; v++) { if (end ? v <= 0 || Math.abs(Math.min(v, 200) - vb) > 3 : v > 0) continue; sc.push([v, fit(vi, String(v), 19, 700, 18)]); }
+      sc.sort((a, b) => a[1] - b[1]); if (!sc.length || sc[0][1] > 0.15 || (sc[1] && sc[0][1] > sc[1][1] * 0.92)) return '';
+      vals.push(sc[0][0]);
+    }
+    // cover each row with the empty panel just under it, then draw the rows in the game's order
+    for (let r = 0; r < 6; r++) { const y1 = Y0 + r * 50; g.putImageData(g.getImageData(SX - 4, y1 + 25, 1200 - 32 - 16 - SX + 8, 25), SX - 4, y1); }
+    const rr = (x, y, w, h, rad) => { g.beginPath(); if (g.roundRect) g.roundRect(x, y, w, h, rad); else g.rect(x, y, w, h); };
+    const txt = (t, x, y, sz, col, w) => { g.font = `${w} ${sz}px ${STACK}`; g.fillStyle = col; g.fillText(t, x, y); };
+    GO.forEach((i, row) => {
+      const v = vals[i], y1 = Y0 + row * 50; txt(NAMES[i], SX, y1 + 18, 17, '#e6e7ea', 600);
+      rr(BX, y1 + 3, BW, 18, 4); g.fillStyle = '#23262b'; g.fill();
+      const fw = Math.max(0, Math.min(BW, Math.abs(v) / 200 * BW)); if (fw > 0) { rr(BX, y1 + 3, fw, 18, 4); g.fillStyle = v < 0 ? '#c0392b' : COLS[i]; g.fill(); }
+      for (let k = 1; k < 10; k++) { g.fillStyle = 'rgba(0,0,0,.35)'; g.fillRect(BX + BW * k / 10, y1 + 3, 1, 18); }
+      txt(String(v), VX, y1 + 19, 19, v < 0 ? '#ff8a7a' : '#fff', 700);
+    });
+    for (const [ty, q] of [['image/webp', .84], ['image/webp', .7], ['image/jpeg', .72]]) { const d = cv.toDataURL(ty, q); if (d.startsWith('data:' + ty) && d.length <= 690000) return { img: d, vals }; }
+    return '';
+  }
   function viewHTML(x) {
     const e = elOf(x.el), si = img(x.sum && x.sum.si), sw = x.sw || { s: [], w: [] };
     const ss2 = (sw.s || []).filter((k2) => BDS.STR[k2]), ww2 = (sw.w || []).filter((k2) => BDS.WEAK[k2]);
@@ -288,9 +332,14 @@ ${st.more ? `<button type="button" class="bdmore" data-more="1"${st.busy ? ' dis
     const pic = !x.full ? '<p class="mute bdload">Loading the build...</p>' : x.img ? `<button type="button" class="bdpic" data-bzoom="1" aria-label="Show the loadout picture full size"><img src="${esc(x.img)}" alt="The loadout: weapons, stats, armor, subclass and artifact"></button>` : gear || '<p class="mute">This build has no picture yet.</p>';
     return `<div class="bdvc" style="--el:${e[2]}">
 <div class="bdvh"><div class="bdsi">${si ? `<img src="${esc(si)}" alt="">` : ''}</div><div class="bdht"><small>${esc([CL[x.cls], subName(x)].filter(Boolean).join(' · '))}</small><h2>${esc(x.title)}</h2>${x.tags.length ? `<div class="bdtags">${x.tags.map((t) => `<em>${esc(TAGN[t] || t)}</em>`).join('')}</div>` : ''}<div class="bdby">by ${esc(x.by)} · shared ${esc(new Date(x.at).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' }))}</div></div><button type="button" class="bdx g" data-bx="1" aria-label="Close and go back to the builds">&times;</button>
-<div class="bdha">${votes(x, true)}<span class="bdu">${x.uses} import${x.uses === 1 ? '' : 's'}</span><button type="button" class="b bdimp" data-imp="${esc(x.id)}">Import to my loadouts</button>${x.mine || x.mod === 2 ? `<button type="button" class="g" data-bedit="1"${x.mine ? '' : ` title="Change ${esc(x.by)}'s build (founders and the owner can)"`}>Edit</button>` : ''}${x.mine && x.img && x.full && window.__gtlo && window.__gtlo.buildPic ? `<button type="button" class="g" data-bpic="1" title="Make the picture again from your gear, with the stats in the game's order"${x.picBusy ? ' disabled' : ''}>${x.picBusy ? 'Making it...' : 'Remake picture'}</button>` : ''}${x.mine || x.mod ? `<button type="button" class="g" data-bdel="${esc(x.id)}">${x.mine || x.mod === 2 ? 'Delete' : 'Take down'}</button>` : ''}${x.msg ? `<div class="bdmsg">${esc(x.msg)}</div>` : ''}</div></div>
+<div class="bdha">${votes(x, true)}<span class="bdu">${x.uses} import${x.uses === 1 ? '' : 's'}</span><button type="button" class="b bdimp" data-imp="${esc(x.id)}">Import to my loadouts</button>${x.mine || x.mod === 2 ? `<button type="button" class="g" data-bedit="1"${x.mine ? '' : ` title="Change ${esc(x.by)}'s build (founders and the owner can)"`}>Edit</button>` : ''}${x.fix && x.fix.img && x.img ? `<button type="button" class="b" data-bfix="1" title="This picture lists the stats in the old order. Put them in the game's order: Health, Melee, Grenade, Super, Class, Weapons."${x.picBusy ? ' disabled' : ''}>${x.picBusy ? 'Saving...' : 'Fix stats order'}</button>` : ''}${x.mine && x.img && x.full && window.__gtlo && window.__gtlo.buildPic ? `<button type="button" class="g" data-bpic="1" title="Make the picture again from your gear, with the stats in the game's order"${x.picBusy ? ' disabled' : ''}>${x.picBusy ? 'Making it...' : 'Remake picture'}</button>` : ''}${x.mine || x.mod ? `<button type="button" class="g" data-bdel="${esc(x.id)}">${x.mine || x.mod === 2 ? 'Delete' : 'Take down'}</button>` : ''}${x.msg ? `<div class="bdmsg">${esc(x.msg)}</div>` : ''}</div></div>
 ${canAdd ? `<div class="bdaddpic"><span>This build has no picture yet. Make one from your gear.</span><button type="button" class="b" data-bpic="1"${x.picBusy ? ' disabled' : ''}>${x.picBusy ? 'Making it...' : 'Add picture'}</button></div>` : ''}
 ${edit}<div class="bdvb">${pic}${notes}${swb}</div></div>`;
+  }
+  // whoever shared a build, a founder or the owner gets a one-click fix for a picture still in the old stat order
+  async function checkStats(o) {
+    if (!o || !o.img || !(o.mine || o.mod === 2) || o.fixChecked) return; o.fixChecked = true;
+    try { const r = await restatPic(o.img); if (r && r.img && OPEN === o) { o.fix = r; drawOpen(); } } catch (e) { /* leave the picture as it is */ }
   }
   function drawOpen() {
     if (!OPEN) return; let m = document.getElementById('bdv');
@@ -305,7 +354,7 @@ ${edit}<div class="bdvb">${pic}${notes}${swb}</div></div>`;
     OPEN = { ...x, notes: '', full: false, msg: '' }; ss(id);
     if (!pushed) { try { history.pushState({ bdv: id }, ''); pushed = true; } catch (e) { /* Back just leaves the page */ } }
     drawOpen();
-    try { const full = await gt.bdGet({ id }); if (OPEN && OPEN.id === id) { Object.assign(OPEN, full, { full: true }); drawOpen(); } }
+    try { const full = await gt.bdGet({ id }); if (OPEN && OPEN.id === id) { Object.assign(OPEN, full, { full: true }); drawOpen(); checkStats(OPEN); } }
     catch (er) { if (OPEN && OPEN.id === id) { OPEN.msg = clean(er); OPEN.full = true; drawOpen(); } }
   }
   function lightbox(src) {
@@ -329,12 +378,18 @@ ${edit}<div class="bdvb">${pic}${notes}${swb}</div></div>`;
       catch (er) { o.msg = clean(er); }
       o.saving = false; if (OPEN === o) drawOpen(); return;
     }
+    if (t.closest('[data-bfix]') && !OPEN.picBusy && OPEN.fix) {
+      const o = OPEN; o.picBusy = true; o.msg = ''; drawOpen();
+      try { await gt.bdPic({ id: o.id, img: o.fix.img }); o.img = o.fix.img; o.fix = null; o.msg = 'Fixed. The stats now read Health, Melee, Grenade, Super, Class, Weapons.'; }
+      catch (er) { o.msg = clean(er); }
+      o.picBusy = false; if (OPEN === o) drawOpen(); return;
+    }
     if (t.closest('[data-bpic]') && !OPEN.picBusy) {
       const o = OPEN; o.picBusy = true; o.msg = ''; drawOpen();
       try {
         const bp = await window.__gtlo.buildPic(o.code, o.title);
         if (!bp || !bp.img) throw new Error('The picture could not be made. Open the Loadouts tab once so your gear is loaded, then try again.');
-        await gt.bdPic({ id: o.id, img: bp.img, info: bp.info || undefined }); o.img = bp.img;
+        await gt.bdPic({ id: o.id, img: bp.img, info: bp.info || undefined }); o.img = bp.img; o.fix = null;
       } catch (er) { o.msg = clean(er); }
       o.picBusy = false; if (OPEN === o) drawOpen(); return;
     }
