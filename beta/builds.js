@@ -153,6 +153,38 @@
 #builds .bdartn{font-size:15px;color:#fff;margin-left:6px}
 @media (max-width:640px){#builds .bdex,#builds .bdnames{margin-left:0}#builds .bdcap{width:64px}}
 #builds .bdcols.solo{grid-template-columns:1fr}#builds .bdpicbig{cursor:zoom-in}#builds .bdsw.one{grid-template-columns:1fr}
+html.bdv-open{overflow:hidden}
+#bdv{position:fixed;inset:0;z-index:9100;background:rgba(4,6,10,.8);overflow:auto;padding:max(3vh,env(safe-area-inset-top)) 16px 32px;display:flex;justify-content:center;align-items:flex-start}
+#bdv .bdvc{width:min(1080px,100%);display:flex;flex-direction:column;gap:12px;color:#e6e7ea}
+#bdv .bdvh{position:relative;display:flex;flex-wrap:wrap;align-items:center;gap:14px;padding:16px 56px 16px 18px;border:1px solid var(--g-line,#2b2e33);border-radius:16px;background:linear-gradient(100deg,color-mix(in srgb,var(--el) 24%,var(--g-panel,#16181d)),var(--g-panel,#16181d) 70%);box-shadow:0 20px 60px rgba(0,0,0,.5)}
+#bdv .bdsi{width:60px;height:60px;flex:none;border-radius:12px;background:color-mix(in srgb,var(--el) 18%,#0d0f13);display:grid;place-items:center;overflow:hidden}#bdv .bdsi img{width:56px;height:56px;display:block}
+#bdv .bdht{flex:1 1 300px;min-width:0;display:flex;flex-direction:column;gap:5px}
+#bdv .bdht small{color:color-mix(in srgb,var(--el) 70%,#fff);font-size:13px}
+#bdv .bdht h2{margin:0!important;padding:0!important;border:0!important;font-size:26px;line-height:1.15;color:#fff;text-transform:none;letter-spacing:-.01em;overflow-wrap:anywhere}
+#bdv .bdtags{display:flex;flex-wrap:wrap;gap:5px}#bdv .bdtags em{font-style:normal;font-size:11.5px;padding:2px 8px;border-radius:999px;border:1px solid var(--g-line,#2b2e33);color:#cfd2d8}
+#bdv .bdby{font-size:12px;color:#8e939b}
+#bdv .bdx{position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;padding:0;font-size:22px;line-height:1;cursor:pointer}
+#bdv .bdha{flex-basis:100%;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+#bdv .bdv{display:inline-flex;align-items:center;gap:5px;height:36px;padding:0 12px;border-radius:999px;font-size:13.5px;cursor:pointer;color:#cfd2d8;background:transparent}
+#bdv .bdv svg{display:block;flex:none}#bdv .bdv.on.bvu{color:#7be3a0;border-color:#3f8a5c!important;background:rgba(63,138,92,.16)}#bdv .bdv.on.bvd{color:#ffb4a8;border-color:#8a4a3f!important;background:rgba(138,74,63,.16)}#bdv .bdv[disabled]{opacity:.5;cursor:default}
+#bdv .bdu{font-size:12.5px;color:#8e939b}
+#bdv .bdimp{height:38px;padding:0 18px;border-radius:999px;font-weight:600;cursor:pointer}
+#bdv .bdha button.g{height:36px;padding:0 14px;border-radius:999px;cursor:pointer}
+#bdv .bdmsg{flex-basis:100%;font-size:13px;color:#ffb4a8}
+#bdv .bdvb{display:flex;flex-direction:column;gap:12px}
+#bdv .bdpic{display:block;width:100%;padding:0!important;border:1px solid var(--g-line,#2b2e33)!important;border-radius:14px!important;overflow:hidden;background:#0c0d11;cursor:zoom-in;line-height:0;box-shadow:0 20px 60px rgba(0,0,0,.5)}#bdv .bdpic img{display:block;width:100%;height:auto}
+#bdv .bdload{padding:30px;text-align:center}
+#bdv .bdbox{border:1px solid var(--g-line,#2b2e33);border-radius:14px;background:var(--g-panel,#16181d);overflow:hidden}
+#bdv .bdbox>h3{margin:0;padding:12px 16px;font-size:12.5px;letter-spacing:.06em;color:#e6e7ea;border-bottom:1px solid var(--g-line,#2b2e33);text-transform:uppercase;font-weight:700}
+#bdv .bdbb{padding:14px 16px 16px}#bdv .bdbb h4{margin:4px 0 8px;font-size:13px;color:#9aa0a8;font-weight:600}
+#bdv .bdnotes{white-space:pre-wrap;overflow-wrap:anywhere;font-size:14.5px;line-height:1.6;color:#d6d9de}
+#bdv .bdsw{display:grid;grid-template-columns:1fr 1fr}#bdv .bdsw.one{grid-template-columns:1fr}#bdv .bdsw>div{padding:14px 16px}#bdv .bdsw .good{background:rgba(63,154,100,.1)}#bdv .bdsw .bad{background:rgba(166,75,75,.1)}#bdv .bdsw h4{margin:0 0 8px;font-size:15px}#bdv .bdsw .good h4{color:#5fd08a}#bdv .bdsw .bad h4{color:#ff7d8f}#bdv .bdsw p{margin:5px 0;font-size:14px;color:#dfe2e6}
+#bdv .bdgi{display:flex;align-items:center;gap:12px;padding:6px 0}#bdv .bdti{display:inline-block;flex:none;border:2px solid #3a3f48;border-radius:6px;overflow:hidden;background:#0d0f13}#bdv .bdti img{width:100%;height:100%;display:block}#bdv .bdgt b{font-size:14px;color:#fff}
+#bdv .bdaddpic{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 14px;border:1px dashed var(--g-line,#2b2e33);border-radius:12px;background:var(--g-panel,#16181d);font-size:13.5px;color:#cfd2d8}#bdv .bdaddpic span{flex:1 1 240px}
+#bdv .bdedit .bdl{display:flex;flex-direction:column;gap:6px;margin:0 0 12px;font-size:13px;color:#cfd2d8}#bdv .bdedit input,#bdv .bdedit textarea{width:100%;box-sizing:border-box;font:inherit;font-size:14px;margin:0!important}
+#bdv .bdchips{display:flex;flex-wrap:wrap;gap:6px}#bdv .bdchip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border:1px solid var(--g-line,#2b2e33);border-radius:999px;cursor:pointer;font-size:12.5px;user-select:none}#bdv .bdchip input{position:absolute;opacity:0;pointer-events:none}#bdv .bdchip.on{border-color:var(--g-accent,#e8b84a);color:#fff;background:color-mix(in srgb,var(--g-accent,#e8b84a) 18%,transparent)}#bdv .bdchip.gd.on{border-color:#3f9a64;background:rgba(63,154,100,.2)}#bdv .bdchip.bd.on{border-color:#a64b4b;background:rgba(166,75,75,.22)}#bdv .bdchip:focus-within{outline:2px solid var(--g-accent,#e8b84a);outline-offset:2px}
+#bdv .bdbtns{display:flex;gap:8px}#bdv .bdbtns button{height:38px;padding:0 16px;border-radius:10px;cursor:pointer}
+@media (max-width:640px){#bdv{padding:8px 6px 24px}#bdv .bdvh{padding:14px 50px 14px 14px}#bdv .bdht h2{font-size:21px}#bdv .bdsw{grid-template-columns:1fr}}
 #builds .bdbtns{display:flex;gap:8px}#builds .bdbtns button{height:38px;padding:0 16px;border-radius:10px;cursor:pointer}
 #bdlb{position:fixed;inset:0;z-index:9200;background:rgba(4,6,10,.88);display:flex;align-items:center;justify-content:center;padding:16px;cursor:zoom-out}#bdlb img{max-width:100%;max-height:100%;border-radius:10px;box-shadow:0 30px 80px rgba(0,0,0,.6)}#bdlb button{position:absolute;top:14px;right:14px;width:40px;height:40px;border-radius:50%;font-size:22px;padding:0;cursor:pointer}
 @media (max-width:900px){#builds .bdcols{grid-template-columns:1fr}}
@@ -164,7 +196,7 @@
   const st = { sort: 'popular', cls: '', el: '', tag: '', q: '', mine: false, p: 0, list: [], more: false, busy: false, err: '', signed: 0, loaded: false };
   const SV_UP = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 10v11H3V10h4zM7 10l4-8a3 3 0 0 1 3 3v4h5.5a2 2 0 0 1 2 2.3l-1.4 8A2 2 0 0 1 18.1 21H7"/></svg>';
   const SV_DN = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform:scaleY(-1)"><path d="M7 10v11H3V10h4zM7 10l4-8a3 3 0 0 1 3 3v4h5.5a2 2 0 0 1 2 2.3l-1.4 8A2 2 0 0 1 18.1 21H7"/></svg>';
-  const subName = (x) => (x.cls >= 0 && x.cls <= 2 && SUBN[x.cls][x.el] ? SUBN[x.cls][x.el] + (x.el === 'prismatic' ? ' ' + CL[x.cls] : '') : x.sub || '');
+  const subName = (x) => (x.cls >= 0 && x.cls <= 2 && SUBN[x.cls][x.el] ? SUBN[x.cls][x.el] : String(x.sub || '').replace(/^Prismatic\s+(Titan|Hunter|Warlock)$/i, 'Prismatic'));
   const gearIcons = (x, n) => [...((x.sum && x.sum.w) || []), ...(((x.sum && x.sum.a) || []).filter((q) => q.x))].slice(0, n || 5).map((q) => `<span class="${q.x ? 'x' : ''}" title="${esc(q.n)}">${img(q.i) ? `<img src="${esc(img(q.i))}" alt="${esc(q.n)}" loading="lazy">` : ''}</span>`).join('');
   const votes = (x, big) => `<button type="button" class="bdv bvu${x.vote === 1 ? ' on' : ''}" data-bv="1" data-id="${esc(x.id)}" title="${x.mine ? 'Your build' : 'I like this build'}" aria-label="Like, ${x.likes}"${x.mine ? ' disabled' : ''}>${SV_UP}${x.likes}</button><button type="button" class="bdv bvd${x.vote === -1 ? ' on' : ''}" data-bv="-1" data-id="${esc(x.id)}" title="${x.mine ? 'Your build' : 'Not for me'}" aria-label="Dislike, ${x.dislikes}"${x.mine ? ' disabled' : ''}>${SV_DN}${x.dislikes}</button>${big ? '' : `<span class="bdu" title="Times it was added to someone's loadouts">${x.uses} import${x.uses === 1 ? '' : 's'}</span>`}`;
   const card = (x) => {
@@ -178,7 +210,6 @@
     return `<div class="bdseg" role="group" aria-label="Subclass"><button type="button" data-el="" class="${st.el ? '' : 'on'}">All subclasses</button>${ELS.map(([k, l, c]) => `<button type="button" data-el="${k}" class="${st.el === k ? 'on' : ''}"><i style="background:${c}"></i>${esc(nm(k, l))}</button>`).join('')}</div>`;
   };
   function draw() {
-    if (OPEN) { const ae = document.activeElement, fid = ae && ae.id && s.contains(ae) ? ae.id : ''; s.innerHTML = pageHTML(OPEN); if (fid) { const i = document.getElementById(fid); if (i) { i.focus({ preventScroll: true }); if (i.setSelectionRange && typeof i.value === 'string') i.setSelectionRange(i.value.length, i.value.length); } } return; }
     const qf = document.activeElement && document.activeElement.id === 'bdq';
     s.innerHTML = `<div class="bdw"><div class="bdh"><div><h2>Builds</h2><p>Builds from the Pathfinder community. Import one straight into your loadouts, and like the ones that work. Make your own with Create build, using any weapon or armor in the game, or share one of your loadouts from its Share menu.</p></div><button type="button" class="b bdcreate" data-create="1">+ Create build</button>
 <div class="bdrow"><div class="bdseg" role="group" aria-label="Class"><button type="button" data-cls="" class="${st.cls === '' ? 'on' : ''}">All classes</button>${CL.map((c, i) => `<button type="button" data-cls="${i}" class="${st.cls === i ? 'on' : ''}">${c}</button>`).join('')}</div>${elSeg()}</div>
@@ -216,8 +247,8 @@ ${st.more ? `<button type="button" class="bdmore" data-more="1"${st.busy ? ' dis
     } catch (er) { const m = clean(er); if (OPEN) { OPEN.msg = m; drawOpen(); } else { st.err = m; draw(); } }
   }
 
-  // ---- one build as its own page (like a build site): subclass, gear and mods, stats, set bonuses, artifact, strengths and
-  // weaknesses, how to play it, the picture, and more builds like it. A refresh comes back to the same build.
+  // ---- one build, opened from the list as a pop-up: the loadout picture big, and under it how to play it (when written) and
+  // strengths and weaknesses (when picked). Clicking outside it, the X, Escape or the browser's Back goes back to the list.
   const BDS = {
     STR: { abil: 'Strong abilities', melee: 'Infinite melee', gren: 'Grenade spam', super: 'Fast super', surv: 'Strong survivability', heal: 'Lots of healing', add: 'Strong ad-clear', boss: 'Strong boss damage', champ: 'Handles champions', close: 'Strong up close', long: 'Strong at range', buff: 'Constant buffs', team: 'Supports the team', easy: 'Easy to play' },
     WEAK: { boss: 'Weak vs bosses', long: 'Weak at range', close: 'Weak up close', add: 'Slow ad-clear', surv: 'Squishy', champ: 'Struggles with champions', hard: 'Hard to play', ammo: 'Ammo hungry', team: 'Needs a team', setup: 'Slow to set up' },
@@ -225,23 +256,25 @@ ${st.more ? `<button type="button" class="bdmore" data-more="1"${st.busy ? ' dis
     STC: ['#9aa0a8', '#6fbf73', '#e0b64a', '#e8a53a', '#c77dff', '#5d9ce0'],
   };
   window.__gtBD = BDS;
-  const RC = { Exotic: '#ceae33', Legendary: '#8a5fb0', Rare: '#5076a3' };
-  let OPEN = null, listY = 0;
+  let OPEN = null, pushed = false;
   const ss = (v) => { try { if (v) sessionStorage.setItem('gt_bdopen', v); else sessionStorage.removeItem('gt_bdopen'); } catch (e) { /* not remembered */ } };
-  const closeOpen = () => { if (!OPEN) return; OPEN = null; ss(''); const lb = document.getElementById('bdlb'); if (lb) lb.remove(); draw(); window.scrollTo(0, listY); };
-  const drawOpen = () => draw();
-  const tile = (q, sz, round) => { const u = img(q && q.i); return `<span class="bdti${round ? ' rd' : ''}" style="width:${sz}px;height:${sz}px${q && q.r && RC[q.r] ? ';border-color:' + RC[q.r] : ''}" title="${esc((q && q.n) || '')}${q && q.d ? '\n\n' + esc(q.d) : ''}">${u ? `<img src="${esc(u)}" alt="${esc((q && q.n) || '')}" loading="lazy">` : ''}</span>`; };
-  function pageHTML(x) {
-    // A build's page: the loadout picture, how to play it (when written), strengths and weaknesses (when picked) and more builds
-    // like it. Builds shared before pictures existed show their gear until the owner adds one.
+  function closeOpen(fromBack) {
+    if (!OPEN) return; OPEN = null; ss('');
+    ['bdv', 'bdlb'].forEach((id) => { const n = document.getElementById(id); if (n) n.remove(); });
+    document.documentElement.classList.remove('bdv-open');
+    if (pushed && !fromBack) { pushed = false; try { history.back(); } catch (e) { /* no history */ } }
+    pushed = false;
+  }
+  window.addEventListener('popstate', () => { if (OPEN) closeOpen(true); });
+  const tile = (q, sz) => { const u = img(q && q.i); return `<span class="bdti" style="width:${sz}px;height:${sz}px${q && q.x ? ';border-color:#ceae33' : ''}" title="${esc((q && q.n) || '')}">${u ? `<img src="${esc(u)}" alt="${esc((q && q.n) || '')}" loading="lazy">` : ''}</span>`; };
+  function viewHTML(x) {
     const e = elOf(x.el), si = img(x.sum && x.sum.si), sw = x.sw || { s: [], w: [] };
-    const box = (title, body, cls) => `<div class="bdbox${cls ? ' ' + cls : ''}"><h3>${title}</h3><div class="bdbb">${body}</div></div>`;
     const ss2 = (sw.s || []).filter((k2) => BDS.STR[k2]), ww2 = (sw.w || []).filter((k2) => BDS.WEAK[k2]);
-    const swb = ss2.length || ww2.length ? box(ss2.length && ww2.length ? 'Strengths and weaknesses' : ss2.length ? 'Strengths' : 'Weaknesses', `<div class="bdsw${ss2.length && ww2.length ? '' : ' one'}">${ss2.length ? `<div class="good">${ss2.length && ww2.length ? '<h4>Strengths</h4>' : ''}${ss2.map((k2) => `<p>✓ ${esc(BDS.STR[k2])}</p>`).join('')}</div>` : ''}${ww2.length ? `<div class="bad">${ss2.length && ww2.length ? '<h4>Weaknesses</h4>' : ''}${ww2.map((k2) => `<p>✕ ${esc(BDS.WEAK[k2])}</p>`).join('')}</div>` : ''}</div>`, 'bdswb') : '';
-    const it = (q) => `<div class="bdgi">${tile({ ...q, r: q.x ? 'Exotic' : '' }, 48)}<div class="bdgt"><b>${esc(q.n)}</b></div></div>`;
-    const gear = x.sum && ((x.sum.w || []).length || (x.sum.a || []).length) ? box('Gear', `${(x.sum.w || []).length ? `<h4>Weapons</h4>${x.sum.w.map(it).join('')}` : ''}${(x.sum.a || []).length ? `<h4>Armor</h4>${x.sum.a.map(it).join('')}` : ''}`) : '';
+    const swb = ss2.length || ww2.length ? `<div class="bdbox bdswb"><h3>${ss2.length && ww2.length ? 'Strengths and weaknesses' : ss2.length ? 'Strengths' : 'Weaknesses'}</h3><div class="bdsw${ss2.length && ww2.length ? '' : ' one'}">${ss2.length ? `<div class="good">${ww2.length ? '<h4>Strengths</h4>' : ''}${ss2.map((k2) => `<p>✓ ${esc(BDS.STR[k2])}</p>`).join('')}</div>` : ''}${ww2.length ? `<div class="bad">${ss2.length ? '<h4>Weaknesses</h4>' : ''}${ww2.map((k2) => `<p>✕ ${esc(BDS.WEAK[k2])}</p>`).join('')}</div>` : ''}</div></div>` : '';
+    const notes = x.notes ? `<div class="bdbox"><h3>How to play it</h3><div class="bdbb"><div class="bdnotes">${esc(x.notes)}</div></div></div>` : '';
+    const it = (q) => `<div class="bdgi">${tile(q, 48)}<div class="bdgt"><b>${esc(q.n)}</b></div></div>`;
+    const gear = x.sum && ((x.sum.w || []).length || (x.sum.a || []).length) ? `<div class="bdbox"><h3>Gear</h3><div class="bdbb">${(x.sum.w || []).length ? `<h4>Weapons</h4>${x.sum.w.map(it).join('')}` : ''}${(x.sum.a || []).length ? `<h4>Armor</h4>${x.sum.a.map(it).join('')}` : ''}</div></div>` : '';
     const canAdd = x.mine && window.__gtlo && window.__gtlo.buildPic && x.full && !x.img;
-    const more = x.moreList && x.moreList.length ? box(`More ${esc((() => { const sn = subName(x), c = CL[x.cls] || ''; return sn && c && sn.includes(c) ? sn : [sn, c].filter(Boolean).join(' '); })())} builds`, x.moreList.map((m) => `<button type="button" class="bdmi" data-open="${esc(m.id)}"><span><b>${esc(m.title)}</b><small>${m.likes - m.dislikes} likes · ${m.uses} imports</small></span><span class="bdmg">${gearIcons(m, 3)}</span></button>`).join('')) : '';
     const chip = (cls, on, attr, k2, label) => `<label class="bdchip${cls}${on ? ' on' : ''}"><input type="checkbox" ${attr}="${k2}"${on ? ' checked' : ''}>${label}</label>`;
     const edit = x.editing ? `<div class="bdbox bdedit"><h3>Edit build</h3><div class="bdbb">
 <label class="bdl">Name<input id="bdetitle" maxlength="60" value="${esc(x.ed.title)}"></label>
@@ -250,25 +283,28 @@ ${st.more ? `<button type="button" class="bdmore" data-more="1"${st.busy ? ' dis
 <div class="bdl">Weaknesses (optional, up to 6)<div class="bdchips">${Object.entries(BDS.WEAK).map(([k2, l2]) => chip(' bd', x.ed.w.includes(k2), 'data-eweak', k2, esc(l2))).join('')}</div></div>
 <label class="bdl">How to play it (optional)<textarea id="bdenotes" maxlength="1200" rows="6">${esc(x.ed.notes)}</textarea></label>
 <div class="bdbtns"><button type="button" class="b" data-esave="1"${x.saving ? ' disabled' : ''}>${x.saving ? 'Saving...' : 'Save changes'}</button><button type="button" class="g" data-ecancel="1">Cancel</button></div></div></div>` : '';
-    const main = !x.full ? '<p class="mute">Loading the build...</p>' : x.img ? `<button type="button" class="bdpic bdpicbig" data-bzoom="1" aria-label="Show the loadout picture full size"><img src="${esc(x.img)}" alt="The loadout: weapons, stats, armor, subclass and artifact"></button>` : gear || '<p class="mute">This build has no picture yet.</p>';
-    const side = (x.notes ? box('How to play it', `<div class="bdnotes">${esc(x.notes)}</div>`) : '') + swb + more;
-    return `<div class="bdw bdpage" style="--el:${e[2]}"><button type="button" class="g bdback" data-bback="1">‹ All builds</button>
-<div class="bdhero"><div class="bdsi big">${si ? `<img src="${esc(si)}" alt="">` : ''}</div><div class="bdht"><small>${esc([CL[x.cls], subName(x)].filter(Boolean).join(' · '))} build</small><h2>${esc(x.title)}</h2>${x.tags.length ? `<div class="bdtags">${x.tags.map((t) => `<em>${esc(TAGN[t] || t)}</em>`).join('')}</div>` : ''}<div class="bdby">by ${esc(x.by)} · shared ${esc(new Date(x.at).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' }))} (${esc(ago(x.at))})</div></div>
+    const pic = !x.full ? '<p class="mute bdload">Loading the build...</p>' : x.img ? `<button type="button" class="bdpic" data-bzoom="1" aria-label="Show the loadout picture full size"><img src="${esc(x.img)}" alt="The loadout: weapons, stats, armor, subclass and artifact"></button>` : gear || '<p class="mute">This build has no picture yet.</p>';
+    return `<div class="bdvc" style="--el:${e[2]}">
+<div class="bdvh"><div class="bdsi">${si ? `<img src="${esc(si)}" alt="">` : ''}</div><div class="bdht"><small>${esc([CL[x.cls], subName(x)].filter(Boolean).join(' · '))}</small><h2>${esc(x.title)}</h2>${x.tags.length ? `<div class="bdtags">${x.tags.map((t) => `<em>${esc(TAGN[t] || t)}</em>`).join('')}</div>` : ''}<div class="bdby">by ${esc(x.by)} · shared ${esc(new Date(x.at).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' }))}</div></div><button type="button" class="bdx g" data-bx="1" aria-label="Close and go back to the builds">&times;</button>
 <div class="bdha">${votes(x, true)}<span class="bdu">${x.uses} import${x.uses === 1 ? '' : 's'}</span><button type="button" class="b bdimp" data-imp="${esc(x.id)}">Import to my loadouts</button>${x.mine ? '<button type="button" class="g" data-bedit="1">Edit</button>' : ''}${x.mine || x.staff ? `<button type="button" class="g" data-bdel="${esc(x.id)}">${x.mine ? 'Delete' : 'Take down'}</button>` : ''}${x.msg ? `<div class="bdmsg">${esc(x.msg)}</div>` : ''}</div></div>
 ${canAdd ? `<div class="bdaddpic"><span>This build has no picture yet. Make one from your gear.</span><button type="button" class="b" data-bpic="1"${x.picBusy ? ' disabled' : ''}>${x.picBusy ? 'Making it...' : 'Add picture'}</button></div>` : ''}
-${edit}
-<div class="bdcols${side ? '' : ' solo'}"><div class="bdmain">${main}</div>${side ? `<div class="bdside">${side}</div>` : ''}</div></div>`;
+${edit}<div class="bdvb">${pic}${notes}${swb}</div></div>`;
   }
-  async function open(id, keepY) {
-    if (!OPEN && !keepY) listY = window.scrollY;
+  function drawOpen() {
+    if (!OPEN) return; let m = document.getElementById('bdv');
+    if (!m) { m = document.createElement('div'); m.id = 'bdv'; m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); document.body.appendChild(m); m.addEventListener('click', viewClick); m.addEventListener('change', editChange); document.documentElement.classList.add('bdv-open'); }
+    m.setAttribute('aria-label', OPEN.title || 'Build');
+    const ae = document.activeElement, fid = ae && ae.id && m.contains(ae) ? ae.id : '', top = (m.querySelector('.bdvc') || {}).scrollTop || m.scrollTop;
+    m.innerHTML = viewHTML(OPEN); m.scrollTop = top;
+    if (fid) { const i = document.getElementById(fid); if (i) { i.focus({ preventScroll: true }); if (i.setSelectionRange && typeof i.value === 'string') i.setSelectionRange(i.value.length, i.value.length); } } else if (!m.contains(document.activeElement)) { const x = m.querySelector('[data-bx]'); if (x) x.focus({ preventScroll: true }); }
+  }
+  async function open(id) {
     const x = byId(id) || { id, title: 'Build', cls: 3, el: '', sub: '', tags: [], sum: {}, at: Date.now(), likes: 0, dislikes: 0, uses: 0, by: '' };
-    OPEN = { ...x, notes: '', full: false, msg: '' }; ss(id); draw(); window.scrollTo(0, 0);
-    try {
-      const full = await gt.bdGet({ id }); if (!OPEN || OPEN.id !== id) return;
-      Object.assign(OPEN, full, { full: true }); draw();
-      const r = await gt.bdList({ sort: 'popular', cls: full.cls >= 0 && full.cls <= 2 ? full.cls : '', el: full.el || '', p: 0 });
-      if (OPEN && OPEN.id === id) { OPEN.moreList = (r.builds || []).filter((m) => m.id !== id).slice(0, 5); draw(); }
-    } catch (er) { if (OPEN && OPEN.id === id) { OPEN.msg = clean(er); OPEN.full = true; draw(); } }
+    OPEN = { ...x, notes: '', full: false, msg: '' }; ss(id);
+    if (!pushed) { try { history.pushState({ bdv: id }, ''); pushed = true; } catch (e) { /* Back just leaves the page */ } }
+    drawOpen();
+    try { const full = await gt.bdGet({ id }); if (OPEN && OPEN.id === id) { Object.assign(OPEN, full, { full: true }); drawOpen(); } }
+    catch (er) { if (OPEN && OPEN.id === id) { OPEN.msg = clean(er); OPEN.full = true; drawOpen(); } }
   }
   function lightbox(src) {
     let lb = document.getElementById('bdlb'); if (lb) lb.remove();
@@ -276,47 +312,48 @@ ${edit}
     lb.innerHTML = `<button type="button" class="g" aria-label="Close">&times;</button><img src="${esc(src)}" alt="The loadout picture">`;
     lb.onclick = () => lb.remove(); document.body.appendChild(lb);
   }
-  async function pageClick(e) {
-    if (!OPEN) return;
-    const t = e.target;
-    if (t.closest('[data-bback]')) { closeOpen(); return; }
+  async function viewClick(e) {
+    if (!OPEN) return; const t = e.target;
+    if (t.id === 'bdv' || t.closest('[data-bx]')) { closeOpen(); return; }
+    const v = t.closest('[data-bv]'); if (v) { vote(v.dataset.id, +v.dataset.bv, v); return; }
+    const im = t.closest('[data-imp]'); if (im) { const id = im.dataset.imp; closeOpen(); imp(id); return; }
     if (t.closest('[data-bzoom]') && OPEN.img) { lightbox(OPEN.img); return; }
-    if (t.closest('[data-bedit]')) { const sw = OPEN.sw || { s: [], w: [], p: [] }; OPEN.editing = true; OPEN.ed = { title: OPEN.title, notes: OPEN.notes || '', tags: OPEN.tags.slice(), s: (sw.s || []).slice(), w: (sw.w || []).slice(), p: (sw.p || []).slice() }; draw(); return; }
-    if (t.closest('[data-ecancel]')) { OPEN.editing = false; draw(); return; }
+    if (t.closest('[data-bedit]')) { const sw = OPEN.sw || { s: [], w: [], p: [] }; OPEN.editing = true; OPEN.ed = { title: OPEN.title, notes: OPEN.notes || '', tags: OPEN.tags.slice(), s: (sw.s || []).slice(), w: (sw.w || []).slice(), p: (sw.p || []).slice() }; drawOpen(); return; }
+    if (t.closest('[data-ecancel]')) { OPEN.editing = false; drawOpen(); return; }
     if (t.closest('[data-esave]') && OPEN.ed) {
       const o = OPEN, ti = document.getElementById('bdetitle'), no = document.getElementById('bdenotes'); o.ed.title = ti ? ti.value : o.ed.title; o.ed.notes = no ? no.value : o.ed.notes;
-      o.saving = true; o.msg = ''; draw();
-      try { await gt.bdEdit({ id: o.id, title: o.ed.title.trim(), notes: o.ed.notes.trim(), tags: o.ed.tags, str: o.ed.s, weak: o.ed.w, prio: o.ed.p }); Object.assign(o, { title: o.ed.title.trim(), notes: o.ed.notes.trim(), tags: o.ed.tags, sw: { s: o.ed.s, w: o.ed.w, p: o.ed.p }, editing: false }); const li = byId(o.id); if (li) Object.assign(li, { title: o.title, tags: o.tags }); }
+      o.saving = true; o.msg = ''; drawOpen();
+      try { await gt.bdEdit({ id: o.id, title: o.ed.title.trim(), notes: o.ed.notes.trim(), tags: o.ed.tags, str: o.ed.s, weak: o.ed.w, prio: o.ed.p }); Object.assign(o, { title: o.ed.title.trim(), notes: o.ed.notes.trim(), tags: o.ed.tags, sw: { s: o.ed.s, w: o.ed.w, p: o.ed.p }, editing: false }); const li = byId(o.id); if (li) { Object.assign(li, { title: o.title, tags: o.tags }); draw(); } }
       catch (er) { o.msg = clean(er); }
-      o.saving = false; if (OPEN === o) draw(); return;
+      o.saving = false; if (OPEN === o) drawOpen(); return;
     }
     if (t.closest('[data-bpic]') && !OPEN.picBusy) {
-      const o = OPEN; o.picBusy = true; o.msg = ''; draw();
+      const o = OPEN; o.picBusy = true; o.msg = ''; drawOpen();
       try {
         const bp = await window.__gtlo.buildPic(o.code, o.title);
         if (!bp || !bp.img) throw new Error('The picture could not be made. Open the Loadouts tab once so your gear is loaded, then try again.');
-        await gt.bdPic({ id: o.id, img: bp.img, info: bp.info || undefined }); o.img = bp.img; if (bp.info) o.info = bp.info;
+        await gt.bdPic({ id: o.id, img: bp.img, info: bp.info || undefined }); o.img = bp.img;
       } catch (er) { o.msg = clean(er); }
-      o.picBusy = false; if (OPEN === o) draw(); return;
+      o.picBusy = false; if (OPEN === o) drawOpen(); return;
     }
     if (t.closest('[data-bdel]')) {
-      if (!OPEN.sure) { OPEN.sure = true; OPEN.msg = 'Click again to ' + (OPEN.mine ? 'delete it for good.' : 'take it down.'); draw(); return; }
-      try { const id = OPEN.id; await gt.bdDel({ id }); st.list = st.list.filter((x) => x.id !== id); closeOpen(); } catch (er) { OPEN.msg = clean(er); draw(); }
+      if (!OPEN.sure) { OPEN.sure = true; OPEN.msg = 'Click again to ' + (OPEN.mine ? 'delete it for good.' : 'take it down.'); drawOpen(); return; }
+      try { const id = OPEN.id; await gt.bdDel({ id }); st.list = st.list.filter((x) => x.id !== id); closeOpen(); draw(); } catch (er) { OPEN.msg = clean(er); drawOpen(); }
     }
   }
   function editChange(e) {
     if (!OPEN || !OPEN.editing) return false; const ds = e.target.dataset || {};
-    const key = ds.etag ? 'tags' : ds.estr ? 's' : ds.eweak ? 'w' : ds.eprio !== undefined ? 'p' : ''; if (!key) return false;
-    const val = key === 'p' ? +ds.eprio : ds.etag || ds.estr || ds.eweak, max = { tags: 4, s: 8, w: 6, p: 6 }[key];
+    const key = ds.etag ? 'tags' : ds.estr ? 's' : ds.eweak ? 'w' : ''; if (!key) return false;
+    const val = ds.etag || ds.estr || ds.eweak, max = { tags: 4, s: 8, w: 6 }[key];
     const ti = document.getElementById('bdetitle'), no = document.getElementById('bdenotes'); if (ti) OPEN.ed.title = ti.value; if (no) OPEN.ed.notes = no.value;
-    if (e.target.checked) { if (OPEN.ed[key].length >= max) { e.target.checked = false; OPEN.msg = 'Pick up to ' + max + '.'; draw(); return true; } OPEN.ed[key].push(val); } else OPEN.ed[key] = OPEN.ed[key].filter((v) => v !== val);
-    OPEN.msg = ''; draw(); return true;
+    if (e.target.checked) { if (OPEN.ed[key].length >= max) { e.target.checked = false; OPEN.msg = 'Pick up to ' + max + '.'; drawOpen(); return true; } OPEN.ed[key].push(val); } else OPEN.ed[key] = OPEN.ed[key].filter((v) => v !== val);
+    OPEN.msg = ''; drawOpen(); return true;
   }
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { const lb = document.getElementById('bdlb'); if (lb) lb.remove(); } });
+  document.addEventListener('keydown', (e) => { if (e.key !== 'Escape') return; const lb = document.getElementById('bdlb'); if (lb) { lb.remove(); return; } if (OPEN && !(e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName))) closeOpen(); });
+  new MutationObserver(() => { if (OPEN && document.documentElement.dataset.gsec !== 'builds') closeOpen(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-gsec'] });
 
   // ---- the tab's own controls ----
   s.addEventListener('click', (e) => {
-    if (OPEN) { const v0 = e.target.closest('[data-bv]'); if (v0) { vote(v0.dataset.id, +v0.dataset.bv, v0); return; } const i0 = e.target.closest('[data-imp]'); if (i0) { imp(i0.dataset.imp); return; } const o0 = e.target.closest('[data-open]'); if (o0) { open(o0.dataset.open, true); return; } pageClick(e); return; }
     if (e.target.closest('[data-create]')) { if (window.__gtlo && window.__gtlo.createBuild) window.__gtlo.createBuild(); else { st.err = 'Open the Loadouts tab once, then try again.'; draw(); } return; }
     const c = e.target.closest('[data-cls]'); if (c) { st.cls = c.dataset.cls === '' ? '' : +c.dataset.cls; load(); return; }
     const el = e.target.closest('[data-el]'); if (el) { st.el = el.dataset.el; load(); return; }
@@ -328,7 +365,7 @@ ${edit}
     const o = e.target.closest('[data-open]'); if (o) open(o.dataset.open);
   });
   s.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('.bdc')) { e.preventDefault(); open(e.target.dataset.open); } });
-  s.addEventListener('change', (e) => { if (editChange(e)) return; if (e.target.id === 'bdtag') { st.tag = e.target.value; load(); } else if (e.target.id === 'bdsort') { st.sort = e.target.value; load(); } });
+  s.addEventListener('change', (e) => { if (e.target.id === 'bdtag') { st.tag = e.target.value; load(); } else if (e.target.id === 'bdsort') { st.sort = e.target.value; load(); } });
   let qt = 0; s.addEventListener('input', (e) => { if (e.target.id === 'bdq') { st.q = e.target.value; clearTimeout(qt); qt = setTimeout(() => load(), 300); } });
 
   window.__gtBuilds = { refresh: () => { if (st.loaded) load(); } };
