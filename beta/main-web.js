@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.46-beta.9: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.46-beta.10: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -811,7 +811,25 @@ H('bd:items', async (e, v) => {
 H('bd:defs', async (e, v) => {
   OBJ(v); const df = await defs(), items = {}, plugs = {};
   ARR(v.items || [], 60).forEach((h) => { h = INT(+h, 1, 4294967295); const d = df.d[h]; if (d) items[h] = { n: d.n, i: d.i, t: d.t || '', r: d.r || '', b: d.b, c: d.c }; });
-  ARR(v.plugs || [], 150).forEach((h) => { h = INT(+h, 1, 4294967295); const p = df.p[h]; if (p) plugs[h] = { n: p.n, i: p.i, c: p.c || '', d: String(p.d || '').slice(0, 400) }; });
+  // Gear you may not own: its intrinsic (a weapon's frame, an exotic's perk) and its armor set with the 2- and 4-piece bonuses.
+  await Promise.all(Object.keys(items).map(async (h) => {
+    const it = items[h], d = df.d[h];
+    try {
+      if (d && d.fi && df.p[d.fi]) it.intr = { h: d.fi, n: df.p[d.fi].n, i: df.p[d.fi].i || '', d: String(df.p[d.fi].d || '').slice(0, 500) };
+      const idf = await Promise.race([entDef('DestinyInventoryItemDefinition', +h), new Promise((ok) => setTimeout(() => ok(null), 4000))]); if (!idf) return;
+      if (!it.intr && idf.sockets) {
+        const cat = (idf.sockets.socketCategories || []).find((c) => c.socketCategoryHash === 3956125808), si = cat && (cat.socketIndexes || [])[0], ph = si !== undefined && idf.sockets.socketEntries && idf.sockets.socketEntries[si] && idf.sockets.socketEntries[si].singleInitialItemHash;
+        const pl = ph && (df.p[ph] || await entDef('DestinyInventoryItemDefinition', ph)), dp = pl && (pl.displayProperties || pl);
+        if (dp && (dp.n || dp.name)) it.intr = { h: ph, n: dp.n || dp.name, i: dp.i || dp.icon || '', d: String(dp.d || dp.description || '').slice(0, 500) };
+      }
+      const sh = idf.equippingBlock && idf.equippingBlock.equipableItemSetHash, sd = sh && await entDef('DestinyEquipableItemSetDefinition', sh);
+      if (sd) {
+        const pds = await Promise.all((sd.setPerks || []).map((q) => entDef('DestinySandboxPerkDefinition', q.sandboxPerkHash)));
+        it.set = { n: (sd.displayProperties && sd.displayProperties.name) || '', perks: (sd.setPerks || []).map((q, qi) => { const dp = pds[qi] && pds[qi].displayProperties; return dp ? { n: dp.name || '', d: String(dp.description || '').slice(0, 400), i: dp.icon || '', rc: q.requiredSetCount || 0 } : null; }).filter(Boolean).sort((a, b) => a.rc - b.rc) };
+      }
+    } catch (er) { /* shown without it */ }
+  }));
+  ARR(v.plugs || [], 200).forEach((h) => { h = INT(+h, 1, 4294967295); const p = df.p[h]; if (p) plugs[h] = { n: p.n, i: p.i, c: p.c || '', d: String(p.d || '').replace(/\[###[^\]]*\]/g, '').replace(/\s{2,}/g, ' ').trim().slice(0, 500) }; });
   return { items, plugs };
 });
 H('bd:pic', async (e, v) => { OBJ(v); const img = BIMG(v.img); if (!img) throw bad(); return bdReq('/builds/pic', { id: BID(v.id), img, info: BINFO(v.info) }); });

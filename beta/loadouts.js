@@ -34,6 +34,8 @@
         id: sid(q.id), h: int(q.h), b: int(q.b), n: String(q.n || '').slice(0, 80), i: rawIcon(q.i), e: q.e === 0 ? 0 : 1,
         m: (Array.isArray(q.m) ? q.m : []).slice(0, 40).map((p) => (Array.isArray(p) && int(p[1]) > 0 ? [int(p[0]), int(p[1]), rawIcon(p[2]), String(p[3] || '').slice(0, 60)] : null)).filter(Boolean),
         cs: (Array.isArray(q.cs) ? q.cs : []).slice(0, 6).map((p) => (Array.isArray(p) && int(p[1]) > 0 ? [int(p[0]), int(p[1]), rawIcon(p[2]), String(p[3] || '').slice(0, 60)] : null)).filter(Boolean),
+        // weapon perks picked for a build ([hash, name, icon]): shown on the build's page and picture, never put on your weapon
+        wp: (Array.isArray(q.wp) ? q.wp : []).slice(0, 8).map((p) => (Array.isArray(p) && int(p[0]) > 0 ? [int(p[0]), String(p[1] || '').slice(0, 60), rawIcon(p[2])] : null)).filter(Boolean),
       };
     }).filter(Boolean);
     const seen = new Set(), items = it.filter((q) => { if (seen.has(q.b) && q.b) return false; seen.add(q.b); return true; });
@@ -51,7 +53,7 @@
   const save = () => { try { localStorage.setItem(KEY(), JSON.stringify(all())); } catch (e) { /* storage unavailable */ } };
   const b64e = (s) => { const u = new TextEncoder().encode(s); let o = ''; for (let i = 0; i < u.length; i++) o += String.fromCharCode(u[i]); return btoa(o); };
   const b64d = (b) => { const s = atob(b), u = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return new TextDecoder().decode(u); };
-  const codeOf = (l) => 'GTL1:' + b64e(JSON.stringify({ v: 1, n: l.n, c: l.c, o: l.o, a: l.a, ai: l.ai, fm: l.fm, mv: l.mv, it: l.it.map((q) => ({ h: q.h, b: q.b, n: q.n, i: q.i, e: q.e, m: q.m })) }));
+  const codeOf = (l) => 'GTL1:' + b64e(JSON.stringify({ v: 1, n: l.n, c: l.c, o: l.o, a: l.a, ai: l.ai, fm: l.fm, mv: l.mv, it: l.it.map((q) => ({ h: q.h, b: q.b, n: q.n, i: q.i, e: q.e, m: q.m, ...(q.wp && q.wp.length ? { wp: q.wp } : {}) })) }));
   function decode(s) {
     const m = /GTL1:([A-Za-z0-9+/=]+)/.exec(String(s || '')); if (!m) throw new Error('That is not a loadout code. It should start with GTL1:');
     let o; try { o = JSON.parse(b64d(m[1])); } catch (e) { throw new Error('That loadout code is damaged. Ask for it again.'); }
@@ -697,15 +699,17 @@
     const ARCH = [['Gunner', 0, 3], ['Bulwark', 1, 2], ['Specialist', 2, 0], ['Grenadier', 3, 4], ['Paragon', 4, 5], ['Brawler', 5, 1]];
     const archOf = (x) => { if (!x || !x.st || x.r === 'Exotic') return ''; const o = x.st.map((v, i) => [v || 0, i]).sort((p, q) => q[0] - p[0]); if (!o[1] || !o[1][0]) return ''; const f = ARCH.find((a) => a[1] === o[0][1] && a[2] === o[1][1]); return f ? f[0] : ''; };
     const AD = ADd.map((d, i) => ({ a: (d && d.arche && d.arche.n) || archOf(arms[i] && arms[i].x), s: (d && d.set && d.set.n) || '', set: (d && d.set) || null, f: (d && d.frame && d.frame.n) || '' }));
-    const WP = WD.map((d) => {
-      if (!d) return [];
-      const out = []; if (d.frame && d.frame.i) out.push({ i: d.frame.i, n: d.frame.n });
-      (d.groups || []).filter((gr) => gr.label === 'Perks').forEach((gr) => gr.cols.forEach((col) => { const on = col.find((p) => p.on); if (on && on.i && !/tracker|memento|shader/i.test(on.c || '')) out.push({ i: on.i, n: on.n }); }));
+    const WP = WD.map((d, wi) => {
+      const en = weps[wi] && weps[wi].en, pk = en && en.wp && en.wp.length ? en.wp.map((p) => ({ h: p[0], i: p[2], n: p[1] })) : null;
+      if (!d) return pk ? pk.slice(0, 7) : [];
+      const out = []; if (d.frame && d.frame.i) out.push({ i: d.frame.i, n: d.frame.n, d: d.frame.d || '', fr: 1 });
+      if (pk) return out.concat(pk).slice(0, 7); // perks picked for a build win over the ones on your own copy
+      (d.groups || []).filter((gr) => gr.label === 'Perks').forEach((gr) => gr.cols.forEach((col) => { const on = col.find((p) => p.on); if (on && on.i && !/tracker|memento|shader/i.test(on.c || '')) out.push({ h: on.h, i: on.i, n: on.n, d: on.d || '' }); }));
       return out.slice(0, 7);
     });
     // Set bonuses that are on: a set's 2- and 4-piece perks, once you wear that many pieces of it.
     const sets = {}; AD.forEach((a) => { if (a.set && a.set.n) { const k = a.set.n; (sets[k] = sets[k] || { set: a.set, n: 0 }).n++; } });
-    const SB = []; Object.values(sets).forEach((o) => (o.set.perks || []).forEach((p) => { if (o.n >= (p.rc || 99)) SB.push({ n: p.n, i: p.i, rc: p.rc, s: o.set.n }); }));
+    const SB = []; Object.values(sets).forEach((o) => (o.set.perks || []).forEach((p) => { if (o.n >= (p.rc || 99)) SB.push({ n: p.n, i: p.i, rc: p.rc, s: o.set.n, d: p.d || '' }); }));
     const paths = [ic(sub), ...weps.map(ic), ...arms.map(ic), ...modsBy.flat().map((m) => m.i), ...anyMods.map((m) => m.i), ...subPl.map((m) => m.i), artIc, ...artPk, ...WP.flat().map((p) => p.i), ...SB.map((p) => p.i)].filter(Boolean);
     let D = {}; try { D = await gt.imgFetch({ p: [...new Set(paths)] }); } catch (e) { /* drawn without icons */ }
     const imgs = {}; await Promise.all(Object.entries(D).map(([k, v]) => new Promise((ok) => { const im = new Image(); im.onload = () => { imgs[k] = im; ok(); }; im.onerror = ok; im.src = v; })));
@@ -899,12 +903,12 @@
       v: 1,
       sub: sub ? { h: sub.en.h, n: (sub.x || sub.en).n || '', i: ic(sub), el: elk } : null,
       sp: subOrd(subM).map(nmM).filter(Boolean).slice(0, 16),
-      w: weps.map((r, i) => (r ? { h: r.en.h, n: (r.x || r.en).n || '', i: ic(r), t: (r.x && r.x.t) || '', r: (r.x && r.x.r) || '', p: (WP[i] || []).map((q) => ({ i: q.i, n: q.n || '' })) } : null)).filter(Boolean),
-      a: arms.map((r, i) => (r ? { h: r.en.h, n: (r.x || r.en).n || '', i: ic(r), s: SLN[i], r: (r.x && r.x.r) || '', ar: AD[i].a || '', set: AD[i].s || '', m: [...l.it.filter((q) => q.b === AB[i]).flatMap((q) => (q.m || []).map(nmM)), ...(l.fm || []).filter((q) => +q[4] === AB[i]).map(nmF)].filter(Boolean).slice(0, 12) } : null)).filter(Boolean),
+      w: weps.map((r, i) => { if (!r) return null; const fr = (WP[i] || []).find((q) => q.fr); return { h: r.en.h, n: (r.x || r.en).n || '', i: ic(r), t: (r.x && r.x.t) || '', r: (r.x && r.x.r) || '', intr: fr ? { n: fr.n || '', i: fr.i, d: fr.d || '' } : null, p: (WP[i] || []).filter((q) => !q.fr).map((q) => ({ h: q.h || 0, i: q.i, n: q.n || '', d: q.d || '' })) }; }).filter(Boolean),
+      a: arms.map((r, i) => (r ? { h: r.en.h, n: (r.x || r.en).n || '', i: ic(r), s: SLN[i], r: (r.x && r.x.r) || '', ar: AD[i].a || '', set: AD[i].s || '', intr: ADd[i] && ADd[i].frame && r.x && r.x.r === 'Exotic' ? { n: ADd[i].frame.n || '', i: ADd[i].frame.i || '', d: ADd[i].frame.d || '' } : null, m: [...l.it.filter((q) => q.b === AB[i]).flatMap((q) => (q.m || []).map(nmM)), ...(l.fm || []).filter((q) => +q[4] === AB[i]).map(nmF)].filter(Boolean).slice(0, 12) } : null)).filter(Boolean),
       any: (l.fm || []).filter((q) => !q[4] || !AB.includes(+q[4])).map(nmF).filter(Boolean).slice(0, 12),
       st: hasSt ? st.slice() : null,
-      sb: SB.slice(0, 4).map((q) => ({ n: q.n || '', i: q.i || '', rc: q.rc || 0, s: q.s || '' })),
-      art: hasArt ? { n: (l.ai && l.ai.n) || 'Artifact', i: artIc, p: (l.a || []).slice(0, 14).map((q) => ({ i: q[2] || '', n: String(q[1] || '') })).filter((q) => q.i) } : null,
+      sb: SB.slice(0, 6).map((q) => ({ n: q.n || '', i: q.i || '', rc: q.rc || 0, s: q.s || '', d: q.d || '' })),
+      art: hasArt ? { n: (l.ai && l.ai.n) || 'Artifact', i: artIc, p: (l.a || []).slice(0, 14).map((q) => ({ h: +q[0] || 0, i: q[2] || '', n: String(q[1] || '') })).filter((q) => q.i) } : null,
     };
     return cv;
   }
@@ -920,10 +924,19 @@
       const info = cv.info || null;
       if (info && gt.bdDefs) {
         try {
-          const need = [...info.w, ...info.a].filter((q) => !q.t || !q.r).map((q) => q.h).filter(Boolean);
-          const D2 = await gt.bdDefs({ items: [...new Set(need)].slice(0, 60), plugs: [...new Set(info.sp.map((q) => q.h).filter(Boolean))].slice(0, 150) });
-          [...info.w, ...info.a].forEach((q) => { const x = D2.items[q.h]; if (x) { if (!q.t) q.t = x.t; if (!q.r) q.r = x.r; } });
-          info.sp.forEach((q) => { const x = D2.plugs[q.h]; if (x) { q.k = subRank(x.c); if (!q.n) q.n = x.n; if (q.k >= 5 && x.d) q.d = x.d; } });
+          const plugsOf = [...info.sp, ...info.w.flatMap((q) => q.p), ...info.a.flatMap((q) => q.m), ...info.any, ...((info.art && info.art.p) || [])];
+          const D2 = await gt.bdDefs({ items: [...new Set([...info.w, ...info.a].map((q) => q.h).filter(Boolean))].slice(0, 60), plugs: [...new Set(plugsOf.map((q) => q.h).filter(Boolean))].slice(0, 200) });
+          [...info.w, ...info.a].forEach((q) => {
+            const x = D2.items[q.h]; if (!x) return;
+            if (!q.t) q.t = x.t; if (!q.r) q.r = x.r;
+            if (!q.intr && x.intr && (q.r === 'Exotic' || info.w.includes(q))) q.intr = x.intr;
+            if (!q.set && x.set && x.set.n) { q.set = x.set.n; q.setp = x.set.perks; }
+          });
+          info.sp.forEach((q) => { const x = D2.plugs[q.h]; if (x) { q.k = subRank(x.c); if (!q.n) q.n = x.n; if (x.d) q.d = x.d; } });
+          plugsOf.forEach((q) => { const x = D2.plugs[q.h]; if (x) { if (!q.n) q.n = x.n; if (!q.d && x.d) q.d = x.d; } });
+          // set bonuses for armor you do not own (worked out from the sets of the pieces in the build)
+          const cnt = {}; info.a.forEach((q) => { if (q.set) cnt[q.set] = (cnt[q.set] || 0) + 1; });
+          info.a.forEach((q) => { (q.setp || []).forEach((p) => { if (cnt[q.set] >= (p.rc || 99) && !info.sb.some((b) => b.n === p.n)) info.sb.push({ n: p.n, i: p.i, rc: p.rc, s: q.set, d: p.d || '' }); }); delete q.setp; });
         } catch (e) { /* the page shows what it has */ }
       }
       let img = '';
@@ -1029,7 +1042,7 @@
       const t = r.x ? V.tile(r.x).replace(/ fade(?=[" ])/, '') : `<div class="vt dl-miss" title="Missing: ${esc(en.n)}">${en.i ? `<img src="${esc(V.icon(en.i))}" alt="">` : '?'}</div>`;
       body = `<div class="dl-tw${en.e === 0 ? ' dl-ne' : ''}" data-ed="pick" data-b="${b}">${t}</div>`;
     } else body = `<div class="dl-tw dl-empty" data-ed="pick" data-b="${b}" title="Add ${esc(BN[b])}"><span>+</span></div>`;
-    const mi = en && AB.includes(b) && en.m.length ? `<div class="dl-pm">${plugIcons(en.m)}</div>` : '';
+    const mi = en && AB.includes(b) && en.m.length ? `<div class="dl-pm">${plugIcons(en.m)}</div>` : en && WB.includes(b) && gt.fdWeapon && (ed.build || !r.x) ? `<div class="dl-pm dl-wpk">${(en.wp || []).map((p) => `<img src="${esc(V.icon(p[2]))}" alt="" title="${esc(p[1])}">`).join('')}<button class="g" data-ed="wperks" data-b="${b}" title="Pick the perks this build uses">${en.wp && en.wp.length ? 'Perks' : '+ Perks'}</button></div>` : '';
     return `<div class="dl-slot">${b === SUB ? '' : `<div class="dl-sn">${esc(BN[b])}</div>`}${body}${mi}${en ? `<div class="dl-sf"><button class="g${en.e === 0 ? '' : ' on'}" data-ed="eqt" data-b="${b}" title="${en.e === 0 ? 'Only moved to the character, not equipped' : 'Equipped when applied'}">${en.e === 0 ? 'Carry' : 'Equip'}</button><button class="g" data-ed="rm" data-b="${b}" title="Remove from loadout">&#10005;</button></div>` : ''}</div>`;
   };
   // Any item: every Legendary and Exotic in the game for the slot (armor for the loadout's class), for builds you do not own yet.
@@ -1077,7 +1090,7 @@
 <div class="dl-ehd"><input id="dlen" class="dl-name" placeholder="${ed.build ? 'Build name' : 'Loadout name'}" maxlength="80" value="${esc(d.n)}"><select id="dlcls" title="Which class this loadout is for"><option value="3"${anyc ? ' selected' : ''}>Any class</option>${[0, 1, 2].map((c) => `<option value="${c}"${d.c === c ? ' selected' : ''}>${esc(CL[c])}</option>`).join('')}</select><span class="dl-sp"></span><button class="g" data-ed="undo"${ed.hist.length ? '' : ' disabled'} title="Undo">&#8630; Undo</button><button class="g" data-ed="redo"${ed.fut.length ? '' : ' disabled'} title="Redo">Redo &#8631;</button><button class="g" data-ed="x" title="Close without saving">&#10005;</button></div>
 <div class="dl-ebody">${ed.build ? '<div class="dl-bhint">Making a build for the Builds tab. Pick any weapon or armor with <b>Any item</b>, even ones you do not own yet. Customize the subclass, mods and artifact, then press <b>Share to Builds</b>.</div>' : ''}<textarea id="dleo" class="dl-notes" placeholder="Notes (add #hashtags like #pvp or #raid to find this loadout fast)">${esc(d.o)}</textarea>
 ${warn}${ed.msg ? `<div class="dl-wr">${esc(ed.msg)}</div>` : ''}
-${ed.pick ? `<div class="dl-es dl-pk"><div class="dl-eh">Choose ${esc(BN[ed.pick])} ${anyOK(ed.pick) && gt.bdItems ? `<span class="dl-src"><button class="g${ed.src === 'mine' ? ' on' : ''}" data-ed="src" data-v="mine">Your items</button><button class="g${ed.src === 'any' ? ' on' : ''}" data-ed="src" data-v="any" title="Every Legendary and Exotic in the game, for builds you do not own yet">Any item</button></span>` : ''}<button class="g" data-ed="pickx">Close</button></div><input id="dlpq" placeholder="${ed.src === 'any' && anyOK(ed.pick) ? 'Search by name or type (for example: hand cannon)' : 'Search (is:exotic, perk:..., or a name)'}" value="${esc(ed.pq)}" autocomplete="off"><div id="dlpl" class="dl-pl">${pickList()}</div></div>` : ''}
+${ed.wpk ? wperkHTML() : ''}${ed.pick ? `<div class="dl-es dl-pk"><div class="dl-eh">Choose ${esc(BN[ed.pick])} ${anyOK(ed.pick) && gt.bdItems ? `<span class="dl-src"><button class="g${ed.src === 'mine' ? ' on' : ''}" data-ed="src" data-v="mine">Your items</button><button class="g${ed.src === 'any' ? ' on' : ''}" data-ed="src" data-v="any" title="Every Legendary and Exotic in the game, for builds you do not own yet">Any item</button></span>` : ''}<button class="g" data-ed="pickx">Close</button></div><input id="dlpq" placeholder="${ed.src === 'any' && anyOK(ed.pick) ? 'Search by name or type (for example: hand cannon)' : 'Search (is:exotic, perk:..., or a name)'}" value="${esc(ed.pq)}" autocomplete="off"><div id="dlpl" class="dl-pl">${pickList()}</div></div>` : ''}
 <div class="dl-panels">
 ${pn('dl-p-sub', 'Subclass', anyc ? '<span class="mute">Pick a class to add a subclass.</span>' : `<div class="dl-subrow">${row([SUB])}<div class="dl-subpl">${subPl.length ? plugIcons(subPl, 'big') : (subEn ? '<span class="mute">No abilities saved. Use Customize.</span>' : '')}</div></div>`, `<button class="g" data-ed="subcust"${subEn ? '' : ' disabled'}>Customize subclass</button>`, anyc)}
 ${pn('dl-p-wep', 'Weapons', `<div class="dl-er">${row(WB)}</div>`, `<label class="dl-ac"><input type="checkbox" id="dlmv"${d.mv ? ' checked' : ''}> Move other items away</label>`)}
@@ -1149,6 +1162,19 @@ ${pn('dl-p-art', 'Artifact', `<div class="dl-artrow">${d.ai && d.ai.i ? `<span c
     ed.pick = null; drawEd();
   }
   function closeEd() { ed = null; AP = null; drawEd(); renderAP(); }
+  // Perks for a weapon in a build: every column the weapon can roll (from the item data), one pick per column.
+  function wperkHTML() {
+    const w = ed.wpk, en = ed.d.it.find((q) => q.b === w.b); if (!en) return '';
+    const on = new Set((en.wp || []).map((p) => p[0]));
+    const body = w.err ? `<p class="dl-wr">${esc(w.err)}</p>` : !w.cols ? '<p class="mute">Loading the perks...</p>' : w.cols.length ? w.cols.map((c, ci) => `<div class="dl-wpc"><small>${esc(c.label)}</small><div>${c.opts.map((o) => `<button class="dl-wpo${on.has(o.h) ? ' on' : ''}" data-ed="wpo" data-ci="${ci}" data-h="${o.h}" title="${esc(o.n + (o.d ? '\n\n' + o.d : ''))}"><img src="${esc(V.icon(o.i))}" alt=""><span>${esc(o.n)}</span></button>`).join('')}</div></div>`).join('') : '<p class="mute">This weapon has no perks to pick.</p>';
+    return `<div class="dl-es dl-pk"><div class="dl-eh">Perks for ${esc(en.n)} <span class="mute" style="font-size:12px;letter-spacing:0;text-transform:none">One per column. Shown on the build; your own copy is not changed.</span> <button class="g" data-ed="wpkx">Done</button></div>${body}</div>`;
+  }
+  async function wperkOpen(b) {
+    const en = ed.d.it.find((q) => q.b === b); if (!en) return;
+    ed.pick = null; ed.wpk = { b, h: en.h, cols: null, err: '' }; ed.top = true; drawEd();
+    try { const r = await gt.fdWeapon({ h: en.h }); if (ed && ed.wpk && ed.wpk.b === b) { ed.wpk.cols = (r.cols || []).filter((c) => !c.fixed || c.opts.length); drawEd(); } }
+    catch (e) { if (ed && ed.wpk && ed.wpk.b === b) { ed.wpk.err = V.clean(e); drawEd(); } }
+  }
   function edClickBuild(l) { mod = { t: 'bdpub', l, title: String(l.n || '').slice(0, 60), notes: String(l.o || '').slice(0, 1200), tags: [], str: [], weak: [], prio: [], cls: l.c < 3 ? l.c : '', msg: '' }; drawMod(); if (gt.pfaStatus) gt.pfaStatus().then((st) => { if (mod && mod.t === 'bdpub') { mod.signed = !!(st && st.on); if (!mod.signed) drawMod(); } }, () => {}); setTimeout(() => { const i = g('bdtitle'); if (i) i.focus(); }, 30); }
   function commit(asNew) {
     const d = clone(ed.d); d.n = d.n.trim();
@@ -1174,9 +1200,15 @@ ${pn('dl-p-art', 'Artifact', `<div class="dl-artrow">${d.ai && d.ai.i ? `<span c
     if (a === 'x') closeEd();
     else if (a === 'undo') { if (ed.hist.length) { ed.fut.push(JSON.stringify(ed.d)); ed.d = JSON.parse(ed.hist.pop()); drawEd(); } }
     else if (a === 'redo') { if (ed.fut.length) { ed.hist.push(JSON.stringify(ed.d)); ed.d = JSON.parse(ed.fut.pop()); drawEd(); } }
-    else if (a === 'pick') { ed.pick = b; ed.pq = ''; ed.top = true; drawEd(); const i = g('dlpq'); if (i) i.focus(); }
+    else if (a === 'pick') { ed.wpk = null; ed.pick = b; ed.pq = ''; ed.top = true; drawEd(); const i = g('dlpq'); if (i) i.focus(); }
     else if (a === 'pickx') { ed.pick = null; drawEd(); }
     else if (a === 'choose') choose(t.dataset.id);
+    else if (a === 'wperks') wperkOpen(b);
+    else if (a === 'wpkx') { ed.wpk = null; drawEd(); }
+    else if (a === 'wpo' && ed.wpk && ed.wpk.cols) {
+      const col = ed.wpk.cols[+t.dataset.ci], o = col && col.opts.find((q) => String(q.h) === t.dataset.h), bk = ed.wpk.b; if (!o) return;
+      mut((d) => { const en = d.it.find((q) => q.b === bk); if (!en) return; const inCol = new Set(col.opts.map((q) => q.h)), had = (en.wp || []).some((p) => p[0] === o.h); en.wp = (en.wp || []).filter((p) => !inCol.has(p[0])); if (!had) en.wp.push([o.h, o.n, rawIcon(o.i)]); const order = ed.wpk.cols.map((c) => new Set(c.opts.map((q) => q.h))); en.wp.sort((p, q) => order.findIndex((s2) => s2.has(p[0])) - order.findIndex((s2) => s2.has(q[0]))); });
+    }
     else if (a === 'src') { ed.src = t.dataset.v === 'any' ? 'any' : 'mine'; ed.anyKey = ''; drawEd(); const i = g('dlpq'); if (i) i.focus(); }
     else if (a === 'chooseany') {
       const x = (ed.anyRes || []).find((q) => String(q.h) === t.dataset.h), bk = ed.pick; if (!x || !bk) return;
@@ -1879,6 +1911,8 @@ ${art ? `<div class="dl-mrow"><span class="dl-gl">Artifact &middot; ${esc(AR.ite
 .dl-wr{color:#ffb74d;font-size:13px}
 .dl-ef{display:flex;gap:8px;padding:10px 14px;border-top:1px solid #2b2d31;background:#0e1013;flex-wrap:wrap}
 #dlmod .dl-url{width:100%;box-sizing:border-box;font:13px ui-monospace,Consolas,monospace;padding:9px 10px;background:#0e1013;border:1px solid #3a3d43;border-radius:3px;color:#fff}
+.dl-wpk{display:flex;flex-wrap:wrap;align-items:center;gap:3px;margin-top:4px}.dl-wpk img{width:22px;height:22px;border-radius:50%;border:1px solid #3a3d43}.dl-wpk button{padding:2px 8px!important;font-size:11.5px!important}
+.dl-wpc{margin:0 0 10px}.dl-wpc small{display:block;font-size:11.5px;color:#9aa0a8;margin:0 0 5px;letter-spacing:.04em}.dl-wpc>div{display:flex;flex-wrap:wrap;gap:5px}.dl-wpo{display:inline-flex!important;align-items:center;gap:6px;padding:4px 10px 4px 4px!important;border-radius:999px!important;font-size:12.5px!important}.dl-wpo img{width:26px;height:26px;border-radius:50%;display:block}.dl-wpo.on{border-color:var(--g-accent,#e8b84a)!important;background:color-mix(in srgb,var(--g-accent,#e8b84a) 20%,transparent)!important;color:#fff!important}
 .dl-src{display:inline-flex;margin-left:10px;gap:0}.dl-src button{border-radius:0!important;padding:4px 10px!important}.dl-src button:first-child{border-radius:6px 0 0 6px!important}.dl-src button:last-child{border-radius:0 6px 6px 0!important}.dl-src button.on{background:var(--g-accent2,#3a6ea5)!important;color:#fff!important;border-color:transparent!important}
 .dl-pa{display:grid;grid-template-columns:44px 1fr;grid-template-rows:auto auto;column-gap:10px;align-items:center;padding:6px;border:1px solid transparent;border-radius:8px;cursor:pointer;min-width:0}.dl-pa:hover,.dl-pa:focus-visible,.dl-pa.on{border-color:var(--g-accent,#e8b84a);background:rgba(255,255,255,.04);outline:0}.dl-pa span{grid-row:1/3;width:44px;height:44px;border:2px solid #3a3d43;border-radius:4px;overflow:hidden;background:#0d0f13}.dl-pa img{width:100%;height:100%;display:block}.dl-pa b{font-size:13px;font-weight:600;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dl-pa small{font-size:11.5px;color:#9aa0a8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #dlpl:has(.dl-pa){display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:4px}.dl-bhint{margin:0 0 10px;padding:9px 12px;border:1px solid color-mix(in srgb,var(--g-accent,#e8b84a) 45%,transparent);border-radius:8px;background:color-mix(in srgb,var(--g-accent,#e8b84a) 10%,transparent);font-size:13px;color:#e6e7ea}
