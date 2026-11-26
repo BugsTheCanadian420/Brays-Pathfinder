@@ -13,6 +13,9 @@
   // entry for every small change.
   const ALL = [
     { id: 20, draft: true, date: 'Nov 2026', items: [
+      'Create build: make a build in the Builds tab with any weapon or armor in the game, even gear you do not own yet, then share it.',
+      'Every build has its own page: subclass, weapons with their perks, armor with mods, stat priority and totals, set bonuses, artifact, strengths and weaknesses, how to play it and the loadout picture. Owners can edit it.',
+      'Refreshing keeps you on the page you were on, including an open build.',
       'Builds: a new tab of builds shared by the community. Filter by class, subclass and what a build is good for (raids, Grandmasters, PvP and more), sort by popular, newest, most liked or most imported, and import one straight into your loadouts. Like or dislike builds with a Pathfinder account; builds people like and import rise to the top.',
       'Share to Builds: in Loadouts, a loadout\'s Share menu can now post it to the Builds tab with a name, tags and notes on how to play it (needs a Pathfinder account). Delete your own builds from the Builds tab at any time.',
       'Finder searches weapon frames: type a frame (for example Lightweight, Aggressive or Rapid-Fire) to see every weapon with it, or add a weapon type to narrow it down (lightweight hand cannon).',

@@ -175,6 +175,7 @@ ${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((i) => `:root[data-anim="full"] :i
     let st = get('starttab');
     if (!st) { let homeStart = false; try { homeStart = JSON.parse(localStorage.getItem('gt.home.start') || 'false'); } catch (e) { /* none */ } st = homeStart ? 'home' : 'vault'; }
     if (st === 'last') st = window.__gtLastTab || 'vault';
+    if (window.__gtReload && window.__gtLastTab) st = window.__gtLastTab; // a refresh stays on the page you were on
     if (st && st !== 'vault') {
       if (st === 'home') { if (window.__gthome) window.__gthome.open(); else if (window.show) window.show('vault'); reveal(); } else {
         const go = () => { const b = document.querySelector('#nav button[data-t="' + CSS.escape(st) + '"]'); if (b && !b.classList.contains('gthide')) b.click(); else if (window.show) window.show('vault'); };

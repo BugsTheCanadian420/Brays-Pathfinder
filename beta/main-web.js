@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.46-beta.8: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.46-beta.9: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -769,6 +769,9 @@ async function helpReq(p, body, staff) {
 // voting and deleting send the Pathfinder account sign-in (helpReq adds it when there is one).
 // A build's picture: the loadout picture as a WebP or JPEG data link, at most about 520 KB.
 const BIMG = (v) => { if (v == null || v === '') return undefined; const s = String(v); if (s.length > 700000 || !/^data:image\/(webp|jpeg|png);base64,[A-Za-z0-9+/=]+$/.test(s)) throw bad(); return s; };
+// A build's page details (worked out on this device) and its strengths, weaknesses and stat priority (keys from fixed lists).
+const BINFO = (v) => { if (v == null) return undefined; OBJ(v); if (JSON.stringify(v).length > 60000) throw bad(); return v; };
+const BSW = (v) => ({ str: ARR(v.str || [], 16).map((k) => TXT(k, 10)), weak: ARR(v.weak || [], 16).map((k) => TXT(k, 10)), prio: ARR(v.prio || [], 6).map((k) => INT(+k, 0, 5)) });
 const BID = (v) => { const id = TXT(v, 12); if (!/^[A-Za-z0-9]{8,12}$/.test(id)) throw bad(); return id; };
 async function bdReq(p, body) {
   try { return await helpReq(p, body); }
@@ -789,9 +792,29 @@ H('bd:get', async (e, v) => { OBJ(v); return (await bdReq('/builds/get?id=' + BI
 H('bd:pub', async (e, v) => {
   OBJ(v); const code = TXT(v.code, 40000); if (!/^GTL1:[A-Za-z0-9+/=]+$/.test(code)) throw bad();
   const tags = ARR(v.tags || [], 8).map((t) => TXT(t, 12)), ex = ARR(v.ex || [], 20).map((h) => INT(+h, 1, 4294967295));
-  return bdReq('/builds/publish', { title: TXT(v.title, 80), notes: TXT(v.notes || '', 1500), tags, code, ex, cls: v.cls === undefined ? undefined : INT(+v.cls, 0, 3), img: BIMG(v.img) });
+  return bdReq('/builds/publish', { title: TXT(v.title, 80), notes: TXT(v.notes || '', 1500), tags, code, ex, cls: v.cls === undefined ? undefined : INT(+v.cls, 0, 3), img: BIMG(v.img), info: BINFO(v.info), ...BSW(v) });
 });
-H('bd:pic', async (e, v) => { OBJ(v); const img = BIMG(v.img); if (!img) throw bad(); return bdReq('/builds/pic', { id: BID(v.id), img }); });
+H('bd:edit', async (e, v) => { OBJ(v); const tags = ARR(v.tags || [], 8).map((t) => TXT(t, 12)); return bdReq('/builds/edit', { id: BID(v.id), title: TXT(v.title, 80), notes: TXT(v.notes || '', 1500), tags, ...BSW(v) }); });
+// Builds you make without owning the gear: any Legendary or Exotic for a slot (armor for the class), by name or type.
+H('bd:items', async (e, v) => {
+  OBJ(v); const b = INT(+v.b, 1, 4294967295), c = v.c === undefined ? 3 : INT(+v.c, 0, 3), q = TXT(v.q || '', 60).trim().toLowerCase(), words = q.split(/\s+/).filter(Boolean);
+  const df = await defs(), seen = new Map();
+  for (const k in df.d) {
+    const d = df.d[k]; if (d.b !== b || !d.n || !/^(Legendary|Exotic)$/.test(d.r || '')) continue;
+    if (c < 3 && d.c !== undefined && d.c !== 3 && d.c !== c) continue;
+    const hay = (d.n + ' ' + (d.t || '')).toLowerCase(); if (!words.every((w) => hay.includes(w))) continue;
+    const key = d.n + '|' + d.r, prev = seen.get(key); if (!prev || +k > prev.h) seen.set(key, { h: +k, n: d.n, i: d.i, t: d.t || '', r: d.r });
+  }
+  return [...seen.values()].sort((a, z) => (q ? (z.n.toLowerCase().startsWith(q) ? 1 : 0) - (a.n.toLowerCase().startsWith(q) ? 1 : 0) : 0) || (a.r === 'Exotic' ? 0 : 1) - (z.r === 'Exotic' ? 0 : 1) || a.n.localeCompare(z.n)).slice(0, 90);
+});
+// Names, types and kinds for a build's page: items (weapon type, rarity) and plugs (a subclass choice's kind: super, aspect ...).
+H('bd:defs', async (e, v) => {
+  OBJ(v); const df = await defs(), items = {}, plugs = {};
+  ARR(v.items || [], 60).forEach((h) => { h = INT(+h, 1, 4294967295); const d = df.d[h]; if (d) items[h] = { n: d.n, i: d.i, t: d.t || '', r: d.r || '', b: d.b, c: d.c }; });
+  ARR(v.plugs || [], 150).forEach((h) => { h = INT(+h, 1, 4294967295); const p = df.p[h]; if (p) plugs[h] = { n: p.n, i: p.i, c: p.c || '', d: String(p.d || '').slice(0, 400) }; });
+  return { items, plugs };
+});
+H('bd:pic', async (e, v) => { OBJ(v); const img = BIMG(v.img); if (!img) throw bad(); return bdReq('/builds/pic', { id: BID(v.id), img, info: BINFO(v.info) }); });
 H('bd:vote', async (e, v) => { OBJ(v); return bdReq('/builds/vote', { id: BID(v.id), v: INT(+v.v, -1, 1) }); });
 H('bd:use', async (e, v) => { OBJ(v); return bdReq('/builds/use', { id: BID(v.id) }); });
 H('bd:del', async (e, v) => { OBJ(v); return bdReq('/builds/delete', { id: BID(v.id) }); });

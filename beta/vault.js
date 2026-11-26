@@ -4586,5 +4586,5 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
   init();
   // Straight to the page chosen in Settings > Display > Open the app on (polish.js finishes opening it), so the Inventory
   // does not flash first.
-  { const st0 = SET.starttab === 'last' ? window.__gtLastTab : SET.starttab; show(st0 && /^[a-z]{2,20}$/.test(st0) ? st0 : 'vault'); }
+  { const st0 = SET.starttab === 'last' || (window.__gtReload && window.__gtLastTab) ? window.__gtLastTab : SET.starttab; show(st0 && /^[a-z]{2,20}$/.test(st0) ? st0 : 'vault'); }
 })();
