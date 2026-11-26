@@ -3274,7 +3274,8 @@ ${GTAB === 'CD' && junkable.length ? `<p class="jkb"><button class="b" data-gk="
     if (!w.length) return '';
     const t = [0, 0, 0, 0, 0, 0]; w.forEach((x) => x.st.forEach((v, i) => { t[i] += v; }));
     const ic = D.sti || [];
-    return `<div class="cst" title="Armor stats: ${STL.map((q, i) => q[1] + ' ' + t[i]).join(', ')}">${t.map((v, i) => `<span title="${STL[i][1]}">${ic[i] ? `<img src="${esc(icon(ic[i]))}" alt="">` : `<em>${STL[i][0]}</em>`}${v}</span>`).join('')}</div>`;
+    const GO = [1, 5, 3, 4, 2, 0]; // the game's order: Health, Melee, Grenade, Super, Class, Weapons
+    return `<div class="cst" title="Armor stats: ${GO.map((i) => STL[i][1] + ' ' + t[i]).join(', ')}">${GO.map((i) => `<span title="${STL[i][1]}">${ic[i] ? `<img src="${esc(icon(ic[i]))}" alt="">` : `<em>${STL[i][0]}</em>`}${t[i]}</span>`).join('')}</div>`;
   }
   // Characters in the order chosen in Settings. Single-character view keeps only the first one.
   const idCmp = (a, b) => { try { const x = BigInt(a.id), y = BigInt(b.id); return x < y ? -1 : x > y ? 1 : 0; } catch (e) { return 0; } };

@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.46-beta.15: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.46-beta.16: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -1254,6 +1254,7 @@ const entDef = async (tbl, h) => {
   return ENTP[k];
 };
 const ARSH = [2996146975, 392767087, 1943323491, 1735777505, 144602215, 4244567218]; // weapons, health, class, grenade, super, melee
+const ARGO = [392767087, 4244567218, 1735777505, 144602215, 1943323491, 2996146975]; // the order the game shows armor stats: health, melee, grenade, super, class, weapons
 const ARCHN = new Set(['paragon', 'brawler', 'gunner', 'specialist', 'grenadier', 'bulwark']); // Armor 3.0 archetypes
 H('item:detail', async (e, v) => { await ensureM();
   OBJ(v); const id = ID(v.id), h = v.h !== undefined ? HASH(v.h) : 0;
@@ -1295,7 +1296,7 @@ H('item:detail', async (e, v) => { await ensureM();
     const tn = tun[q.h] || 0, v = tn < 0 && cur.value === 0 ? tn : cur.value;
     out.stats.push({ h: q.h, n: def.n, v, max: q.max, num: q.num, o: def.o, mb: Math.max(0, Math.min(v, mbn[q.h] || 0)), mw: Math.max(0, Math.min(v, mwn[q.h] || 0)), tn: tn || undefined });
   }
-  out.stats.sort((a, b) => (isArmor ? ARSH.indexOf(a.h) - ARSH.indexOf(b.h) : a.o - b.o));
+  out.stats.sort((a, b) => (isArmor ? ARGO.indexOf(a.h) - ARGO.indexOf(b.h) : a.o - b.o));
   if (isArmor) out.tot = out.stats.reduce((t, q) => t + q.v, 0);
   if (inst.energy && inst.energy.energyCapacity) out.energy = { cap: inst.energy.energyCapacity, used: inst.energy.energyUsed || 0 };
   if (inst.primaryStat) out.pw = inst.primaryStat.value;

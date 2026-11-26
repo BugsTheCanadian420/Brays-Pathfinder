@@ -803,12 +803,13 @@
     label('STATS', sx, L.top + 26);
     if (hasSt) {
       const tot = st.reduce((a, b) => a + b, 0), bx = sx + 108, bw = sw - 108 - 56;
-      st.forEach((v, i) => {
-        const y1 = L.top + 48 + i * 50; txt(IMSTL[i], sx, y1 + 18, 17, '#e6e7ea', 600);
+      // in the game's order (Health, Melee, Grenade, Super, Class, Weapons); a stat below 0 (tuning took 5 from it) shows in red, like the game
+      GORD.forEach((i, row) => {
+        const v = st[i], y1 = L.top + 48 + row * 50; txt(IMSTL[i], sx, y1 + 18, 17, '#e6e7ea', 600);
         rr(bx, y1 + 3, bw, 18, 4); g2.fillStyle = '#23262b'; g2.fill();
-        const fw = Math.max(0, Math.min(bw, v / 200 * bw)); if (fw > 0) { rr(bx, y1 + 3, fw, 18, 4); g2.fillStyle = IMSTC[i]; g2.fill(); }
+        const fw = Math.max(0, Math.min(bw, Math.abs(v) / 200 * bw)); if (fw > 0) { rr(bx, y1 + 3, fw, 18, 4); g2.fillStyle = v < 0 ? '#c0392b' : IMSTC[i]; g2.fill(); }
         for (let t = 1; t < 10; t++) { g2.fillStyle = 'rgba(0,0,0,.35)'; g2.fillRect(bx + bw * t / 10, y1 + 3, 1, 18); } // tens, like the game
-        txt(String(v), bx + bw + 12, y1 + 19, 19, '#fff', 700);
+        txt(String(v), bx + bw + 12, y1 + 19, 19, v < 0 ? '#ff8a7a' : '#fff', 700);
       });
       txt('Total ' + tot, sx, L.top + 384, 18, '#e0b64a', 700);
     } else txt('Stats show for your own armor.', sx, L.top + 70, 15, '#8b8f97', 400);
@@ -1713,7 +1714,7 @@ ${(() => { const BD = window.__gtBD; if (!BD) return ''; const ch = (k, label, c
   const statsOf = (xs) => {
     const w = xs.filter((x) => x.st); if (!w.length) return '';
     const t = [0, 0, 0, 0, 0, 0]; w.forEach((x) => x.st.forEach((v, i) => { t[i] += v; }));
-    return `<div class="dl-stats" title="Armor stats of these pieces">${t.map((v, i) => `<span title="${STL[i][1]}">${STL[i][0]}<b>${v}</b></span>`).join('')}<span class="dl-tot">Total <b>${t.reduce((s, v) => s + v, 0)}</b></span></div>`;
+    return `<div class="dl-stats" title="Armor stats of these pieces">${[1, 5, 3, 4, 2, 0].map((i) => `<span title="${STL[i][1]}">${STL[i][0]}<b>${t[i]}</b></span>`).join('')}<span class="dl-tot">Total <b>${t.reduce((s, v) => s + v, 0)}</b></span></div>`;
   };
   const tileOf = (r) => (r.x ? V.tile(r.x).replace(/ fade(?=[" ])/, '') : `<div class="vt dl-miss" title="Missing: ${esc(r.en.n || 'item')}">${r.en.i ? `<img src="${esc(V.icon(r.en.i))}" alt="">` : '?'}</div>`);
   const plugIcons = (m, big) => m.map((p) => `<span class="ap ${big ? 'md' : 'sm'}" data-ph="${int(p[1])}" title="${esc(p[3])}">${p[2] ? `<img src="${esc(V.icon(p[2]))}" alt="">` : ''}</span>`).join('');
