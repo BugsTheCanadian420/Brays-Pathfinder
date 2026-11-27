@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.48-beta.1: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.48-beta.2: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -1094,10 +1094,13 @@ H('vault:load', async () => {
     });
     // Bungie never shows a stat below 0, so a stat the tuning took 5 from is only given back when it shows above 0.
     o.sb = cur.map((v, k) => (rem[k] < 0 && v === 0 ? 0 : Math.max(0, v - rem[k])));
+    // Balanced tuning (+1 to the three lowest stats) has no fixed stats in Bungie's data: take its +1s back by hand.
+    const tp = o.ti !== undefined && df.p[ss[o.ti].plugHash];
+    if (tp && !(tp.s || []).length && /balanced/i.test(tp.n || '')) [0, 1, 2, 3, 4, 5].sort((a, b) => o.sb[a] - o.sb[b]).slice(0, 3).forEach((k) => { o.sb[k] = Math.max(0, o.sb[k] - 1); });
     if (o.ti !== undefined) {
       const opts = new Set([ss[o.ti].plugHash]); (((rp[id] && rp[id].plugs) || {})[o.ti] || []).forEach((p) => p.plugItemHash && p.enabled !== false && opts.add(p.plugItemHash));
       const tu = [];
-      opts.forEach((h) => { const pl = df.p[h]; if (!pl || pl.c !== OPC.t || !(pl.s || []).length) return; const dl = [0, 0, 0, 0, 0, 0]; pl.s.forEach(([sh, v]) => { const k = SH.indexOf(sh); if (k >= 0) dl[k] += v; }); if (dl.some((v) => v)) tu.push([h, dl, pl.n, pl.i || '']); });
+      opts.forEach((h) => { const pl = df.p[h]; if (!pl || pl.c !== OPC.t) return; if (!(pl.s || []).length) { if (/balanced/i.test(pl.n || '')) tu.push([h, null, pl.n, pl.i || '']); return; } const dl = [0, 0, 0, 0, 0, 0]; pl.s.forEach(([sh, v]) => { const k = SH.indexOf(sh); if (k >= 0) dl[k] += v; }); if (dl.some((v) => v)) tu.push([h, dl, pl.n, pl.i || '']); });
       if (tu.length) o.tu = tu;
     }
     return o;

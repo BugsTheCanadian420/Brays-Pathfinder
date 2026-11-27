@@ -187,6 +187,9 @@
   // One entry per piece (and per Tier 5 tuning choice), ready for the search.
   function procItems(d) {
     const T = X.TAGS ? X.TAGS() : {}, all = classArmor(d), q = OP.q.trim();
+    // the stat tuning should take from: the lowest switched-off stat, else the one with the lowest maximum (lowest in the order on ties)
+    const offs = OP.pri.filter((k) => !OP.on[k]);
+    const DUMP = offs.length ? offs[offs.length - 1] : [...OP.pri].reverse().reduce((b, k) => (OP.mx[k] < OP.mx[b] ? k : b), OP.pri[5]);
     const per = SLOTS.map(() => []);
     SLOTS.forEach((b, si) => {
       let pool = all.filter((x) => x.b === b && !OP.exc.has(x.id));
@@ -203,7 +206,15 @@
         const art = OP.art && x.op && x.op.ai !== undefined ? 1 : 0;
         const exo = x.r === 'Exotic' ? 1 : 0;
         const vs = [{ st: base, tu: null }];
-        if (OP.tune && OP.auto && x.op && x.op.tu) x.op.tu.forEach(([h, dl, n, ic]) => vs.push({ st: base.map((v, k) => Math.max(0, Math.min(MAXS, v + dl[k]))), tu: [h, n, dl, ic] }));
+        if (OP.tune && OP.auto && x.op && x.op.tu) x.op.tu.forEach(([h, dl0, n, ic]) => {
+          // like DIM, only tuning that takes from the "dump" stat (or from a stat with a low maximum) is tried
+          const neg = dl0 ? dl0.findIndex((q) => q < 0) : -1;
+          if (neg >= 0 && neg !== DUMP && !(OP.mx[neg] > 0 && OP.mx[neg] <= 175)) return;
+          // Balanced tuning: +1 to the piece's three lowest stats
+          const dl = dl0 || (() => { const o = [0, 0, 0, 0, 0, 0]; [0, 1, 2, 3, 4, 5].sort((a, b) => base[a] - base[b]).slice(0, 3).forEach((k) => { o[k] = 1; }); return o; })();
+          // a stat can go below 0 on the piece (the game takes the 5 off the character's total, DIM shows it as -5)
+          vs.push({ st: base.map((v, k) => Math.min(MAXS, v + dl[k])), tu: [h, n, dl, ic] });
+        });
         vs.forEach((v) => per[si].push({ x, si, st: v.st, tu: v.tu, cap, art, exo, eh: exo ? x.h : 0, set: setOf(x) }));
       });
     });
@@ -253,6 +264,8 @@
     const P = order.map((i) => per[i]);
     const suf = []; for (let i = 5; i >= 0; i--) suf[i] = i === 5 ? [0, 0, 0, 0, 0, 0] : suf[i + 1].map((v, k) => v + Math.max(...P[i].map((e) => e.st[k])));
     const sufArt = []; for (let i = 5; i >= 0; i--) sufArt[i] = i === 5 ? 0 : sufArt[i + 1] + (P[i].some((e) => e.art) ? 1 : 0);
+    // the most the remaining slots can add to the total of the stats that count (much tighter than adding up each stat's best)
+    const sufT = []; for (let i = 5; i >= 0; i--) sufT[i] = i === 5 ? 0 : sufT[i + 1] + Math.max(...P[i].map(etot));
     const N = 100, best = [], near = []; let checked = 0, valid = 0;
     const total = P.reduce((t, l) => t * l.length, 1);
     const rmin = [MAXS, MAXS, MAXS, MAXS, MAXS, MAXS].map((v) => v + 999), rmax = [0, 0, 0, 0, 0, 0].map(() => -999);
@@ -290,6 +303,7 @@
         for (const k of ordr) { while (big.length && room(k, 5)) { const si = big.shift(); plan.push([si, 'm', k, 5]); v[k] += 5; } }
       }
       for (const k of ordr) while (artFree.length && room(k, 3)) useArt(k);
+      for (let k = 0; k < 6; k++) if (v[k] < 0) v[k] = 0;
       return { v, plan };
     };
     let last = performance.now();
@@ -335,8 +349,9 @@
       if (e.exo && exo) return false;
       for (let k = 0; k < 6; k++) cur[k] += e.st[k];
       const sf = suf[i + 1], art = artN + (e.art ? 1 : 0) + sufArt[i + 1];
-      let need = 0, ub = 0;
-      for (const k of en) { const top = cur[k] + F[k] + sf[k]; if (OP.mn[k] > top) need += OP.mn[k] - top; ub += Math.min(OP.mx[k], top); }
+      let need = 0, ub = 0, raw = sufT[i + 1];
+      for (const k of en) { const top = cur[k] + F[k] + sf[k]; if (OP.mn[k] > top) need += OP.mn[k] - top; ub += Math.min(OP.mx[k], top); raw += cur[k] + F[k]; }
+      if (raw < ub) ub = raw;
       let ok;
       if (nearMode) ok = !(near.length >= 8 && Math.max(0, need - modMax - art * 3) > near[near.length - 1].sh);
       else if (need > modMax + art * 3) ok = false;
