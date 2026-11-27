@@ -79,122 +79,447 @@
   org.b.onclick = () => { O.focus = 0; const had = org.s.firstChild; if (!had) drawOrg(); window.show('organizer'); if (had) requestAnimationFrame(() => setTimeout(drawOrg, 0)); };
 
   // ---------------- Loadout Optimizer ----------------
-  // Armor 3.0: each stat goes from 0 to 200. You set the minimum you want for each stat and the order they matter in;
-  // Stat mods (one per piece, +5 minor or +10 major) can fill what the armor alone is missing. When no set reaches every
-  // minimum, the closest sets are shown instead, with how far short each stat is.
-  const OPS = (() => { try { return JSON.parse(localStorage.getItem('gt.opt')) || {}; } catch (e) { return {}; } })();
-  const OP = { cls: 0, t: Array.isArray(OPS.t) && OPS.t.length === 6 ? OPS.t.map((v) => Math.max(0, Math.min(200, +v || 0))) : [0, 0, 0, 0, 0, 0], pri: Array.isArray(OPS.pri) && OPS.pri.length === 6 ? OPS.pri : [1, 5, 3, 4, 2, 0], mods: OPS.mods === undefined ? 5 : Math.max(0, Math.min(5, +OPS.mods || 0)), msz: +OPS.msz === 5 ? 5 : 10, font: Array.isArray(OPS.font) && OPS.font.length === 6 ? OPS.font.map((v) => Math.max(0, Math.min(3, +v || 0))) : [0, 0, 0, 0, 0, 0], near: false, ex: '', res: null, msg: '', set: 0, need: 2, SI: null, SD: {}, sLoad: false };
-  const saveOP = () => { try { localStorage.setItem('gt.opt', JSON.stringify({ t: OP.t, pri: OP.pri, mods: OP.mods, msz: OP.msz, font: OP.font })); } catch (e) { /* storage off */ } };
-  // Font mods (Weapons/Health/Class/Grenade/Super/Melee Font) add to a stat while you have any Armor Charge: +20 for one copy,
-  // +40 for two, +50 for three (Bungie, This Week in Destiny 07/10/2025). They use the armor-slot mod sockets, not the stat mod one.
-  const FONTV = [0, 20, 40, 50], fontAdd = () => OP.font.map((n) => FONTV[n] || 0);
+  const st2 = document.createElement('style');
+  st2.textContent = `
+#optimizer .o2help{margin:0 0 10px;max-width:980px;font-size:13px}
+#optimizer .o2opts{margin-top:8px}
+#optimizer .o2ck{display:inline-flex;gap:6px;align-items:center;font-size:13px;white-space:nowrap}
+#optimizer .o2q{display:inline-flex;gap:6px;align-items:center;font-size:13px;flex:1 1 260px}
+#optimizer .o2q input{flex:1;min-width:160px;background:var(--g-deep);border:1px solid #3a3d43;border-radius:3px;padding:5px 8px;color:#fff}
+#optimizer .o2grid{display:flex;flex-direction:column;gap:4px;margin:12px 0 6px;max-width:860px}
+#optimizer .o2h,#optimizer .o2row{display:grid;grid-template-columns:52px 120px 70px 70px minmax(120px,1fr) 92px 70px;gap:8px;align-items:center}
+#optimizer .o2h{font-size:11.5px;color:#9aa0a8;text-transform:none}
+#optimizer .o2row.off .o2n{color:#7d828a}
+#optimizer .o2row .ord{display:flex;gap:2px}
+#optimizer .o2row .ord button{padding:0!important;font-size:10px;width:24px;height:24px;line-height:22px;min-width:0}
+#optimizer .o2row .ord button[disabled]{opacity:.3}
+#optimizer .o2row input[type=number]{width:100%;padding:4px 6px!important}
+#optimizer .o2row select{width:100%;padding:3px 4px!important;font-size:12px}
+#optimizer .o2n{display:flex;gap:6px;align-items:center;font-weight:700;font-size:13.5px;cursor:pointer}
+#optimizer .o2bar{position:relative;height:16px;background:#1b1d22;border:1px solid #2c2f35;border-radius:3px;overflow:hidden}
+#optimizer .o2bar i{position:absolute;top:0;bottom:0}
+#optimizer .o2bar i.want{background:rgba(240,190,70,.16);border-left:1px solid rgba(240,190,70,.5);border-right:1px solid rgba(240,190,70,.5)}
+#optimizer .o2bar i.can{top:4px;bottom:4px;background:#e6e7ea;border-radius:2px}
+#optimizer .o2bar em{position:absolute;right:4px;top:0;font-size:10.5px;line-height:14px;font-style:normal;color:#c9ccd2;text-shadow:0 0 3px #000}
+#optimizer .o2pins{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+#optimizer .o2chip{display:inline-flex;gap:6px;align-items:center;font-size:12.5px;border:1px solid #3a3d43;border-radius:12px;padding:2px 4px 2px 10px}
+#optimizer .o2chip.pin{border-color:#6a5a2a;color:#f0d58a}
+#optimizer .o2chip.exc{border-color:#6b3434;color:#f0a0a0}
+#optimizer .o2chip button{padding:0 6px!important;border:0!important;background:none!important;color:inherit!important;font-size:15px;line-height:1}
+#optimizer .o2list{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+#optimizer .oset2{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;border:1px solid var(--g-line,#2b2e33);border-radius:4px;padding:8px 10px;background:rgba(255,255,255,.015)}
+#optimizer .oset2.near{border-color:#5a4520}
+#optimizer .o2l{display:flex;flex-direction:column;gap:6px;min-width:0;flex:1 1 520px}
+#optimizer .oset2 .tiles{display:flex;gap:4px;flex-wrap:wrap}
+#optimizer .o2t{padding:0!important;border:2px solid transparent!important;background:none!important;border-radius:4px!important;--t:50px;line-height:0}
+#optimizer .o2t.pin{border-color:#e8b84a!important}
+#optimizer .o2t:hover{border-color:#8a8f98!important}
+#optimizer .o2st{display:flex;gap:4px 14px;flex-wrap:wrap;font-size:13px}
+#optimizer .o2st span{color:#c9ccd2;cursor:help;white-space:nowrap}
+#optimizer .o2st span b{color:#fff;font-size:14px}
+#optimizer .o2st span.ok b{color:#7ed99a}
+#optimizer .o2st span.short b{color:#ff8a7a}
+#optimizer .o2st span.off{opacity:.55}
+#optimizer .o2st i{font-style:normal;color:#ff8a7a;font-size:11.5px;margin-left:4px}
+#optimizer .o2m{font-size:12.5px}
+#optimizer .o2m b{color:#fff}
+#optimizer .o2m .up{color:#7ed99a}#optimizer .o2m .dn{color:#ff8a7a}
+#optimizer .o2mods{display:flex;gap:4px 16px;flex-wrap:wrap;font-size:12px;color:#aeb3bb}
+#optimizer .o2mods b{color:#d5d8de;font-weight:600}
+#optimizer .o2r{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.o2menu{position:fixed;z-index:9999;display:none;flex-direction:column;min-width:200px;background:#16181c;border:1px solid #3a3d43;border-radius:4px;box-shadow:0 8px 24px rgba(0,0,0,.6);padding:4px}
+.o2menu.on{display:flex}
+.o2menu .o2mt{font-size:12px;color:#9aa0a8;padding:4px 8px;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.o2menu button{text-align:left;background:none;border:0;color:#e6e7ea;padding:7px 10px;border-radius:3px;cursor:pointer;font-size:13px}
+.o2menu button:hover{background:#262931}
+@media (max-width:640px){
+#optimizer .o2h{display:none}
+#optimizer .o2row{grid-template-columns:44px 1fr 62px 62px;row-gap:4px;padding:6px 0;border-bottom:1px solid #24262b}
+#optimizer .o2row .o2bar{grid-column:1/-1}
+#optimizer .o2row select{grid-column:1/3}
+#optimizer .o2row input[data-bon]{grid-column:3/5}
+#optimizer .o2l{flex-basis:100%}
+}`;
+  document.head.appendChild(st2);
+  // Works like DIM's Loadout Optimizer, for Armor 3.0 (each stat 0 to 200):
+  //  - each piece's own stats, without the mods in it right now (stat mods, artifice +3, Tier 5 tuning);
+  //  - a minimum and a maximum per stat, stats you can switch off, and a priority order;
+  //  - auto stat mods (+10 major for 3 energy, +5 minor for 1), artifice +3 and Tier 5 tuning, chosen per set;
+  //  - Font mods, other bonuses (fragments and the like), assume masterworked, set bonuses, exotic choice,
+  //    a search filter, pinned and excluded pieces;
+  //  - every combination is checked (with pruning), best total first, ties broken by the stat order.
+  const OPS = (() => { try { return JSON.parse(localStorage.getItem('gt.opt2')) || {}; } catch (e) { return {}; } })();
+  const arr6 = (a, f, lo, hi) => (Array.isArray(a) && a.length === 6 ? a.map((v) => Math.max(lo, Math.min(hi, Math.round(+v || 0)))) : [0, 0, 0, 0, 0, 0].map(() => f));
+  const OP = {
+    cls: 0, pri: Array.isArray(OPS.pri) && OPS.pri.length === 6 && [0, 1, 2, 3, 4, 5].every((k) => OPS.pri.includes(k)) ? OPS.pri : [1, 5, 3, 4, 2, 0],
+    mn: arr6(OPS.mn, 0, 0, 200), mx: arr6(OPS.mx, 200, 0, 200), on: Array.isArray(OPS.on) && OPS.on.length === 6 ? OPS.on.map((v) => !!v) : [true, true, true, true, true, true],
+    font: arr6(OPS.font, 0, 0, 3), bon: arr6(OPS.bon, 0, -100, 100),
+    auto: OPS.auto !== false, tune: OPS.tune !== false, art: OPS.art !== false, mwa: !!OPS.mwa, junk: OPS.junk !== false, q: typeof OPS.q === 'string' ? OPS.q.slice(0, 200) : '',
+    ex: '', sets: [], pin: {}, exc: new Set(),
+    res: null, near: false, msg: '', busy: false, run: 0, rng: null, shown: 30, SI: null, SD: {}, sLoad: false,
+  };
+  const saveOP = () => { try { localStorage.setItem('gt.opt2', JSON.stringify({ pri: OP.pri, mn: OP.mn, mx: OP.mx, on: OP.on, font: OP.font, bon: OP.bon, auto: OP.auto, tune: OP.tune, art: OP.art, mwa: OP.mwa, junk: OP.junk, q: OP.q })); } catch (e) { /* storage off */ } };
+  // Font mods add to a stat while you have any Armor Charge: +20 for one copy, +40 for two, +50 for three
+  // (Bungie, This Week in Destiny 07/10/2025). Each goes in a slot mod socket of one piece and costs 1 energy (the cheap version).
+  const FONTV = [0, 20, 40, 50];
   const SLOTS = [3448274439, 3551918588, 14239492, 20886954, 1585787867];
-  const inSet = (x) => !!(OP.set && OP.SI && OP.SI[x.h] === OP.set);
-  // Which armor set each piece belongs to, looked up once (the app keeps it on disk after the first time).
+  const SLN = ['Helmet', 'Arms', 'Chest', 'Legs', 'Class item'];
+  // stat index -> armor slot of its Font mod: Weapons Font legs, Health Font chest, Class Font class item,
+  // Grenade Font arms, Super Font helmet, Melee Font arms
+  const FONTSLOT = [3, 2, 4, 1, 0, 1];
+  const MAXS = 200;
   async function loadSets() {
     const d = D(); if (!d || OP.sLoad || !window.gt.armSets) return; OP.sLoad = true;
     try { const r = await window.gt.armSets({ h: [...new Set(d.items.filter((x) => ARMOR.has(x.b) && !x.pm).map((x) => x.h))] }); OP.SI = r.items || {}; OP.SD = r.sets || {}; }
     catch (e) { OP.SI = {}; OP.setErr = 1; }
     if (opt.s.classList.contains('on')) drawOpt();
   }
-  const setsOf = (its) => { const c = {}; its.forEach((x) => { const sh = OP.SI && OP.SI[x.h]; if (sh) c[sh] = (c[sh] || 0) + 1; }); return Object.keys(c).filter((sh) => c[sh] >= 2).map((sh) => ({ sh: +sh, n: c[sh], d: OP.SD[sh] })); };
-  function optimize() {
-    const d = D(); if (!d) return [];
-    const rank = []; OP.pri.forEach((k, i) => { rank[k] = i; });
-    const w = [0, 1, 2, 3, 4, 5].map((k) => (6 - rank[k]) + (OP.t[k] > 0 ? 6 : 0));
-    const sc = (x) => x.st.reduce((a, v, i) => a + v * w[i], 0);
-    const per = SLOTS.map((b) => {
-      let a = d.items.filter((x) => !x.pm && x.b === b && x.st && (x.c === OP.cls || x.c === 3));
-      const lockEx = OP.ex && d.items.find((x) => x.id === OP.ex);
-      if (lockEx) a = lockEx.b === b ? [lockEx] : a.filter((x) => x.r !== 'Exotic');
-      const ex = a.filter((x) => x.r === 'Exotic').sort((p, q) => sc(q) - sc(p)).slice(0, lockEx ? 1 : 5);
-      const nx = a.filter((x) => x.r !== 'Exotic').sort((p, q) => sc(q) - sc(p)).slice(0, 12);
-      const sx = OP.set ? a.filter((x) => x.r !== 'Exotic' && inSet(x) && !nx.includes(x)).sort((p, q) => sc(q) - sc(p)).slice(0, 6) : [];
-      return [...ex, ...nx, ...sx];
-    });
-    if (per.some((a) => !a.length)) return [];
-    const best = [], near = []; let worst = -Infinity, nworst = Infinity;
-    const M = OP.msz, F = fontAdd();
-    // No set reaches every minimum: keep the closest ones (least short in total, then the best stats).
-    const nearLeaf = (s0) => {
-      const v = tot.map((q, k) => q + F[k]), used = [0, 0, 0, 0, 0, 0]; let left = OP.mods;
-      for (const k of OP.pri) while (left > 0 && OP.t[k] - v[k] > 0) { v[k] += M; used[k]++; left--; }
-      const short = v.map((q, k) => Math.max(0, OP.t[k] - q)), sh = short.reduce((a, q) => a + q, 0), key = tot.join(',');
-      const rk = sh * 1e7 - s0;
-      if (near.length < 8 || rk < nworst) {
-        if (near.some((b) => b.key === key)) return;
-        near.push({ rk, key, ids: pick.slice(), t: v, base: tot.slice(), used, short }); near.sort((a, b) => a.rk - b.rk); if (near.length > 8) near.length = 8; nworst = near[near.length - 1].rk;
-      }
-    };
-    const tot = [0, 0, 0, 0, 0, 0], pick = [];
-    const leaf = () => {
-      let need = 0; const v = tot.map((q, k) => q + F[k]), used = [0, 0, 0, 0, 0, 0];
-      for (let k = 0; k < 6; k++) { const def = OP.t[k] - v[k]; if (def > 0) { const m = Math.ceil(def / M); need += m; used[k] += m; v[k] += m * M; } }
-      if (need > OP.mods) { if (!best.length) nearLeaf(tot.reduce((a, q, k) => a + Math.min(q + F[k], 200) * (6 - rank[k]), 0)); return; }
-      // spare mods go to the stats that matter most and are not yet at 200
-      let spare = OP.mods - need;
-      for (const k of OP.pri) { while (spare > 0 && v[k] + M <= 200 && (OP.t[k] > 0 || OP.t.every((q) => !q))) { v[k] += M; used[k]++; spare--; } }
-      const s = v.reduce((a, q, k) => a + Math.min(q, 200) * 1000 + Math.min(q, 200) * (6 - rank[k]), 0);
-      if (best.length < 8 || s > worst) {
-        const key = tot.join(',');
-        if (best.some((b) => b.key === key)) return; // the same stats from another copy of an item
-        best.push({ s, key, ids: pick.slice(), t: v, base: tot.slice(), used }); best.sort((a, b) => b.s - a.s); if (best.length > 8) best.length = 8; worst = best[best.length - 1].s;
-      }
-    };
-    const rec = (i, ex, sn) => {
-      if (OP.set && sn + (5 - i) < OP.need) return; // can no longer reach the set bonus
-      if (i === 5) { leaf(); return; }
-      for (const x of per[i]) {
-        const e = x.r === 'Exotic' ? 1 : 0; if (ex && e) continue;
-        for (let k = 0; k < 6; k++) tot[k] += x.st[k]; pick[i] = x.id;
-        rec(i + 1, ex || e, sn + (inSet(x) ? 1 : 0));
-        for (let k = 0; k < 6; k++) tot[k] -= x.st[k];
-      }
-    };
-    rec(0, 0, 0);
-    OP.near = !best.length && near.length > 0;
-    return best.length ? best : near;
+  const setOf = (x) => (OP.SI && OP.SI[x.h]) || 0;
+  const setsOf = (its) => { const c = {}; its.forEach((x) => { const sh = setOf(x); if (sh) c[sh] = (c[sh] || 0) + 1; }); return Object.keys(c).filter((sh) => c[sh] >= 2).map((sh) => ({ sh: +sh, n: c[sh], d: OP.SD[sh] })); };
+  const classArmor = (d) => d.items.filter((x) => !x.pm && x.st && SLOTS.includes(x.b) && (x.c === OP.cls || x.c === 3));
+  // Armor 3.0 masterwork: +5 to the piece's three lowest stats (DIM assumes the same); the part it already has is kept.
+  function assumeMw(st, x) {
+    if (!OP.mwa || x.mw || !x.gt) return st;
+    const o = st.slice(), low = [0, 1, 2, 3, 4, 5].sort((a, b) => o[a] - o[b]).slice(0, 3), have = Math.max(0, Math.min(5, Math.min(...low.map((k) => o[k]))));
+    low.forEach((k) => { o[k] += 5 - have; });
+    return o;
   }
-  function setOpts() {
+  // One entry per piece (and per Tier 5 tuning choice), ready for the search.
+  function procItems(d) {
+    const T = X.TAGS ? X.TAGS() : {}, all = classArmor(d), q = OP.q.trim();
+    const per = SLOTS.map(() => []);
+    SLOTS.forEach((b, si) => {
+      let pool = all.filter((x) => x.b === b && !OP.exc.has(x.id));
+      const pinned = OP.pin[si] && pool.find((x) => x.id === OP.pin[si]);
+      if (pinned) pool = [pinned];
+      else {
+        if (OP.junk) pool = pool.filter((x) => T[x.id] !== 'junk');
+        // like DIM: when nothing in a slot matches the search, the search is not used for that slot
+        if (q && X.match) { const m = pool.filter((x) => X.match(x, q)); if (m.length) pool = m; }
+      }
+      pool.forEach((x) => {
+        const base0 = (x.op && x.op.sb) || x.st, base = assumeMw(base0, x);
+        const cap = Math.min(11, Math.max(OP.mwa && !x.mw ? 10 : 0, x.en || 10));
+        const art = OP.art && x.op && x.op.ai !== undefined ? 1 : 0;
+        const exo = x.r === 'Exotic' ? 1 : 0;
+        const vs = [{ st: base, tu: null }];
+        if (OP.tune && OP.auto && x.op && x.op.tu) x.op.tu.forEach(([h, dl, n, ic]) => vs.push({ st: base.map((v, k) => Math.max(0, Math.min(MAXS, v + dl[k]))), tu: [h, n, dl, ic] }));
+        vs.forEach((v) => per[si].push({ x, si, st: v.st, tu: v.tu, cap, art, exo, eh: exo ? x.h : 0, set: setOf(x) }));
+      });
+    });
+    return per;
+  }
+  // Drop entries another entry in the same slot beats or equals on every stat that counts (and on artifice, energy,
+  // exotic and set-bonus needs), so the search only looks at pieces that could ever win.
+  function prune(list, en, keyOf) {
+    const groups = {};
+    list.forEach((e) => { const k = keyOf(e); (groups[k] = groups[k] || []).push(e); });
+    const out = [];
+    Object.values(groups).forEach((g) => {
+      g.sort((a, b) => en.reduce((t, k) => t + b.st[k] - a.st[k], 0) || (b.art - a.art) || (b.cap - a.cap) || ((a.tu ? 1 : 0) - (b.tu ? 1 : 0)));
+      const keep = [];
+      g.forEach((e) => {
+        const dom = keep.some((o) => o.art >= e.art && Math.min(o.cap, 6) >= Math.min(e.cap, 6) && en.every((k) => o.st[k] >= e.st[k]));
+        if (!dom) keep.push(e);
+      });
+      out.push(...keep);
+    });
+    return out;
+  }
+  const fontCost = (si) => OP.font.reduce((t, n, k) => t + (FONTSLOT[k] === si ? n : 0), 0);
+  const cmpRes = (a, b) => (b.tot - a.tot) || (() => { for (const k of OP.pri) { if (!OP.on[k]) continue; const d = Math.min(b.v[k], OP.mx[k]) - Math.min(a.v[k], OP.mx[k]); if (d) return d; } return 0; })();
+  // could a set whose stats are at most ub (per stat) and whose total is at most ubT still beat w?
+  const canBeat = (ubT, ub, w) => { if (ubT !== w.tot) return ubT > w.tot; for (const k of OP.pri) { if (!OP.on[k]) continue; const a = Math.min(ub[k], OP.mx[k]), b = Math.min(w.v[k], OP.mx[k]); if (a !== b) return a > b; } return false; };
+  // The search. Runs in small steps so the page stays responsive; returns the best sets, the closest ones when none
+  // reach every minimum, and the range each stat can reach.
+  async function optimize(token, onStep) {
+    const d = D(); if (!d) return { sets: [] };
+    const en = [0, 1, 2, 3, 4, 5].filter((k) => OP.on[k]);
+    const exSel = OP.ex, exHash = /^\d+$/.test(exSel) ? +exSel : 0;
+    const req = OP.sets.filter((s) => s.sh);
+    let per = procItems(d);
+    // exotic rules
+    per = per.map((l) => l.filter((e) => !(exSel === 'none' && e.exo) && !(exHash && e.exo && e.eh !== exHash)));
+    if (exHash && !per.some((l) => l.some((e) => e.eh === exHash))) return { sets: [], why: 'You do not have that exotic for this class.' };
+    const reqSet = new Set(req.map((s) => s.sh));
+    per = per.map((l) => prune(l, en.length ? en : [0, 1, 2, 3, 4, 5], (e) => (e.exo ? 'E' + (exHash ? e.eh : '') : 'L') + '|' + (reqSet.has(e.set) ? e.set : 0)));
+    if (per.some((l) => !l.length)) return { sets: [], why: 'No armor left in the ' + SLN[per.findIndex((l) => !l.length)] + ' slot (check the search, junk and excluded pieces).' };
+    const F = [0, 1, 2, 3, 4, 5].map((k) => FONTV[OP.font[k]] + OP.bon[k]);
+    const fc = SLOTS.map((b, si) => fontCost(si));
+    // sort each slot best first, and what the remaining slots could add at most
+    const etot = (e) => en.reduce((t, k) => t + e.st[k], 0);
+    per.forEach((l) => l.sort((a, b) => etot(b) - etot(a)));
+    const order = [0, 1, 2, 3, 4].sort((a, b) => per[a].length - per[b].length);
+    const P = order.map((i) => per[i]);
+    const suf = []; for (let i = 5; i >= 0; i--) suf[i] = i === 5 ? [0, 0, 0, 0, 0, 0] : suf[i + 1].map((v, k) => v + Math.max(...P[i].map((e) => e.st[k])));
+    const sufArt = []; for (let i = 5; i >= 0; i--) sufArt[i] = i === 5 ? 0 : sufArt[i + 1] + (P[i].some((e) => e.art) ? 1 : 0);
+    const N = 100, best = [], near = []; let checked = 0, valid = 0;
+    const total = P.reduce((t, l) => t * l.length, 1);
+    const rmin = [MAXS, MAXS, MAXS, MAXS, MAXS, MAXS].map((v) => v + 999), rmax = [0, 0, 0, 0, 0, 0].map(() => -999);
+    const anyMin = en.some((k) => OP.mn[k] > 0);
+    const modMax = (OP.auto ? 50 : 0);
+    const cur = [0, 0, 0, 0, 0, 0], pick = [];
+    // stat mods, artifice and spare points for one set; null when the minimums cannot be reached
+    const finish = (setEntries) => {
+      const v = cur.map((q, k) => q + F[k]);
+      const plan = []; // [slotIndex, kind, statIndex, amount]
+      const budget = setEntries.map((e) => (OP.auto ? e.cap - fc[e.si] : -1));
+      const artFree = setEntries.filter((e) => e.art).map((e) => e.si);
+      const def = [0, 1, 2, 3, 4, 5].map((k) => (OP.on[k] ? Math.max(0, OP.mn[k] - v[k]) : 0));
+      // artifice first where it saves a mod: deficits of 1-3 points, or the odd 1-3 left over after +5s
+      const useArt = (k) => { const si = artFree.shift(); plan.push([si, 'a', k, 3]); v[k] += 3; def[k] = Math.max(0, def[k] - 3); };
+      [0, 1, 2, 3, 4, 5].filter((k) => def[k] > 0 && def[k] % 5 > 0 && def[k] % 5 <= 3).sort((a, b) => OP.pri.indexOf(a) - OP.pri.indexOf(b)).forEach((k) => { if (artFree.length) useArt(k); });
+      // stat mods: +10 needs 3 energy, +5 needs 1
+      const big = [], small = [];
+      setEntries.forEach((e, j) => { if (budget[j] >= 3) big.push(e.si); else if (budget[j] >= 1) small.push(e.si); });
+      for (const k of OP.pri) {
+        while (def[k] > 0) {
+          if (def[k] <= 3 && artFree.length) { useArt(k); continue; }
+          if (def[k] <= 5 && small.length) { const si = small.shift(); plan.push([si, 'm', k, 5]); v[k] += 5; def[k] = Math.max(0, def[k] - 5); continue; }
+          if (big.length) { const si = big.shift(); plan.push([si, 'M', k, 10]); v[k] += 10; def[k] = Math.max(0, def[k] - 10); continue; }
+          if (small.length) { const si = small.shift(); plan.push([si, 'm', k, 5]); v[k] += 5; def[k] = Math.max(0, def[k] - 5); continue; }
+          if (artFree.length) { useArt(k); continue; }
+          return { v, plan, short: def.slice() };
+        }
+      }
+      // spare mods and artifice go to the stats in order, up to each stat's maximum (switched-off stats last)
+      const ordr = [...OP.pri.filter((k) => OP.on[k]), ...OP.pri.filter((k) => !OP.on[k])];
+      const room = (k, a) => v[k] + a <= (OP.on[k] ? OP.mx[k] : MAXS);
+      if (OP.auto) {
+        for (const k of ordr) { while (big.length && room(k, 10)) { const si = big.shift(); plan.push([si, 'M', k, 10]); v[k] += 10; } while (small.length && room(k, 5)) { const si = small.shift(); plan.push([si, 'm', k, 5]); v[k] += 5; } }
+        for (const k of ordr) { while (big.length && room(k, 5)) { const si = big.shift(); plan.push([si, 'm', k, 5]); v[k] += 5; } }
+      }
+      for (const k of ordr) while (artFree.length && room(k, 3)) useArt(k);
+      return { v, plan };
+    };
+    let last = performance.now();
+    let nearMode = false;
+    const reqH = req.map((r) => r.sh), reqN = req.map((r) => r.n), rc = req.map(() => 0);
+    const sufExo = []; for (let i = 5; i >= 0; i--) sufExo[i] = i === 5 ? 0 : sufExo[i + 1] + (P[i].some((e) => e.exo) ? 1 : 0);
+    let artN = 0; const ubv = [0, 0, 0, 0, 0, 0], mxT = en.reduce((t, k) => t + OP.mx[k], 0);
+    const mv = (e) => (OP.auto ? (e.cap - fc[e.si] >= 3 ? 10 : e.cap - fc[e.si] >= 1 ? 5 : 0) : 0);
+    const leaf = (exo) => {
+      checked++;
+      if (OP.ex === 'req' && !exo) return;
+      for (let q = 0; q < reqH.length; q++) if (rc[q] < reqN[q]) return;
+      if (!nearMode && best.length >= N) {
+        let ubL = artN * 3; for (let j = 0; j < 5; j++) ubL += mv(pick[j]);
+        let u = 0; for (const k of en) { ubv[k] = cur[k] + F[k] + ubL; u += Math.min(OP.mx[k], cur[k] + F[k]); }
+        if (!canBeat(Math.min(u + ubL, mxT), ubv, best[best.length - 1])) return;
+      }
+      const ents = pick.slice();
+      const r = finish(ents);
+      if (r.short) {
+        if (!nearMode) return;
+        const sh = r.short.reduce((x, y) => x + y, 0), tot = en.reduce((t, k) => t + Math.min(r.v[k], OP.mx[k]), 0);
+        if (near.length < 8 || sh < near[near.length - 1].sh || (sh === near[near.length - 1].sh && tot > near[near.length - 1].tot)) {
+          near.push({ ents, v: r.v, plan: r.plan, short: r.short, sh, tot }); near.sort((x, y) => x.sh - y.sh || y.tot - x.tot); if (near.length > 8) near.length = 8;
+        }
+        return;
+      }
+      if (nearMode) return;
+      valid++;
+      for (let k = 0; k < 6; k++) { const q = Math.min(MAXS, r.v[k]); if (q < rmin[k]) rmin[k] = q; if (q > rmax[k]) rmax[k] = q; }
+      const tot = en.reduce((t, k) => t + Math.min(r.v[k], OP.mx[k]), 0);
+      const res = { ents, v: r.v, plan: r.plan, tot };
+      if (best.length >= N && cmpRes(res, best[best.length - 1]) >= 0) return;
+      const key = ents.map((e) => e.x.h + ':' + e.st.join('.')).sort().join('|');
+      if (best.some((o) => o.key === key)) return;
+      res.key = key;
+      let lo = 0, hi = best.length; while (lo < hi) { const mid = (lo + hi) >> 1; if (cmpRes(res, best[mid]) < 0) hi = mid; else lo = mid + 1; }
+      best.splice(lo, 0, res); if (best.length > N) best.length = N;
+    };
+    const skipCount = (i) => { let t = 1; for (let q = i + 1; q < 5; q++) t *= P[q].length; return t; };
+    // can this piece at depth i lead anywhere? (adds it to the running totals when it can)
+    const enter = (i, e, exo) => {
+      if (e.exo && exo) return false;
+      for (let k = 0; k < 6; k++) cur[k] += e.st[k];
+      const sf = suf[i + 1], art = artN + (e.art ? 1 : 0) + sufArt[i + 1];
+      let need = 0, ub = 0;
+      for (const k of en) { const top = cur[k] + F[k] + sf[k]; if (OP.mn[k] > top) need += OP.mn[k] - top; ub += Math.min(OP.mx[k], top); }
+      let ok;
+      if (nearMode) ok = !(near.length >= 8 && Math.max(0, need - modMax - art * 3) > near[near.length - 1].sh);
+      else if (need > modMax + art * 3) ok = false;
+      else if (best.length >= N) { for (const k of en) ubv[k] = cur[k] + F[k] + sf[k] + modMax + art * 3; ok = canBeat(Math.min(ub + modMax + art * 3, mxT), ubv, best[best.length - 1]); }
+      else ok = true;
+      if (ok && OP.ex === 'req' && !exo && !e.exo && !sufExo[i + 1]) ok = false;
+      if (ok && reqH.length) { for (let q = 0; q < reqH.length; q++) { const c = rc[q] + (e.set === reqH[q] ? 1 : 0); if (c + (4 - i) < reqN[q]) { ok = false; break; } } }
+      if (!ok) { for (let k = 0; k < 6; k++) cur[k] -= e.st[k]; checked += skipCount(i); return false; }
+      pick[i] = e; if (e.art) artN++; for (let q = 0; q < reqH.length; q++) if (e.set === reqH[q]) rc[q]++;
+      return true;
+    };
+    const leave = (e) => { for (let k = 0; k < 6; k++) cur[k] -= e.st[k]; if (e.art) artN--; for (let q = 0; q < reqH.length; q++) if (e.set === reqH[q]) rc[q]--; };
+    const recS = (i, exo) => {
+      if (i === 5) { leaf(exo); return; }
+      const L = P[i];
+      for (let j = 0; j < L.length; j++) { const e = L[j]; if (!enter(i, e, exo)) continue; recS(i + 1, exo || e.exo); leave(e); }
+    };
+    const pass = async () => {
+      for (const e0 of P[0]) {
+        if (token !== OP.run) return;
+        if (!enter(0, e0, 0)) continue;
+        for (const e1 of P[1]) {
+          if (!enter(1, e1, e0.exo)) continue;
+          recS(2, e0.exo || e1.exo);
+          leave(e1);
+          if (performance.now() - last > 40) { last = performance.now(); if (onStep) onStep(checked / total); await new Promise((ok2) => setTimeout(ok2, 0)); if (token !== OP.run) { leave(e0); return; } }
+        }
+        leave(e0);
+      }
+    };
+    await pass();
+    // nothing reaches every minimum: look again for the closest sets
+    if (!best.length && anyMin && token === OP.run) { nearMode = true; checked = 0; await pass(); }
+    const toSet = (r) => { const ents = order.map((i, oi) => r.ents[oi]); const bySlot = []; ents.forEach((e) => { bySlot[e.si] = e; }); return Object.assign({}, r, { ents: bySlot }); };
+    return { sets: best.map(toSet), near: best.length ? [] : near.map(toSet), valid, checked, total, rng: valid ? { lo: rmin, hi: rmax } : null, counts: per.map((l) => l.length) };
+  }
+  function setOpts(cur) {
     const d = D(); if (!d || !OP.SI) return '';
-    const cnt = {}; d.items.filter((x) => ARMOR.has(x.b) && !x.pm && (x.c === OP.cls || x.c === 3) && x.st).forEach((x) => { const sh = OP.SI[x.h]; if (sh) { cnt[sh] = cnt[sh] || new Set(); cnt[sh].add(x.b); } });
+    const cnt = {}; classArmor(d).forEach((x) => { const sh = OP.SI[x.h]; if (sh) { cnt[sh] = cnt[sh] || new Set(); cnt[sh].add(x.b); } });
     return Object.keys(cnt).filter((sh) => cnt[sh].size >= 2).map((sh) => [+sh, (OP.SD[sh] && OP.SD[sh].n) || 'Set', cnt[sh].size]).sort((a, b) => a[1].localeCompare(b[1]))
-      .map(([sh, n, k]) => `<option value="${sh}"${OP.set === sh ? ' selected' : ''}>${esc(n)} (${k} slot${k === 1 ? '' : 's'})</option>`).join('');
+      .map(([sh, n, k]) => `<option value="${sh}"${cur === sh ? ' selected' : ''}>${esc(n)} (${k} slot${k === 1 ? '' : 's'})</option>`).join('');
+  }
+  const modName = (kind, k, amt) => (kind === 'a' ? stn[k] + ' Forged (artifice +3)' : (amt === 10 ? stn[k] + ' Mod (+10)' : 'Minor ' + stn[k] + ' Mod (+5)'));
+  function resHTML(r, i, d, near) {
+    const its = r.ents.map((e) => e.x);
+    const chars = d.chars.filter((c) => c.cls === OP.cls);
+    const base = [0, 1, 2, 3, 4, 5].map((k) => r.ents.reduce((t, e) => t + e.st[k], 0));
+    const add = { M: [0, 0, 0, 0, 0, 0], a: [0, 0, 0, 0, 0, 0] }; r.plan.forEach(([si, kind, k, amt]) => { (kind === 'a' ? add.a : add.M)[k] += amt; });
+    const tun = r.ents.filter((e) => e.tu);
+    const eqC = chars[0] && d.items.filter((x) => x.loc === chars[0].id && x.e && SLOTS.includes(x.b) && x.st);
+    const eqT = eqC && eqC.length === 5 ? [0, 1, 2, 3, 4, 5].filter((k) => OP.on[k]).reduce((t, k) => t + Math.min(OP.mx[k], eqC.reduce((s, x) => s + x.st[k], 0)), 0) : null;
+    const tot = r.tot !== undefined ? r.tot : [0, 1, 2, 3, 4, 5].filter((k) => OP.on[k]).reduce((t, k) => t + Math.min(r.v[k], OP.mx[k]), 0);
+    const mods = [];
+    r.ents.forEach((e) => { const m = r.plan.filter((p) => p[0] === e.si).map((p) => modName(p[1], p[2], p[3])); if (e.tu) m.push('Tuning ' + e.tu[1]); const f = OP.font.map((n, k) => (n && FONTSLOT[k] === e.si ? n + '&times; ' + stn[k] + ' Font' : '')).filter(Boolean); if (m.length || f.length) mods.push(`<span><b>${SLN[e.si]}:</b> ${[...m.map(esc), ...f].join(', ')}</span>`); });
+    return `<div class="oset2${near ? ' near' : ''}" data-ri="${i}"><div class="o2l"><div class="tiles">${its.map((x, si) => `<button class="o2t${OP.pin[si] === x.id ? ' pin' : ''}" data-it="${esc(x.id)}" data-si="${si}" title="${esc(x.n)} (${esc(where(x))}). Click to pin or exclude it.">${mt(x)}</button>`).join('')}</div>
+<div class="o2st">${OP.pri.map((k) => { const sv = Math.min(MAXS, r.v[k]), cls = !OP.on[k] ? 'off' : near && r.short && r.short[k] ? 'short' : OP.mn[k] && sv >= OP.mn[k] ? 'ok' : ''; const parts = [`armor ${base[k]}`]; if (add.M[k]) parts.push(`mods +${add.M[k]}`); if (add.a[k]) parts.push(`artifice +${add.a[k]}`); const tk = tun.reduce((t, e) => t + e.tu[2][k], 0); if (tk) parts.push(`tuning ${tk > 0 ? '+' : ''}${tk}`); if (FONTV[OP.font[k]]) parts.push(`fonts +${FONTV[OP.font[k]]}`); if (OP.bon[k]) parts.push(`bonus ${OP.bon[k] > 0 ? '+' : ''}${OP.bon[k]}`); return `<span class="${cls}" title="${esc(stn[k] + ': ' + parts.join(', ') + (r.v[k] > OP.mx[k] && OP.on[k] ? ' (above your maximum of ' + OP.mx[k] + ', the rest does not count)' : ''))}">${stn[k]} <b>${sv}</b>${near && r.short && r.short[k] ? ` <i>(${r.short[k]} short)</i>` : ''}</span>`; }).join('')}</div>
+<div class="o2m mute">Total <b>${tot}</b>${eqT !== null ? ` <span class="${tot - eqT > 0 ? 'up' : tot - eqT < 0 ? 'dn' : ''}" title="Compared with the armor ${esc(X.CL[OP.cls])} has on now">(${tot - eqT >= 0 ? '+' : ''}${tot - eqT} vs equipped)</span>` : ''}${setsOf(its).map((q) => ` <span class="oset-b" title="${esc(((q.d && q.d.p) || []).filter((p) => p.rc <= q.n).map((p) => p.rc + '-piece: ' + p.n + (p.d ? ' - ' + p.d : '')).join('\n'))}">${esc((q.d && q.d.n) || 'Set')} ${q.n >= 4 ? '4' : '2'}-piece</span>`).join('')}</div>
+${mods.length ? `<div class="o2mods">${mods.join('')}</div>` : ''}</div>
+<div class="o2r">${chars.map((c) => `<button data-eq="${esc(c.id)}" data-ri="${i}">Equip on ${esc(X.CL[c.cls])} ${c.light}</button>`).join('')}<button data-save="${i}" title="Open the loadout editor with this armor and its mods">Save as loadout</button></div></div>`;
   }
   function drawOpt() {
     const d = D();
     if (d && !OP.SI && !OP.sLoad) setTimeout(loadSets, 0);
     if (!d) { opt.s.innerHTML = '<div class="card"><p class="mute">Open the Vault tab and load your vault first.</p></div>'; return; }
-    const exs = d.items.filter((x) => ARMOR.has(x.b) && x.r === 'Exotic' && !x.pm && (x.c === OP.cls || x.c === 3) && x.st);
-    const seen = new Set();
-    const exo = exs.filter((x) => (seen.has(x.h) ? false : seen.add(x.h)));
-    const res = (OP.res || []).map((r) => {
-      const its = r.ids.map((id) => d.items.find((x) => x.id === id));
-      const chars = d.chars.filter((c) => c.cls === OP.cls);
-      const M = OP.msz, FA = fontAdd();
-      return `<div class="oset${r.short ? ' near' : ''}"><div class="tiles">${its.map((x) => `<div class="mtile" style="--t:52px" title="${esc(x.n)} (${esc(where(x))})">${mt(x)}</div>`).join('')}</div><div class="ostats">${OP.pri.map((i) => `<span class="${OP.t[i] && r.t[i] >= OP.t[i] ? 'ok' : r.short && r.short[i] ? 'short' : ''}">${stn[i]} <b>${Math.min(200, r.t[i])}</b>${r.used[i] ? `<em>+${r.used[i] * M}</em>` : ''}${FA[i] ? `<em class="of" title="Font mod: only while you have Armor Charge">+${FA[i]} font</em>` : ''}${r.short && r.short[i] ? `<i title="Short of your minimum (${OP.t[i]})">${r.short[i]} short</i>` : ''}</span>`).join('')}</div><span class="mute">Total ${r.t.reduce((a, b) => a + Math.min(200, b), 0)}${r.used.some((u) => u) ? ` &middot; mods: ${OP.pri.filter((i) => r.used[i]).map((i) => '+' + M + ' ' + stn[i] + (r.used[i] > 1 ? ' &times;' + r.used[i] : '')).join(', ')}` : ''}</span>${setsOf(its).map((q) => `<span class="oset-b" title="${esc(((q.d && q.d.p) || []).filter((p) => p.rc <= q.n).map((p) => p.rc + '-piece: ' + p.n + (p.d ? ' - ' + p.d : '')).join('\n'))}">${esc((q.d && q.d.n) || 'Set')} ${q.n >= 4 ? '4' : '2'}-piece</span>`).join('')}${chars.map((c) => `<button data-eq="${esc(c.id)}" data-ids="${esc(r.ids.join(','))}">Equip on ${esc(X.CL[c.cls])} ${c.light}</button>`).join('')}</div>`;
-    }).join('');
-    opt.s.innerHTML = `<div class="card"><h2 style="margin:0 0 6px">Loadout Optimizer</h2><p class="mute">Finds the best five-piece armor set from everything you own. Stats go from 0 to 200. Set the minimum you want for each stat (0 means no minimum) and use the arrows to put the stats in order: stats nearer the top count for more when picking between sets. Stat mods (one per piece, +5 or +10) fill whatever the armor is missing. Font mods (the menu at the end of each stat) count too if you pick them: +20 for one, +40 for two, +50 for three, but only while you have Armor Charge. If nothing reaches every minimum, you get the closest sets. Fragments and the artifact are not counted.</p><div class="otools"><label>Class <select id="pcls">${X.CL.map((c, i) => `<option value="${i}"${OP.cls === i ? ' selected' : ''}>${c}</option>`).join('')}</select></label><label>Exotic <select id="pex"><option value="">Any (at most one)</option>${exo.map((x) => `<option value="${esc(x.id)}"${OP.ex === x.id ? ' selected' : ''}>${esc(x.n)}</option>`).join('')}</select></label><label>Set bonus <select id="pset"${OP.SI ? '' : ' disabled'}><option value="0">${OP.SI ? 'None' : OP.setErr ? 'Could not load armor sets' : 'Loading armor sets...'}</option>${setOpts()}</select></label>${OP.set ? `<label><select id="pneed"><option value="2"${OP.need === 2 ? ' selected' : ''}>2-piece</option><option value="4"${OP.need === 4 ? ' selected' : ''}>4-piece</option></select></label>` : ''}</div>${OP.set && OP.SD[OP.set] ? `<div class="osetp">${(OP.SD[OP.set].p || []).map((p) => `<div><b>${p.rc}-piece: ${esc(p.n)}</b> <span class="mute">${esc(p.d)}</span></div>`).join('')}</div>` : ''}<div class="otgt">${OP.pri.map((i, r) => `<div class="otr"><span class="ord"><button data-up="${r}"${r ? '' : ' disabled'} title="Matters more" aria-label="${stn[i]} matters more">&#9650;</button><button data-dn="${r}"${r < 5 ? '' : ' disabled'} title="Matters less" aria-label="${stn[i]} matters less">&#9660;</button></span><b>${stn[i]}</b><input type="range" min="0" max="200" step="5" value="${OP.t[i]}" data-t="${i}" aria-label="${stn[i]} minimum"><input type="number" min="0" max="200" step="5" value="${OP.t[i]}" data-tn="${i}" aria-label="${stn[i]} minimum"><span class="mute">min</span><select data-font="${i}" title="${stn[i]} Font mods: add to ${stn[i]} only while you have Armor Charge" aria-label="${stn[i]} Font mods">${FONTV.map((v, n) => `<option value="${n}"${OP.font[i] === n ? ' selected' : ''}>${n ? (n === 1 ? '1 font' : n + ' fonts') + ' +' + v : 'No font'}</option>`).join('')}</select></div>`).join('')}</div>
-<div class="orun"><div class="omods"><span class="olbl">Stat mods</span><select id="pmods" title="How many armor pieces may use a stat mod (one per piece) to reach your minimums">${[0, 1, 2, 3, 4, 5].map((n) => `<option value="${n}"${OP.mods === n ? ' selected' : ''}>${n ? n + (n === 1 ? ' piece' : ' pieces') : 'None (0)'}</option>`).join('')}</select>${OP.mods ? `<select id="pmsz" title="Minor stat mods give +5, major ones +10"><option value="10"${OP.msz === 10 ? ' selected' : ''}>+10 each (major)</option><option value="5"${OP.msz === 5 ? ' selected' : ''}>+5 each (minor)</option></select>` : ''}</div><button class="on orbtn" id="prun">Find best sets</button><span class="mute" id="pmsg">${esc(OP.msg)}</span></div>${res || ''}</div>`;
+    const arm = classArmor(d);
+    const exs = arm.filter((x) => x.r === 'Exotic'); const seen = new Set();
+    const exo = SLOTS.map((b, si) => ({ si, l: exs.filter((x) => x.b === b && (seen.has(x.h) ? false : seen.add(x.h))).sort((a, c) => a.n.localeCompare(c.n)) })).filter((g) => g.l.length);
+    const R = OP.res, list = R ? (R.sets.length ? R.sets : R.near || []) : [];
+    const rng = R && R.rng;
+    const pinned = Object.keys(OP.pin).map((si) => arm.find((x) => x.id === OP.pin[si])).filter(Boolean);
+    const excl = [...OP.exc].map((id) => d.items.find((x) => x.id === id)).filter(Boolean);
+    const set0 = OP.sets[0] || { sh: 0, n: 2 }, set1 = OP.sets[1] || { sh: 0, n: 2 };
+    opt.s.innerHTML = `<div class="card lo2"><h2 style="margin:0 0 4px">Loadout Optimizer</h2>
+<p class="mute o2help">Finds the best armor sets from everything you own for one class. Each piece counts with its own stats (mods in it now are left out). Set a minimum and maximum for each stat, switch off stats you do not care about, and use the arrows to put them in order: the best total of the stats you switched on wins, ties go to the stat nearer the top. Stat mods, artifice (+3) and Tier 5 tuning are picked for each set.</p>
+<div class="otools"><label>Class <select id="pcls">${X.CL.map((c, i) => `<option value="${i}"${OP.cls === i ? ' selected' : ''}>${c}</option>`).join('')}</select></label>
+<label>Exotic <select id="pex"><option value=""${!OP.ex ? ' selected' : ''}>Any (at most one)</option><option value="req"${OP.ex === 'req' ? ' selected' : ''}>Must have an exotic</option><option value="none"${OP.ex === 'none' ? ' selected' : ''}>No exotic</option>${exo.map((g) => `<optgroup label="${SLN[g.si]}">${g.l.map((x) => `<option value="${x.h}"${OP.ex === String(x.h) ? ' selected' : ''}>${esc(x.n)}</option>`).join('')}</optgroup>`).join('')}</select></label>
+<label>Set bonus <select id="pset0"${OP.SI ? '' : ' disabled'}><option value="0">${OP.SI ? 'None' : OP.setErr ? 'Could not load armor sets' : 'Loading armor sets...'}</option>${setOpts(set0.sh)}</select></label>${set0.sh ? `<select id="pneed0" aria-label="Pieces"><option value="2"${set0.n === 2 ? ' selected' : ''}>2-piece</option><option value="4"${set0.n === 4 ? ' selected' : ''}>4-piece</option></select>${set0.n === 2 ? `<label>and <select id="pset1"><option value="0">no second set</option>${setOpts(set1.sh)}</select></label>` : ''}` : ''}</div>
+<div class="otools o2opts"><label class="o2ck"><input type="checkbox" id="pauto"${OP.auto ? ' checked' : ''}> Auto stat mods</label><label class="o2ck"><input type="checkbox" id="ptune"${OP.tune ? ' checked' : ''}${OP.auto ? '' : ' disabled'}> Tier 5 tuning</label><label class="o2ck"><input type="checkbox" id="part"${OP.art ? ' checked' : ''}> Artifice +3</label><label class="o2ck" title="Counts every piece as masterworked (Armor 3.0: +5 to its three lowest stats). You have to masterwork them to get these stats."><input type="checkbox" id="pmwa"${OP.mwa ? ' checked' : ''}> Assume masterworked</label><label class="o2ck"><input type="checkbox" id="pjunk"${OP.junk ? ' checked' : ''}> Skip junk</label><label class="o2q">Only armor matching <input type="text" id="pq" value="${esc(OP.q)}" placeholder="e.g. tag:favorite or -is:locked" spellcheck="false"></label></div>
+${OP.sets.some((s) => s.sh) ? `<div class="osetp">${OP.sets.filter((s) => s.sh && OP.SD[s.sh]).map((s) => (OP.SD[s.sh].p || []).filter((p) => p.rc <= s.n).map((p) => `<div><b>${esc(OP.SD[s.sh].n)} ${p.rc}-piece: ${esc(p.n)}</b> <span class="mute">${esc(p.d)}</span></div>`).join('')).join('')}</div>` : ''}
+<div class="o2grid"><div class="o2h"><span></span><span>Stat</span><span>Min</span><span>Max</span><span>Can reach</span><span>Fonts</span><span title="Fragments, the artifact or anything else that adds to or takes from a stat">Bonus</span></div>
+${OP.pri.map((k, r) => `<div class="o2row${OP.on[k] ? '' : ' off'}"><span class="ord"><button data-up="${r}"${r ? '' : ' disabled'} title="Matters more" aria-label="${stn[k]} matters more">&#9650;</button><button data-dn="${r}"${r < 5 ? '' : ' disabled'} title="Matters less" aria-label="${stn[k]} matters less">&#9660;</button></span>
+<label class="o2n"><input type="checkbox" data-on="${k}"${OP.on[k] ? ' checked' : ''} aria-label="Count ${stn[k]}"> ${stn[k]}</label>
+<input type="number" min="0" max="200" step="5" value="${OP.mn[k]}" data-mn="${k}" aria-label="${stn[k]} minimum"${OP.on[k] ? '' : ' disabled'}>
+<input type="number" min="0" max="200" step="5" value="${OP.mx[k]}" data-mx="${k}" aria-label="${stn[k]} maximum"${OP.on[k] ? '' : ' disabled'}>
+<span class="o2bar" title="${rng ? `${stn[k]} can reach ${rng.lo[k]} to ${rng.hi[k]} with these settings` : 'Find sets to see what each stat can reach'}"><i style="left:${(OP.mn[k] / 2)}%;width:${Math.max(0, (OP.mx[k] - OP.mn[k]) / 2)}%" class="want"></i>${rng ? `<i class="can" style="left:${rng.lo[k] / 2}%;width:${Math.max(1, (rng.hi[k] - rng.lo[k]) / 2)}%"></i><em>${rng.lo[k]}-${rng.hi[k]}</em>` : ''}</span>
+<select data-font="${k}" aria-label="${stn[k]} Font mods" title="${stn[k]} Font mods: count only while you have Armor Charge">${FONTV.map((v, n) => `<option value="${n}"${OP.font[k] === n ? ' selected' : ''}>${n ? n + ' (+' + v + ')' : 'None'}</option>`).join('')}</select>
+<input type="number" min="-100" max="100" step="1" value="${OP.bon[k]}" data-bon="${k}" aria-label="${stn[k]} bonus"></div>`).join('')}</div>
+${pinned.length || excl.length ? `<div class="o2pins">${pinned.map((x) => `<span class="o2chip pin" title="${esc(x.n)}">Pinned: ${esc(x.n)} <button data-unpin="${esc(x.id)}" aria-label="Unpin">&times;</button></span>`).join('')}${excl.map((x) => `<span class="o2chip exc" title="${esc(x.n)}">Excluded: ${esc(x.n)} <button data-unexc="${esc(x.id)}" aria-label="Stop excluding">&times;</button></span>`).join('')}${excl.length > 1 ? '<button data-unexc="*">Clear excluded</button>' : ''}</div>` : ''}
+<div class="orun"><button class="on orbtn" id="prun"${OP.busy ? ' disabled' : ''}>${OP.busy ? 'Searching...' : 'Find best sets'}</button>${OP.busy ? '<button id="pstop">Stop</button>' : ''}<span class="mute" id="pmsg">${esc(OP.msg)}</span></div>
+${list.length ? `<div class="o2list">${list.slice(0, OP.shown).map((r, i) => resHTML(r, i, d, !R.sets.length)).join('')}</div>${list.length > OP.shown ? `<button id="pmore">Show more (${list.length - OP.shown} left)</button>` : ''}` : ''}</div>`;
   }
-  opt.s.addEventListener('input', (e) => {
-    const t = e.target, k = t.dataset.t !== undefined ? +t.dataset.t : t.dataset.tn !== undefined ? +t.dataset.tn : -1; if (k < 0) return;
-    const v = Math.max(0, Math.min(200, Math.round((+t.value || 0) / 5) * 5)); OP.t[k] = v; saveOP();
-    const row = t.closest('.otr'); if (row) { const a = row.querySelector('[data-t]'), n = row.querySelector('[data-tn]'); if (a && a !== t) a.value = v; if (n && n !== t) n.value = v; }
+  const num = (t, lo, hi) => Math.max(lo, Math.min(hi, Math.round(+t.value || 0)));
+  opt.s.addEventListener('change', (e) => {
+    const t = e.target, id = t.id;
+    const reset = () => { OP.res = null; OP.msg = ''; };
+    if (id === 'pcls') { OP.cls = +t.value; OP.ex = ''; OP.sets = []; OP.pin = {}; reset(); }
+    else if (id === 'pex') { OP.ex = t.value; reset(); }
+    else if (id === 'pset0') { const sh = +t.value || 0; OP.sets = sh ? [{ sh, n: (OP.sets[0] && OP.sets[0].n) || 2 }] : []; reset(); }
+    else if (id === 'pneed0') { OP.sets[0].n = +t.value === 4 ? 4 : 2; if (OP.sets[0].n === 4) OP.sets.length = 1; reset(); }
+    else if (id === 'pset1') { const sh = +t.value || 0; OP.sets = [OP.sets[0]].concat(sh && sh !== OP.sets[0].sh ? [{ sh, n: 2 }] : []); reset(); }
+    else if (id === 'pauto') { OP.auto = t.checked; saveOP(); reset(); }
+    else if (id === 'ptune') { OP.tune = t.checked; saveOP(); reset(); }
+    else if (id === 'part') { OP.art = t.checked; saveOP(); reset(); }
+    else if (id === 'pmwa') { OP.mwa = t.checked; saveOP(); reset(); }
+    else if (id === 'pjunk') { OP.junk = t.checked; saveOP(); reset(); }
+    else if (id === 'pq') { OP.q = t.value.slice(0, 200); saveOP(); reset(); }
+    else if (t.dataset.on !== undefined) { OP.on[+t.dataset.on] = t.checked; if (!OP.on.some(Boolean)) OP.on[+t.dataset.on] = true; saveOP(); reset(); }
+    else if (t.dataset.mn !== undefined) { const k = +t.dataset.mn; OP.mn[k] = num(t, 0, 200); if (OP.mx[k] < OP.mn[k]) OP.mx[k] = OP.mn[k]; saveOP(); reset(); }
+    else if (t.dataset.mx !== undefined) { const k = +t.dataset.mx; OP.mx[k] = num(t, 0, 200); if (OP.mn[k] > OP.mx[k]) OP.mn[k] = OP.mx[k]; saveOP(); reset(); }
+    else if (t.dataset.font !== undefined) { OP.font[+t.dataset.font] = num(t, 0, 3); saveOP(); reset(); }
+    else if (t.dataset.bon !== undefined) { OP.bon[+t.dataset.bon] = num(t, -100, 100); saveOP(); reset(); }
+    else return;
+    drawOpt();
   });
-  opt.s.addEventListener('change', (e) => { if (e.target.id === 'pcls') { OP.cls = +e.target.value; OP.ex = ''; OP.set = 0; OP.res = null; drawOpt(); } else if (e.target.id === 'pex') OP.ex = e.target.value; else if (e.target.id === 'pset') { OP.set = +e.target.value || 0; OP.res = null; drawOpt(); } else if (e.target.id === 'pneed') { OP.need = +e.target.value === 4 ? 4 : 2; OP.res = null; drawOpt(); } else if (e.target.id === 'pmods') { OP.mods = +e.target.value || 0; saveOP(); drawOpt(); } else if (e.target.id === 'pmsz') { OP.msz = +e.target.value === 5 ? 5 : 10; saveOP(); } else if (e.target.dataset.font !== undefined) { OP.font[+e.target.dataset.font] = Math.max(0, Math.min(3, +e.target.value || 0)); saveOP(); OP.res = null; drawOpt(); } else if (e.target.dataset.tn !== undefined) { const n = e.target; n.value = OP.t[+n.dataset.tn]; } });
+  opt.s.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.id === 'pq') { e.target.blur(); } });
+  // the small menu on a piece in the results: pin it, exclude it, or show it
+  const pmenu = document.createElement('div'); pmenu.className = 'o2menu'; document.body.appendChild(pmenu);
+  document.addEventListener('click', (e) => { if (!pmenu.contains(e.target) && !e.target.closest('.o2t')) pmenu.classList.remove('on'); });
+  pmenu.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-a]'); if (!b) return; const id = pmenu.dataset.id, si = +pmenu.dataset.si; pmenu.classList.remove('on');
+    if (b.dataset.a === 'pin') { OP.pin[si] = id; OP.exc.delete(id); }
+    else if (b.dataset.a === 'unpin') delete OP.pin[si];
+    else if (b.dataset.a === 'exc') { OP.exc.add(id); if (OP.pin[si] === id) delete OP.pin[si]; }
+    else if (b.dataset.a === 'info') { if (X.open) X.open(id); return; }
+    OP.msg = 'Changed: press Find best sets again.'; drawOpt();
+  });
+  function curList() { const R = OP.res; return R ? (R.sets.length ? R.sets : R.near || []) : []; }
   opt.s.addEventListener('click', async (e) => {
-    if (e.target.id === 'prun') {
-      OP.res = optimize();
-      const want = OP.t.some((v) => v > 0);
-      OP.msg = OP.res.length && OP.near ? 'No set reaches every minimum' + (OP.set ? ' with that set bonus' : '') + '. The ' + OP.res.length + ' closest' + (OP.mods < 5 || OP.msz < 10 ? ' (more or bigger stat mods may close the gap)' : '') + ':' : OP.res.length ? 'Top ' + OP.res.length + ' sets:' : want ? 'No set reaches those minimums' + (OP.set ? ' with that set bonus' : '') + '. Lower a minimum and try again.' : OP.set ? 'No set of five gets that set bonus with the armor you own.' : 'Not enough armor with stats for that class. Load the vault again.'; drawOpt(); return;
+    const t = e.target;
+    if (t.id === 'prun') {
+      const token = ++OP.run; OP.busy = true; OP.msg = 'Searching...'; OP.shown = 30; drawOpt();
+      const t0 = performance.now();
+      let R;
+      try { R = await optimize(token, (f) => { const m = document.getElementById('pmsg'); if (m) m.textContent = 'Searching... ' + Math.min(99, Math.round(f * 100)) + '%'; }); }
+      catch (er) { R = { sets: [], why: 'Something went wrong: ' + (er && er.message) }; }
+      if (token !== OP.run) return;
+      OP.busy = false; OP.res = R;
+      const secs = ((performance.now() - t0) / 1000).toFixed(1), set = OP.sets.some((s) => s.sh) ? ' with that set bonus' : '';
+      OP.msg = R.why ? R.why : R.sets.length ? `Best ${R.sets.length} of ${R.total.toLocaleString()} combinations (${secs} s).` : R.near && R.near.length ? `No set reaches every minimum${set}. The ${R.near.length} closest:` : `No set fits those settings${set}.`;
+      drawOpt(); return;
     }
-    const up = e.target.closest('[data-up]'), dn = e.target.closest('[data-dn]');
-    if (up || dn) { const r = +(up || dn).dataset[up ? 'up' : 'dn'], o = up ? r - 1 : r + 1; if (o >= 0 && o < 6) { const a = OP.pri; [a[r], a[o]] = [a[o], a[r]]; saveOP(); OP.res = null; drawOpt(); } return;
+    if (t.id === 'pstop') { OP.run++; OP.busy = false; OP.msg = 'Stopped.'; drawOpt(); return; }
+    if (t.id === 'pmore') { OP.shown += 30; drawOpt(); return; }
+    const up = t.closest('[data-up]'), dn = t.closest('[data-dn]');
+    if (up || dn) { const r = +(up || dn).dataset[up ? 'up' : 'dn'], o = up ? r - 1 : r + 1; if (o >= 0 && o < 6) { const a = OP.pri; [a[r], a[o]] = [a[o], a[r]]; saveOP(); OP.res = null; OP.msg = ''; drawOpt(); } return; }
+    const unp = t.closest('[data-unpin]'); if (unp) { Object.keys(OP.pin).forEach((si) => { if (OP.pin[si] === unp.dataset.unpin) delete OP.pin[si]; }); OP.res = null; drawOpt(); return; }
+    const une = t.closest('[data-unexc]'); if (une) { if (une.dataset.unexc === '*') OP.exc.clear(); else OP.exc.delete(une.dataset.unexc); OP.res = null; drawOpt(); return; }
+    const tile = t.closest('.o2t');
+    if (tile) {
+      const id = tile.dataset.it, si = +tile.dataset.si, x = D().items.find((o) => o.id === id); if (!x) return;
+      const rc = tile.getBoundingClientRect();
+      pmenu.dataset.id = id; pmenu.dataset.si = si;
+      pmenu.innerHTML = `<div class="o2mt">${esc(x.n)}</div>${OP.pin[si] === id ? '<button data-a="unpin">Unpin</button>' : '<button data-a="pin">Pin (always use it)</button>'}<button data-a="exc">Exclude (never use it)</button><button data-a="info">Show details</button>`;
+      pmenu.style.left = Math.min(innerWidth - 220, rc.left) + 'px'; pmenu.style.top = (rc.bottom + 4) + 'px'; pmenu.classList.add('on');
+      return;
     }
-    const q = e.target.closest('[data-eq]'); if (q) { OP.msg = 'Equipping...'; const m = document.getElementById('pmsg'); if (m) m.textContent = OP.msg; await X.equip(q.dataset.ids.split(','), q.dataset.eq); const t = document.getElementById('vnote'); OP.msg = t ? t.textContent : 'Done'; drawOpt(); }
+    const q = t.closest('[data-eq]');
+    if (q) {
+      const r = curList()[+q.dataset.ri]; if (!r) return;
+      q.disabled = true; OP.msg = 'Equipping... (only works in orbit, a social space or offline)'; const m = document.getElementById('pmsg'); if (m) m.textContent = OP.msg;
+      await X.equip(r.ents.map((e) => e.x.id), q.dataset.eq);
+      const n = document.getElementById('vnote'); OP.msg = (n && n.textContent) || 'Done'; drawOpt(); return;
+    }
+    const sv = t.closest('[data-save]');
+    if (sv) {
+      const r = curList()[+sv.dataset.save]; if (!r || !window.__gtlo || !window.__gtlo.fromOptimizer) return;
+      const d = D(), opm = d.opm || { g: [], a: [] };
+      const items = r.ents.map((e) => {
+        const m = [];
+        r.plan.filter((p) => p[0] === e.si).forEach(([si, kind, k, amt]) => {
+          if (kind === 'a') { const h = opm.a && opm.a[k]; if (h && e.x.op && e.x.op.ai !== undefined) m.push([e.x.op.ai, h, (opm.ic || {})[h] || '', stn[k] + ' Forged']); }
+          else { const h = opm.g && opm.g[k] && opm.g[k][amt === 10 ? 0 : 1]; if (h && e.x.op && e.x.op.gi !== undefined) m.push([e.x.op.gi, h, (opm.ic || {})[h] || '', (amt === 10 ? '' : 'Minor ') + stn[k] + ' Mod']); }
+        });
+        if (e.tu && e.x.op && e.x.op.ti !== undefined) m.push([e.x.op.ti, e.tu[0], e.tu[3] || '', e.tu[1]]);
+        return { x: e.x, m };
+      });
+      const notes = 'Made with the Loadout Optimizer: ' + OP.pri.filter((k) => OP.on[k]).map((k) => stn[k] + ' ' + Math.min(MAXS, r.v[k])).join(', ') + (OP.font.some(Boolean) ? '. Fonts: ' + OP.font.map((n, k) => (n ? n + 'x ' + stn[k] : '')).filter(Boolean).join(', ') : '') + '.';
+      window.__gtlo.fromOptimizer({ c: OP.cls, items, o: notes });
+    }
   });
   opt.b.onclick = () => { window.show('optimizer'); drawOpt(); };
+  // test hook: lets the page's own checks run the search without the screen
+  window.__gtopt = { OP, optimize: () => optimize(++OP.run) };
 
   // ---------------- Compare ----------------
   async function compare(id) {

@@ -105,6 +105,11 @@
     async buildPic(code, title) { const l = decode(code); if (title) l.n = String(title).slice(0, 80); return buildPic(l); },
     // Builds tab > Create build: the loadout editor in build mode (any item, Share to Builds at the bottom).
     createBuild() { let c = 3; try { const e0 = CH && V.ent(CH); if (e0 && e0.cls !== undefined) c = e0.cls; } catch (e) { /* any class */ } openEd(norm({ id: newId(), n: '', c, o: '', it: [], a: [], mv: 0 }), true, { build: true }); },
+    // Loadout Optimizer > Save as loadout: the loadout editor with the set's armor and the mods it needs
+    fromOptimizer(o) {
+      const its = (o.items || []).map(({ x, m }) => Object.assign(entOf(x), { m: (m || []).map((p) => [p[0], p[1], p[2] || '', p[3] || '']) }));
+      openEd(norm({ id: newId(), n: 'Optimizer set', c: o.c >= 0 && o.c <= 2 ? o.c : 3, o: String(o.o || ''), it: its, mv: 0, a: [], t: Date.now(), k: Date.now() }), true);
+    },
     openBuild(code, meta) { const l = decode(code); if (meta && meta.title) l.n = String(meta.title).slice(0, 80); mod = { t: 'shin', l, bid: meta && meta.id, by: meta && meta.by }; drawMod(); },
   });
   function shinHTML() {

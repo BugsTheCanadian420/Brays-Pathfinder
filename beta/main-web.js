@@ -1,4 +1,4 @@
-/* Pathfinder 0.3.47-beta.2: main.js, run in the browser by web/shims.js */
+/* Pathfinder 0.3.48-beta.1: main.js, run in the browser by web/shims.js */
 window.__GT_MAIN__ = function (require, module, exports, __dirname, __filename) {
 const { app, BrowserWindow, ipcMain, safeStorage, shell, Menu, clipboard, session, Notification, nativeImage, dialog } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), zlib = require('zlib');
@@ -1081,6 +1081,41 @@ H('vault:load', async () => {
   const ARB = new Set([3448274439, 3551918588, 14239492, 20886954, 1585787867]);
   const SH = [2996146975, 392767087, 1943323491, 1735777505, 144602215, 4244567218]; // weapons, health, class, grenade, super, melee
   const astats = (id) => { const o = ist[id] && ist[id].stats; return o ? SH.map((h) => (o[h] && o[h].value) || 0) : undefined; };
+  // Loadout Optimizer (works like DIM's): each armor piece's own stats without the mods in it right now (stat mods,
+  // artifice +3, Tier 5 tuning), the tuning choices it can take, and which sockets take a stat mod, an artifice mod and the tuning.
+  const OPC = { g: 'enhancements.v2_general', a: 'enhancements.artifice', t: 'core.gear_systems.armor_tiering.plugs.tuning.mods' };
+  const aopt = (id, cur) => {
+    const ss = (sk[id] && sk[id].sockets) || []; if (!ss.length || !cur) return undefined;
+    const o = {}, rem = [0, 0, 0, 0, 0, 0];
+    ss.forEach((q, i) => {
+      const pl = q.plugHash && df.p[q.plugHash], c = pl ? pl.c || '' : '';
+      if (c === OPC.g) { if (o.gi === undefined) o.gi = i; } else if (c === OPC.a) o.ai = i; else if (c === OPC.t) o.ti = i; else return;
+      (pl.s || []).forEach(([sh, v]) => { const k = SH.indexOf(sh); if (k >= 0) rem[k] += v; });
+    });
+    // Bungie never shows a stat below 0, so a stat the tuning took 5 from is only given back when it shows above 0.
+    o.sb = cur.map((v, k) => (rem[k] < 0 && v === 0 ? 0 : Math.max(0, v - rem[k])));
+    if (o.ti !== undefined) {
+      const opts = new Set([ss[o.ti].plugHash]); (((rp[id] && rp[id].plugs) || {})[o.ti] || []).forEach((p) => p.plugItemHash && p.enabled !== false && opts.add(p.plugItemHash));
+      const tu = [];
+      opts.forEach((h) => { const pl = df.p[h]; if (!pl || pl.c !== OPC.t || !(pl.s || []).length) return; const dl = [0, 0, 0, 0, 0, 0]; pl.s.forEach(([sh, v]) => { const k = SH.indexOf(sh); if (k >= 0) dl[k] += v; }); if (dl.some((v) => v)) tu.push([h, dl, pl.n, pl.i || '']); });
+      if (tu.length) o.tu = tu;
+    }
+    return o;
+  };
+  // the stat mods (+10 major, +5 minor) and artifice mods (+3) the optimizer can suggest, per stat
+  if (!df.opm) {
+    const g = SH.map(() => [0, 0]), a = SH.map(() => 0);
+    for (const k in df.p) {
+      const pl = df.p[k]; if (!pl.s || !pl.s.length) continue;
+      const cost = (pl.s.find((q) => q[0] === 3578062600) || [0, 0])[1];
+      pl.s.forEach(([sh, v]) => { const i = SH.indexOf(sh); if (i < 0) return;
+        if (pl.c === OPC.g && v === 10 && cost === 3 && +k > g[i][0]) g[i][0] = +k;
+        if (pl.c === OPC.g && v === 5 && cost === 1 && +k > g[i][1]) g[i][1] = +k;
+        if (pl.c === OPC.a && v === 3 && +k > a[i]) a[i] = +k; });
+    }
+    const ic = {}; [...g.flat(), ...a].forEach((h) => { if (h && df.p[h]) ic[h] = df.p[h].i || ''; });
+    df.opm = { g, a, ic };
+  }
   // Armor and subclasses: only the plugs in their sockets right now (archetype, exotic perk, mods, aspects, fragments...), for search.
   // Kept apart from pk (weapon perks and their options), which the wish lists and targets read.
   const SUBB = 3284755031;
@@ -1097,7 +1132,7 @@ H('vault:load', async () => {
     const o = ovd && (ovd.fg || ovd.i) ? { n: ovd.n, i: ovd.fg || ovd.i, fg: !!ovd.fg } : orn(it.itemInstanceId);
     const s = it.itemInstanceId && inst[it.itemInstanceId] && inst[it.itemInstanceId].primaryStat;
     const wmi = f.wl && f.wl.length ? f.wl[Math.min(it.versionNumber || 0, f.wl.length - 1)] : f.w, stt = it.state || 0, gti = it.itemInstanceId && inst[it.itemInstanceId] && inst[it.itemInstanceId].gearTier;
-    return { wm: wmi >= 0 && df.W ? df.W[wmi] : undefined, bt: f.bt || undefined, fc: f.f || undefined, lk: stt & 1 ? 1 : undefined, mw: stt & 4 ? 1 : undefined, cr: stt & 8 ? 1 : undefined, gt: gti || undefined, id: it.itemInstanceId, h: it.itemHash, n: f.n, i: o ? o.i : f.i, bi: o ? f.i : undefined, orn: o ? o.n : undefined, of: o && o.fg ? 1 : undefined, pk: WB.has(f.b) && it.itemInstanceId ? perks(it.itemInstanceId) : undefined, fr: WB.has(f.b) && it.itemInstanceId ? frI(it.itemInstanceId) : undefined, pc: WB.has(f.b) && it.itemInstanceId && f.r === 'Legendary' ? pcol(it.itemInstanceId, it.itemHash) : undefined, og: WB.has(f.b) && it.itemInstanceId && f.r === 'Legendary' ? ogh(it.itemInstanceId) : undefined, oo: WB.has(f.b) && it.itemInstanceId && f.r === 'Legendary' ? ooh(it.itemInstanceId) : undefined, ep: WB.has(f.b) && it.itemInstanceId ? epl(it.itemInstanceId) : undefined, ah: WB.has(f.b) && it.itemInstanceId ? ((sk[it.itemInstanceId] && sk[it.itemInstanceId].sockets) || []).map((q) => (q.isEnabled !== false && q.plugHash) || 0).filter(Boolean) : undefined, st: ARB.has(f.b) && it.itemInstanceId ? astats(it.itemInstanceId) : undefined, ap: (ARB.has(f.b) || f.b === SUBB) && it.itemInstanceId ? aplugs(it.itemInstanceId) : undefined, am: f.am || undefined, en: (ARB.has(f.b) && inst[it.itemInstanceId] && inst[it.itemInstanceId].energy && inst[it.itemInstanceId].energy.energyCapacity) || undefined, ds: stt & 16 ? 1 : undefined, r: f.r, t: f.t, b: f.b, c: f.c, p: s ? s.value : 0, el: (inst[it.itemInstanceId] && inst[it.itemInstanceId].damageType) || 0 };
+    return { wm: wmi >= 0 && df.W ? df.W[wmi] : undefined, bt: f.bt || undefined, fc: f.f || undefined, lk: stt & 1 ? 1 : undefined, mw: stt & 4 ? 1 : undefined, cr: stt & 8 ? 1 : undefined, gt: gti || undefined, id: it.itemInstanceId, h: it.itemHash, n: f.n, i: o ? o.i : f.i, bi: o ? f.i : undefined, orn: o ? o.n : undefined, of: o && o.fg ? 1 : undefined, pk: WB.has(f.b) && it.itemInstanceId ? perks(it.itemInstanceId) : undefined, fr: WB.has(f.b) && it.itemInstanceId ? frI(it.itemInstanceId) : undefined, pc: WB.has(f.b) && it.itemInstanceId && f.r === 'Legendary' ? pcol(it.itemInstanceId, it.itemHash) : undefined, og: WB.has(f.b) && it.itemInstanceId && f.r === 'Legendary' ? ogh(it.itemInstanceId) : undefined, oo: WB.has(f.b) && it.itemInstanceId && f.r === 'Legendary' ? ooh(it.itemInstanceId) : undefined, ep: WB.has(f.b) && it.itemInstanceId ? epl(it.itemInstanceId) : undefined, ah: WB.has(f.b) && it.itemInstanceId ? ((sk[it.itemInstanceId] && sk[it.itemInstanceId].sockets) || []).map((q) => (q.isEnabled !== false && q.plugHash) || 0).filter(Boolean) : undefined, st: ARB.has(f.b) && it.itemInstanceId ? astats(it.itemInstanceId) : undefined, op: ARB.has(f.b) && it.itemInstanceId ? aopt(it.itemInstanceId, astats(it.itemInstanceId)) : undefined, ap: (ARB.has(f.b) || f.b === SUBB) && it.itemInstanceId ? aplugs(it.itemInstanceId) : undefined, am: f.am || undefined, en: (ARB.has(f.b) && inst[it.itemInstanceId] && inst[it.itemInstanceId].energy && inst[it.itemInstanceId].energy.energyCapacity) || undefined, ds: stt & 16 ? 1 : undefined, r: f.r, t: f.t, b: f.b, c: f.c, p: s ? s.value : 0, el: (inst[it.itemInstanceId] && inst[it.itemInstanceId].damageType) || 0 };
   };
   { // ornament definitions the cached item data does not have (new universal ornaments): look them up once
     const all = [...((pr.profileInventory.data || {}).items || [])]; for (const k in pr.characterEquipment.data) all.push(...(pr.characterEquipment.data[k].items || [])); for (const k in pr.characterInventories.data) all.push(...(pr.characterInventories.data[k].items || []));
@@ -1201,7 +1236,7 @@ H('vault:load', async () => {
   // In an activity right now (Bungie's "transitory" data only exists while you are playing): the page checks for new drops more often then.
   const trn = (pr.profileTransitoryData && pr.profileTransitoryData.data) || null;
   const play = trn ? 1 : 0;
-  const res = { play, ts: Date.parse(pr.responseMintedTimestamp) || 0, ts2: Date.parse(pr.secondaryComponentsMintedTimestamp) || 0, chars, sti, items, gen, cur, ic: { el: df.dm || {}, bk: df.bk || {} }, pm, lo, art, pn, name: m.bungieGlobalDisplayName || m.displayName };
+  const res = { play, ts: Date.parse(pr.responseMintedTimestamp) || 0, ts2: Date.parse(pr.secondaryComponentsMintedTimestamp) || 0, chars, sti, items, gen, cur, ic: { el: df.dm || {}, bk: df.bk || {} }, pm, lo, art, pn, opm: df.opm, name: m.bungieGlobalDisplayName || m.displayName };
   xdSave(df);
   { const mid = (rd().tok || {}).mid, f = apath('vcache.json'); setTimeout(() => { fs.promises.writeFile(f, JSON.stringify({ v: 1, at: Date.now(), mid, d: res })).catch(() => {}); }, 50); }
   return res;
