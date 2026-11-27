@@ -95,6 +95,7 @@
 #optimizer .o2row .ord button[disabled]{opacity:.3}
 #optimizer .o2row input[type=number]{width:100%;padding:4px 6px!important}
 #optimizer .o2row select{width:100%;padding:3px 4px!important;font-size:12px}
+#optimizer .o2f{display:block;min-width:0}#optimizer .o2f small{display:none;font-size:10.5px;color:#9aa0a8;margin-bottom:1px}
 #optimizer .o2n{display:flex;gap:6px;align-items:center;font-weight:700;font-size:13.5px;cursor:pointer}
 #optimizer .o2bar{position:relative;height:16px;background:#1b1d22;border:1px solid #2c2f35;border-radius:3px;overflow:hidden}
 #optimizer .o2bar i{position:absolute;top:0;bottom:0}
@@ -136,8 +137,9 @@
 #optimizer .o2h{display:none}
 #optimizer .o2row{grid-template-columns:44px 1fr 62px 62px;row-gap:4px;padding:6px 0;border-bottom:1px solid #24262b}
 #optimizer .o2row .o2bar{grid-column:1/-1}
-#optimizer .o2row select{grid-column:1/3}
-#optimizer .o2row input[data-bon]{grid-column:3/5}
+#optimizer .o2f small{display:block}
+#optimizer .o2row .o2f:nth-of-type(4){grid-column:1/3}
+#optimizer .o2row .o2f:nth-of-type(5){grid-column:3/5}
 #optimizer .o2l{flex-basis:100%}
 }`;
   document.head.appendChild(st2);
@@ -251,7 +253,12 @@
     let per = procItems(d);
     // exotic rules
     per = per.map((l) => l.filter((e) => !(exSel === 'none' && e.exo) && !(exHash && e.exo && e.eh !== exHash)));
-    if (exHash && !per.some((l) => l.some((e) => e.eh === exHash))) return { sets: [], why: 'You do not have that exotic for this class.' };
+    if (exHash) {
+      // a chosen exotic is in every set: its slot only offers that exotic (the best copy wins)
+      const si = per.findIndex((l) => l.some((e) => e.eh === exHash));
+      if (si < 0) return { sets: [], why: 'You do not have that exotic for this class.' };
+      per[si] = per[si].filter((e) => e.eh === exHash);
+    }
     const reqSet = new Set(req.map((s) => s.sh));
     per = per.map((l) => prune(l, en.length ? en : [0, 1, 2, 3, 4, 5], (e) => (e.exo ? 'E' + (exHash ? e.eh : '') : 'L') + '|' + (reqSet.has(e.set) ? e.set : 0)));
     if (per.some((l) => !l.length)) return { sets: [], why: 'No armor left in the ' + SLN[per.findIndex((l) => !l.length)] + ' slot (check the search, junk and excluded pieces).' };
@@ -386,8 +393,9 @@
     // nothing reaches every minimum: look again for the closest sets
     if (!best.length && anyMin && token === OP.run) { nearMode = true; checked = 0; await pass(); }
     const toSet = (r) => { const ents = order.map((i, oi) => r.ents[oi]); const bySlot = []; ents.forEach((e) => { bySlot[e.si] = e; }); return Object.assign({}, r, { ents: bySlot }); };
-    return { sets: best.map(toSet), near: best.length ? [] : near.map(toSet), valid, checked, total, rng: valid ? { lo: rmin, hi: rmax } : null, counts: per.map((l) => l.length) };
+    return { sets: best.map(toSet), near: best.length ? [] : near.map(toSet), valid, checked, total, rng: best.length ? { lo: [0, 1, 2, 3, 4, 5].map((k) => Math.min(...best.map((b) => Math.min(MAXS, b.v[k])))), hi: [0, 1, 2, 3, 4, 5].map((k) => Math.max(...best.map((b) => Math.min(MAXS, b.v[k])))) } : null, counts: per.map((l) => l.length) };
   }
+  const setSlots = (sh) => { const d = D(); if (!d || !OP.SI) return 0; return new Set(classArmor(d).filter((x) => OP.SI[x.h] === sh).map((x) => x.b)).size; };
   function setOpts(cur) {
     const d = D(); if (!d || !OP.SI) return '';
     const cnt = {}; classArmor(d).forEach((x) => { const sh = OP.SI[x.h]; if (sh) { cnt[sh] = cnt[sh] || new Set(); cnt[sh].add(x.b); } });
@@ -405,7 +413,7 @@
     const eqT = eqC && eqC.length === 5 ? [0, 1, 2, 3, 4, 5].filter((k) => OP.on[k]).reduce((t, k) => t + Math.min(OP.mx[k], eqC.reduce((s, x) => s + x.st[k], 0)), 0) : null;
     const tot = r.tot !== undefined ? r.tot : [0, 1, 2, 3, 4, 5].filter((k) => OP.on[k]).reduce((t, k) => t + Math.min(r.v[k], OP.mx[k]), 0);
     const mods = [];
-    r.ents.forEach((e) => { const m = r.plan.filter((p) => p[0] === e.si).map((p) => modName(p[1], p[2], p[3])); if (e.tu) m.push('Tuning ' + e.tu[1]); const f = OP.font.map((n, k) => (n && FONTSLOT[k] === e.si ? n + '&times; ' + stn[k] + ' Font' : '')).filter(Boolean); if (m.length || f.length) mods.push(`<span><b>${SLN[e.si]}:</b> ${[...m.map(esc), ...f].join(', ')}</span>`); });
+    r.ents.forEach((e) => { const m = r.plan.filter((p) => p[0] === e.si).map((p) => modName(p[1], p[2], p[3])); if (e.tu) m.push(/^balanced/i.test(e.tu[1]) ? e.tu[1] : 'Tuning ' + e.tu[1]); const f = OP.font.map((n, k) => (n && FONTSLOT[k] === e.si ? n + '&times; ' + stn[k] + ' Font' : '')).filter(Boolean); if (m.length || f.length) mods.push(`<span><b>${SLN[e.si]}:</b> ${[...m.map(esc), ...f].join(', ')}</span>`); });
     return `<div class="oset2${near ? ' near' : ''}" data-ri="${i}"><div class="o2l"><div class="tiles">${its.map((x, si) => `<button class="o2t${OP.pin[si] === x.id ? ' pin' : ''}" data-it="${esc(x.id)}" data-si="${si}" title="${esc(x.n)} (${esc(where(x))}). Click to pin or exclude it.">${mt(x)}</button>`).join('')}</div>
 <div class="o2st">${OP.pri.map((k) => { const sv = Math.min(MAXS, r.v[k]), cls = !OP.on[k] ? 'off' : near && r.short && r.short[k] ? 'short' : OP.mn[k] && sv >= OP.mn[k] ? 'ok' : ''; const parts = [`armor ${base[k]}`]; if (add.M[k]) parts.push(`mods +${add.M[k]}`); if (add.a[k]) parts.push(`artifice +${add.a[k]}`); const tk = tun.reduce((t, e) => t + e.tu[2][k], 0); if (tk) parts.push(`tuning ${tk > 0 ? '+' : ''}${tk}`); if (FONTV[OP.font[k]]) parts.push(`fonts +${FONTV[OP.font[k]]}`); if (OP.bon[k]) parts.push(`bonus ${OP.bon[k] > 0 ? '+' : ''}${OP.bon[k]}`); return `<span class="${cls}" title="${esc(stn[k] + ': ' + parts.join(', ') + (r.v[k] > OP.mx[k] && OP.on[k] ? ' (above your maximum of ' + OP.mx[k] + ', the rest does not count)' : ''))}">${stn[k]} <b>${sv}</b>${near && r.short && r.short[k] ? ` <i>(${r.short[k]} short)</i>` : ''}</span>`; }).join('')}</div>
 <div class="o2m mute">Total <b>${tot}</b>${eqT !== null ? ` <span class="${tot - eqT > 0 ? 'up' : tot - eqT < 0 ? 'dn' : ''}" title="Compared with the armor ${esc(X.CL[OP.cls])} has on now">(${tot - eqT >= 0 ? '+' : ''}${tot - eqT} vs equipped)</span>` : ''}${setsOf(its).map((q) => ` <span class="oset-b" title="${esc(((q.d && q.d.p) || []).filter((p) => p.rc <= q.n).map((p) => p.rc + '-piece: ' + p.n + (p.d ? ' - ' + p.d : '')).join('\n'))}">${esc((q.d && q.d.n) || 'Set')} ${q.n >= 4 ? '4' : '2'}-piece</span>`).join('')}</div>
@@ -428,17 +436,17 @@ ${mods.length ? `<div class="o2mods">${mods.join('')}</div>` : ''}</div>
 <p class="mute o2help">Finds the best armor sets from everything you own for one class. Each piece counts with its own stats (mods in it now are left out). Set a minimum and maximum for each stat, switch off stats you do not care about, and use the arrows to put them in order: the best total of the stats you switched on wins, ties go to the stat nearer the top. Stat mods, artifice (+3) and Tier 5 tuning are picked for each set.</p>
 <div class="otools"><label>Class <select id="pcls">${X.CL.map((c, i) => `<option value="${i}"${OP.cls === i ? ' selected' : ''}>${c}</option>`).join('')}</select></label>
 <label>Exotic <select id="pex"><option value=""${!OP.ex ? ' selected' : ''}>Any (at most one)</option><option value="req"${OP.ex === 'req' ? ' selected' : ''}>Must have an exotic</option><option value="none"${OP.ex === 'none' ? ' selected' : ''}>No exotic</option>${exo.map((g) => `<optgroup label="${SLN[g.si]}">${g.l.map((x) => `<option value="${x.h}"${OP.ex === String(x.h) ? ' selected' : ''}>${esc(x.n)}</option>`).join('')}</optgroup>`).join('')}</select></label>
-<label>Set bonus <select id="pset0"${OP.SI ? '' : ' disabled'}><option value="0">${OP.SI ? 'None' : OP.setErr ? 'Could not load armor sets' : 'Loading armor sets...'}</option>${setOpts(set0.sh)}</select></label>${set0.sh ? `<select id="pneed0" aria-label="Pieces"><option value="2"${set0.n === 2 ? ' selected' : ''}>2-piece</option><option value="4"${set0.n === 4 ? ' selected' : ''}>4-piece</option></select>${set0.n === 2 ? `<label>and <select id="pset1"><option value="0">no second set</option>${setOpts(set1.sh)}</select></label>` : ''}` : ''}</div>
+<label>Set bonus <select id="pset0"${OP.SI ? '' : ' disabled'}><option value="0">${OP.SI ? 'None' : OP.setErr ? 'Could not load armor sets' : 'Loading armor sets...'}</option>${setOpts(set0.sh)}</select></label>${set0.sh ? `<select id="pneed0" aria-label="Pieces"><option value="2"${set0.n === 2 ? ' selected' : ''}>2-piece</option><option value="4"${set0.n === 4 ? ' selected' : ''}${setSlots(set0.sh) < 4 ? ' disabled' : ''}>4-piece</option></select>${set0.n === 2 ? `<label>and <select id="pset1"><option value="0">no second set</option>${setOpts(set1.sh)}</select></label>` : ''}` : ''}</div>
 <div class="otools o2opts"><label class="o2ck"><input type="checkbox" id="pauto"${OP.auto ? ' checked' : ''}> Auto stat mods</label><label class="o2ck"><input type="checkbox" id="ptune"${OP.tune ? ' checked' : ''}${OP.auto ? '' : ' disabled'}> Tier 5 tuning</label><label class="o2ck"><input type="checkbox" id="part"${OP.art ? ' checked' : ''}> Artifice +3</label><label class="o2ck" title="Counts every piece as masterworked (Armor 3.0: +5 to its three lowest stats). You have to masterwork them to get these stats."><input type="checkbox" id="pmwa"${OP.mwa ? ' checked' : ''}> Assume masterworked</label><label class="o2ck"><input type="checkbox" id="pjunk"${OP.junk ? ' checked' : ''}> Skip junk</label><label class="o2q">Only armor matching <input type="text" id="pq" value="${esc(OP.q)}" placeholder="e.g. tag:favorite or -is:locked" spellcheck="false"></label></div>
 ${OP.sets.some((s) => s.sh) ? `<div class="osetp">${OP.sets.filter((s) => s.sh && OP.SD[s.sh]).map((s) => (OP.SD[s.sh].p || []).filter((p) => p.rc <= s.n).map((p) => `<div><b>${esc(OP.SD[s.sh].n)} ${p.rc}-piece: ${esc(p.n)}</b> <span class="mute">${esc(p.d)}</span></div>`).join('')).join('')}</div>` : ''}
-<div class="o2grid"><div class="o2h"><span></span><span>Stat</span><span>Min</span><span>Max</span><span>Can reach</span><span>Fonts</span><span title="Fragments, the artifact or anything else that adds to or takes from a stat">Bonus</span></div>
+<div class="o2grid"><div class="o2h"><span></span><span>Stat</span><span>Min</span><span>Max</span><span title="The lowest and highest each stat gets in the sets found">In the sets found</span><span>Fonts</span><span title="Fragments, the artifact or anything else that adds to or takes from a stat">Bonus</span></div>
 ${OP.pri.map((k, r) => `<div class="o2row${OP.on[k] ? '' : ' off'}"><span class="ord"><button data-up="${r}"${r ? '' : ' disabled'} title="Matters more" aria-label="${stn[k]} matters more">&#9650;</button><button data-dn="${r}"${r < 5 ? '' : ' disabled'} title="Matters less" aria-label="${stn[k]} matters less">&#9660;</button></span>
 <label class="o2n"><input type="checkbox" data-on="${k}"${OP.on[k] ? ' checked' : ''} aria-label="Count ${stn[k]}"> ${stn[k]}</label>
-<input type="number" min="0" max="200" step="5" value="${OP.mn[k]}" data-mn="${k}" aria-label="${stn[k]} minimum"${OP.on[k] ? '' : ' disabled'}>
-<input type="number" min="0" max="200" step="5" value="${OP.mx[k]}" data-mx="${k}" aria-label="${stn[k]} maximum"${OP.on[k] ? '' : ' disabled'}>
-<span class="o2bar" title="${rng ? `${stn[k]} can reach ${rng.lo[k]} to ${rng.hi[k]} with these settings` : 'Find sets to see what each stat can reach'}"><i style="left:${(OP.mn[k] / 2)}%;width:${Math.max(0, (OP.mx[k] - OP.mn[k]) / 2)}%" class="want"></i>${rng ? `<i class="can" style="left:${rng.lo[k] / 2}%;width:${Math.max(1, (rng.hi[k] - rng.lo[k]) / 2)}%"></i><em>${rng.lo[k]}-${rng.hi[k]}</em>` : ''}</span>
-<select data-font="${k}" aria-label="${stn[k]} Font mods" title="${stn[k]} Font mods: count only while you have Armor Charge">${FONTV.map((v, n) => `<option value="${n}"${OP.font[k] === n ? ' selected' : ''}>${n ? n + ' (+' + v + ')' : 'None'}</option>`).join('')}</select>
-<input type="number" min="-100" max="100" step="1" value="${OP.bon[k]}" data-bon="${k}" aria-label="${stn[k]} bonus"></div>`).join('')}</div>
+<label class="o2f"><small>Min</small><input type="number" min="0" max="200" step="5" value="${OP.mn[k]}" data-mn="${k}" aria-label="${stn[k]} minimum"${OP.on[k] ? '' : ' disabled'}></label>
+<label class="o2f"><small>Max</small><input type="number" min="0" max="200" step="5" value="${OP.mx[k]}" data-mx="${k}" aria-label="${stn[k]} maximum"${OP.on[k] ? '' : ' disabled'}></label>
+<span class="o2bar" title="${rng ? `${stn[k]} goes from ${rng.lo[k]} to ${rng.hi[k]} in the sets found` : 'Find sets to see the range of each stat in them'}"><i style="left:${(OP.mn[k] / 2)}%;width:${Math.max(0, (OP.mx[k] - OP.mn[k]) / 2)}%" class="want"></i>${rng ? `<i class="can" style="left:${rng.lo[k] / 2}%;width:${Math.max(1, (rng.hi[k] - rng.lo[k]) / 2)}%"></i><em>${rng.lo[k]}-${rng.hi[k]}</em>` : ''}</span>
+<label class="o2f"><small>Fonts</small><select data-font="${k}" aria-label="${stn[k]} Font mods" title="${stn[k]} Font mods: count only while you have Armor Charge">${FONTV.map((v, n) => `<option value="${n}"${OP.font[k] === n ? ' selected' : ''}>${n ? n + ' (+' + v + ')' : 'None'}</option>`).join('')}</select></label>
+<label class="o2f"><small>Bonus</small><input type="number" min="-100" max="100" step="1" value="${OP.bon[k]}" data-bon="${k}" aria-label="${stn[k]} bonus"></label></div>`).join('')}</div>
 ${pinned.length || excl.length ? `<div class="o2pins">${pinned.map((x) => `<span class="o2chip pin" title="${esc(x.n)}">Pinned: ${esc(x.n)} <button data-unpin="${esc(x.id)}" aria-label="Unpin">&times;</button></span>`).join('')}${excl.map((x) => `<span class="o2chip exc" title="${esc(x.n)}">Excluded: ${esc(x.n)} <button data-unexc="${esc(x.id)}" aria-label="Stop excluding">&times;</button></span>`).join('')}${excl.length > 1 ? '<button data-unexc="*">Clear excluded</button>' : ''}</div>` : ''}
 <div class="orun"><button class="on orbtn" id="prun"${OP.busy ? ' disabled' : ''}>${OP.busy ? 'Searching...' : 'Find best sets'}</button>${OP.busy ? '<button id="pstop">Stop</button>' : ''}<span class="mute" id="pmsg">${esc(OP.msg)}</span></div>
 ${list.length ? `<div class="o2list">${list.slice(0, OP.shown).map((r, i) => resHTML(r, i, d, !R.sets.length)).join('')}</div>${list.length > OP.shown ? `<button id="pmore">Show more (${list.length - OP.shown} left)</button>` : ''}` : ''}</div>`;
