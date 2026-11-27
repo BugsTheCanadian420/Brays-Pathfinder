@@ -3,7 +3,8 @@
   "bungie": {
     "apiKey": "000c0b4eb4e34dc9b52d5c4d2a7474fe",
     "clientId": "56296",
-    "tokenUrl": "https://gt-token.brandonwkindred.workers.dev",
+    "tokenUrl": "https://api.d2pathfinder.com",
+    "ratingsUrl": "https://ratings.d2pathfinder.com",
     "redirect": "https://d2pathfinder.com/"
   }
 }
