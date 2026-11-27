@@ -1,5 +1,5 @@
 // Made by web/build.js: the PC app download, link previews for share links, and the site's files for everything else.
-const API = "https://gt-token.brandonwkindred.workers.dev", REPO = "BugsTheCanadian420/Brays-Pathfinder", DOMAIN = "d2pathfinder.com";
+const API = "https://api.d2pathfinder.com", REPO = "BugsTheCanadian420/Brays-Pathfinder", DOMAIN = "d2pathfinder.com";
 const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 // If the site has a service binding named TOKEN to the token service (Pages > Settings > Bindings), it is used; otherwise the
 // token service's public address.
