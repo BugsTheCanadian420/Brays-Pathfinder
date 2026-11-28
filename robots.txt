@@ -1,6 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /beta/
-Disallow: /download/
 
 Sitemap: https://d2pathfinder.com/sitemap.xml

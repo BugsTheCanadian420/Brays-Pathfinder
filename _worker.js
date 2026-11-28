@@ -16,7 +16,7 @@ async function latest() {
   REL = { at: Date.now(), v: String(j.tag_name || '').replace(/^v/, ''), url: a.browser_download_url, size: a.size || 0, name: a.name, date: j.published_at || '' };
   return REL;
 }
-const json = (o, st) => new Response(JSON.stringify(o), { status: st || 200, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=300' } });
+const json = (o, st) => new Response(JSON.stringify(o), { status: st || 200, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=300', 'X-Robots-Tag': 'noindex' } });
 // a share link: /abc1234, /abc1234/Name, or the same under /beta/ (made on the beta)
 const SHARE = /^\/(?:beta\/)?([A-Za-z0-9]{5,12})(?:\/([^/]{1,160}))?\/?$/i;
 const SITE = {
@@ -39,10 +39,10 @@ const SITE = {
       try {
         const rel = await latest();
         if (p0 === '/download/info') return json({ v: rel.v, size: rel.size, name: rel.name, date: rel.date });
-        return new Response(null, { status: 302, headers: { Location: rel.url, 'Cache-Control': 'public, max-age=300' } });
+        return new Response(null, { status: 302, headers: { Location: rel.url, 'Cache-Control': 'public, max-age=300', 'X-Robots-Tag': 'noindex' } });
       } catch (e) {
         if (p0 === '/download/info') return json({ error: 'unavailable' }, 503);
-        return Response.redirect('https://github.com/' + REPO + '/releases/latest', 302);
+        return new Response(null, { status: 302, headers: { Location: 'https://github.com/' + REPO + '/releases/latest', 'X-Robots-Tag': 'noindex' } });
       }
     }
     if (!res) res = await env.ASSETS.fetch(request);
